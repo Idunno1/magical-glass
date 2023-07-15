@@ -1,0 +1,16 @@
+{
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.runtime.special": {
+        "love.filesystem.load": "loadfile",
+        "modRequire": "require"
+    },
+    "Lua.workspace.library": [
+        "${3rd}/love2d/library",
+        "c:/Users/T/.vscode/extensions/kristal.kristal-vscode-1.1.1/3rd//kristal-lua-docs/library"
+    ],
+    "Lua.type.weakUnionCheck": true,
+    "Lua.diagnostics.disable": [
+        "need-check-nil"
+    ],
+    "Lua.type.weakNilCheck": true
+}

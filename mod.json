@@ -1,0 +1,27 @@
+{
+    "id": "magical-glass-s",
+    "name": "Magical Glass",
+    "subtitle": "...What fucking game am I playing again?",
+
+    "version": "something idk",
+    "engineVer": "v0.8.1-dev",
+
+    "chapter": 2,
+
+    //"encounter": "dummy",
+
+    "map": "tundra3",
+    "party": ["kris", "susie", "ralsei"],
+    "inventory": {
+        "items": ["monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", ],
+        "key_items": ["cell_phone"]
+    },
+
+    "config": {
+        "kristal": {
+            "mercyBar": false,
+            "enemyBarPercentages": false
+            // End of config
+        }
+    }
+}
