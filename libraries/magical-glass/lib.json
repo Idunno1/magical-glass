@@ -1,6 +1,15 @@
 {
     "id": "magical-glass",
-    "authors": ["Nyakorita - started it", "Sam Deluxe and bor - finished it"],
+    "authors": [
+        "Nyakorita - Made the UI",
+        "Sam Deluxe and Bor - did the thing"
+    ],
     "version": "v1.0.0",
-    "engineVer": "v0.8.1-dev"
+    "engineVer": "v0.8.1-dev",
+
+    "config": {
+        "mercyBar": true,
+        "enemyBarPercentages": false
+        // End of config
+    }
 }

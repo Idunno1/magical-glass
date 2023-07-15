@@ -8,19 +8,19 @@
 
     "chapter": 2,
 
-    //"encounter": "dummy",
+    "encounter": "dummy",
 
     "map": "tundra3",
     "party": ["kris", "susie", "ralsei"],
     "inventory": {
-        "items": ["monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", ],
+       // "items": ["monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", ],
         "key_items": ["cell_phone"]
     },
 
     "config": {
         "kristal": {
-            "mercyBar": false,
-            "enemyBarPercentages": false
+            "mercyBar": true,
+            "enemyBarPercentages": true
             // End of config
         }
     }

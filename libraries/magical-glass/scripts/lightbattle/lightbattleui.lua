@@ -267,17 +267,29 @@ function LightBattleUI:drawState()
         local font_main = Assets.getFont("main")
         local font_mono = Assets.getFont("main_mono")
 
-        local draw_mercy = Game:getConfig("mercyBar")
-        local draw_percents = Game:getConfig("enemyBarPercentages")
+        local draw_mercy = Kristal.getLibConfig("magical-glass", "mercyBar")
+        local draw_percents = Kristal.getLibConfig("magical-glass", "enemyBarPercentages")
 
         Draw.setColor(1, 1, 1, 1)
 
+        --[[
         if draw_mercy and draw_percents and self.style ~= "undertale" then
             love.graphics.setFont(font_main)
             if Game.battle.state == "ENEMYSELECT" and self.style ~= "undertale" and Game.battle.state_reason ~= "ACT" then
                 love.graphics.print("HP", 400, -10, 0, 1, 0.5)
             end
             love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+        end
+        --]]
+
+        if draw_percents and self.style ~= "undertale" then
+            love.graphics.setFont(font_main)
+            if Game.battle.state == "ENEMYSELECT" and self.style ~= "undertale" and Game.battle.state_reason ~= "ACT" then
+                love.graphics.print("HP", 400, -10, 0, 1, 0.5)
+            end
+            if draw_mercy then
+                love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+            end
         end
 
         love.graphics.setFont(font_mono)
