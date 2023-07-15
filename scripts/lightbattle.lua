@@ -301,6 +301,24 @@ function LightBattle:spawnSoul(x, y)
     end
 end
 
+function LightBattle:swapSoul(object)
+    if self.soul then
+        self.soul:remove()
+    end
+    object:setPosition(self.soul:getPosition())
+    object.layer = self.soul.layer
+    self.soul = object
+    self:addChild(object)
+end
+
+function LightBattle:returnSoul(dont_destroy)
+    if dont_destroy == nil then dont_destroy = false end
+    local bx, by = self:getSoulLocation(true)
+    if self.soul then
+        self.soul:transitionTo(bx, by, not dont_destroy)
+    end
+end
+
 function LightBattle:getSoulLocation(always_player)
     if self.soul and (not always_player) then
         return self.soul:getPosition()
@@ -1086,7 +1104,7 @@ function LightBattle:nextTurn()
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
     end
 
-    if self.soul and not self.encounter.light then
+    if self.soul then
         self:returnSoul()
     end
 
