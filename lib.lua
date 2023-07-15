@@ -22,6 +22,8 @@ function lib:init()
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
+    BATTLE_LAYERS["arena_frame"] = BATTLE_LAYERS["arena"] + 10
+
 end
 
 function lib:postInit()

@@ -19,10 +19,10 @@ function LightBattle:init()
     self.fader.alpha = 1
     self:addChild(self.fader)
 
-    self.selected_button = 1
-
     self.money = 0
     self.xp = 0
+
+    self.used_violence = false
 
     self.ui_move = Assets.newSound("ui_move")
     self.ui_select = Assets.newSound("ui_select")
@@ -30,17 +30,17 @@ function LightBattle:init()
 
     self.encounter_context = nil
 
-    self:createPartyBattlers()
-
     self.offset = 0
 
     self.textbox_timer = 0
     self.use_textbox_timer = true
 
+    self:createPartyBattlers()
+
+    self.current_selecting = 0
+
     self.camera = Camera(self, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_WIDTH, SCREEN_HEIGHT, false)
     self.cutscene = nil
-
-    self.current_selecting = 1
 
     self.turn_count = 0
 
@@ -1075,9 +1075,7 @@ function LightBattle:nextTurn()
         for _,box in ipairs(self.battle_ui.action_boxes) do
             box.selected_button = 1
             --box:setHeadIcon("head")
-            if not self.encounter.light then
-                box:resetHeadIcon()
-            end
+            --box:resetHeadIcon()
         end
         if self.state == "INTRO" or self.state_reason == "INTRO" or not self.seen_encounter_text then
             self.seen_encounter_text = true
@@ -1323,7 +1321,9 @@ function LightBattle:update()
         end
     elseif self.state == "ACTIONSELECT" then
         local actbox = self.battle_ui.action_boxes[self.current_selecting]
-        actbox:snapSoulToButton()
+        if actbox then
+            actbox:snapSoulToButton()
+        end
         -- might be needed for enemies that attack you while it's your turn
         -- self:updateWaves()
     end
@@ -1622,6 +1622,7 @@ end
 
 function LightBattle:commitSingleAction(action)
     local battler = self.party[action.character_id]
+    print(action)
 
     battler.action = action
     self.character_actions[action.character_id] = action
@@ -1631,7 +1632,7 @@ function LightBattle:commitSingleAction(action)
     end
 
     if action.action == "ITEM" and action.data then
-        local result = action.data:onSelect(battler, action.target)
+        local result = action.data:onBattleSelect(battler, action.target)
         if result ~= false then
             local storage, index = Game.inventory:getItemIndex(action.data)
             action.item_storage = storage
@@ -1923,7 +1924,7 @@ end
 
 function LightBattle:nextParty()
     -- dt mode only
-    table.insert(self.selected_character_stack, self.current_selecting)
+--[[     table.insert(self.selected_character_stack, self.current_selecting)
     table.insert(self.selected_action_stack, Utils.copy(self.character_actions))
 
     local all_done = true
@@ -1952,7 +1953,8 @@ function LightBattle:nextParty()
             party.chara:onActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
-    end
+    end ]]
+    self:startProcessing()
 end
 
 function LightBattle:previousParty()
@@ -2337,19 +2339,15 @@ function LightBattle:handleActionSelectInput(key)
     elseif Input.is("left", key) then
         actbox.selected_button = actbox.selected_button - 1
         self:playMoveSound()
-        --actbox:snapSoulToButton()
+        if actbox then
+            actbox:snapSoulToButton()
+        end
     elseif Input.is("right", key) then
         actbox.selected_button = actbox.selected_button + 1
         self:playMoveSound()
-        --actbox:snapSoulToButton()
-    end
-
-    if actbox.selected_button < 1 then
-        actbox.selected_button = #actbox.buttons
-    end
-
-    if actbox.selected_button > #actbox.buttons then
-        actbox.selected_button = 1
+        if actbox then
+            actbox:snapSoulToButton()
+        end
     end
 end
 

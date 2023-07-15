@@ -62,6 +62,15 @@ end
 
 function LightActionBoxSingle:snapSoulToButton()
     if Game.battle.soul then
+
+        if self.selected_button < 1 then
+            self.selected_button = #self.buttons
+        end
+    
+        if self.selected_button > #self.buttons then
+            self.selected_button = 1
+        end
+
         Game.battle.soul.x = self.buttons[self.selected_button].x - 19
         Game.battle.soul.y = self.buttons[self.selected_button].y + 279
     end
