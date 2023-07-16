@@ -1104,9 +1104,9 @@ function LightBattle:nextTurn()
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
     end
 
-    if self.soul then
+--[[     if self.soul then
         self:returnSoul()
-    end
+    end ]]
 
     self.encounter:onTurnStart()
     for _,enemy in ipairs(self:getActiveEnemies()) do
@@ -2064,6 +2064,8 @@ end
 function LightBattle:addMenuItem(tbl)
     tbl = {
         ["name"] = tbl.name or "",
+        ["shortname"] = tbl.shortname or nil,
+        ["seriousname"] = tbl.seriousname or nil,
         ["tp"] = tbl.tp or 0,
         ["unusable"] = tbl.unusable or false,
         ["description"] = tbl.description or "",

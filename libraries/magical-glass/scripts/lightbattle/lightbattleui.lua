@@ -98,7 +98,7 @@ function LightBattleUI:drawState()
     if state == "MENUSELECT" then
 
         local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
-        local max_page = math.ceil(#Game.battle.menu_items / 6) - 1
+        local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
 
         local x = 0
         local y = 0
@@ -189,11 +189,19 @@ function LightBattleUI:drawState()
                 love.graphics.setColor(Game:getFlag("name_color"))
             end
 
-            if #item.party > 0 then
-                love.graphics.print(item.name, text_offset + 89 + (x * (240 + extra_offset[2])), (y * 32))
-            else
-                love.graphics.print("* " .. item.name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
+            local name = item.name
+            if item.shortname then
+                name = item.shortname
+            elseif item.seriousname and Game:getFlag("serious_mode") then
+                name = item.seriousname
             end
+
+            if #item.party > 0 then
+                love.graphics.print(name, text_offset + 89 + (x * (240 + extra_offset[2])), (y * 32))
+            else
+                love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
+            end
+
             text_offset = text_offset + font:getWidth(item.name)
 
             if item.icons then

@@ -112,7 +112,7 @@ function LightActionBoxSingle:drawStatusStrip()
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
 
     local max = self.battler.chara:getStat("health")
-    local current = self.battler.chara.health
+    local current = self.battler.chara.lw_health
     local size = max * 1.25
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.rectangle("fill", x + 245, y, size, 21)

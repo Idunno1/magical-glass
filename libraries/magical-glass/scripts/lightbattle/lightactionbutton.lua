@@ -135,6 +135,8 @@ function LightActionButton:select()
         for i,item in ipairs(Game.inventory:getStorage("items")) do
             Game.battle:addMenuItem({
                 ["name"] = item:getName(),
+                ["shortname"] = item:getShortName(),
+                ["seriousname"] = item:getSeriousName(),
                 ["unusable"] = item.usable_in ~= "all" and item.usable_in ~= "battle",
                 ["description"] = item:getBattleDescription(),
                 ["data"] = item,
