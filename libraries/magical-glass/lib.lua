@@ -93,11 +93,6 @@ function lib:init()
     
             if self.party_selecting ~= "all" then
                 local old_selecting = self.party_selecting
-        
-                if self.party_selecting ~= old_selecting then
-                    self.ui_move:stop()
-                    self.ui_move:play()
-                end
 
                 if Input.pressed("right") then
                     self.party_selecting = self.party_selecting + 1
@@ -108,6 +103,11 @@ function lib:init()
                 end
 
                 self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
+
+                if self.party_selecting ~= old_selecting then
+                    self.ui_move:stop()
+                    self.ui_move:play()
+                end
 
                 if Input.pressed("confirm") then
                     local item = Game.inventory:getItem(self.storage, self.item_selecting)
