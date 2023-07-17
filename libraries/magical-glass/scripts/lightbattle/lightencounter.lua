@@ -197,7 +197,7 @@ function LightEncounter:getDefeatedEnemies()
 end
 
 function LightEncounter:createSoul(x, y, color)
-    return Soul(x, y, color)
+    return LightSoul(x, y, color)
 end
 
 function LightEncounter:setFlag(flag, value)

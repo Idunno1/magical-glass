@@ -1,12 +1,13 @@
 LightBattle              = libRequire("magical-glass", "scripts/lightbattle")
-LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/lightbattleui")
-LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/lighttensionbar")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
-LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/lightactionbutton")
-LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/lightactionbox")
-LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/lightactionboxsingle")
-LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/lightactionboxdisplay")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
+LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
+LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
+LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
+LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
+LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
+LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
+LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxdisplay")
 
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
@@ -19,6 +20,45 @@ function lib:init()
         object:encounterLight(encounter, transition, enemy, context)
         --orig(object, encounter, transition, enemy) 
     end)
+
+    Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
+    
+        orig(self, x, y, texture)
+        if Game:isLight() then
+            self.inv_timer = 1
+        end
+
+    end)
+
+    Utils.hook(LightEquipItem, "init", function(orig, self)
+
+        orig(self)
+
+        -- Animation style
+        -- simple: frame by frame animation
+        -- complex: ignores self.attack_animation, animated by onAttack())
+        self.animation_style = "simple"
+
+        -- Attack animation (only used for simple animations)
+        self.attack_animation = "effects/attack/strike"
+
+        -- Sound played when attacking, defaults to laz_c
+        self.attack_sound = "laz_c"
+
+        self.attack_pitch = 1
+        
+    end)
+
+    Utils.hook(LightEquipItem, "onAttack", function(orig, self, character)
+
+        -- complex animation shit (like the notebook and gun animations) go here
+        
+    end)
+
+    Utils.hook(LightEquipItem, "getAnimationStyle", function(orig, self)    return self.animation_style end)
+    Utils.hook(LightEquipItem, "getAttackAnimation", function(orig, self)   return self.attack_animation end)
+    Utils.hook(LightEquipItem, "getAttackSound", function(orig, self)       return self.attack_sound end)
+    Utils.hook(LightEquipItem, "getAttackPitch", function(orig, self)       return self.attack_pitch end)
 
     Utils.hook(LightItemMenu, "init", function(orig, self)
     
@@ -259,6 +299,141 @@ function lib:init()
     
     end)
 
+    Utils.hook(PartyMember, "init", function(orig, self)
+    
+        orig(self)
+
+        self.lw_portrait = nil
+
+        self.light_color = nil
+        self.light_dmg_color = nil
+        self.light_attack_bar_color = nil
+        self.light_xact_color = nil
+
+        self.lw_stats = {
+            health = 20,
+            attack = 10,
+            defense = 10,
+            magic = 0
+        }
+
+    end)
+
+    Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
+
+    Utils.hook(PartyMember, "getLightColor", function(orig, self)
+        if self.light_color then
+            return Utils.unpackColor(self.light_color)
+        else
+            return self:getColor()
+        end
+    end)
+
+    Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
+        if self.light_dmg_color then
+            return Utils.unpackColor(self.light_dmg_color)
+        else
+            return self:getLightColor()
+        end
+    end)
+
+    Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
+        if self.light_attack_bar_color then
+            return Utils.unpackColor(self.light_attack_bar_color)
+        else
+            return self:getLightColor()
+        end
+    end)
+
+    Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
+        if self.light_xact_color then
+            return Utils.unpackColor(self.light_xact_color)
+        else
+            return self:getLightColor()
+        end
+    end)
+
+    Utils.hook(LightStatMenu, "init", function(orig, self)
+    
+        orig(self)
+        self.party_selecting = 1
+
+        self.portrait = Sprite(Assets.getTexture("face/susie/neutral"), 20, 20)
+        self.portrait:setColor(1, 1, 1, 1)
+        self.portrait.layer = 1000
+        self.portrait:setOrigin(0.5, 1)
+        self:addChild(self.portrait)
+
+    end)
+
+    Utils.hook(LightStatMenu, "update", function(orig, self)
+        local chara = Game.party[self.party_selecting]
+    
+        if Input.pressed("right") then
+            self.party_selecting = self.party_selecting + 1
+            --self.portrait:setSprite(chara:getLightPortrait())
+            print(self.portrait.texture)
+        end
+
+        if Input.pressed("left") then
+            self.party_selecting = self.party_selecting - 1
+            --self.portrait:setSprite(chara:getLightPortrait())
+        end
+
+        if self.party_selecting > #Game.party then
+            self.party_selecting = 1
+        end
+
+        if self.party_selecting < 1 then
+            self.party_selecting = #Game.party
+        end
+
+        if Input.pressed("cancel") then
+            self.ui_move:stop()
+            self.ui_move:play()
+            self.portrait:remove()
+            Game.world.menu:closeBox()
+            return
+        end
+
+        LightStatMenu.__super.update(self)
+
+    end)
+
+    Utils.hook(LightStatMenu, "draw", function(orig, self)
+    
+        love.graphics.setFont(self.font)
+        Draw.setColor(PALETTE["world_text"])
+    
+        local chara = Game.party[self.party_selecting]
+        local offset = 0
+
+        love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
+        love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
+        love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
+    
+        local exp_needed = math.max(0, chara:getLightEXPNeeded(chara:getLightLV() + 1) - chara:getLightEXP())
+    
+        love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
+        love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
+        if Game:getFlag("always_show_magic") or chara.lw_stats.magic > 0 then
+            love.graphics.print("MG  ", 4, 228)
+            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
+            offset = 20
+        end
+        love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
+        love.graphics.print("NEXT: ".. exp_needed, 172, 196)
+    
+        local weapon_name = chara:getWeapon() and chara:getWeapon():getName() or ""
+        local armor_name = chara:getArmor(1) and chara:getArmor(1):getName() or ""
+    
+        love.graphics.print("WEAPON: "..weapon_name, 4, 256 + offset)
+        love.graphics.print("ARMOR: "..armor_name, 4, 288 + offset)
+    
+        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
+
+    end)
+
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
     BATTLE_LAYERS["arena_frame"] = BATTLE_LAYERS["arena"] + 10
 
@@ -276,7 +451,8 @@ end
 
 function lib:postInit()
     Game:setFlag("serious_mode", false)
-    Game:setFlag("enable_tp", false)
+    Game:setFlag("always_show_magic", false)
+    Game:setFlag("enable_lw_tp", false)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
 end

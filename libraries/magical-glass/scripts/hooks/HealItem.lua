@@ -4,9 +4,9 @@ function HealItem:init()
 
     super.init(self)
     -- Short name for the light battle item menu
-    self.short_name = "TestItem"
+    self.short_name = nil
     -- Serious name for the light battle item menu
-    self.serious_name = "Test"
+    self.serious_name = nil
     -- Should the item display how much HP was healed after its message?
     self.display_healing = true
 
@@ -17,7 +17,7 @@ function HealItem:getSeriousName() return self.serious_name end
 
 function HealItem:onWorldUse(target)
 
-    self:onWorldUseSFX(target)
+    self:useSound(target)
     local text = self:onWorldUseText(target)
     --local text = self:onWorldUseText(target)
     if self.target == "ally" then
@@ -41,21 +41,28 @@ end
 function HealItem:onWorldUseText(target)
 
     if self.target == "ally" and target.id == Game.party[1].id then
-        local sorry = Utils.random(0, 50, 1)
-        if sorry == 50 then
-            return "* You ate the Test Item.\n* Mmm... Testy."
-        else
-            return "* You ate the Test Item."
-        end
+        return self:useOnPlayerText(target)
     elseif self.target == "ally" then
-        return "* " .. target.name .. " ate the Test Item."
+        return self:useOnAllyText(target)
     elseif self.target == "party" then
-        return "* Everyone ate the Test Item."
+        return self:useOnEveryoneText(target)
     end
 
 end
 
-function HealItem:onWorldUseSFX(target)
+function HealItem:useOnPlayerText(target)
+    return "* You ate the " .. self:getName() .. "."
+end
+
+function HealItem:useOnAllyText(target)
+    return "* " .. target.name .. " ate the " .. self:getName() .. "."
+end
+
+function HealItem:useOnEveryoneText(target)
+    return "* Everyone ate the " .. self:getName() .. "."
+end
+
+function HealItem:useSound(target)
     Game.world.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")
         wait(0.4)

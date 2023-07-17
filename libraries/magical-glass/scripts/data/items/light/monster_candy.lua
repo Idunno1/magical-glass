@@ -33,10 +33,6 @@ function item:init(inventory)
 
 end
 
-function item:onWorldUseText(target)
-    return "* You snorted the Monster Candy."
-end
-
 function item:onToss()
     Game.world:showText("* The Monster Candy was\n  yeeted.")
     return false
