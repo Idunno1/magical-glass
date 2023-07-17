@@ -358,12 +358,12 @@ function lib:init()
         orig(self)
         self.party_selecting = 1
 
-        self.portrait = Sprite(Assets.getTexture("face/susie/neutral"), 20, 20)
+--[[         self.portrait = Sprite(Assets.getTexture("face/susie/neutral"), 20, 20)
         self.portrait:setColor(1, 1, 1, 1)
         self.portrait.layer = 1000
         self.portrait:setOrigin(0.5, 1)
         self:addChild(self.portrait)
-
+ ]]
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -371,13 +371,10 @@ function lib:init()
     
         if Input.pressed("right") then
             self.party_selecting = self.party_selecting + 1
-            --self.portrait:setSprite(chara:getLightPortrait())
-            print(self.portrait.texture)
         end
 
         if Input.pressed("left") then
             self.party_selecting = self.party_selecting - 1
-            --self.portrait:setSprite(chara:getLightPortrait())
         end
 
         if self.party_selecting > #Game.party then
@@ -391,7 +388,6 @@ function lib:init()
         if Input.pressed("cancel") then
             self.ui_move:stop()
             self.ui_move:play()
-            self.portrait:remove()
             Game.world.menu:closeBox()
             return
         end
@@ -408,6 +404,21 @@ function lib:init()
         local chara = Game.party[self.party_selecting]
         local offset = 0
 
+        if Game:getFlag("lw_stat_menu_portraits") then
+            local ox, oy = chara.actor:getPortraitOffset()
+            if chara:getLightPortrait() then
+                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
+            end
+
+            if #Game.party > 1 then
+                Draw.setColor(Game:getSoulColor())
+                Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
+
+                Draw.setColor(PALETTE["world_text"])
+                love.graphics.print("<                >", 162, 116)
+            end
+        end
+
         love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
         love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
@@ -419,7 +430,7 @@ function lib:init()
         if Game:getFlag("always_show_magic") or chara.lw_stats.magic > 0 then
             love.graphics.print("MG  ", 4, 228)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
-            offset = 20
+            offset = 18
         end
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
@@ -453,6 +464,7 @@ function lib:postInit()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
     Game:setFlag("enable_lw_tp", false)
+    Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
 end

@@ -949,7 +949,7 @@ function LightBattle:onStateChange(old,new)
             Game.money = 0
         end
 
-        local win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " gold." --lightcurrency?
+        local win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
         -- exp shit goes here
 
@@ -997,7 +997,7 @@ function LightBattle:onStateChange(old,new)
             Game.money = 0
         end
 
-        return self.encounter:onFlee()
+        self.encounter:onFlee()
     elseif new == "FLEEFAIL" then
         self.actions_done_timer = Utils.approach(self.actions_done_timer, 0, DT)
         local any_hurt = false

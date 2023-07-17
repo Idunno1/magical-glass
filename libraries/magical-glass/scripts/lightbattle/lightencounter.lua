@@ -63,7 +63,7 @@ function LightEncounter:onFlee()
     elseif message == 3 then
         message = self.flee_messages[4]
     elseif Game.battle.used_violence then
-        message = "* Ran away with " .. Game.battle.xp .. "EXP and " .. Game.battle.money .. "GOLD."
+        message = "* Ran away with " .. Game.battle.xp .. "EXP and " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
     end
 
     local soul_x, soul_y = Game.battle.soul:getPosition()
