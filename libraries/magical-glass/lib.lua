@@ -428,9 +428,11 @@ function lib:init()
         love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         if Game:getFlag("always_show_magic") or chara.lw_stats.magic > 0 then
-            love.graphics.print("MG  ", 4, 228)
-            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
-            offset = 18
+            --love.graphics.print("MG  ", 4, 228)
+            --love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
+            love.graphics.print("MG  ", 4, 132)
+            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 132)
+            --offset = 18
         end
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
@@ -438,10 +440,15 @@ function lib:init()
         local weapon_name = chara:getWeapon() and chara:getWeapon():getName() or ""
         local armor_name = chara:getArmor(1) and chara:getArmor(1):getName() or ""
     
+        --[[
         love.graphics.print("WEAPON: "..weapon_name, 4, 256 + offset)
         love.graphics.print("ARMOR: "..armor_name, 4, 288 + offset)
+        ]]
+        love.graphics.print("WEAPON: "..weapon_name, 4, 256)
+        love.graphics.print("ARMOR: "..armor_name, 4, 288)
     
-        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
+        --love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
+        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
 
     end)
 
@@ -467,6 +474,8 @@ function lib:postInit()
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
+
+    Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 end
 
 function Game:encounterLight(encounter, transition, enemy, context)

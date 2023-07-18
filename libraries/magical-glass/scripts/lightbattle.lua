@@ -782,13 +782,23 @@ function LightBattle:onStateChange(old,new)
         self.soul.sprite:set("player/heart_light")
         self.fader:fadeIn(nil, {speed=5/30})
 
+        --self.battle_ui.encounter_text:setText(self.encounter.text)
+        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+
         if self.state_reason == "CANCEL" then
             -- this doesn't print the text out again for some reason
-            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
-        end
 
-        self.battle_ui.encounter_text:setText(self.encounter.text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            --self.battle_ui:clearEncounterText()
+            self.battle_ui:setEncounterText(self.battle_ui.current_encounter_text)
+            --[[]
+            self.battle_ui.encounter_text.text.line_offset = 0
+            self.battle_ui.encounter_text.text.style = "none"
+            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
+            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
+            --]]
+        end
 
         local had_started = self.started
         if not self.started then

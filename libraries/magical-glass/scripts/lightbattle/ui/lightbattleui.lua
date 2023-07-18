@@ -88,6 +88,16 @@ function LightBattleUI:clearEncounterText()
     self.encounter_text:setText("")
 end
 
+function LightBattleUI:setEncounterText(txt)
+    self:clearEncounterText()
+    Game.battle.timer:script(function(wait)
+        wait(0.15)
+        if Game.battle.state == "ACTIONSELECT" then
+            self.encounter_text:setText(txt)
+        end
+    end)
+end
+
 function LightBattleUI:drawActionArea()
     self:drawState()
 end
