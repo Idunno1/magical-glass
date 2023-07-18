@@ -72,6 +72,10 @@ function LightBattle:init()
     self.normal_attackers = {}
     self.auto_attackers = {}
 
+    self.attack_done = false
+    self.cancel_attack = false
+    self.auto_attack_timer = 0
+
     self.post_battletext_func = nil
     self.post_battletext_state = "ACTIONSELECT"
 
@@ -817,7 +821,11 @@ function LightBattle:onStateChange(old,new)
             party.chara:onActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
-
+    elseif new == "ACTIONS" then
+        self.battle_ui:clearEncounterText()
+        if self.state_reason ~= "DONTPROCESS" then
+            self:tryProcessNextAction()
+        end
     elseif new == "MENUSELECT" then
         self.battle_ui:clearEncounterText()
         self.current_menu_x = 1
@@ -838,6 +846,8 @@ function LightBattle:onStateChange(old,new)
         self.current_menu_y = 1
     elseif new == "ATTACKING" then
         self.battle_ui:clearEncounterText()
+
+        local enemies_left = self:getActiveEnemies()
 
         if #enemies_left > 0 then
             for i,battler in ipairs(self.party) do
@@ -1443,6 +1453,19 @@ function LightBattle:updateTransitionOut()
     self:returnToWorld()
 end
 
+function LightBattle:updateAttacking()
+    if self.cancel_attack then
+        self:finishAllActions()
+        self:setState("ACTIONSDONE")
+    end
+
+    if not self.attack_done then
+        if not self.battle_ui.attacking then
+            self.battle_ui:beginAttack()
+        end
+    end
+end
+
 function LightBattle:draw()
     if self.encounter.background then
         self:drawBackground()
@@ -1735,7 +1758,7 @@ function LightBattle:removeAction(character_id)
 end
 
 function LightBattle:isHighlighted(battler)
-    if self.state == "PARTYSELECT" then
+--[[     if self.state == "PARTYSELECT" then
         return self.party[self.current_menu_y] == battler
     elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
         return self.enemies[self.current_menu_y] == battler
@@ -1749,7 +1772,7 @@ function LightBattle:isHighlighted(battler)
                 return Utils.containsValue(highlighted, battler)
             end
         end
-    end
+    end ]]
     return false
 end
 
@@ -1951,8 +1974,7 @@ function LightBattle:setSelectedParty(index)
 end
 
 function LightBattle:nextParty()
-    -- dt mode only
---[[     table.insert(self.selected_character_stack, self.current_selecting)
+    table.insert(self.selected_character_stack, self.current_selecting)
     table.insert(self.selected_action_stack, Utils.copy(self.character_actions))
 
     local all_done = true
@@ -1981,7 +2003,7 @@ function LightBattle:nextParty()
             party.chara:onActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
-    end ]]
+    end
     self:startProcessing()
 end
 

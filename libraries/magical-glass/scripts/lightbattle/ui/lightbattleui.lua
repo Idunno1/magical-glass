@@ -35,10 +35,9 @@ function LightBattleUI:init()
     self:addChild(self.short_act_text_2)
     self:addChild(self.short_act_text_3)
 
-    self.action_boxes = {}
     self.attack_box = nil
-    self.attack_bars = {}
-
+    self.action_boxes = {}
+    
     self.attacking = false
 
     -- for the deltatraveler stuff, disabled for now
@@ -96,6 +95,23 @@ function LightBattleUI:setEncounterText(txt)
             self.encounter_text:setText(txt)
         end
     end)
+function LightBattleUI:beginAttack()
+    local attack_order = Utils.pickMultiple(Game.battle.normal_attackers, #Game.battle.normal_attackers)
+
+    local last_offset = -1
+    local offset = 0
+
+    self.attack_box = AttackBox(self.arena.x + 20, self.arena.y + 20)
+    self:addChild(self.attack_box)
+
+    self.attacking = true
+end
+
+function LightBattleUI:endAttack()
+    Game.battle.cancel_attack = false
+    self.attack_box.scale_y = (self.attack_box.scale_y - 0.08) * DTMULT
+    self.attack_box:fadeOutSpeedAndRemove(1) -- needs scale shit
+    self.attacking = false
 end
 
 function LightBattleUI:drawActionArea()
