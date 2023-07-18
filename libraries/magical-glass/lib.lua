@@ -8,6 +8,8 @@ LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
 LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
 LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxdisplay")
+LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
+LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
 
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
