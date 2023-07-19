@@ -9,14 +9,14 @@ function LightBattleUI:init()
 
     self.style = Game:getFlag("gauge_styles")
 
-    self.arena = LightArena(SCREEN_WIDTH/2 - 1, 385)
+    self.arena = LightArena(SCREEN_WIDTH/2, 385)
     self.arena.layer = BATTLE_LAYERS["ui"] -- change to the arena layer when wave starts
     self.arena.collider.colliders.layer = self.arena.layer + 2
     Game.battle:addChild(self.arena)
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
     self.encounter_text.text.hold_skip = false
-    self.encounter_text.text.line_offset = 0
+    self.encounter_text.text.line_offset = 5
     self.encounter_text.text.style = "none"
     self.encounter_text.text.state.typing_sound = "ut"
     self.encounter_text:setText("")

@@ -770,9 +770,9 @@ function LightBattle:onStateChange(old,new)
 
         if self.state_reason == "CANCEL" then
             self.timer:during(1/30, function()
+                self.battle_ui.encounter_text.text.line_offset = 5
                 self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
                 self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-
             end)
         else
             self.battle_ui.encounter_text:setText(self.encounter.text)
@@ -1211,7 +1211,7 @@ end
 
 function LightBattle:battleText(text,post_func)
     local target_state = self:getState()
-
+    self.battle_ui.encounter_text.text.line_offset = 4 -- toby jesus christ
     self.battle_ui.encounter_text:setText(text, function()
         self.battle_ui:clearEncounterText()
         if type(post_func) == "string" then
@@ -2157,9 +2157,9 @@ function LightBattle:onKeyPressed(key)
             end
             self.current_menu_x = self.current_menu_x - 1
             if self.current_menu_x < 1 then
-                self.current_menu_x = self.current_menu_columns + max_page
+                self.current_menu_x = self.current_menu_columns + (max_page + 1)
                 if not self:isValidMenuLocation() then
-                    self.current_menu_x = 1
+                    self.current_menu_x = self.current_menu_columns + (max_page + 1) - 1
                 end
             end
         elseif Input.is("right", key) then
