@@ -19,6 +19,8 @@ function LightBattle:init()
     self.fader.alpha = 1
     self:addChild(self.fader)
 
+    self.enemy_world_characters = {}
+
     self.money = 0
     self.xp = 0
 
@@ -246,26 +248,13 @@ function LightBattle:postInit(state, encounter)
     end
 
     if Game.encounter_enemies then
-        for _,from in ipairs(Game.encounter_enemies) do
-            if not isClass(from) then
-                local enemy = self:parseEnemyIdentifier(from[1])
-                from[2].visible = false
-                from[2].battler = enemy
-                self.enemy_world_characters[enemy] = from[2]
+        for _,enemy in ipairs(Game.encounter_enemies) do
+            if not isClass(enemy) then
+                local battler = self:parseEnemyIdentifier(enemy[1])
+                enemy[2].battler = battler
+                self.enemy_world_characters[battler] = enemy[2]
                 if state == "TRANSITION" then
-                    enemy:setPosition(from[2]:getScreenPos())
-                end
-            else
-                for _,enemy in ipairs(self.enemies) do
-                    if enemy.actor and from.actor and enemy.actor.id == from.actor.id then
-                        from.visible = false
-                        from.battler = enemy
-                        self.enemy_world_characters[enemy] = from
-                        if state == "TRANSITION" then
-                            enemy:setPosition(from:getScreenPos())
-                        end
-                        break
-                    end
+                    battler:setPosition(enemy[2]:getScreenPos())
                 end
             end
         end
@@ -781,22 +770,21 @@ function LightBattle:onStateChange(old,new)
             self:spawnSoul(0, 0)
         end
         self.soul.can_move = false
-
-        self.soul.sprite:set("player/heart_light")
+        
         self.fader:fadeIn(nil, {speed=5/30})
 
-        self.battle_ui.encounter_text:setText(self.encounter.text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         if self.state_reason == "CANCEL" then
+            self.timer:during(3/30, function()
+                self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
+                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
-            self.battle_ui:clearEncounterText() -- is this necessary?
-            self.battle_ui.encounter_text.text.line_offset = 0
-            self.battle_ui.encounter_text.text.style = "none"
+            end)
+        else
+            self.battle_ui.encounter_text:setText(self.encounter.text)
             self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            self.battle_ui.encounter_text:setText("[noskip]"..self.battle_ui.current_encounter_text)
-            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
         end
+
+        self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
         local had_started = self.started
         if not self.started then
@@ -821,7 +809,7 @@ function LightBattle:onStateChange(old,new)
             self:tryProcessNextAction()
         end
     elseif new == "MENUSELECT" then
-        self.battle_ui:clearEncounterText()
+        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
 
@@ -830,12 +818,12 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_rows = 3
         end
     elseif new == "ENEMYSELECT" then
-        self.battle_ui:clearEncounterText()
+        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
         self.selected_enemy = 1
     elseif new == "PARTYSELECT" then
-        self.battle_ui:clearEncounterText()
+        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
     elseif new == "ATTACKING" then
@@ -1109,7 +1097,7 @@ function LightBattle:nextTurn()
             --box:setHeadIcon("head")
             --box:resetHeadIcon()
         end
-        if self.state == "INTRO" or self.state_reason == "INTRO" or not self.seen_encounter_text then
+        if not self.seen_encounter_text then
             self.seen_encounter_text = true
             self.battle_ui.current_encounter_text = self.encounter.text
         else
@@ -1222,7 +1210,7 @@ function LightBattle:battleText(text,post_func)
     local target_state = self:getState()
 
     self.battle_ui.encounter_text:setText(text, function()
-        self.battle_ui.encounter_text:setText("")
+        self.battle_ui:clearEncounterText()
         if type(post_func) == "string" then
             target_state = post_func
         elseif type(post_func) == "function" and post_func() then
@@ -1990,9 +1978,8 @@ function LightBattle:nextParty()
         self:startProcessing()
     else
         if self:getState() ~= "ACTIONSELECT" then
-            self.battle_ui.encounter_text:setText("[instant]" .. self.battle_ui.current_encounter_text)
-
             self:setState("ACTIONSELECT")
+            self.battle_ui.encounter_text:setText("[instant]" .. self.battle_ui.current_encounter_text)
         else
             local party = self.party[self.current_selecting]
             party.chara:onActionSelect(party, false)
@@ -2196,6 +2183,7 @@ function LightBattle:onKeyPressed(key)
             end
         end
     elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
+
         if Input.isConfirm(key) then
             self:playSelectSound()
             if #self.enemies == 0 then return end

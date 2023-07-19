@@ -15,6 +15,7 @@ function LightBattleUI:init()
     Game.battle:addChild(self.arena)
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
+    self.encounter_text.text.hold_skip = false
     self.encounter_text.text.line_offset = 0
     self.encounter_text.text.style = "none"
     self.encounter_text.text.state.typing_sound = "ut"

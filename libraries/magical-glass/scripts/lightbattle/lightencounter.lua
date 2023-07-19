@@ -63,7 +63,7 @@ function LightEncounter:onFlee()
     elseif message == 3 then
         message = self.flee_messages[4]
     elseif Game.battle.used_violence then
-        message = "* Ran away with " .. Game.battle.xp .. "EXP and " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        message = "* Ran away with " .. Game.battle.xp .. "EXP\nand " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
     end
 
     local soul_x, soul_y = Game.battle.soul:getPosition()
@@ -78,7 +78,7 @@ function LightEncounter:onFlee()
     Game.battle.soul.visible = false
     gtfo.physics.speed_x = -3
 
-    Game.battle:battleText(message, function()
+    Game.battle:battleText("[noskip]"..message.."[wait: 30]", function()
         Game.battle:setState("TRANSITIONOUT")
         Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,1)
         Game.battle.encounter:onBattleEnd()

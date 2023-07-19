@@ -23,6 +23,105 @@ function lib:init()
         --orig(object, encounter, transition, enemy) 
     end)
 
+    Utils.hook(DialogueText, "init", function(orig, self, ...)
+    
+        orig(self, ...)
+        self.hold_skip = true
+
+    end)
+
+    Utils.hook(DialogueText, "update", function(orig, self)
+        local speed = self.state.speed
+
+        if not OVERLAY_OPEN then
+
+            if not self.hold_skip then
+
+                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+
+                if input or self.auto_advance or self.should_advance then
+                    self.should_advance = false
+                    if not self.state.typing then
+                        self:advance()
+                    end
+                end
+        
+                if self.skippable and (Input.pressed("cancel") and not self.state.noskip) then
+                    if not self.skip_speed then
+                        self.state.skipping = true
+                    else
+                        speed = speed * 2
+                    end
+                end
+
+            else
+                if Input.pressed("menu") then
+                    self.fast_skipping_timer = 1
+                end
+        
+                local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
+        
+                if input or self.auto_advance or self.should_advance then
+                    self.should_advance = false
+                    if not self.state.typing then
+                        self:advance()
+                    end
+                end
+        
+                if Input.down("menu") then
+                    if self.fast_skipping_timer < 1 then
+                        self.fast_skipping_timer = self.fast_skipping_timer + DTMULT
+                    end
+                else
+                    self.fast_skipping_timer = 0
+                end
+                
+                if self.skippable and ((Input.down("cancel") and not self.state.noskip) or (Input.down("menu") and not self.state.noskip)) then
+                    if not self.skip_speed then
+                        self.state.skipping = true
+                    else
+                        speed = speed * 2
+                    end
+                end
+            end
+    
+        end
+    
+        if self.state.waiting == 0 then
+            self.state.progress = self.state.progress + (DT * 30 * speed)
+        else
+            self.state.waiting = math.max(0, self.state.waiting - DT)
+        end
+    
+        if self.state.typing then
+            self:drawToCanvas(function()
+                while (math.floor(self.state.progress) > self.state.typed_characters) or self.state.skipping do
+                    local current_node = self.nodes[self.state.current_node]
+    
+                    if current_node == nil then
+                        self.state.typing = false
+                        break
+                    end
+    
+                    self:playTextSound(current_node)
+                    self:processNode(current_node, false)
+    
+                    if self.state.skipping then
+                        self.state.progress = self.state.typed_characters
+                    end
+    
+                    self.state.current_node = self.state.current_node + 1
+                end
+            end)
+        end
+    
+        self:updateTalkSprite(self.state.talk_anim and self.state.typing)
+    
+        DialogueText.__super.update(self)
+    
+        self.last_talking = self.state.talk_anim and self.state.typing
+    end)
+
     Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
     
         orig(self, x, y, texture)
@@ -469,9 +568,10 @@ function lib:changeSpareColor(color)
     end
 end
 
-function lib:postInit()
+function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
+    Game:setFlag("undertale_textbox_skipping", true)
     Game:setFlag("enable_lw_tp", false)
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
@@ -494,13 +594,13 @@ function Game:encounterLight(encounter, transition, enemy, context)
         self.encounter_enemies = {enemy}
     end
 
-    if context then
-        self.battle.encounter_context = context
-    end
-
     self.state = "BATTLE"
 
     self.battle = LightBattle()
+
+    if context then
+        self.battle.encounter_context = context
+    end
 
     if type(transition) == "string" then
         self.battle:postInit(transition, encounter)
