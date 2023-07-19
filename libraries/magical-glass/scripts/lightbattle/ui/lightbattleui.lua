@@ -277,7 +277,7 @@ function LightBattleUI:drawState()
         Draw.setColor(1, 1, 1, 1)
 
         for _,menu in ipairs(Game.battle.pager_menus) do
-            if max_page > 0 and Game.battle.state_reason == menu then
+            if Game.battle.state_reason == menu then
                 love.graphics.print("PAGE " .. page + 1, 388, 64)
             end
         end

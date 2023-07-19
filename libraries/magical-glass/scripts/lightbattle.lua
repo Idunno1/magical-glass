@@ -469,7 +469,6 @@ function LightBattle:beginAction(action)
     end
 
     if action.action == "ACT" then
-        self.soul:remove()
         -- Play the ACT animation by default
         --battler:setAnimation("battle/act")
         -- Enemies might change the ACT animation, so run onActStart here
@@ -515,7 +514,6 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
         local worked = enemy:canSpare()
-        self.soul:remove()
 
 --[[         battler:setAnimation("battle/spare", function()
             enemy:onMercy(battler)
@@ -597,7 +595,6 @@ function LightBattle:processAction(action)
         return false
 
     elseif action.action == "ITEM" then
-        self.soul:remove()
         local item = action.data
         if item.instant then
             self:finishAction(action)
@@ -772,7 +769,7 @@ function LightBattle:onStateChange(old,new)
         self.fader:fadeIn(nil, {speed=5/30})
 
         if self.state_reason == "CANCEL" then
-            self.timer:during(3/30, function()
+            self.timer:during(1/30, function()
                 self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
                 self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
@@ -802,6 +799,8 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onCharacterTurn(party, false)
         end
     elseif new == "ACTIONS" then
+        -- this could possibly cause the double text shit again, but if it has the timer,
+        -- the dialogue just doesn't show up
         self.battle_ui:clearEncounterText()
         if self.state_reason ~= "DONTPROCESS" then
             self:tryProcessNextAction()
@@ -958,7 +957,6 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onBattleEnd()
         else
             self:battleText(win_text, function()
-                self.soul:remove()
                 self:setState("TRANSITIONOUT")
                 self.encounter:onBattleEnd()
                 return true
@@ -1223,6 +1221,7 @@ function LightBattle:battleText(text,post_func)
         end
         self:setState(target_state)
     end)
+    self.soul:remove()
     self.battle_ui.encounter_text:setAdvance(true)
     self:setState("BATTLETEXT")
 end
@@ -2150,13 +2149,15 @@ function LightBattle:onKeyPressed(key)
             Game:setTensionPreview(0)
             self:setState("ACTIONSELECT", "CANCEL")
             return
-        elseif Input.is("left", key) then -- TODO: pagination
+        elseif Input.is("left", key) then
+            local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
+
             if self.current_menu_columns > 1 then
                 self:playMoveSound()
             end
             self.current_menu_x = self.current_menu_x - 1
             if self.current_menu_x < 1 then
-                self.current_menu_x = self.current_menu_columns
+                self.current_menu_x = self.current_menu_columns + max_page
                 if not self:isValidMenuLocation() then
                     self.current_menu_x = 1
                 end
