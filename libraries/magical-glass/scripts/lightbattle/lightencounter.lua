@@ -78,13 +78,6 @@ function LightEncounter:onFlee()
     Game.battle.soul.visible = false
     gtfo.physics.speed_x = -3
 
-    Game.battle:battleText("[noskip]"..message.."[wait: 30]", function()
-        Game.battle:setState("TRANSITIONOUT")
-        Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,1)
-        Game.battle.encounter:onBattleEnd()
-        return true
-    end)
-
 end
 
 function LightEncounter:beforeStateChange(old, new) end

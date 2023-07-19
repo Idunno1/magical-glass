@@ -469,6 +469,7 @@ function LightBattle:beginAction(action)
     end
 
     if action.action == "ACT" then
+        self.soul:remove()
         -- Play the ACT animation by default
         --battler:setAnimation("battle/act")
         -- Enemies might change the ACT animation, so run onActStart here
@@ -514,6 +515,7 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
         local worked = enemy:canSpare()
+        self.soul:remove()
 
 --[[         battler:setAnimation("battle/spare", function()
             enemy:onMercy(battler)
@@ -595,6 +597,7 @@ function LightBattle:processAction(action)
         return false
 
     elseif action.action == "ITEM" then
+        self.soul:remove()
         local item = action.data
         if item.instant then
             self:finishAction(action)
@@ -603,15 +606,10 @@ function LightBattle:processAction(action)
             if text then
                 self:battleText(text)
             end
---[[             battler:setAnimation("battle/item", function()
-                local result = item:onBattleUse(battler, action.target)
-                if result or result == nil then
-                    self:finishAction(action)
-                end
-            end) ]]
-
             local result = item:onBattleUse(battler, action.target)
-            self:finishAction(action)
+            if result or result == nil then
+                self:finishAction(action)
+            end
         end
         return false
 
@@ -960,6 +958,7 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onBattleEnd()
         else
             self:battleText(win_text, function()
+                self.soul:remove()
                 self:setState("TRANSITIONOUT")
                 self.encounter:onBattleEnd()
                 return true
@@ -974,8 +973,6 @@ function LightBattle:onStateChange(old,new)
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
-
-
     elseif new == "FLEEING" then
         self.current_selecting = 0
 
@@ -1000,6 +997,14 @@ function LightBattle:onStateChange(old,new)
         end
 
         self.encounter:onFlee()
+
+        self:battleText("[noskip]"..message.."[wait: 30]", function()
+            self:setState("TRANSITIONOUT")
+            self.battle_ui.arena:setBackgroundColor(r,g,b,1)
+            self.encounter:onBattleEnd()
+            return true
+        end)
+
     elseif new == "FLEEFAIL" then
         self.actions_done_timer = Utils.approach(self.actions_done_timer, 0, DT)
         local any_hurt = false
@@ -1219,7 +1224,6 @@ function LightBattle:battleText(text,post_func)
         self:setState(target_state)
     end)
     self.battle_ui.encounter_text:setAdvance(true)
-
     self:setState("BATTLETEXT")
 end
 
