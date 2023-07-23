@@ -10,8 +10,7 @@ function LightBattleUI:init()
     self.style = Game:getFlag("gauge_styles")
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
-    self.arena.layer = BATTLE_LAYERS["ui"] -- change to the arena layer when wave starts
-    self.arena.collider.colliders.layer = self.arena.layer + 2
+    --self.arena.layer = BATTLE_LAYERS["ui"] -- change to the arena layer when wave starts
     Game.battle:addChild(self.arena)
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
@@ -94,16 +93,18 @@ function LightBattleUI:beginAttack()
     local last_offset = -1
     local offset = 0
 
-    self.attack_box = AttackBox(self.arena.x + 20, self.arena.y + 20)
-    self:addChild(self.attack_box)
+    self.attack_box = LightAttackBox(self.arena.width / 2, self.arena.height / 2)
+    self.arena:addChild(self.attack_box)
 
     self.attacking = true
 end
 
 function LightBattleUI:endAttack()
+    self.attack_box.fading = true
+    if self.attack_box.bolt then
+        self.attack_box.bolt:remove()
+    end
     Game.battle.cancel_attack = false
-    self.attack_box.scale_y = (self.attack_box.scale_y - 0.08) * DTMULT
-    self.attack_box:fadeOutSpeedAndRemove(1) -- needs scale shit
     self.attacking = false
 end
 
@@ -125,6 +126,7 @@ function LightBattleUI:drawState()
         local menu_offsets = { -- {soul, text}
             ["ACT"] = {12, 16},
             ["ITEM"] = {0, 0},
+            ["SPELL"] = {12, 16},
             ["MERCY"] = {0, 0}, --doesn't matter lmao
         }
 
@@ -392,9 +394,9 @@ function LightBattleUI:drawState()
             if Game.battle.state == "XACTENEMYSELECT" then
                 Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                 if Game.battle.selected_xaction.id == 0 then
-                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 50 + y_off)
+                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 50 + y_offset)
                 else
-                    love.graphics.print(Game.battle.selected_xaction.name, 282, 50 + y_off)
+                    love.graphics.print(Game.battle.selected_xaction.name, 282, 50 + y_offset)
                 end
             end
 
@@ -494,11 +496,6 @@ function LightBattleUI:drawState()
                 love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
-
-    end
-
-    if state == "ATTACKING" or self.attacking then
-        -- dumbtarget shit goes here
     end
 
 end

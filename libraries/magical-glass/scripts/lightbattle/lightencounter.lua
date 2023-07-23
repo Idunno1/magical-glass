@@ -66,17 +66,29 @@ function LightEncounter:onFlee()
         message = "* Ran away with " .. Game.battle.xp .. "EXP\nand " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
     end
 
-    local soul_x, soul_y = Game.battle.soul:getPosition()
-    local gtfo = Sprite("player/heartgtfo", soul_x - 7, soul_y - 8)
+--[[     local soul_x, soul_y = Game.battle.soul:getPosition()
+    local gtfo = Sprite("player/heartgtfo", soul_x - 7, soul_y - 8) ]]
 
-    Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,0) --todo:separate the arena's frame from its background and put it on 
+    --Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,0) --todo:separate the arena's frame from its background and put it on 
 
-    gtfo:setColor(Game:getSoulColor())
+--[[     gtfo:setColor(Game:getSoulColor())
     gtfo:setAnimation({"player/heartgtfo", 1/15, true})
     gtfo.layer = BATTLE_LAYERS["ui"] - 1
     Game.battle:addChild(gtfo)
     Game.battle.soul.visible = false
     gtfo.physics.speed_x = -3
+ ]]
+
+    Game.battle.battle_ui.arena.collider.colliders = {}
+    Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
+    Game.battle.soul.physics.speed_x = -3
+
+    Game.battle:battleText("[noskip]"..message.."[wait: 30]", function()
+        Game.battle:setState("TRANSITIONOUT")
+        Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,1)
+        self:onBattleEnd()
+        return true
+    end)
 
 end
 

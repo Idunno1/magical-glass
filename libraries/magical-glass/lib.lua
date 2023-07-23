@@ -1,5 +1,7 @@
 LightBattle              = libRequire("magical-glass", "scripts/lightbattle")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
+LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
+LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
@@ -131,35 +133,20 @@ function lib:init()
 
     end)
 
-    Utils.hook(LightEquipItem, "init", function(orig, self)
+    Utils.hook(EnemyBattler, "getLightAttackDamage", function(orig, self, damage, battler, points, stretch)
+        if damage > 0 then
+            return damage
+        end
 
-        orig(self)
-
-        -- Animation style
-        -- simple: frame by frame animation
-        -- complex: ignores self.attack_animation, animated by onAttack())
-        self.animation_style = "simple"
-
-        -- Attack animation (only used for simple animations)
-        self.attack_animation = "effects/attack/strike"
-
-        -- Sound played when attacking, defaults to laz_c
-        self.attack_sound = "laz_c"
-
-        self.attack_pitch = 1
+        local total_damage = (battler.chara:getStat("attack") - self.defense) + Utils.random(0, 2, 1)
+        if points <= 12 then
+            total_damage = Utils.round(total_damage * 2.2)
+        elseif points >= 12 then
+            total_damage = Utils.round((total_damage * stretch) * 2)
+        end
         
+        return total_damage
     end)
-
-    Utils.hook(LightEquipItem, "onAttack", function(orig, self, character)
-
-        -- complex animation shit (like the notebook and gun animations) go here
-        
-    end)
-
-    Utils.hook(LightEquipItem, "getAnimationStyle", function(orig, self)    return self.animation_style end)
-    Utils.hook(LightEquipItem, "getAttackAnimation", function(orig, self)   return self.attack_animation end)
-    Utils.hook(LightEquipItem, "getAttackSound", function(orig, self)       return self.attack_sound end)
-    Utils.hook(LightEquipItem, "getAttackPitch", function(orig, self)       return self.attack_pitch end)
 
     Utils.hook(LightItemMenu, "init", function(orig, self)
     
@@ -167,7 +154,6 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        --self.party_select_bg = UIBox(-36, 242, 372, 52)
         self.party_select_bg = UIBox(-36, 242, 372, 52)
         self.party_select_bg.visible = false
         self.party_select_bg.layer = -1
@@ -572,7 +558,7 @@ function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
     Game:setFlag("undertale_textbox_skipping", true)
-    Game:setFlag("enable_lw_tp", false)
+    Game:setFlag("enable_lw_tp", true)
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
