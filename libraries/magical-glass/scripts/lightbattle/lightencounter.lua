@@ -80,6 +80,7 @@ function LightEncounter:onFlee()
  ]]
 
     Game.battle.battle_ui.arena.collider.colliders = {}
+    Game.battle.soul.y = Game.battle.soul.y + 4
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
 

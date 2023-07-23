@@ -1,5 +1,8 @@
 local LightBattle, super = Class(Object)
 
+-- nyako, if you ever read this, i'm sorry i basically turned this into a hodgepodge of
+-- kristal code and literal shit
+
 function LightBattle:init()
     super.init(self)
 
@@ -137,7 +140,7 @@ function LightBattle:playMoveSound()
     self.ui_move:play()
 end
 
-function LightBattle:playSpareSound()
+function LightBattle:playVaporizedSound()
     self.vaporized:stop()
     self.vaporized:play()
 end
@@ -237,8 +240,6 @@ function LightBattle:postInit(state, encounter)
             wait(17/30)
             -- Wait
             wait(5/30)
-            self.soul:setScale(1)
-            self.soul.sprite:set("player/heart_light")
             self.soul.x = self.soul.x - 1
             self.soul.y = self.soul.y - 1
             self:setState("ACTIONSELECT")
@@ -274,7 +275,7 @@ function LightBattle:postInit(state, encounter)
             enemy:onEncounterStart(enemy == self.encounter_context, self.encounter)
         end
     end
-    
+
     if not self.encounter:onBattleInit() then
         self:setState(state)
     end   
@@ -1099,6 +1100,64 @@ function LightBattle:onStateChange(old,new)
         end
     end
 
+    -- List of states that should remove the arena.
+    -- A whitelist is better than a blacklist in case the modder adds more states.
+    -- And in case the modder adds more states and wants the arena to be removed, they can remove the arena themselves.
+    local remove_arena = {"DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "XACTENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING"}
+
+    local should_end = true
+    if Utils.containsValue(remove_arena, new) then
+        for _,wave in ipairs(self.waves) do
+            if wave:beforeEnd() then
+                should_end = false
+            end
+        end
+        if should_end then
+            --self:returnSoul()
+            if self.arena then
+                self.arena:remove()
+                self.arena = nil
+            end
+            for _,battler in ipairs(self.party) do
+                battler.targeted = false
+            end
+        end
+    end
+
+    local ending_wave = self.state_reason == "WAVEENDED"
+
+    if old == "DEFENDING" and new ~= "DEFENDINGBEGIN" and should_end then
+        for _,wave in ipairs(self.waves) do
+            if not wave:onEnd(false) then
+                wave:clear()
+                wave:remove()
+            end
+        end
+
+        local function exitWaves()
+            for _,wave in ipairs(self.waves) do
+                wave:onArenaExit()
+            end
+            self.waves = {}
+        end
+
+        if self:hasCutscene() then
+            self.cutscene:after(function()
+                exitWaves()
+                if ending_wave then
+                    self:nextTurn()
+                end
+            end)
+        else
+            self.timer:after(15/30, function()
+                exitWaves()
+                if ending_wave then
+                    self:nextTurn()
+                end
+            end)
+        end
+    end
+
     self.encounter:onStateChange(old,new)
 end
 
@@ -1342,7 +1401,6 @@ function LightBattle:sortChildren()
 end
 
 function LightBattle:update()
-    print(#self.current_actions)
     for _,enemy in ipairs(self.enemies_to_remove) do
         Utils.removeFromTable(self.enemies, enemy)
     end
@@ -1640,9 +1698,14 @@ function LightBattle:advanceBoxes()
 end
 
 function LightBattle:endActionAnimation(battler, action, callback)
-    local _callback = callback
+local _callback = callback
     callback = function()
-        --code
+        -- Remove the battler's action icon
+        if battler.action then
+            battler.action.icon = nil
+        end
+        -- Reset the head sprite
+        local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
         if _callback then
             _callback()
         end
@@ -1651,7 +1714,19 @@ function LightBattle:endActionAnimation(battler, action, callback)
         return
     end
     if action.action ~= "ATTACK" and action.action ~= "AUTOATTACK" then
-        --code
+        if battler.sprite.anim == "battle/"..action.action:lower() then
+            -- Attempt to play the end animation if the sprite hasn't changed
+--[[             if not battler:setAnimation("battle/"..action.action:lower().."_end", callback) then
+                --battler:resetSprite()
+            end ]]
+            callback()
+        else
+            -- Otherwise, play idle animation
+            battler:resetSprite()
+            if callback then
+                callback()
+            end
+        end
     else
         callback()
     end
