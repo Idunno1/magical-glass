@@ -31,6 +31,8 @@ function LightEncounter:init()
         "* Escaped...", --17/20
         "* Don't slow me down." --1/20
     }
+
+    self.used_flee_message = nil
 end
 
 function LightEncounter:onBattleInit()
@@ -53,42 +55,44 @@ function LightEncounter:onCharacterTurn(battler, undo) end
 function LightEncounter:onFlee()
 
     Assets.playSound("escaped")
-    local message = Utils.random(0, 20, 1)
-    if message == 0 or message == 1 then
-        message = self.flee_messages[1]
-    elseif message == 2 then
-        message = self.flee_messages[2]
-    elseif message > 3 then
-        message = self.flee_messages[3]
-    elseif message == 3 then
-        message = self.flee_messages[4]
-    elseif Game.battle.used_violence then
-        message = "* Ran away with " .. Game.battle.xp .. "EXP\nand " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+
+    if Game.battle.used_violence then -- level up shit
+
+        local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
+        local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
+
+        self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+
+        for _,member in ipairs(Game.battle.party) do
+            member.chara.lw_exp = member.chara.lw_exp + xp
+            local lv = member.chara:getLightLV()
+    
+            if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
+                member.chara.lw_lv = lv + 1
+                member.chara:onLightLevelUp(lv)
+                Assets.stopAndPlaySound("levelup")
+                --self.used_flee_message = "* Ran away with " .. Game.battle.xp .. " EXP\n  and " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+            end
+        end
+
+    else
+        self.used_flee_message = self:getFleeMessage()
     end
-
---[[     local soul_x, soul_y = Game.battle.soul:getPosition()
-    local gtfo = Sprite("player/heartgtfo", soul_x - 7, soul_y - 8) ]]
-
-    --Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,0) --todo:separate the arena's frame from its background and put it on 
-
---[[     gtfo:setColor(Game:getSoulColor())
-    gtfo:setAnimation({"player/heartgtfo", 1/15, true})
-    gtfo.layer = BATTLE_LAYERS["ui"] - 1
-    Game.battle:addChild(gtfo)
-    Game.battle.soul.visible = false
-    gtfo.physics.speed_x = -3
- ]]
 
     Game.battle.battle_ui.arena.collider.colliders = {}
     Game.battle.soul.y = Game.battle.soul.y + 4
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
 
-    Game.battle:battleText("[noskip]"..message.."[wait: 30]", function()
+--[[     Game.battle:battleText("[noskip]"..message.."[wait: 30]", function() -- this text is printed at the position of the spare option
         Game.battle:setState("TRANSITIONOUT")
-        Game.battle.battle_ui.arena:setBackgroundColor(r,g,b,1)
         self:onBattleEnd()
-        return true
+    end) ]]
+
+    Game.battle.timer:script(function(wait)
+        wait(1)
+        Game.battle:setState("TRANSITIONOUT")
+        self:onBattleEnd()
     end)
 
 end
@@ -147,6 +151,24 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     return enemy_obj
 end
 
+function LightEncounter:getFleeMessage()
+    local message = Utils.random(0, 20, 1)
+
+    if message == 0 or message == 1 then
+        return self.flee_messages[1]
+    elseif message == 2 then
+        return self.flee_messages[2]
+    elseif message > 3 then
+        return self.flee_messages[3]
+    elseif message == 3 then
+        return self.flee_messages[4]
+    end
+end
+
+function LightEncounter:getUsedFleeMessage()
+    return self.used_flee_message
+end
+
 function LightEncounter:getEncounterText()
     local enemies = Game.battle:getActiveEnemies()
     local enemy = Utils.pick(enemies, function(v)
@@ -193,8 +215,11 @@ function LightEncounter:onWavesDone()
             chance = chance + 10
         end
     end
-    orig(self)
 
+
+    --Game.battle.arena:setShape(arena_shape)
+    Game.battle.soul:remove()
+    Game.battle.arena.layer = BATTLE_LAYERS["ui"] - 1
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")
 end
 

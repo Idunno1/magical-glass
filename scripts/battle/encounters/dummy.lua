@@ -11,6 +11,11 @@ function Dummy:init()
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("dummy")
+    self:addEnemy("dummy")
+end
+
+function Dummy:getVictoryXP()
+    return 10
 end
 
 return Dummy

@@ -9,10 +9,10 @@ function Dummy:init()
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 450
-    self.health = 450
+    self.max_health = 70
+    self.health = 70
     -- Enemy attack (determines bullet damage)
-    self.attack = 4
+    self.attack = 7
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
@@ -51,7 +51,7 @@ function Dummy:init()
     self:registerAct("Smile")
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
-    self:registerAct("Tell Story", "", {"ralsei"})
+    self:registerAct("Tell Story", "", {"noelle"})
 end
 
 function Dummy:onAct(battler, name)

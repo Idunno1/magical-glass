@@ -240,6 +240,8 @@ function LightBattle:postInit(state, encounter)
             wait(17/30)
             -- Wait
             wait(5/30)
+            self.soul.sprite:set("player/heart_light")
+            self.soul:setScale(1)
             self.soul.x = self.soul.x - 1
             self.soul.y = self.soul.y - 1
             self:setState("ACTIONSELECT")
@@ -251,7 +253,8 @@ function LightBattle:postInit(state, encounter)
 
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
-
+    self.arena = self.battle_ui.arena
+    
     if Game:getFlag("enable_lw_tp") then
         self.tension_bar = LightTensionBar(29, 53, true)
         self:addChild(self.tension_bar)
@@ -823,6 +826,10 @@ function LightBattle:onStateChange(old,new)
     -- we still kind of need an intro phase for self.encounter:onBattleStart()
     if new == "ACTIONSELECT" then
 
+        if not self.soul then
+            self:spawnSoul()
+        end
+
         if self.current_selecting < 1 or self.current_selecting > #self.party then
             self:nextTurn()
             if self.state ~= "ACTIONSELECT" then
@@ -840,10 +847,12 @@ function LightBattle:onStateChange(old,new)
         if self.state_reason == "CANCEL" then
             self.timer:during(1/30, function()
                 self.battle_ui.encounter_text.text.line_offset = 5
+                self.battle_ui:clearEncounterText()
                 self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
                 self.battle_ui.encounter_text.text.state.typing_sound = "ut"
             end)
         else
+            self.battle_ui:clearEncounterText()
             self.battle_ui.encounter_text:setText(self.encounter.text)
             self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         end
@@ -1005,21 +1014,32 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
+        local win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+
         self.money = math.floor(self.money)
 
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        Game.money = Game.money + self.money
-        Game.xp = Game.xp + self.xp
+        Game.lw_money = Game.lw_money + self.money
 
-        if (Game.money < 0) then
-            Game.money = 0
+        if (Game.lw_money < 0) then
+            Game.lw_money = 0
         end
 
-        local win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        for _,member in ipairs(self.party) do
+            member.chara.lw_exp = member.chara.lw_exp + self.xp
+            local lv = member.chara:getLightLV()
 
-        -- exp shit goes here
+            if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
+                member.chara.lw_lv = lv + 1
+                member.chara:onLightLevelUp(lv)
+                Assets.stopAndPlaySound("levelup")
+                win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+            end
+        end
+
+        win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
 
         if self.encounter.no_end_message then
             self:setState("TRANSITIONOUT")
@@ -1033,15 +1053,48 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
+        self.current_selecting = 0
+
         if self.tension_bar and self.tension_bar.shown then
             self.tension_bar:hide()
         end
-        -- fader shit goes here (screen becomes black in 1 frame then fades back in)
+
+        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 1/3})
+
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
+
+        if self.state_reason then
+            self:setWaves(self.state_reason)
+            local enemy_found = false
+            for i,enemy in ipairs(self.enemies) do
+                if Utils.containsValue(enemy.waves, self.state_reason[1]) then
+                    enemy.selected_wave = self.state_reason[1]
+                    enemy_found = true
+                end
+            end
+            if not enemy_found then
+                self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
+            end
+        else
+            self:setWaves(self.encounter:getNextWaves())
+        end
+
+        for _,wave in ipairs(Game.battle.waves) do
+            if wave:onArenaEnter() then
+                wave.active = true
+            end
+        end
+
+        self.defending_begin_timer = 0
+
     elseif new == "FLEEING" then
         self.current_selecting = 0
+
+        if self.tension_bar and self.tension_bar.shown then
+            self.tension_bar:hide()
+        end
 
         for _,battler in ipairs(self.party) do
             battler:setSleeping(false)
@@ -1057,10 +1110,6 @@ function LightBattle:onStateChange(old,new)
 
             local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
             --box:resetHeadIcon()
-        end
-
-        if (Game.money < 0) then
-            Game.money = 0
         end
 
         self.encounter:onFlee()
@@ -1113,11 +1162,8 @@ function LightBattle:onStateChange(old,new)
             end
         end
         if should_end then
-            --self:returnSoul()
-            if self.arena then
-                self.arena:remove()
-                self.arena = nil
-            end
+            Game.battle.arena:setPosition(SCREEN_WIDTH/2, 385)
+            Game.battle.arena:setShape(shape or {{0, 0}, {565, 0}, {565, 130}, {0, 130}})
             for _,battler in ipairs(self.party) do
                 battler.targeted = false
             end
@@ -1323,10 +1369,21 @@ function LightBattle:hurt(amount, exact)
 end
 
 function LightBattle:checkGameOver()
-    if self.player.health <= 0 then
-        self.music:stop()
-        Game:gameOver(self:getSoulLocation())
+    for _,battler in ipairs(self.party) do
+        if not battler.is_down then
+            return
+        end
     end
+    self.music:stop()
+    if self:getState() == "DEFENDING" then
+        for _,wave in ipairs(self.waves) do
+            wave:onEnd(true)
+        end
+    end
+    if self.encounter:onGameOver() then
+        return
+    end
+    Game:gameOver(self:getSoulLocation())
 end
 
 function LightBattle:battleText(text,post_func)
@@ -1343,7 +1400,7 @@ function LightBattle:battleText(text,post_func)
         self:setState(target_state)
     end)
 
-    if self.state ~= "FLEEING" then
+    if self.state ~= "FLEEING" and self.soul then
         self.soul:remove()
     end
 
@@ -1446,12 +1503,52 @@ function LightBattle:update()
         end
     elseif self.state == "DEFENDINGBEGIN" then
         self.defending_begin_timer = self.defending_begin_timer + DTMULT
-        if self.defending_begin_timer >= 15 then
+        if self.defending_begin_timer >= 15 then -- look into this in ut
             self:setState("DEFENDING")
         end
     elseif self.state == "DEFENDING" then
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
+
+        local soul_x, soul_y, soul_offset_x, soul_offset_y
+        local arena_x, arena_y, arena_w, arena_h, arena_shape
+        local has_arena = true
+        for _,wave in ipairs(self.waves) do
+            soul_x = wave.soul_start_x or soul_x
+            soul_y = wave.soul_start_y or soul_y
+            soul_offset_x = wave.soul_offset_x or soul_offset_x
+            soul_offset_y = wave.soul_offset_y or soul_offset_y
+            arena_x = wave.arena_x or arena_x
+            arena_y = wave.arena_y or arena_y
+            arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
+            arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
+            if wave.arena_shape then
+                arena_shape = wave.arena_shape
+            end
+            if not wave.has_arena then
+                has_arena = false
+            end
+        end
+
+        local center_x, center_y
+
+        if has_arena then
+            if not arena_shape then
+                arena_w, arena_h = arena_w or 142, arena_h or 142
+                arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
+            end
+
+            self.arena.layer = BATTLE_LAYERS["arena"]
+            self.arena:setShape(arena_shape)
+            center_x, center_y = self.arena:getCenter()
+        else
+            center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 + 10
+        end
+
+        soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+        soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+        self:spawnSoul(soul_x or center_x, soul_y or center_y)
+
         self.textbox_timer = self.textbox_timer - DTMULT
         if (self.textbox_timer <= 0) and self.use_textbox_timer then
             self:advanceBoxes()
@@ -1513,9 +1610,6 @@ function LightBattle:update()
     --self.update_child_list = true
     super.update(self)
 
-    if self.state == "TRANSITIONOUT" then
-        self:updateTransitionOut()
-    end
 end
 
 function LightBattle:updateTransition()
@@ -1557,10 +1651,6 @@ function LightBattle:updateChildren()
             v:fullUpdate()
         end
     end
-end
-
-function LightBattle:updateTransitionOut()
-    self:returnToWorld()
 end
 
 function LightBattle:updateAttacking()
@@ -2138,7 +2228,80 @@ function LightBattle:getPartyFromTarget(target)
 end
 
 function LightBattle:hurt(amount, exact, target)
-    -- todo: this
+    -- Note: 0, 1 and 2 are to target a specific party member.
+    -- In Kristal, we'll allow them to be objects as well.
+    -- Also in Kristal, they're 1, 2 and 3.
+    -- 3 is "ALL" in Kristal,
+    -- while 4 is "ANY".
+    target = target or "ANY"
+
+    -- Alright, first let's try to adjust targets.
+
+    if type(target) == "number" then
+        target = self.party[target]
+    end
+
+    if isClass(target) and target:includes(PartyBattler) then
+        if (not target) or (target.chara:getHealth() <= 0) then -- Why doesn't this look at :canTarget()? Weird.
+            target = self:randomTargetOld()
+        end
+    end
+
+    if target == "ANY" then
+        target = self:randomTargetOld()
+
+        -- Calculate the average HP of the party.
+        -- This is "scr_party_hpaverage", which gets called multiple times in the original script.
+        -- We'll only do it once here, just for the slight optimization. This won't affect accuracy.
+
+        -- Speaking of accuracy, this function doesn't work at all!
+        -- It contains a bug which causes it to always return 0, unless all party members are at full health.
+        -- This is because of a random floor() call.
+        -- I won't bother making the code accurate; all that matters is the output.
+
+        local party_average_hp = 1
+
+        for _,battler in ipairs(self.party) do
+            if battler.chara:getHealth() ~= battler.chara:getStat("health") then
+                party_average_hp = 0
+                break
+            end
+        end
+
+        -- Retarget... twice.
+        if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
+            target = self:randomTargetOld()
+        end
+        if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
+            target = self:randomTargetOld()
+        end
+
+        -- If we landed on Kris (or, well, the first party member), and their health is low, retarget (plot armor lol)
+        if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
+            target = self:randomTargetOld()
+        end
+
+        -- They got hit, so un-darken them
+        target.should_darken = false
+        target.targeted = true
+    end
+
+    -- Now it's time to actually damage them!
+    if isClass(target) and target:includes(PartyBattler) then
+        target:hurt(amount, exact)
+        return {target}
+    end
+
+    if target == "ALL" then
+        Assets.playSound("hurt")
+        for _,battler in ipairs(self.party) do
+            if not battler.is_down then
+                battler:hurt(amount, exact, nil, {all = true})
+            end
+        end
+        -- Return the battlers who aren't down, aka the ones we hit.
+        return Utils.filter(self.party, function(item) return not item.is_down end)
+    end
 end
 
 function LightBattle:setWaves(waves, allow_duplicates)
@@ -2647,6 +2810,29 @@ function LightBattle:handleAttackingInput(key)
                 end
             end
         end
+    end
+end
+
+function LightBattle:updateWaves()
+    self.wave_timer = self.wave_timer + DT
+
+    local all_done = true
+    for _,wave in ipairs(self.waves) do
+        if not wave.finished then
+            if wave.time >= 0 and self.wave_timer >= wave.time then
+                wave.finished = true
+            else
+                all_done = false
+            end
+        end
+        if not wave:canEnd() then
+            all_done = false
+        end
+    end
+
+    if all_done and not self.finished_waves then
+        self.finished_waves = true
+        self.encounter:onWavesDone()
     end
 end
 

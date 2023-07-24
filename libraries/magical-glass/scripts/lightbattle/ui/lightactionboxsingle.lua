@@ -103,7 +103,7 @@ end
 function LightActionBoxSingle:drawStatusStrip()
     local x, y = 10, 130
     local name = self.battler.chara.name:upper()
-    local level = self.battler.chara.level
+    local level = self.battler.chara:getLightLV()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(1, 1, 1, 1)

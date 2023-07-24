@@ -138,7 +138,7 @@ function lib:init()
             return damage
         end
 
-        local total_damage = (battler.chara:getStat("attack") - self.defense) + Utils.random(0, 2, 1)
+        local total_damage = (battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
         if points <= 12 then
             total_damage = Utils.round(total_damage * 2.2)
         elseif points >= 12 then
@@ -406,6 +406,34 @@ function lib:init()
 
     end)
 
+    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self, level)
+    
+        self.lw_stats = {
+            health = (16 + (self:getLightLV() * 4)),
+            attack = (8 + (self:getLightLV() * 2)),
+            defense = (9 + math.ceil(self:getLightLV() / 4)),
+            magic = 0
+        }
+
+        if self:getLightLV() == 20 then
+            self.lw_stats = {
+                health = 99,
+                attack = 99,
+                defense = 99,
+                magic = 0
+            }
+        end
+
+    end)
+
+    Utils.hook(PartyMember, "setLevel", function(orig, self, level)
+    
+        self.lw_lv = level
+        self.lw_exp = self:getLightEXPNeeded(level)
+        self:onLightLevelUp()
+
+    end)
+
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
@@ -558,7 +586,7 @@ function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
     Game:setFlag("undertale_textbox_skipping", true)
-    Game:setFlag("enable_lw_tp", true)
+    Game:setFlag("enable_lw_tp", false)
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink

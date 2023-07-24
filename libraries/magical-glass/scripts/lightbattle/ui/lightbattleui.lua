@@ -10,7 +10,7 @@ function LightBattleUI:init()
     self.style = Game:getFlag("gauge_styles")
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
-    --self.arena.layer = BATTLE_LAYERS["ui"] -- change to the arena layer when wave starts
+    self.arena.layer = BATTLE_LAYERS["ui"] - 1
     Game.battle:addChild(self.arena)
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
@@ -496,6 +496,13 @@ function LightBattleUI:drawState()
                 love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
+    elseif state == "FLEEING" or state == "TRANSITIONOUT" then
+        local font = Assets.getFont("main_mono")
+        love.graphics.setFont(font, 32)
+        local message = Game.battle.encounter:getUsedFleeMessage() or ""
+
+        Draw.setColor(1, 1, 1, 1)
+        love.graphics.print(message, 100, 0)
     end
 
 end

@@ -11,7 +11,7 @@
     "encounter": "dummy",
 
     "map": "tundra3",
-    "party": ["kris", "susie", "noelle"],
+    "party": ["kris", /* "susie", "noelle" */],
     "inventory": {
         "items": ["monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "clubssandwich"],
         "key_items": ["cell_phone"]
