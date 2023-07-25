@@ -3,7 +3,7 @@
     "name": "Magical Glass",
     "subtitle": "...What fucking game am I playing again?",
 
-    "version": "something idk",
+    "version": "v4.2.0",
     "engineVer": "v0.8.1-dev",
 
     "chapter": 2,
@@ -13,7 +13,7 @@
     "map": "tundra3",
     "party": ["kris", /* "susie", "noelle" */],
     "inventory": {
-        "items": ["monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "monster_candy", "clubssandwich"],
+        "items": ["light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy"],
         "key_items": ["cell_phone"]
     },
 

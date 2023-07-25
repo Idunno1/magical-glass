@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="28" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="13" nextobjectid="138">
+ <editorsettings>
+  <export target="data.lua" format="lua"/>
+ </editorsettings>
+ <properties>
+  <property name="light" type="bool" value="true"/>
+  <property name="name" value="Snowdin - Box Road"/>
+ </properties>
+ <tileset firstgid="1" source="../../tilesets/tundratiles.tsx"/>
+ <tileset firstgid="676" source="../../tilesets/objects.tsx"/>
+ <layer id="1" name="tiles" width="28" height="12">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11,11,11,12,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,20,20,20,14,12,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,19,20,20,20,20,21,1,1,1,1,
+1,1,1,1,1,1,10,11,11,11,11,11,11,11,11,12,3,4,28,22,20,20,20,14,12,1,1,1,
+11,11,11,11,11,11,13,20,20,20,20,20,20,20,20,14,11,11,11,13,20,20,20,20,14,11,12,1,
+20,20,20,20,20,20,20,20,23,29,29,29,29,22,20,20,20,20,20,20,20,23,22,20,20,20,14,11,
+29,29,29,29,29,29,29,29,30,1,1,1,1,28,29,29,29,29,29,29,29,30,28,29,22,20,20,20,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,28,29,29,29,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <layer id="7" name="tiles2" width="28" height="12">
+  <data encoding="csv">
+337,310,337,310,337,310,337,310,327,310,327,310,327,310,327,310,327,310,327,408,409,408,337,408,337,408,337,408,
+310,337,310,337,310,337,310,337,310,327,310,327,310,327,310,327,310,327,338,417,418,417,326,327,408,337,408,337,
+337,310,337,310,337,310,337,310,327,310,327,310,327,310,327,310,327,338,347,426,427,426,335,336,337,408,337,408,
+310,337,310,337,310,407,408,337,310,327,310,327,310,327,310,327,338,347,356,0,0,0,344,345,326,337,408,337,
+337,310,337,310,337,330,417,418,417,418,417,418,417,418,417,418,347,356,0,0,0,0,0,334,335,326,337,408,
+416,417,416,417,346,347,426,427,426,427,426,427,426,427,426,427,356,0,0,0,0,0,0,0,344,335,326,337,
+425,426,425,426,355,356,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,344,335,346,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,344,355,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="9" name="objects_decal"/>
+ <objectgroup color="#0000ff" id="3" name="collision">
+  <object id="80" x="0" y="440" width="360" height="40"/>
+  <object id="81" x="360" y="400" width="200" height="40"/>
+  <object id="84" x="560" y="440" width="360" height="40"/>
+  <object id="86" x="920" y="400" width="120" height="40"/>
+  <object id="87" x="1080" y="440" width="40" height="40"/>
+  <object id="88" x="360" y="400">
+   <polygon points="0,0 -40,40 0,40 0,0"/>
+  </object>
+  <object id="90" x="920" y="400">
+   <polygon points="0,0 -40,40 0,40 0,0"/>
+  </object>
+  <object id="89" x="560" y="400">
+   <polygon points="0,0 0,40 40,40"/>
+  </object>
+  <object id="91" x="1040" y="400">
+   <polygon points="0,0 0,40 40,40"/>
+  </object>
+  <object id="94" x="200" y="280">
+   <polygon points="0,0 0,-40 40,-40"/>
+  </object>
+  <object id="104" x="640" y="240">
+   <polygon points="0,0 0,-40 40,-40"/>
+  </object>
+  <object id="105" x="680" y="200">
+   <polygon points="0,0 0,-40 40,-40"/>
+  </object>
+  <object id="106" x="720" y="160">
+   <polygon points="0,0 0,-40 40,-40"/>
+  </object>
+  <object id="95" x="160" y="200" width="40" height="40"/>
+  <object id="96" x="200" y="200" width="40" height="40"/>
+  <object id="97" x="240" y="200" width="40" height="40"/>
+  <object id="99" x="280" y="200" width="40" height="40"/>
+  <object id="100" x="320" y="200" width="80" height="40"/>
+  <object id="103" x="480" y="200" width="80" height="40"/>
+  <object id="101" x="400" y="200" width="80" height="40"/>
+  <object id="102" x="560" y="200" width="80" height="40"/>
+  <object id="107" x="920" y="160">
+   <polygon points="0,0 0,-40 -40,-40"/>
+  </object>
+  <object id="109" x="960" y="200">
+   <polygon points="0,0 0,-40 -40,-40"/>
+  </object>
+  <object id="110" x="1000" y="240">
+   <polygon points="0,0 0,-40 -40,-40"/>
+  </object>
+  <object id="111" x="1040" y="280">
+   <polygon points="0,0 0,-40 -40,-40"/>
+  </object>
+  <object id="112" x="1080" y="320">
+   <polygon points="0,0 0,-40 -40,-40"/>
+  </object>
+  <object id="113" x="1080" y="280" width="40" height="40"/>
+  <object id="115" x="0" y="240" width="80" height="40"/>
+  <object id="116" x="80" y="240" width="80" height="40"/>
+  <object id="117" x="160" y="240" width="40" height="40"/>
+  <object id="119" x="731" y="88" width="189" height="32"/>
+ </objectgroup>
+ <objectgroup color="#00ff00" id="12" name="controllers"/>
+ <objectgroup color="#7f00ff" id="5" name="markers">
+  <object id="126" name="spawn" x="100" y="360">
+   <point/>
+  </object>
+  <object id="127" name="entry" x="80" y="360">
+   <point/>
+  </object>
+  <object id="129" name="entry2" x="1040" y="360">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup color="#ff00ff" id="4" name="objects">
+  <object id="121" gid="690" x="800" y="220" width="90" height="144"/>
+  <object id="125" name="interactable" x="805" y="99" width="40" height="40">
+   <properties>
+    <property name="text1">* ...!?[wait:5]
+* There is a camera behind the...[wait:5]
+&quot;sentry station.&quot;</property>
+   </properties>
+  </object>
+  <object id="124" name="interactable" x="847" y="99" width="40" height="40">
+   <properties>
+    <property name="text1">* ...!?[wait:5]
+* There is a camera behind the...[wait:5]
+&quot;sentry station.&quot;</property>
+   </properties>
+  </object>
+  <object id="128" name="transition" x="0" y="280" width="40" height="160">
+   <properties>
+    <property name="map" value="tundra3"/>
+    <property name="marker" value="entry2"/>
+   </properties>
+  </object>
+  <object id="122" name="interactable" x="804" y="182" width="40" height="40">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+    <property name="text1">* There's some narration on this
+cardboard box.</property>
+    <property name="text2">[font:papyrus][voice:papyrus]YOU OBSERVE THE
+WELL-CRAFTED
+SENTRY STATION.</property>
+    <property name="text3">[font:papyrus][voice:papyrus]WHO COULD HAVE
+BUILT THIS,[wait:5] YOU
+PONDER...</property>
+    <property name="text4">[font:papyrus][voice:papyrus]I BET IT WAS
+THAT VERY FAMOUS
+ROYAL GUARDSMAN!</property>
+    <property name="text5">[font:papyrus][voice:papyrus](NOTE: NOT YET A
+VERY FAMOUS
+ROYAL GUARDSMAN.[wait:5])</property>
+   </properties>
+  </object>
+  <object id="123" name="interactable" x="846" y="182" width="40" height="40">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+    <property name="text1">* There's some narration on this
+cardboard box.</property>
+    <property name="text2">[font:papyrus][voice:papyrus]YOU OBSERVE THE
+WELL-CRAFTED
+SENTRY STATION.</property>
+    <property name="text3">[font:papyrus][voice:papyrus]WHO COULD HAVE
+BUILT THIS,[wait:5] YOU
+PONDER...</property>
+    <property name="text4">[font:papyrus][voice:papyrus]I BET IT WAS
+THAT VERY FAMOUS
+ROYAL GUARDSMAN!</property>
+    <property name="text5">[font:papyrus][voice:papyrus](NOTE: NOT YET A
+VERY FAMOUS
+ROYAL GUARDSMAN.[wait:5])</property>
+   </properties>
+  </object>
+  <object id="131" name="randomencounter" x="40" y="40">
+   <properties>
+    <property name="encounter" value="dummy"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="137" name="transition" x="1080" y="320" width="40" height="120">
+   <properties>
+    <property name="map" value="darktundra1"/>
+    <property name="marker" value="entry"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="11" name="tiles3" width="28" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,300,301,363,364,390,301,312,0,0,0,0,0,0,0,300,301,390,301,312,0,
+389,390,389,390,389,390,389,390,309,318,319,320,319,320,321,390,389,390,389,390,389,390,309,318,319,320,321,390,
+318,319,320,399,318,319,320,399,318,319,320,399,318,319,318,319,320,399,318,319,320,399,318,319,318,319,318,319
+</data>
+ </layer>
+ <layer id="6" name="tiles4" width="28" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

@@ -1765,7 +1765,7 @@ function LightBattle:drawBackground()
     love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
 
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(Assets.getTexture("ui/lightbattle/background"), 15, 9)
+    love.graphics.draw(Assets.getTexture(self.encounter.backgroundimage) or Assets.getTexture("ui/lightbattle/backgrounds/battle"), 15, 9)
 end
 
 function LightBattle:getItemIndex()
