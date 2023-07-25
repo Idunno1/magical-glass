@@ -408,6 +408,8 @@ function lib:init()
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self, level)
     
+        Assets.stopAndPlaySound("levelup")
+
         self.lw_stats = {
             health = (16 + (self:getLightLV() * 4)),
             attack = (8 + (self:getLightLV() * 2)),
@@ -415,7 +417,7 @@ function lib:init()
             magic = 0
         }
 
-        if self:getLightLV() == 20 then
+        if self:getLightLV() >= 20 then
             self.lw_stats = {
                 health = 99,
                 attack = 99,
@@ -509,6 +511,11 @@ function lib:init()
 
         LightStatMenu.__super.update(self)
 
+    end)
+
+    Utils.hook(Wave, "setTargetSize", function(orig, self, width, height)
+        self.arena_width = width
+        self.arena_height = height or width
     end)
 
     Utils.hook(LightStatMenu, "draw", function(orig, self)

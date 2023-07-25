@@ -102,6 +102,7 @@ end
 function LightAttackBox:draw()
 
     if self.fading then
+        self.target_sprite.x = self.target_sprite.x - 15 * DTMULT
         self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
         self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
     end

@@ -30,7 +30,7 @@ function LightBattle:init()
 
     self.ui_move = Assets.newSound("ui_move")
     self.ui_select = Assets.newSound("ui_select")
-    self.vaporized = Assets.newSound("vaporized")
+    self.spare_sound = Assets.newSound("vaporized")
 
     self.encounter_context = nil
 
@@ -545,7 +545,19 @@ function LightBattle:processAction(action)
     end
 
     if action.action == "SPARE" then
-        local worked = enemy:canSpare()
+
+        for _,act_enemy in ipairs(self:getActiveEnemies()) do
+            local worked = act_enemy:canSpare()
+
+            act_enemy:onMercy(battler)
+            self:finishAction(action)
+    
+--[[             local text = "* You spared the enemies."
+            local enemy_text = act_enemy:getSpareText(battler, worked)
+            if text then
+                self:battleText(text)
+            end ]]
+        end
 
 --[[         battler:setAnimation("battle/spare", function()
             enemy:onMercy(battler)
@@ -554,13 +566,7 @@ function LightBattle:processAction(action)
             end
             self:finishAction(action)
         end) ]]
-        enemy:onMercy(battler)
-        self:finishAction(action)
 
-        local text = enemy:getSpareText(battler, worked)
-        if text then
-            self:battleText(text)
-        end
 
         return false
 
@@ -930,6 +936,7 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ENEMYDIALOGUE" then
+
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -937,6 +944,80 @@ function LightBattle:onStateChange(old,new)
         if #active_enemies == 0 then
             self:setState("VICTORY")
         else
+
+            if self.state_reason then
+                self:setWaves(self.state_reason)
+                local enemy_found = false
+                for i,enemy in ipairs(self.enemies) do
+                    if Utils.containsValue(enemy.waves, self.state_reason[1]) then
+                        enemy.selected_wave = self.state_reason[1]
+                        enemy_found = true
+                    end
+                end
+                if not enemy_found then
+                    self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
+                end
+            else
+                self:setWaves(self.encounter:getNextWaves())
+            end
+
+            local soul_x, soul_y, soul_offset_x, soul_offset_y
+            local arena_x, arena_y, arena_w, arena_h, arena_shape
+            local has_arena = true
+            for _,wave in ipairs(self.waves) do
+                soul_x = wave.soul_start_x or soul_x
+                soul_y = wave.soul_start_y or soul_y
+                soul_offset_x = wave.soul_offset_x or soul_offset_x
+                soul_offset_y = wave.soul_offset_y or soul_offset_y
+                arena_x = wave.arena_x or arena_x
+                arena_y = wave.arena_y or arena_y
+                arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
+                arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
+                if wave.arena_shape then
+                    arena_shape = wave.arena_shape
+                end
+                if not wave.has_arena then
+                    has_arena = false
+                end
+            end
+    
+            local center_x, center_y
+    
+            if has_arena then
+                
+                if not arena_shape then
+                    arena_w, arena_h = arena_w or 142, arena_h or 142
+                    arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
+                end
+    
+                self.arena.layer = BATTLE_LAYERS["arena"]
+                -- border resizes in increments of 15, width then height
+                local width_timer = self.arena.width
+                local height_timer = self.arena.height
+
+                self.timer:during(2, function()
+    
+                    width_timer = Utils.approach(width_timer, arena_w, DTMULT * 30)
+                    local prog_w = width_timer
+                    self.arena:setSize(prog_w, self.arena.height)
+
+                    if prog_w == arena_w then
+                        height_timer = Utils.approach(height_timer, arena_h, DTMULT * 30)
+                        local prog_h = height_timer
+                        self.arena:setSize(self.arena.width, prog_h)
+                    end
+    
+                end, function() self.arena:setSize(arena_w,arena_h) end)
+
+                center_x, center_y = self.arena:getCenter()
+            else
+                center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 + 10
+            end
+    
+            soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+            soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+            self:spawnSoul(soul_x or center_x, soul_y or center_y)
+
             for _,enemy in ipairs(active_enemies) do
                 enemy.current_target = enemy:getTarget()
             end
@@ -1032,9 +1113,7 @@ function LightBattle:onStateChange(old,new)
             local lv = member.chara:getLightLV()
 
             if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                member.chara.lw_lv = lv + 1
-                member.chara:onLightLevelUp(lv)
-                Assets.stopAndPlaySound("levelup")
+                member.chara:setLevel(lv + 1)
                 win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
             end
         end
@@ -1059,27 +1138,11 @@ function LightBattle:onStateChange(old,new)
             self.tension_bar:hide()
         end
 
-        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 1/3})
+        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 5/30})
 
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
-
-        if self.state_reason then
-            self:setWaves(self.state_reason)
-            local enemy_found = false
-            for i,enemy in ipairs(self.enemies) do
-                if Utils.containsValue(enemy.waves, self.state_reason[1]) then
-                    enemy.selected_wave = self.state_reason[1]
-                    enemy_found = true
-                end
-            end
-            if not enemy_found then
-                self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
-            end
-        else
-            self:setWaves(self.encounter:getNextWaves())
-        end
 
         for _,wave in ipairs(Game.battle.waves) do
             if wave:onArenaEnter() then
@@ -1147,6 +1210,19 @@ function LightBattle:onStateChange(old,new)
                 return true
             end) ]]
         end
+    elseif new == "DEFENDINGEND" then
+
+        local width_timer = self.arena.width
+        local height_timer = self.arena.height
+        self.timer:during(1, function()
+
+            width_timer = Utils.approach(width_timer, self.arena.default_dim[1], DTMULT * 30)
+            height_timer = Utils.approach(height_timer, self.arena.default_dim[2], DTMULT * 30)
+            local prog_w = width_timer
+            local prog_h = height_timer
+            self.arena:setSize(prog_w, prog_h)
+
+        end, function() self.arena:setSize(self.arena.default_dim[1], self.arena.default_dim[2]) end)
     end
 
     -- List of states that should remove the arena.
@@ -1162,8 +1238,6 @@ function LightBattle:onStateChange(old,new)
             end
         end
         if should_end then
-            Game.battle.arena:setPosition(SCREEN_WIDTH/2, 385)
-            Game.battle.arena:setShape(shape or {{0, 0}, {565, 0}, {565, 130}, {0, 130}})
             for _,battler in ipairs(self.party) do
                 battler.targeted = false
             end
@@ -1510,46 +1584,7 @@ function LightBattle:update()
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
 
-        local soul_x, soul_y, soul_offset_x, soul_offset_y
-        local arena_x, arena_y, arena_w, arena_h, arena_shape
-        local has_arena = true
-        for _,wave in ipairs(self.waves) do
-            soul_x = wave.soul_start_x or soul_x
-            soul_y = wave.soul_start_y or soul_y
-            soul_offset_x = wave.soul_offset_x or soul_offset_x
-            soul_offset_y = wave.soul_offset_y or soul_offset_y
-            arena_x = wave.arena_x or arena_x
-            arena_y = wave.arena_y or arena_y
-            arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
-            arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
-            if wave.arena_shape then
-                arena_shape = wave.arena_shape
-            end
-            if not wave.has_arena then
-                has_arena = false
-            end
-        end
-
-        local center_x, center_y
-
-        if has_arena then
-            if not arena_shape then
-                arena_w, arena_h = arena_w or 142, arena_h or 142
-                arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
-            end
-
-            self.arena.layer = BATTLE_LAYERS["arena"]
-            self.arena:setShape(arena_shape)
-            center_x, center_y = self.arena:getCenter()
-        else
-            center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 + 10
-        end
-
-        soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
-        soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-        self:spawnSoul(soul_x or center_x, soul_y or center_y)
-
-        self.textbox_timer = self.textbox_timer - DTMULT
+            self.textbox_timer = self.textbox_timer - DTMULT
         if (self.textbox_timer <= 0) and self.use_textbox_timer then
             self:advanceBoxes()
         else
@@ -2583,9 +2618,6 @@ function LightBattle:onKeyPressed(key)
                     xaction.name = self.enemies[self.selected_enemy]:getXAction(self.party[self.current_selecting])
                 end
                 self:pushAction("XACT", self.enemies[self.selected_enemy], xaction)
-            elseif self.state_reason == "SPARE" then
-                --this'll need tweaking
-                self:pushAction("SPARE", self.enemies[self.selected_enemy])
             elseif self.state_reason == "ACT" then
                 self:clearMenuItems()
                 local enemy = self.enemies[self.selected_enemy]

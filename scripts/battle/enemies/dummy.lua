@@ -16,7 +16,7 @@ function Dummy:init()
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
-    self.money = 100
+    self.money = 2
     -- Hide HP in UNDERTALE battles
     self.hidehp = false
 
@@ -26,8 +26,8 @@ function Dummy:init()
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
         "basic",
-        "aiming",
-        "movingarena"
+--[[         "aiming",
+        "movingarena" ]]
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble

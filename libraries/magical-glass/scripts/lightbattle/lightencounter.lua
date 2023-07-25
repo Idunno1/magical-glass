@@ -61,16 +61,20 @@ function LightEncounter:onFlee()
         local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
         local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 
-        self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        Game.lw_money = Game.lw_money + money
+
+        if (Game.lw_money < 0) then
+            Game.lw_money = 0
+        end
+
+        self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency") .. "."
 
         for _,member in ipairs(Game.battle.party) do
             member.chara.lw_exp = member.chara.lw_exp + xp
             local lv = member.chara:getLightLV()
     
             if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                member.chara.lw_lv = lv + 1
-                member.chara:onLightLevelUp(lv)
-                Assets.stopAndPlaySound("levelup")
+                member.chara:setLevel(lv + 1)
                 --self.used_flee_message = "* Ran away with " .. Game.battle.xp .. " EXP\n  and " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
             end
         end

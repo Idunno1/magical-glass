@@ -145,6 +145,8 @@ function LightActionButton:select()
 
                     if not item.target or item.target == "none" then
                         Game.battle:pushAction("ITEM", nil, menu_item)
+                    elseif item.target == "ally" and #Game.battle:getActiveParty() == 1 then
+                        Game.battle:pushAction("ITEM", Game.battle.party[1], menu_item)
                     elseif item.target == "ally" then
                         Game.battle:setState("PARTYSELECT", "ITEM")
                     elseif item.target == "enemy" then
@@ -167,7 +169,7 @@ function LightActionButton:select()
         Game.battle:addMenuItem({
             ["name"] = "Spare",
             ["callback"] = function(menu_item)
-                Game.battle:setState("ENEMYSELECT", "SPARE") -- needs to instantly spare all enemies
+                Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
         })
         if Game.battle.encounter.can_flee then

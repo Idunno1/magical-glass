@@ -7,7 +7,8 @@ function LightArena:init(x, y, shape)
     self.bg_color = {0, 0, 0}
 
     self.line_width = 5 -- must call setShape again if u change this
-    self:setShape(shape or {{0, 0}, {565, 0}, {565, 130}, {0, 130}})
+    self.default_dim = {565, 130}
+    self:setShape(shape or {{0, 0}, {self.default_dim[1], 0}, {self.default_dim[1], self.default_dim[2]}, {0, self.default_dim[2]}})
 
     self:setOrigin(0.5, 1)
 end
@@ -35,10 +36,10 @@ function LightArena:setShape(shape)
     self.processed_width = self.width
     self.processed_height = self.height
 
-    self.left = math.floor(self.x - self.width/2)
-    self.right = math.floor(self.x + self.width/2)
-    self.top = math.floor(self.y - self.height/2)
-    self.bottom = math.floor(self.y + self.height/2)
+    self.left = math.floor(self.x - self.width)
+    self.right = math.floor(self.x)
+    self.top = math.floor(self.y - self.height)
+    self.bottom = math.floor(self.y)
 
     self.triangles = love.math.triangulate(Utils.unpackPolygon(self.shape))
 
