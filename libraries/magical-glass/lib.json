@@ -1,8 +1,9 @@
 {
     "id": "magical-glass",
     "authors": [
-        "Nyakorita - Made the UI",
-        "Sam Deluxe and Bor - did the thing"
+        "Nyakorita - Initial UI and dust code",
+        "Sam Deluxe - Finished the UI and made it playable",
+        "Bor -"
     ],
     "version": "v1.0.0",
     "engineVer": "v0.8.1-dev",

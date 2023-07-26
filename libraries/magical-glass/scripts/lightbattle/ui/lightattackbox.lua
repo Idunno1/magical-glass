@@ -81,16 +81,23 @@ function LightAttackBox:miss()
 end
 
 function LightAttackBox:update()
-    if Game.battle.cancel_attack then
-        self.scale_y = (self.scale_y - 0.08) * DTMULT
-        self:fadeOutSpeedAndRemove(1) -- needs scale shit
-    end
 
     if not self.done then
         self.bolt:move(LightAttackBox.BOLTSPEED * DTMULT, 0)
     end
+    
+    if Game.battle.cancel_attack then
+        self.bolt:remove()
+        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
+        if self.target_sprite.alpha < 0.08 then
+            self:remove()
+        end
+    end
 
     if self.fading then
+        self.target_sprite.x = self.target_sprite.x - 15 * DTMULT
+        self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
         if self.target_sprite.scale_x < 0.08 then
             self:remove()
         end
@@ -100,12 +107,6 @@ function LightAttackBox:update()
 end
 
 function LightAttackBox:draw()
-
-    if self.fading then
-        self.target_sprite.x = self.target_sprite.x - 15 * DTMULT
-        self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
-        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-    end
 
     if DEBUG_RENDER then
         local font = Assets.getFont("main", 16)

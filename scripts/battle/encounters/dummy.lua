@@ -10,11 +10,7 @@ function Dummy:init()
     self.music = "battle_dt"
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("dummy")
-end
-
-function Dummy:getVictoryXP()
-    return 10
+    self:addEnemy("dummy", SCREEN_WIDTH/2, 240)
 end
 
 return Dummy

@@ -1,10 +1,13 @@
 LightBattle              = libRequire("magical-glass", "scripts/lightbattle")
+LightPartyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightpartybattler")
+LightEnemyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightenemybattler")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
-LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
-LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
+--LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
+--LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
+LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/lightdamagenumber")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
 LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
 LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
@@ -23,6 +26,27 @@ function lib:init()
         -- when this shit's done, make a thing that checks for the class' type (encounter or encounterlight)
         object:encounterLight(encounter, transition, enemy, context)
         --orig(object, encounter, transition, enemy) 
+    end)
+    
+    Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
+        x, y = self:getRelativePos(x, y)
+
+        local offset = 0
+        if not kill then
+            offset = (self.hit_count * 20)
+        end
+    
+        local percent = LightDamageNumber(type, arg, x + 4, y + 20 - offset, color)
+        if kill then
+            percent.kill_others = true
+        end
+        self.parent:addChild(percent)
+    
+        if not kill then
+            self.hit_count = self.hit_count + 1
+        end
+    
+        return percent
     end)
 
     Utils.hook(DialogueText, "init", function(orig, self, ...)
@@ -124,6 +148,8 @@ function lib:init()
         self.last_talking = self.state.talk_anim and self.state.typing
     end)
 
+    -- bullets need a min and max damage argument
+
     Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
     
         orig(self, x, y, texture)
@@ -131,21 +157,6 @@ function lib:init()
             self.inv_timer = 1
         end
 
-    end)
-
-    Utils.hook(EnemyBattler, "getLightAttackDamage", function(orig, self, damage, battler, points, stretch)
-        if damage > 0 then
-            return damage
-        end
-
-        local total_damage = (battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
-        if points <= 12 then
-            total_damage = Utils.round(total_damage * 2.2)
-        elseif points >= 12 then
-            total_damage = Utils.round((total_damage * stretch) * 2)
-        end
-        
-        return total_damage
     end)
 
     Utils.hook(LightItemMenu, "init", function(orig, self)
@@ -485,6 +496,8 @@ function lib:init()
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
         local chara = Game.party[self.party_selecting]
+
+        local old_selecting = self.party_selecting
     
         if Input.pressed("right") then
             self.party_selecting = self.party_selecting + 1
@@ -500,6 +513,11 @@ function lib:init()
 
         if self.party_selecting < 1 then
             self.party_selecting = #Game.party
+        end
+
+        if self.party_selecting ~= old_selecting then
+            self.ui_move:stop()
+            self.ui_move:play()
         end
 
         if Input.pressed("cancel") then
@@ -579,16 +597,6 @@ function lib:init()
 
 end
 
-function lib:changeSpareColor(color)
-    if color == "yellow" then
-        Game:setFlag("name_color", COLORS.yellow)
-    elseif color == "pink" then
-        Game:setFlag("name_color", PALETTE["pink_spare"])
-    elseif color == "white" then
-        Game:setFlag("name_color", COLORS.white)
-    end
-end
-
 function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
@@ -599,6 +607,16 @@ function lib:load()
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
 
     Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
+end
+
+function lib:changeSpareColor(color)
+    if color == "yellow" then
+        Game:setFlag("name_color", COLORS.yellow)
+    elseif color == "pink" then
+        Game:setFlag("name_color", PALETTE["pink_spare"])
+    elseif color == "white" then
+        Game:setFlag("name_color", COLORS.white)
+    end
 end
 
 function Game:encounterLight(encounter, transition, enemy, context)

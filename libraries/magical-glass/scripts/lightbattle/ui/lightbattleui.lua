@@ -88,6 +88,8 @@ function LightBattleUI:clearEncounterText()
 end
 
 function LightBattleUI:beginAttack()
+    Game.battle.current_selecting = 0
+
     local attack_order = Utils.pickMultiple(Game.battle.normal_attackers, #Game.battle.normal_attackers)
 
     local last_offset = -1
@@ -262,10 +264,8 @@ function LightBattleUI:drawState()
         local current_item = Game.battle.menu_items[Game.battle:getItemIndex()]
         if current_item.description then
             Draw.setColor(COLORS.gray)
-            love.graphics.print(current_item.description, 260 + 240, 50)
-            Draw.setColor(1, 1, 1, 1)
-            _, tp_offset = current_item.description:gsub('\n', '\n')
-            tp_offset = tp_offset + 1
+            local str = current_item.description:gsub('\n', ' ')
+            love.graphics.print(str, 100 - 16, 64)
         end
 
         if current_item.tp and current_item.tp ~= 0 then
@@ -339,7 +339,7 @@ function LightBattleUI:drawState()
             else
                 local canvas = Draw.pushCanvas(font_mono:getWidth("* " .. enemy.name), font_mono:getHeight())
                 Draw.setColor(1, 1, 1)
-                love.graphics.print("* " .. enemy.name)
+                love.graphics.print("* " .. enemy.name) -- todo: exclude the * from the gradient
                 Draw.popCanvas()
 
                 local color_canvas = Draw.pushCanvas(#name_colors, 1)

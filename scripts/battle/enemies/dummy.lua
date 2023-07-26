@@ -1,4 +1,4 @@
-local Dummy, super = Class(EnemyBattler)
+local Dummy, super = Class(LightEnemyBattler)
 
 function Dummy:init()
     super:init(self)
@@ -10,18 +10,19 @@ function Dummy:init()
 
     -- Enemy health
     self.max_health = 70
-    self.health = 70
+    self.health = 400
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
     self.money = 2
+    self.experience = 10
     -- Hide HP in UNDERTALE battles
     self.hidehp = false
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
-    self.spare_points = 20
+    self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {

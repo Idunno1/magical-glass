@@ -151,7 +151,7 @@ function LightBattle:createPartyBattlers()
 
         if Game.world.player and Game.world.player.visible and Game.world.player.actor.id == party_member:getActor().id then
             local player_x, player_y = Game.world.player:getScreenPos() -- just in case
-            local player_battler = PartyBattler(party_member, player_x, player_y)
+            local player_battler = LightPartyBattler(party_member, player_x, player_y)
             player_battler.visible = false
             self:addChild(player_battler)
             table.insert(self.party, player_battler)
@@ -169,7 +169,7 @@ function LightBattle:createPartyBattlers()
                 end
             end
             if not found then
-                local chara_battler = PartyBattler(party_member, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+                local chara_battler = LightPartyBattler(party_member, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                 self:addChild(chara_battler)
                 table.insert(self.party, chara_battler)
             end
@@ -352,13 +352,13 @@ function LightBattle:getState()
 end
 
 function LightBattle:onSubStateChange(old,new)
-    if (old == "ACT") and (new ~= "ACT") then
+--[[     if (old == "ACT") and (new ~= "ACT") then
         for _,battler in ipairs(self.party) do
             if battler.sprite.anim == "battle/act" then
                 battler:setAnimation("battle/act_end")
             end
         end
-    end
+    end ]]
 end
 
 function LightBattle:registerXAction(party, name, description, tp)
@@ -544,31 +544,18 @@ function LightBattle:processAction(action)
         end
     end
 
+    self.current_selecting = 0
+
     if action.action == "SPARE" then
+
+        self.soul:remove()
 
         for _,act_enemy in ipairs(self:getActiveEnemies()) do
             local worked = act_enemy:canSpare()
-
             act_enemy:onMercy(battler)
-            self:finishAction(action)
-    
---[[             local text = "* You spared the enemies."
-            local enemy_text = act_enemy:getSpareText(battler, worked)
-            if text then
-                self:battleText(text)
-            end ]]
         end
 
---[[         battler:setAnimation("battle/spare", function()
-            enemy:onMercy(battler)
-            if not worked then
-                enemy:mercyFlash()
-            end
-            self:finishAction(action)
-        end) ]]
-
-
-        return false
+        self:finishAction(action)
 
     elseif action.action == "ATTACK" or action.action == "AUTOATTACK" then
 
@@ -590,7 +577,7 @@ function LightBattle:processAction(action)
             local damage = 0
 
             if not action.force_miss then
-                damage = Utils.round(enemy:getLightAttackDamage(action.damage or 0, battler, action.points, action.stretch))
+                damage = Utils.round(enemy:getAttackDamage(action.damage or 0, battler, action.points, action.stretch))
 
                 if damage < 0 then
                     damage = 0
@@ -851,15 +838,17 @@ function LightBattle:onStateChange(old,new)
         self.fader:fadeIn(nil, {speed=5/30})
 
         if self.state_reason == "CANCEL" then
-            self.timer:during(1/30, function()
+            self.timer:after(2/30 *DTMULT, function()
                 self.battle_ui.encounter_text.text.line_offset = 5
                 self.battle_ui:clearEncounterText()
+                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
                 self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
                 self.battle_ui.encounter_text.text.state.typing_sound = "ut"
             end)
         else
             self.battle_ui:clearEncounterText()
-            self.battle_ui.encounter_text:setText(self.encounter.text)
+            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
             self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         end
 
@@ -986,12 +975,11 @@ function LightBattle:onStateChange(old,new)
             if has_arena then
                 
                 if not arena_shape then
-                    arena_w, arena_h = arena_w or 142, arena_h or 142
+                    arena_w, arena_h = arena_w or 142, arena_h or 130
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
     
                 self.arena.layer = BATTLE_LAYERS["arena"]
-                -- border resizes in increments of 15, width then height
                 local width_timer = self.arena.width
                 local height_timer = self.arena.height
 
@@ -1014,9 +1002,12 @@ function LightBattle:onStateChange(old,new)
                 center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 + 10
             end
     
-            soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
-            soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-            self:spawnSoul(soul_x or center_x, soul_y or center_y)
+            self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
+                soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+                soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+                self:spawnSoul(soul_x or center_x, soul_y or center_y)
+                self.soul.can_move = false
+            end)
 
             for _,enemy in ipairs(active_enemies) do
                 enemy.current_target = enemy:getTarget()
@@ -1042,6 +1033,11 @@ function LightBattle:onStateChange(old,new)
             end
         end
     elseif new == "DIALOGUEEND" then
+
+        self.timer:after(2/30, function()
+            self.soul.can_move = true
+        end)
+
         self.battle_ui:clearEncounterText()
 
         for i,battler in ipairs(self.party) do
@@ -1081,7 +1077,7 @@ function LightBattle:onStateChange(old,new)
                 battler.chara:setHealth(battler.chara:autoHealAmount())
             end
 
-            battler:setAnimation("battle/victory")
+            --battler:setAnimation("battle/victory")
 
 --[[             local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
             box:resetHeadIcon() ]]
@@ -1427,14 +1423,6 @@ function LightBattle:setActText(text, dont_finish)
     end)
 end
 
-function LightBattle:getEnemyBattler(string_id)
-    for _, enemy in ipairs(self.enemies) do
-        if enemy.id == string_id then
-            return enemy
-        end
-    end
-end
-
 function LightBattle:hurt(amount, exact)
     if self.player then
         self.player.health = self.player.health - amount
@@ -1477,6 +1465,8 @@ function LightBattle:battleText(text,post_func)
     if self.state ~= "FLEEING" and self.soul then
         self.soul:remove()
     end
+
+    self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
     self.battle_ui.encounter_text:setAdvance(true)
     self:setState("BATTLETEXT")
@@ -1560,11 +1550,11 @@ function LightBattle:update()
             end
         end
         if self.actions_done_timer == 0 and not any_hurt then
-            for _,battler in ipairs(self.attackers) do
+--[[             for _,battler in ipairs(self.attackers) do
                 if not battler:setAnimation("battle/attack_end") then
                     battler:resetSprite()
                 end
-            end
+            end ]]
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
@@ -1718,7 +1708,7 @@ function LightBattle:updateAttacking()
         local attack = self.battle_ui.attack_box
         if not attack.attacked then
             local close = attack:getClose()
-            if close <= -295 or close >= 295 then
+            if close <= -295 or close >= 295 then -- move to attackbox
                 attack:miss()
 
                 local action = self:getActionBy(attack.battler)
@@ -1838,12 +1828,12 @@ local _callback = callback
     if Kristal.callEvent("onBattleActionEndAnimation", action, action.action, battler, action.target, callback, _callback) then
         return
     end
-    if action.action ~= "ATTACK" and action.action ~= "AUTOATTACK" then
+--[[     if action.action ~= "ATTACK" and action.action ~= "AUTOATTACK" then
         if battler.sprite.anim == "battle/"..action.action:lower() then
             -- Attempt to play the end animation if the sprite hasn't changed
---[[             if not battler:setAnimation("battle/"..action.action:lower().."_end", callback) then
+            if not battler:setAnimation("battle/"..action.action:lower().."_end", callback) then
                 --battler:resetSprite()
-            end ]]
+            end
             callback()
         else
             -- Otherwise, play idle animation
@@ -1852,9 +1842,9 @@ local _callback = callback
                 callback()
             end
         end
-    else
+    else ]]
         callback()
-    end
+    --end
 end
 
 function LightBattle:pushForcedAction(battler, action, target, data, extra)
@@ -2025,7 +2015,7 @@ function LightBattle:commitSingleAction(action)
         end
 
         if (action.action == "ITEM" and action.data and (not action.data.instant)) or (action.action ~= "ITEM") then
-            battler:setAnimation("battle/"..anim.."_ready")
+            --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
             if action.action == "AUTOATTACK" or action.action == "SKIP" then
                 action.icon = nil
@@ -2276,7 +2266,7 @@ function LightBattle:hurt(amount, exact, target)
         target = self.party[target]
     end
 
-    if isClass(target) and target:includes(PartyBattler) then
+    if isClass(target) and (target:includes(PartyBattler) or target:includes(LightPartyBattler)) then
         if (not target) or (target.chara:getHealth() <= 0) then -- Why doesn't this look at :canTarget()? Weird.
             target = self:randomTargetOld()
         end
@@ -2322,7 +2312,7 @@ function LightBattle:hurt(amount, exact, target)
     end
 
     -- Now it's time to actually damage them!
-    if isClass(target) and target:includes(PartyBattler) then
+    if isClass(target) and (target:includes(PartyBattler) or target:includes(LightPartyBattler)) then
         target:hurt(amount, exact)
         return {target}
     end
