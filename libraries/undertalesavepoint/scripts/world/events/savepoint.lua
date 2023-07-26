@@ -15,7 +15,7 @@ function Savepoint:init(data)
 
     self:setOrigin(0.5, 0.5)
     if self.undertale then
-        self:setSprite("world/events/savepointut", 1/2)
+        self:setSprite("world/events/savepointut", 0.15)
     else
         self:setSprite("world/events/savepoint", 1/6)
     end
