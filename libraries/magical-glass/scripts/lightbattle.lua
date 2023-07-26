@@ -879,7 +879,7 @@ function LightBattle:onStateChange(old,new)
             self:tryProcessNextAction()
         end
     elseif new == "MENUSELECT" then
-        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
+        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
 
@@ -888,12 +888,12 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_rows = 3
         end
     elseif new == "ENEMYSELECT" then
-        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
+        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
         self.selected_enemy = 1
     elseif new == "PARTYSELECT" then
-        self.timer:during(1/30, function() self.battle_ui:clearEncounterText() end)
+        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
         self.current_menu_x = 1
         self.current_menu_y = 1
     elseif new == "ATTACKING" then
