@@ -597,6 +597,10 @@ function lib:init()
 
 end
 
+function lib:postInit()
+    self.randomEncounter = love.math.random(20, 100)
+end
+
 function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
@@ -607,6 +611,8 @@ function lib:load()
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
 
     Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
+
+    Game:setFlag("randomEncounterTable", {})
 end
 
 function lib:changeSpareColor(color)
@@ -648,6 +654,33 @@ function Game:encounterLight(encounter, transition, enemy, context)
     end
 
     self.stage:addChild(self.battle)
+
+end
+
+function lib:onFootstep(chara, num)
+    
+    if Game.world.map:getEvent("randomencounter") ~= nil then
+
+        self.randomEncounter = self.randomEncounter - 1
+
+        if chara == Game.world.player and self.randomEncounter < 0 then
+            if not Game.world.cutscene and not Game.battle then
+                Game.world:startCutscene(function(cutscene)
+                    Assets.stopAndPlaySound("alert")
+                    local sprite = Sprite("effects/alert", Game.world.player.width/2)
+                    sprite:setScale(1,1)
+                    sprite:setOrigin(0.5, 1)
+                    Game.world.player:addChild(sprite)
+                    sprite.layer = WORLD_LAYERS["above_events"]
+                    cutscene:wait(0.75)
+                    sprite:remove()
+                    cutscene:startEncounter("dummy", true)
+                end)
+                self.randomEncounter = love.math.random(20, 100)
+            end
+        end
+
+    end
 
 end
 

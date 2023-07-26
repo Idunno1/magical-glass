@@ -1,0 +1,55 @@
+{
+    "maps": [
+        {
+            "fileName": "maps/tundra3.tmx",
+            "height": 480,
+            "width": 800,
+            "x": -40,
+            "y": 0
+        },
+        {
+            "fileName": "maps/tundra3A.tmx",
+            "height": 480,
+            "width": 640,
+            "x": 80,
+            "y": -480
+        },
+        {
+            "fileName": "maps/tundra1.tmx",
+            "height": 480,
+            "width": 880,
+            "x": -6360,
+            "y": 0
+        },
+        {
+            "fileName": "maps/tundra2.tmx",
+            "height": 480,
+            "width": 5440,
+            "x": -5480,
+            "y": 0
+        },
+        {
+            "fileName": "maps/tundra2/tundra2.tmx",
+            "height": 480,
+            "width": 5440,
+            "x": -5480,
+            "y": 0
+        },
+        {
+            "fileName": "maps/tundra4/tundra4.tmx",
+            "height": 480,
+            "width": 1120,
+            "x": 760,
+            "y": 0
+        },
+        {
+            "fileName": "maps/darktundra1.tmx",
+            "height": 480,
+            "width": 800,
+            "x": 1920,
+            "y": 0
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
