@@ -56,6 +56,19 @@ function lib:registerDebugOptions(debug)
         debug:enterMenu("light_encounter_select", 0)
     end, in_overworld)
 
+    debug:registerMenu("encounter_select", "Encounter Select", "search")
+    -- loop through registry and add menu options for all encounters
+    for id,_ in pairs(Registry.encounters) do
+        debug:registerOption("encounter_select", id, "Start this encounter.", function()
+            if Game:isLight() then
+                Game.light = false
+                Game:setFlag("temporary_world_value#", "light")
+            end
+            Game:encounter(id)
+            debug:closeMenu()
+        end)
+    end
+
     debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
     for id,_ in pairs(self.light_encounters) do
         debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
@@ -87,8 +100,7 @@ function lib:init()
     end
 
     Utils.hook(Game, "encounter", function(orig, object, encounter, transition, enemy, context, force_light)
-        -- For testing let's start our thingy instead
-        -- when this shit's done, make a thing that checks for the class' type (encounter or encounterlight)
+        -- the worst thing ever
 
         if context then
             if context.light_encounter then
@@ -319,6 +331,16 @@ function lib:init()
             self:setState(state)
         end
 
+    end)
+
+    Utils.hook(Battle, "returnToWorld", function(orig, self)
+    
+        orig(self)
+        if not Game:isLight() and Game:getFlag("temporary_world_value#") == "light" then
+            Game.light = true
+            Game:setFlag("temporary_world_value#", nil)
+        end
+        
     end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
