@@ -1431,9 +1431,8 @@ function LightBattle:returnToWorld()
     Game.battle = nil
     Game.state = "OVERWORLD"
 
-    if Game:isLight() and Game:getFlag("temporary_world_value#") == "dark" then
-        Game.light = false
-        Game:convertToDark()
+    if Game:getFlag("temporary_world_value#") == "dark" then
+        Game:setLight(false) -- crashes if the battle was restarted
         Game:setFlag("temporary_world_value#", nil)
     end
 end

@@ -61,8 +61,7 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
-                Game.light = false
-                Game:convertToDark()
+                Game:setLight(false)
                 Game:setFlag("temporary_world_value#", "light")
             end
             Game:encounter(id)
@@ -74,8 +73,7 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
             if not Game:isLight() then
-                Game.light = true
-                Game:convertToLight()
+                Game:setLight(false)
                 Game:setFlag("temporary_world_value#", "dark")
             end
             Game:encounter(id)
@@ -387,9 +385,8 @@ function lib:init()
     Utils.hook(Battle, "returnToWorld", function(orig, self)
     
         orig(self)
-        if not Game:isLight() and Game:getFlag("temporary_world_value#") == "light" then
-            Game.light = true
-            Game:convertToLight()
+        if Game:getFlag("temporary_world_value#") == "light" then
+            Game:setLight(true) -- crashes if the battle was restarted
             Game:setFlag("temporary_world_value#", nil)
         end
 
