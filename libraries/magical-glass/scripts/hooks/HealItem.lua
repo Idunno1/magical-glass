@@ -126,4 +126,7 @@ function HealItem:worldUseSound(target)
     end)
 end
 
+function HealItem:getShortName() return self.short_name or self.serious_name or self.name end
+function HealItem:getSeriousName() return self.serious_name or self.short_name or self.name end
+
 return HealItem

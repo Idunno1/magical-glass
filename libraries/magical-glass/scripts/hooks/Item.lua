@@ -14,7 +14,7 @@ function Item:init()
 
 end
 
-function Item:getShortName() return self.short_name end
-function Item:getSeriousName() return self.serious_name end
+function Item:getShortName() return self.short_name or self.serious_name or self.name end
+function Item:getSeriousName() return self.serious_name or self.short_name or self.name end
 
 return Item
