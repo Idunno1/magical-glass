@@ -181,9 +181,13 @@ function LightBattle:postInit(state, encounter)
     self.state = state
 
     if type(encounter) == "string" then
-        self.encounter = Registry.createEncounter(encounter)
+        self.encounter = MagicalGlassLib:createLightEncounter(encounter)
     else
         self.encounter = encounter
+    end
+
+    if self.encounter.includes(Encounter) then
+        error("fuck")
     end
 
     if Game.world.music:isPlaying() and self.encounter.music then
@@ -1405,6 +1409,11 @@ function LightBattle:returnToWorld()
     self.encounter.defeated_enemies = self.defeated_enemies
     Game.battle = nil
     Game.state = "OVERWORLD"
+
+    if Game:isLight() and Game:getFlag("temporary_world_value#") == "dark" then
+        Game.light = false
+        Game:setFlag("temporary_world_value#", nil)
+    end
 end
 
 function LightBattle:setActText(text, dont_finish)

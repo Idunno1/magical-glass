@@ -126,7 +126,7 @@ function LightEncounter:drawBackground(fade) end
 function LightEncounter:addEnemy(enemy, x, y, ...)
     local enemy_obj
     if type(enemy) == "string" then
-        enemy_obj = Registry.createEnemy(enemy, ...)
+        enemy_obj = MagicalGlassLib:createLightEnemy(enemy, ...)
     else
         enemy_obj = enemy
     end

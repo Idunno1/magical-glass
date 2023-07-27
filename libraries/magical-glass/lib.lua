@@ -19,13 +19,306 @@ LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/l
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
+function lib:registerLightEncounter(id)
+    self.light_encounters[id] = class
+end
+
+function lib:getLightEncounter(id)
+    return self.light_encounters[id]
+end
+
+function lib:createLightEncounter(id, ...)
+    if self.light_encounters[id] then
+        return self.light_encounters[id](...)
+    else
+        error("Attempt to create non existent light encounter \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerLightEnemy(id)
+    self.light_enemies[id] = class
+end
+
+function lib:getLightEnemy(id)
+    return self.light_enemies[id]
+end
+
+function lib:createLightEnemy(id, ...)
+    if self.light_enemies[id] then
+        return self.light_enemies[id](...)
+    else
+        error("Attempt to create non existent light enemy \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerDebugOptions(debug)
+    debug:registerOption("main", "Start Light Encounter", "Start a light encounter.", function()
+        debug:enterMenu("light_encounter_select", 0)
+    end, in_overworld)
+
+    debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
+    for id,_ in pairs(self.light_encounters) do
+        debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
+            if not Game:isLight() then
+                Game.light = true
+                Game:setFlag("temporary_world_value#", "dark")
+            end
+            Game:encounter(id, nil, nil, nil, true)
+            debug:closeMenu()
+        end)
+    end
+end
+
 function lib:init()
 
-    Utils.hook(Game, "encounter", function(orig, object, encounter, transition, enemy, context)
+    self.light_encounters = {}
+    self.light_enemies = {}
+
+    for _,path,light_enc in Registry.iterScripts("battle/lightencounters") do
+        assert(light_enc ~= nil, '"lightencounters/'..path..'.lua" does not return value')
+        light_enc.id = light_enc.id or path
+        self.light_encounters[light_enc.id] = light_enc
+    end
+
+    for _,path,light_enemy in Registry.iterScripts("battle/lightenemies") do
+        assert(light_enemy ~= nil, '"lightenemies/'..path..'.lua" does not return value')
+        light_enemy.id = light_enemy.id or path
+        self.light_enemies[light_enemy.id] = light_enemy
+    end
+
+    Utils.hook(Game, "encounter", function(orig, object, encounter, transition, enemy, context, force_light)
         -- For testing let's start our thingy instead
         -- when this shit's done, make a thing that checks for the class' type (encounter or encounterlight)
-        object:encounterLight(encounter, transition, enemy, context)
-        --orig(object, encounter, transition, enemy) 
+
+        if context then
+            if context.light_encounter then
+                Game:encounterLight(encounter, transition, enemy, context)
+            elseif context.encounter then
+                orig(object, encounter, transition, enemy, context)
+            end
+        else
+            if force_light then
+                Game:encounterLight(encounter, transition, enemy, context)
+            else
+                orig(object, encounter, transition, enemy, context)
+            end
+        end
+
+    end)
+
+    Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
+    
+        ChaserEnemy.__super.init(self, actor, x, y)
+
+        properties = properties or {}
+    
+        if properties["sprite"] then
+            self.sprite:setSprite(properties["sprite"])
+        elseif properties["animation"] then
+            self.sprite:setAnimation(properties["animation"])
+        end
+    
+        if properties["facing"] then
+            self:setFacing(properties["facing"])
+        end
+    
+        self.encounter = properties["encounter"]
+        self.light_encounter = properties["lightencounter"]
+
+        print(self.encounter)
+
+        self.enemy = properties["enemy"]
+        self.light_enemy = properties["lightenemy"]
+
+        self.group = properties["group"]
+    
+        self.path = properties["path"]
+        self.speed = properties["speed"] or 6
+    
+        self.progress = (properties["progress"] or 0) % 1
+        self.reverse_progress = false
+    
+        self.can_chase = properties["chase"]
+        self.chase_speed = properties["chasespeed"] or 9
+        self.chase_dist = properties["chasedist"] or 200
+        self.chasing = properties["chasing"] or false
+    
+        self.alert_timer = 0
+        self.alert_icon = nil
+    
+        self.noclip = true
+        self.enemy_collision = true
+    
+        self.remove_on_encounter = true
+        self.encountered = false
+        self.once = properties["once"] or false
+    
+        if properties["aura"] == nil then
+            self.sprite.aura = Game:getConfig("enemyAuras")
+        else
+            self.sprite.aura = properties["aura"]
+        end
+
+    end)
+
+    Utils.hook(ChaserEnemy, "onCollide", function(orig, self, player)
+
+        if self:isActive() and player:includes(Player) then
+            self.encountered = true
+            local encounter
+            local enemy
+            print(self.encounter)
+            print(self.light_encounter)
+
+            if self.encounter and self.light_encounter then
+                if Game:isLight() then
+                    encounter = self.light_encounter
+                    enemy = self.light_enemy
+                else
+                    encounter = self.encounter
+                    enemy = self.enemy
+                end
+            elseif self.encounter then
+                encounter = self.encounter
+                enemy = self.enemy
+            elseif self.light_encounter then
+                encounter = self.light_encounter
+                enemy = self.light_enemy
+            end
+
+            if not encounter then
+                if Game:isLight() and MagicalGlassLib:getLightEnemy(self.enemy or self.actor.id) then
+                    encounter = LightEncounter()
+                    encounter:addEnemy(self.actor.id)
+                elseif not Game:isLight() and Registry.getEnemy(self.light_enemy or self.actor.id) then
+                    encounter = Encounter()
+                    encounter:addEnemy(self.actor.id)
+                end
+            end
+
+            if encounter then
+                self.world.encountering_enemy = true
+                self.sprite:setAnimation("hurt")
+                self.sprite.aura = false
+                Game.lock_movement = true
+                self.world.timer:script(function(wait)
+                    Assets.playSound("tensionhorn")
+                    wait(8/30)
+                    local src = Assets.playSound("tensionhorn")
+                    src:setPitch(1.1)
+                    wait(12/30)
+                    self.world.encountering_enemy = false
+                    Game.lock_movement = false
+                    local enemy_target = self
+                    if enemy then
+                        enemy_target = {{enemy, self}}
+                    end
+                    Game:encounter(encounter, true, enemy_target, self)
+                end)
+            end
+
+        end
+    end)
+
+    Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
+        self.state = state
+    
+        if type(encounter) == "string" then
+            self.encounter = Registry.createEncounter(encounter)
+        else
+            self.encounter = encounter
+        end
+
+        if self.encounter:includes(LightEncounter) then
+            error("Attempted to create a LightEncounter in a Dark battle")
+        end
+
+        if Game.world.music:isPlaying() and self.encounter.music then
+            self.resume_world_music = true
+            Game.world.music:pause()
+        end
+    
+        if self.encounter.queued_enemy_spawns then
+            for _,enemy in ipairs(self.encounter.queued_enemy_spawns) do
+                if state == "TRANSITION" then
+                    enemy.target_x = enemy.x
+                    enemy.target_y = enemy.y
+                    enemy.x = SCREEN_WIDTH + 200
+                end
+                table.insert(self.enemies, enemy)
+                self:addChild(enemy)
+            end
+        end
+    
+        self.battle_ui = BattleUI()
+        self:addChild(self.battle_ui)
+    
+        self.tension_bar = TensionBar(-25, 40, true)
+        self:addChild(self.tension_bar)
+    
+        self.battler_targets = {}
+        for index, battler in ipairs(self.party) do
+            local target_x, target_y = self.encounter:getPartyPosition(index)
+            table.insert(self.battler_targets, {target_x, target_y})
+    
+            if state ~= "TRANSITION" then
+                battler:setPosition(target_x, target_y)
+            end
+        end
+    
+        for _,enemy in ipairs(self.enemies) do
+            self.enemy_beginning_positions[enemy] = {enemy.x, enemy.y}
+        end
+        if Game.encounter_enemies then
+            for _,from in ipairs(Game.encounter_enemies) do
+                if not isClass(from) then
+                    local enemy = self:parseEnemyIdentifier(from[1])
+                    from[2].visible = false
+                    from[2].battler = enemy
+                    self.enemy_beginning_positions[enemy] = {from[2]:getScreenPos()}
+                    self.enemy_world_characters[enemy] = from[2]
+                    if state == "TRANSITION" then
+                        enemy:setPosition(from[2]:getScreenPos())
+                    end
+                else
+                    for _,enemy in ipairs(self.enemies) do
+                        if enemy.actor and from.actor and enemy.actor.id == from.actor.id then
+                            from.visible = false
+                            from.battler = enemy
+                            self.enemy_beginning_positions[enemy] = {from:getScreenPos()}
+                            self.enemy_world_characters[enemy] = from
+                            if state == "TRANSITION" then
+                                enemy:setPosition(from:getScreenPos())
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    
+        if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
+            for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do
+                enemy:onEncounterStart(enemy == self.encounter_context, self.encounter)
+            end
+        end
+    
+        if state == "TRANSITION" then
+            self.transitioned = true
+            self.transition_timer = 0
+            self.afterimage_count = 0
+        else
+            self.transition_timer = 10
+    
+            if state ~= "INTRO" then
+                self:nextTurn()
+            end
+        end
+    
+        if not self.encounter:onBattleInit() then
+            self:setState(state)
+        end
+
     end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
@@ -626,6 +919,10 @@ function lib:changeSpareColor(color)
 end
 
 function Game:encounterLight(encounter, transition, enemy, context)
+
+    if not self.light then
+        self.light = true
+    end
 
     if transition == nil then transition = true end
 

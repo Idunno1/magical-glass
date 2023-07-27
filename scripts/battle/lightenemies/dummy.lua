@@ -1,4 +1,4 @@
-local Dummy, super = Class(EnemyBattler)
+local Dummy, super = Class(LightEnemyBattler)
 
 function Dummy:init()
     super:init(self)
@@ -9,23 +9,26 @@ function Dummy:init()
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 450
-    self.health = 450
+    self.max_health = 70
+    self.health = 400
     -- Enemy attack (determines bullet damage)
-    self.attack = 4
+    self.attack = 7
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
-    self.money = 100
+    self.money = 2
+    self.experience = 10
+    -- Hide HP in UNDERTALE battles
+    self.hidehp = false
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
-    self.spare_points = 20
+    self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
         "basic",
-        "aiming",
-        "movingarena"
+--[[         "aiming",
+        "movingarena" ]]
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
@@ -49,7 +52,7 @@ function Dummy:init()
     self:registerAct("Smile")
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
-    self:registerAct("Tell Story", "", {"ralsei"})
+    self:registerAct("Tell Story", "", {"noelle"})
 end
 
 function Dummy:onAct(battler, name)
