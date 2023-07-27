@@ -203,7 +203,7 @@ end
     super.flash(self, sprite or self.overlay_sprite.visible and self.overlay_sprite or self.sprite, offset_x, offset_y, layer)
 end ]]
 
-function LightPartyBattler:heal(amount, sparkle_color, show_up, sound)
+function LightPartyBattler:heal(amount, show_up, sound)
     if sound then
         Assets.stopAndPlaySound("power")
     end

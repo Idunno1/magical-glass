@@ -55,10 +55,8 @@ function item:init()
         },
         noelle = "Oh, it's... sticky?"
     }
-end
 
-function item:convertToLight(inventory)
-    return "light/monster_candy"
+    self.light_item = "light/monster_candy"
 end
 
 return item

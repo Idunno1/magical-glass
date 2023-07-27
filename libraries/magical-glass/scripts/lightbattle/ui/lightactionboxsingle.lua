@@ -107,7 +107,7 @@ function LightActionBoxSingle:drawStatusStrip()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.print(name .. "  LV " .. level, x, y)
+    love.graphics.print(name .. "   LV " .. level, x, y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
 

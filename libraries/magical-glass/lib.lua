@@ -62,6 +62,7 @@ function lib:registerDebugOptions(debug)
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
                 Game.light = false
+                Game:convertToDark()
                 Game:setFlag("temporary_world_value#", "light")
             end
             Game:encounter(id)
@@ -74,9 +75,10 @@ function lib:registerDebugOptions(debug)
         debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
             if not Game:isLight() then
                 Game.light = true
+                Game:convertToLight()
                 Game:setFlag("temporary_world_value#", "dark")
             end
-            Game:encounter(id, nil, nil, nil, true)
+            Game:encounter(id)
             debug:closeMenu()
         end)
     end
@@ -99,23 +101,74 @@ function lib:init()
         self.light_enemies[light_enemy.id] = light_enemy
     end
 
-    Utils.hook(Game, "encounter", function(orig, object, encounter, transition, enemy, context, force_light)
+    Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
         -- the worst thing ever
 
         if context then
             if context.light_encounter then
                 Game:encounterLight(encounter, transition, enemy, context)
             elseif context.encounter then
-                orig(object, encounter, transition, enemy, context)
+                orig(self, encounter, transition, enemy, context, force_light)
             end
         else
-            if force_light then
-                Game:encounterLight(encounter, transition, enemy, context)
+            if Game:getFlag("temporary_world_value#") then
+                if Game:getFlag("temporary_world_value#") == "dark" then
+                    Game.light = true
+                    Game:encounterLight(encounter, transition, enemy, context)
+                elseif Game:getFlag("temporary_world_value#") == "light" then
+                    Game.light = false
+                    orig(self, encounter, transition, enemy, context, force_light)
+                end
             else
-                orig(object, encounter, transition, enemy, context)
+                if Game:isLight() then
+                    Game:encounterLight(encounter, transition, enemy, context)
+                else
+                    orig(self, encounter, transition, enemy, context, force_light)
+                end
             end
         end
 
+    end)
+
+    Utils.hook(DarkInventory, "convertToLight", function(orig, self)
+        local new_inventory = LightInventory()
+
+        local was_storage_enabled = new_inventory.storage_enabled
+        new_inventory.storage_enabled = true
+    
+        Kristal.callEvent("onConvertToLight", new_inventory)
+    
+        for _,storage_id in ipairs(self.convert_order) do
+            local storage = Utils.copy(self:getStorage(storage_id))
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    local result = item:convertToLight(new_inventory) or (storage.id == "light" and item)
+    
+                    if result then
+                        self:removeItem(item)
+    
+                        if type(result) == "string" then
+                            result = Registry.createItem(result)
+                        end
+                        if isClass(result) then
+                            result.dark_item = item
+                            result.dark_location = {storage = storage.id, index = i}
+                            new_inventory:addItem(result)
+                        end
+                    end
+                end
+            end
+        end
+    
+        if Game:getFlag("temporary_world_value#") then
+            local ball = Registry.createItem("light/ball_of_junk", self)
+            new_inventory:addItemTo("items", 1, ball)
+        end
+    
+        new_inventory.storage_enabled = was_storage_enabled
+    
+        return new_inventory
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -136,8 +189,6 @@ function lib:init()
     
         self.encounter = properties["encounter"]
         self.light_encounter = properties["lightencounter"]
-
-        print(self.encounter)
 
         self.enemy = properties["enemy"]
         self.light_enemy = properties["lightenemy"]
@@ -338,9 +389,10 @@ function lib:init()
         orig(self)
         if not Game:isLight() and Game:getFlag("temporary_world_value#") == "light" then
             Game.light = true
+            Game:convertToLight()
             Game:setFlag("temporary_world_value#", nil)
         end
-        
+
     end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
@@ -682,14 +734,14 @@ function lib:init()
                 if target.id == Game.party[1].id and maxed then
                     message = "* Your HP was maxed out."
                 elseif target.id == Game.party[1].id and not maxed then
-                    message = "* You recovered " .. amount .. " HP!"
+                    message = "* You recovered " .. amount .. " HP."
                 elseif maxed then
                     message = target.name .. "'s HP was maxed out."
                 else
-                    message = target.name .. " recovered " .. amount .. " HP!"
+                    message = target.name .. " recovered " .. amount .. " HP."
                 end
             elseif item.target == "party" and display_healing then
-                message = "* Everyone recovered " .. amount .. " HP!"
+                message = "* Everyone recovered " .. amount .. " HP."
             end
 
             if text then

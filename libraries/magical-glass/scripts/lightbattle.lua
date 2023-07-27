@@ -668,13 +668,34 @@ function LightBattle:processAction(action)
         if item.instant then
             self:finishAction(action)
         else
-            local text = item:getBattleText(battler, action.target)
-            if text then
-                self:battleText(text)
-            end
-            local result = item:onBattleUse(battler, action.target)
+            local result = item:onLightBattleUse(battler, action.target)
             if result or result == nil then
                 self:finishAction(action)
+            end
+            local text = item:getLightBattleText(battler, action.target)
+            if text then
+                if item.display_healing then
+                    local message
+                    local chara = action.target.chara
+
+                    local maxed = chara:getHealth() >= chara:getStat("health")
+
+                    if action.data.target == "ally" then
+                        if chara.id == self.party[1].chara.id and maxed then
+                            message = "* Your HP was maxed out."
+                        elseif chara.id == self.party[1].chara.id and not maxed then
+                            message = "* You recovered " .. amount .. " HP."
+                        elseif maxed then
+                            message = chara.name .. "'s HP was maxed out."
+                        else
+                            message = chara.name .. " recovered " .. amount .. " HP."
+                        end
+                    elseif action.data.target == "party" then
+                        message = "* Everyone recovered " .. amount .. " HP."
+                    end
+                    text = text .. "\n" .. message
+                end
+                self:battleText(text)
             end
         end
         return false
@@ -1412,6 +1433,7 @@ function LightBattle:returnToWorld()
 
     if Game:isLight() and Game:getFlag("temporary_world_value#") == "dark" then
         Game.light = false
+        Game:convertToDark()
         Game:setFlag("temporary_world_value#", nil)
     end
 end

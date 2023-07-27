@@ -35,6 +35,10 @@ function item:init(inventory)
     self.dark_item = "dark_candy"
 end
 
+function item:onUse()
+
+end
+
 function item:onToss()
     Game.world:showText("* The Monster Candy was\n  yeeted.")
     return false

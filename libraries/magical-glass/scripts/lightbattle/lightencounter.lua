@@ -35,6 +35,10 @@ function LightEncounter:init()
     self.used_flee_message = nil
 end
 
+function LightEncounter:isLight()
+    return true
+end
+
 function LightEncounter:onBattleInit()
 
     self.flee_chance = Utils.random(0, 100, 1)
