@@ -248,7 +248,11 @@ function LightBattle:postInit(state, encounter)
             self.soul:setScale(1)
             self.soul.x = self.soul.x - 1
             self.soul.y = self.soul.y - 1
-            self:setState("ACTIONSELECT")
+            if self.encounter.nobodycame == true then
+                self:setState("BUTNOBODYCAME")
+            else
+                self:setState("ACTIONSELECT")
+            end
             self.fader:fadeIn(nil, {speed=5/30})
         end)
     else
@@ -896,6 +900,45 @@ function LightBattle:onStateChange(old,new)
             party.chara:onActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
+    elseif new == "BUTNOBODYCAME" then
+
+        if not self.soul then
+            self:spawnSoul()
+        end
+
+        if not self.soul then
+            self:spawnSoul(0, 0)
+        end
+        self.soul.can_move = false
+        
+        self.fader:fadeIn(nil, {speed=5/30})
+
+        if self.state_reason == "CANCEL" then
+            self.timer:after(2/30 *DTMULT, function()
+                self.battle_ui.encounter_text.text.line_offset = 5
+                self.battle_ui:clearEncounterText()
+                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+                self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
+                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            end)
+        else
+            self.battle_ui:clearEncounterText()
+            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
+            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+        end
+
+        self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
+
+        local had_started = self.started
+        if not self.started then
+            self.started = true
+
+            if self.encounter.music then
+                self.music:play(self.encounter.music)
+            end
+        end
+
     elseif new == "ACTIONS" then
         -- this could possibly cause the double text shit again, but if it has the timer,
         -- the dialogue just doesn't show up
@@ -2629,6 +2672,27 @@ function LightBattle:onKeyPressed(key)
                 self.current_menu_y = 1
             end
         end
+
+    elseif self.state == "BUTNOBODYCAME" then
+        if Input.isConfirm(key) then
+            self.music:stop()
+            self.current_selecting = 0
+
+            for _, battler in ipairs(self.party) do
+                battler:setSleeping(false)
+                battler.defending = false
+                battler.action = nil
+
+                if battler.chara:getHealth() <= 0 then
+                    battler:revive()
+                    battler.chara:setHealth(battler.chara:autoHealAmount())
+                end
+            end
+
+            self:setState("TRANSITIONOUT")
+            self.encounter:onBattleEnd()
+        end
+
     elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
 
         if Input.isConfirm(key) then
