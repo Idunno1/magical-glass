@@ -1432,6 +1432,9 @@ function LightBattle:returnToWorld()
     Game.state = "OVERWORLD"
 
     if Game:getFlag("temporary_world_value#") == "dark" then
+        if not Game.inventory then
+            Game:setupInventory()
+        end
         Game:setLight(false) -- crashes if the battle was restarted
         Game:setFlag("temporary_world_value#", nil)
     end

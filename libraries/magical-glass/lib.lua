@@ -73,7 +73,7 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
             if not Game:isLight() then
-                Game:setLight(false)
+                Game:setLight(true)
                 Game:setFlag("temporary_world_value#", "dark")
             end
             Game:encounter(id)
@@ -99,6 +99,77 @@ function lib:init()
         self.light_enemies[light_enemy.id] = light_enemy
     end
 
+    Utils.hook(Game, "load", function(orig, self, data, index, fade)
+
+        orig(self, data, index, fade)
+        self.is_new_file = data == nil
+
+        data = data or {}
+  
+        if Game:getFlag("temporary_world_value#") then
+            if Game:getFlag("temporary_world_value#") == "light" then
+                self.inventory = DarkInventory()
+            elseif Game:getFlag("temporary_world_value#") == "dark" then
+                self.inventory = LightInventory()
+            end
+    
+            if data.inventory then
+                self.inventory:load(data.inventory)
+            else
+                local default_inv = Kristal.getModOption("inventory") or {}
+                if not self.light and not default_inv["key_items"] then
+                    default_inv["key_items"] = {"cell_phone"}
+                end
+                for storage,items in pairs(default_inv) do
+                    for i,item in ipairs(items) do
+                        self.inventory:setItem(storage, i, item)
+                    end
+                end
+            end
+        
+            local loaded_light = data.light or false
+        
+            -- Party members have to be converted to light initially, due to dark world defaults
+            if loaded_light ~= self.light then
+                if self.light then
+                    for _,chara in pairs(self.party_data) do
+                        chara:convertToLight()
+                    end
+                else
+                    for _,chara in pairs(self.party_data) do
+                        chara:convertToDark()
+                    end
+                end
+            end
+        
+            if self.is_new_file then
+                if self.light then
+                    Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
+                end
+        
+                for id,equipped in pairs(Kristal.getModOption("equipment") or {}) do
+                    if equipped["weapon"] then
+                        self.party_data[id]:setWeapon(equipped["weapon"] ~= "" and equipped["weapon"] or nil)
+                    end
+                    local armors = equipped["armor"] or {}
+                    for i = 1, 2 do
+                        if armors[i] then
+                            if self.light and i == 2 then
+                                local main_armor = self.party_data[id]:getArmor(1)
+                                if not main_armor:includes(LightEquipItem) then
+                                    error("Cannot set 2nd armor, 1st armor must be a LightEquipItem")
+                                end
+                                main_armor:setArmor(2, armors[i])
+                            else
+                                self.party_data[id]:setArmor(i, armors[i] ~= "" and armors[i] or nil)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
         -- the worst thing ever
 
@@ -106,22 +177,30 @@ function lib:init()
             if context.light_encounter then
                 Game:encounterLight(encounter, transition, enemy, context)
             elseif context.encounter then
-                orig(self, encounter, transition, enemy, context, force_light)
+                orig(self, encounter, transition, enemy, context)
             end
         else
             if Game:getFlag("temporary_world_value#") then
                 if Game:getFlag("temporary_world_value#") == "dark" then
-                    Game.light = true
+                    if Game:isLight() then
+                        Game:setLight(true)
+                    else
+                        Game.light = true
+                    end
                     Game:encounterLight(encounter, transition, enemy, context)
                 elseif Game:getFlag("temporary_world_value#") == "light" then
-                    Game.light = false
-                    orig(self, encounter, transition, enemy, context, force_light)
+                    if not Game:isLight() then
+                        Game:setLight(false)
+                    else
+                        Game.light = false
+                    end
+                    orig(self, encounter, transition, enemy, context)
                 end
             else
                 if Game:isLight() then
                     Game:encounterLight(encounter, transition, enemy, context)
                 else
-                    orig(self, encounter, transition, enemy, context, force_light)
+                    orig(self, encounter, transition, enemy, context)
                 end
             end
         end
@@ -167,6 +246,11 @@ function lib:init()
         new_inventory.storage_enabled = was_storage_enabled
     
         return new_inventory
+    end)
+
+    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
+        orig(self)
+        
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -386,11 +470,26 @@ function lib:init()
     
         orig(self)
         if Game:getFlag("temporary_world_value#") == "light" then
-            Game:setLight(true) -- crashes if the battle was restarted
+            Game:setLight(true)
             Game:setFlag("temporary_world_value#", nil)
         end
 
     end)
+
+    Utils.hook(Item, "init", function(orig, self)
+    
+        orig(self)
+        -- Short name for the light battle item menu
+        self.short_name = nil
+        -- Serious name for the light battle item menu
+        self.serious_name = nil
+        -- Should the item display how much HP was healed after its message?
+        self.display_healing = true
+    
+    end)
+
+    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name end)
+    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)

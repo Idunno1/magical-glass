@@ -1,5 +1,20 @@
 local HealItem, super = Class("HealItem", true)
 
+--[[ function HealItem:init()
+    super.init(self)
+
+    -- Short name for the light battle item menu
+    self.short_name = nil
+    -- Serious name for the light battle item menu
+    self.serious_name = nil
+    -- Should the item display how much HP was healed after its message?
+    self.display_healing = true
+
+end
+
+function HealItem:getShortName() return self.short_name end
+function HealItem:getSeriousName() return self.serious_name end ]]
+
 function HealItem:onWorldUse(target)
 
     local text = self:getWorldUseText(target)
