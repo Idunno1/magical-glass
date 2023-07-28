@@ -488,8 +488,8 @@ function lib:init()
     
     end)
 
-    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name end)
-    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name end)
+    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
+    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
