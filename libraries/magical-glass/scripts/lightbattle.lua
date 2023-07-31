@@ -248,7 +248,7 @@ function LightBattle:postInit(state, encounter)
             self.soul:setScale(1)
             self.soul.x = self.soul.x - 1
             self.soul.y = self.soul.y - 1
-            if self.encounter.nobodycame == true then
+            if self.encounter.nobody_came == true then
                 self:setState("BUTNOBODYCAME")
             else
                 self:setState("ACTIONSELECT")

@@ -5,7 +5,7 @@ function LightEncounter:init()
     self.text = "* A skirmish breaks out!"
 
     -- Is a "But Nobody Came"/"Genocide" Encounter
-    self.nobodycame = false
+    self.nobody_came = false
 
     -- Whether the default grid background is drawn
     self.background = true
