@@ -676,6 +676,7 @@ function LightBattle:processAction(action)
             if text then
                 if item.display_healing then
                     local message
+                    local amount = item.heal_amount
                     local chara = action.target.chara
 
                     local maxed = chara:getHealth() >= chara:getStat("health")
@@ -973,6 +974,7 @@ function LightBattle:onStateChange(old,new)
                 end
             else
                 self:setWaves(self.encounter:getNextWaves())
+                self.wave_timer = 1
             end
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
@@ -1000,7 +1002,7 @@ function LightBattle:onStateChange(old,new)
             if has_arena then
                 
                 if not arena_shape then
-                    arena_w, arena_h = arena_w or 142, arena_h or 130
+                    arena_w, arena_h = arena_w or 160, arena_h or 130
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
     
@@ -1008,7 +1010,7 @@ function LightBattle:onStateChange(old,new)
                 local width_timer = self.arena.width
                 local height_timer = self.arena.height
 
-                self.timer:during(2, function()
+                self.timer:during(15 * DTMULT, function()
     
                     width_timer = Utils.approach(width_timer, arena_w, DTMULT * 30)
                     local prog_w = width_timer
@@ -1020,7 +1022,7 @@ function LightBattle:onStateChange(old,new)
                         self.arena:setSize(self.arena.width, prog_h)
                     end
     
-                end, function() self.arena:setSize(arena_w,arena_h) end)
+                end, function() self.arena:setSize(arena_w, arena_h) end)
 
                 center_x, center_y = self.arena:getCenter()
             else
@@ -1235,7 +1237,7 @@ function LightBattle:onStateChange(old,new)
 
         local width_timer = self.arena.width
         local height_timer = self.arena.height
-        self.timer:during(1, function()
+        self.timer:during(15 * DTMULT, function()
 
             width_timer = Utils.approach(width_timer, self.arena.default_dim[1], DTMULT * 30)
             height_timer = Utils.approach(height_timer, self.arena.default_dim[2], DTMULT * 30)
@@ -1267,7 +1269,7 @@ function LightBattle:onStateChange(old,new)
 
     local ending_wave = self.state_reason == "WAVEENDED"
 
-    if old == "DEFENDING" and new ~= "DEFENDINGBEGIN" and should_end then
+    if old == "DEFENDING" and new ~= "ENEMYDIALOGUE" and should_end then
         for _,wave in ipairs(self.waves) do
             if not wave:onEnd(false) then
                 wave:clear()
@@ -1514,6 +1516,7 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
+    self.soul:remove()
     if self.cutscene then
         local cutscene_name = ""
         if type(group) == "string" then
@@ -1607,7 +1610,7 @@ function LightBattle:update()
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
 
-            self.textbox_timer = self.textbox_timer - DTMULT
+        self.textbox_timer = self.textbox_timer - DTMULT
         if (self.textbox_timer <= 0) and self.use_textbox_timer then
             self:advanceBoxes()
         else

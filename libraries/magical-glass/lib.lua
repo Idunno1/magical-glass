@@ -1,6 +1,7 @@
 LightBattle              = libRequire("magical-glass", "scripts/lightbattle")
 LightPartyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightpartybattler")
 LightEnemyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightenemybattler")
+LightEnemySprite         = libRequire("magical-glass", "scripts/lightbattle/lightenemysprite")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
 --LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
 --LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
@@ -1068,7 +1069,7 @@ function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
     Game:setFlag("undertale_textbox_skipping", true)
-    Game:setFlag("enable_lw_tp", false)
+    Game:setFlag("enable_lw_tp", true)
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
     Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink

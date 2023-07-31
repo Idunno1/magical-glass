@@ -474,9 +474,9 @@ function LightEnemyBattler:onHurt(damage, battler)
     end
     self:getActiveSprite():shake(9) -- not sure if this should be different
 
-    if self.health <= (self.max_health * self.tired_percentage) then
+--[[     if self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
-    end
+    end ]]
 end
 
 function LightEnemyBattler:onHurtEnd()
@@ -542,16 +542,11 @@ function LightEnemyBattler:heal(amount)
     Assets.stopAndPlaySound("power")
     self.health = self.health + amount
 
-    --self:flash()
-
     if self.health >= self.max_health then
         self.health = self.max_health
---[[         self:statusMessage("msg", "max")
-    else
-        self:statusMessage("heal", amount, {0, 1, 0}) ]]
     end
+    self:lightStatusMessage("heal", "+" .. amount, {0, 1, 0})
 
-    --self:sparkle()
 end
 
 function LightEnemyBattler:freeze()

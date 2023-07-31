@@ -10,6 +10,8 @@ function LightArena:init(x, y, shape)
     self.default_dim = {565, 130}
     self:setShape(shape or {{0, 0}, {self.default_dim[1], 0}, {self.default_dim[1], self.default_dim[2]}, {0, self.default_dim[2]}})
 
+    self.mask.layer = BATTLE_LAYERS["above_ui"] + 2000
+
     self:setOrigin(0.5, 1)
 end
 

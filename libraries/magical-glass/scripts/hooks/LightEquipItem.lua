@@ -5,6 +5,13 @@ local LightEquipItem, super = Class("LightEquipItem", true)
 function LightEquipItem:init()
     super.init(self)
 
+    self.attack_bolts = 1
+
+    self.attack_speed = Utils.pick({-10, 10})
+    self.attack_speed_variance = 2
+
+    self.attack_zone = {-295, 295}
+
     -- Sound played when attacking, defaults to laz_c
     self.attack_sound = "laz_c"
 

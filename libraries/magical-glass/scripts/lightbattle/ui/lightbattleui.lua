@@ -102,11 +102,15 @@ function LightBattleUI:beginAttack()
 end
 
 function LightBattleUI:endAttack()
-    self.attack_box.fading = true
+    if not Game.battle:retargetEnemy() then
+        Game.battle.cancel_attack = true
+    else
+        self.attack_box.fading = true
+    end
+
     if self.attack_box.bolt then
         self.attack_box.bolt:remove()
     end
-    Game.battle.cancel_attack = false
     self.attacking = false
 end
 
@@ -270,7 +274,7 @@ function LightBattleUI:drawState()
 
         if current_item.tp and current_item.tp ~= 0 then
             Draw.setColor(PALETTE["tension_desc"])
-            love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 240, 50 + (tp_offset * 32))
+            love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
             Game:setTensionPreview(current_item.tp)
         else
             Game:setTensionPreview(0)
@@ -394,7 +398,7 @@ function LightBattleUI:drawState()
             if Game.battle.state == "XACTENEMYSELECT" then
                 Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                 if Game.battle.selected_xaction.id == 0 then
-                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 50 + y_offset)
+                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 0 + y_offset)
                 else
                     love.graphics.print(Game.battle.selected_xaction.name, 282, 50 + y_offset)
                 end

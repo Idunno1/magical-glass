@@ -7,6 +7,8 @@ function LightAttackBox:init(x, y)
 
     self.battler = Game.battle.party[1]
 
+    self.arena = Game.battle.arena
+
     self.attackers = Game.battle.attackers
 
     self.target_sprite = Sprite("ui/lightbattle/dumbtarget")
@@ -88,14 +90,15 @@ function LightAttackBox:update()
     
     if Game.battle.cancel_attack then
         self.bolt:remove()
+        self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
         self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-        if self.target_sprite.alpha < 0.08 then
+        if self.target_sprite.scale_x < 0.08 then
             self:remove()
         end
     end
 
     if self.fading then
-        self.target_sprite.x = self.target_sprite.x - 15 * DTMULT
+        self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
         self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
         self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
         if self.target_sprite.scale_x < 0.08 then
