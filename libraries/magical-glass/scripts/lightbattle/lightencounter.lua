@@ -4,6 +4,9 @@ function LightEncounter:init()
     -- Text that will be displayed when the battle starts
     self.text = "* A skirmish breaks out!"
 
+    -- Is a "But Nobody Came"/"Genocide" Encounter
+    self.nobodycame = false
+
     -- Whether the default grid background is drawn
     self.background = true
 
