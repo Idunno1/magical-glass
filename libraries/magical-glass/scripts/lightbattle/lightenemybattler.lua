@@ -192,36 +192,25 @@ function LightEnemyBattler:spare(pacify)
         Game.battle.spare_sound:stop()
         Game.battle.spare_sound:play()
 
-        local spare_flash = self:addFX(ColorMaskFX())
-        spare_flash.amount = 0
+        for i = 0, 14 do
+--[[             local x, y = (((Utils.random(self.width / 2) + (self.width / 4)) + self.x) - 8),
+                         (((Utils.random(self.height / 2) + (self.width / 4)) + self.y) - 8) ]]
 
-        local sparkle_timer = 0
-        local parent = self.parent
+            local x, y = Utils.random(0, self.width), Utils.random(0, self.height)
+            local dust = SpareDust(self:getRelativePos(x, y))
+            self.parent:addChild(dust)
 
-        Game.battle.timer:during(5/30, function()
-            spare_flash.amount = spare_flash.amount + 0.2 * DTMULT
-            sparkle_timer = sparkle_timer + DTMULT
-            if sparkle_timer >= 0.5 then
-                local x, y = Utils.random(0, self.width), Utils.random(0, self.height)
-                local sparkle = SpareSparkle(self:getRelativePos(x, y))
-                sparkle.layer = self.layer + 0.001
-                parent:addChild(sparkle)
-                sparkle_timer = sparkle_timer - 0.5
-            end
-        end, function()
-            spare_flash.amount = 1
-            local img1 = AfterImage(self, 0.7, (1/25) * 0.7)
-            local img2 = AfterImage(self, 0.4, (1/30) * 0.4)
-            img1:addFX(ColorMaskFX())
-            img2:addFX(ColorMaskFX())
-            img1.physics.speed_x = 4
-            img2.physics.speed_x = 8
-            parent:addChild(img1)
-            parent:addChild(img2)
-            self:remove()
-        end)
+
+            dust.rightside = ((8 + dust.x) - self.x) / (self.width / 2)
+            dust.topside = ((8 + dust.y) - self.y) / (self.height / 2)
+
+            dust:spread()
+
+            dust.layer = BATTLE_LAYERS["above_ui"] + 3
+        end
     end
 
+    self.sprite:setAnimation("spared")
     self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end

@@ -72,14 +72,16 @@ function lib:registerDebugOptions(debug)
 
     debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
     for id,_ in pairs(self.light_encounters) do
-        debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
-            if not Game:isLight() then
-                Game:setLight(true)
-                Game:setFlag("temporary_world_value#", "dark")
-            end
-            Game:encounter(id)
-            debug:closeMenu()
-        end)
+        if id ~= "_nobody" then
+            debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
+                if not Game:isLight() then
+                    Game:setLight(true)
+                    Game:setFlag("temporary_world_value#", "dark")
+                end
+                Game:encounter(id)
+                debug:closeMenu()
+            end)
+        end
     end
 end
 
@@ -1069,10 +1071,10 @@ function lib:load()
     Game:setFlag("serious_mode", false)
     Game:setFlag("always_show_magic", false)
     Game:setFlag("undertale_textbox_skipping", true)
-    Game:setFlag("enable_lw_tp", true)
+    Game:setFlag("enable_lw_tp", false)
     Game:setFlag("lw_stat_menu_portraits", true)
     Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
-    Game:setFlag("name_color", PALETTE["pink_spare"]) -- yellow, white, pink
+    Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
 
     Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
