@@ -189,20 +189,20 @@ end
 
 function LightEnemyBattler:spare(pacify)
     if self.exit_on_defeat then
+        self.alpha = 0.5
         Game.battle.spare_sound:stop()
         Game.battle.spare_sound:play()
 
-        for i = 0, 14 do
---[[             local x, y = (((Utils.random(self.width / 2) + (self.width / 4)) + self.x) - 8),
-                         (((Utils.random(self.height / 2) + (self.width / 4)) + self.y) - 8) ]]
+        -- this still seems to break for bigger enemies, but it works so eh
+        for i = 0, 15 do
+            local x = ((Utils.random((self.width / 2)) + (self.width / 4)) + self.x) - 32
+            local y = ((Utils.random((self.height / 2)) + (self.height / 4)) + self.y) - 64
 
-            local x, y = Utils.random(0, self.width), Utils.random(0, self.height)
-            local dust = SpareDust(self:getRelativePos(x, y))
+            local dust = SpareDust(x, y)
             self.parent:addChild(dust)
 
-
-            dust.rightside = ((8 + dust.x) - self.x) / (self.width / 2)
-            dust.topside = ((8 + dust.y) - self.y) / (self.height / 2)
+            dust.rightside = ((32 + dust.x) - self.x) / (self.width / 2)
+            dust.topside = ((64 + dust.y) - self.y) / (self.height / 2)
 
             dust:spread()
 
