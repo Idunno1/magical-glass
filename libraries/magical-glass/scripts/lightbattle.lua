@@ -2629,7 +2629,9 @@ function LightBattle:onKeyPressed(key)
             if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
             if Kristal.callEvent("onBattleMenuSelect", self.state_reason, menu_item, can_select) then return end
             if can_select then
-                self:playSelectSound()
+                if menu_item.name ~= "Flee" then
+                    self:playSelectSound()
+                end
                 menu_item["callback"](menu_item)
                 return
             end
