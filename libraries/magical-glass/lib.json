@@ -3,14 +3,16 @@
     "authors": [
         "Nyakorita - Initial UI and dust code",
         "Sam Deluxe - Finished the UI and made it playable",
-        "Bor -"
+        "Bor - Helped with stuff"
     ],
     "version": "v1.0.0",
     "engineVer": "v0.8.1-dev",
 
     "config": {
         "mercyBar": true,
-        "enemyBarPercentages": false
+        "enemyBarPercentages": false,
+        "undertaleCurrency": "gold",
+        "undertaleCurrencyShort": "G"
         // End of config
     }
 }

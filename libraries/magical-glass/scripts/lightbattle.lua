@@ -1161,26 +1161,48 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
-        local win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        local win_text 
 
         self.money = math.floor(self.money)
 
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        Game.lw_money = Game.lw_money + self.money
+        if not Game:getFlag("undertale_currency", false) then
+            win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
-        if (Game.lw_money < 0) then
-            Game.lw_money = 0
-        end
+            Game.lw_money = Game.lw_money + self.money
 
-        for _,member in ipairs(self.party) do
-            member.chara.lw_exp = member.chara.lw_exp + self.xp
-            local lv = member.chara:getLightLV()
+            if (Game.lw_money < 0) then
+                Game.lw_money = 0
+            end
 
-            if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                member.chara:setLevel(lv + 1)
-                win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+            for _,member in ipairs(self.party) do
+                member.chara.lw_exp = member.chara.lw_exp + self.xp
+                local lv = member.chara:getLightLV()
+
+                if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
+                    member.chara:setLevel(lv + 1)
+                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+                end
+            end
+        else
+            win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. "."
+
+            Game.ut_money = Game.ut_money or 0 + self.money
+
+            if (Game.ut_money < 0) then
+                Game.ut_money = 0
+            end
+
+            for _,member in ipairs(self.party) do
+                member.chara.lw_exp = member.chara.lw_exp + self.xp
+                local lv = member.chara:getLightLV()
+
+                if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
+                    member.chara:setLevel(lv + 1)
+                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. ".\n* Your LOVE increased."
+                end
             end
         end
 

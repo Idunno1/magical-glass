@@ -1,5 +1,6 @@
-local LightMenu, super = Class("LightMenu", true)
---[[
+--local LightMenu, super = Class("LightMenu", false)
+local LightMenu, super = Class(Object)
+
 function LightMenu:init()
     super.init(self, 0, 0)
 
@@ -74,7 +75,12 @@ function LightMenu:onKeyPressed(key)
         local old_selected = self.current_selecting
         if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
         if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
-        local max_selecting = Game:getFlag("has_cell_phone", false) and 3 or 2
+        local max_selecting
+        if not Game:getFlag("hide_cell", false) then
+            max_selecting = Game:getFlag("has_cell_phone", false) and 3 or 2
+        else
+            max_selecting = 2
+        end
         self.current_selecting = Utils.clamp(self.current_selecting, 1, max_selecting)
         if old_selected ~= self.current_selecting then
             self.ui_move:stop()
@@ -154,7 +160,11 @@ function LightMenu:draw()
     love.graphics.setFont(self.font_small)
     love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
     love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
-    love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4)..Game.lw_money, 46, 136 + offset)
+    if not Game:getFlag("undertale_currency", false) then
+        love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4) .. Game.lw_money, 46, 136 + offset)
+    else
+        love.graphics.print(Utils.padString(Kristal.getLibConfig("magical-glass", "undertaleCurrencyShort"), 4) .. Game.ut_money or 0, 46, 136 + offset)
+    end
 
     love.graphics.setFont(self.font)
     if Game.inventory:getItemCount(self.storage, false) <= 0 then
@@ -165,44 +175,29 @@ function LightMenu:draw()
     love.graphics.print("ITEM", 84, 188 + (36 * 0))
     Draw.setColor(PALETTE["world_text"])
     love.graphics.print("STAT", 84, 188 + (36 * 1))
-    if Game:getFlag("has_cell_phone", false) then
-        if #Game.world.calls > 0 then
-            Draw.setColor(PALETTE["world_text"])
-        else
-            Draw.setColor(PALETTE["world_gray"])
+
+    if not Game:getFlag("hide_cell", false) then
+        if Game:getFlag("has_cell_phone", false) then
+            if #Game.world.calls > 0 then
+                Draw.setColor(PALETTE["world_text"])
+            else
+                Draw.setColor(PALETTE["world_gray"])
+            end
+            love.graphics.print("CELL", 84, 188 + (36 * 2))
         end
-        love.graphics.print("CELL", 84, 188 + (36 * 2))
+    else
+        if Game:getFlag("has_cell_phone", false) then
+            if #Game.world.calls > 0 then
+                Draw.setColor(PALETTE["world_text"])
+                love.graphics.print("CELL", 84, 188 + (36 * 2))
+            end
+        end
     end
 
     if self.state == "MAIN" then
         Draw.setColor(Game:getSoulColor())
         Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
     end
-end
---]]
-
-function LightMenu:init()
-    super.init(self, 0, 0)
-    
-    self.portrait_box = UIBox(56, 76, 100, 62)
-    self:addChild(self.portrait_box)
-    local offset = 0
-    if self.top then
-        offset = 270
-    end
-    self.portrait_box.y = 76 - offset
-
-end
-
-function LightMenu:realign()
-    local _, player_y = Game.world.player:localToScreenPos()
-    self.top = player_y > 260
-
-    local offset = 0
-    if self.top then
-        offset = 270
-    end
-    self.info_box.y = 76 + offset
 end
 
 return LightMenu

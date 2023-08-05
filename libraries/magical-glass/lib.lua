@@ -20,6 +20,29 @@ LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/l
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
+function lib:postInit(new_file)
+    self.randomEncounter = love.math.random(20, 100)
+    if new_file then
+        Game:setFlag("serious_mode", false)
+        Game:setFlag("always_show_magic", false)
+        Game:setFlag("undertale_textbox_skipping", true)
+        Game:setFlag("enable_lw_tp", false)
+        Game:setFlag("lw_stat_menu_portraits", true)
+        Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
+        Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
+    
+        Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
+    
+        Game:setFlag("undertale_currency", false)
+        Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
+    
+        Game:setFlag("randomEncounterTable", {}) 
+    end
+end
+
+function lib:load()
+end
+
 function lib:registerLightEncounter(id)
     self.light_encounters[id] = class
 end
@@ -1052,31 +1075,89 @@ function lib:init()
         love.graphics.print("ARMOR: "..armor_name, 4, 288)
     
         --love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
-        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
+        if not Game:getFlag("undertale_currency", false) then
+            love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
+        else
+            love.graphics.print(Kristal.getLibConfig("magical-glass", "undertaleCurrency"):upper()..": "..Game.ut_money or 0, 4, 328)
+        end
 
     end)
+
+    Utils.hook(Game, "save", function(orig, self, x, y)
+        orig(self, x, y)
+
+        local data = {
+            chapter = self.chapter,
+
+            name = self.save_name,
+            level = self.save_level,
+            playtime = self.playtime,
+
+            light = self.light,
+
+            room_name = self.world and self.world.map and self.world.map.name or "???",
+            room_id = self.world and self.world.map and self.world.map.id,
+
+            money = self.money,
+            xp = self.xp,
+
+            tension = self.tension,
+            max_tension = self.max_tension,
+
+            lw_money = self.lw_money,
+
+            ut_money = self.ut_money or 0,
+
+            level_up_count = self.level_up_count,
+
+            border = self.border,
+
+            temp_followers = self.temp_followers,
+
+            flags = self.flags
+        }
+
+        if x then
+            if type(x) == "string" then
+                data.spawn_marker = x
+            elseif type(x) == "table" then
+                data.spawn_position = x
+            elseif x and y then
+                data.spawn_position = { x, y }
+            end
+        end
+
+        data.party = {}
+        for _, party in ipairs(self.party) do
+            table.insert(data.party, party.id)
+        end
+
+        data.inventory = self.inventory:save()
+
+        data.party_data = {}
+        for k, v in pairs(self.party_data) do
+            data.party_data[k] = v:save()
+        end
+
+        Kristal.callEvent("save", data)
+
+        return data
+    end)
+
+    Utils.hook(Game, "load", function(orig, self, data, index, fade)
+        orig(self, data, index, fade)
+
+        self.is_new_file = data == nil
+
+        data = data or {}
+
+        self.ut_money = data.ut_money or 0
+    end)
+
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
     BATTLE_LAYERS["arena_frame"] = BATTLE_LAYERS["arena"] + 10
 
-end
-
-function lib:postInit()
-    self.randomEncounter = love.math.random(20, 100)
-end
-
-function lib:load()
-    Game:setFlag("serious_mode", false)
-    Game:setFlag("always_show_magic", false)
-    Game:setFlag("undertale_textbox_skipping", true)
-    Game:setFlag("enable_lw_tp", false)
-    Game:setFlag("lw_stat_menu_portraits", true)
-    Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
-    Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
-
-    Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
-
-    Game:setFlag("randomEncounterTable", {})
 end
 
 function lib:changeSpareColor(color)
