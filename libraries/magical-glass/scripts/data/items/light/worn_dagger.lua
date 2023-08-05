@@ -1,10 +1,12 @@
-local item, super = Class(LightEquipItem, "stick")
+local item, super = Class(LightEquipItem, "worn_dagger")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Stick"
+    self.name = "Worn Dagger"
+    self.short_name = "WornDG"
+    self.serious_name = "W. Dagger"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -12,16 +14,20 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    -- self.check = "Weapon AT 0\n* Whoa-oh-oh-oh-oh-oh-oh-oh story of undertale"
-    self.check = "Weapon AT 0\n* Its bark is worse than\nits bite."
+    self.check = "Weapon AT 15\n* Perfect for cutting plants\nand vines."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Default dark item conversion for this item
-    self.dark_item = "woodier_blade"
+    -- Equip bonuses (for weapons and armor)
+    self.bonuses = {
+        attack = 15
+    }
+
+    self.direction = "random" -- i swear it only goes to the left though
+
 end
 
 return item

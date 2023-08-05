@@ -13,8 +13,15 @@
     "map": "tundra3",
     "party": ["kris", /* "susie", "noelle" */],
     "inventory": {
-        "items": ["light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy"],
+        "items": ["light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "light/monster_candy", "toy_knife", "worn_dagger"],
         "key_items": ["cell_phone"]
+    },
+
+    "equipment": {
+        "kris": {
+            "weapon": "ballet_shoes",
+            "armor": ["light/bandage"]
+        }
     },
 
     "config": {

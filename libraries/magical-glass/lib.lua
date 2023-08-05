@@ -315,9 +315,7 @@ function lib:init()
             self.encountered = true
             local encounter
             local enemy
-            print(self.encounter)
-            print(self.light_encounter)
-
+            
             if self.encounter and self.light_encounter then
                 if Game:isLight() then
                     encounter = self.light_encounter

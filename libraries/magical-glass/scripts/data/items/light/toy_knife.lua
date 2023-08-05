@@ -1,10 +1,10 @@
-local item, super = Class(LightEquipItem, "stick")
+local item, super = Class(LightEquipItem, "toy_knife")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Stick"
+    self.name = "Toy Knife"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -12,16 +12,21 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    -- self.check = "Weapon AT 0\n* Whoa-oh-oh-oh-oh-oh-oh-oh story of undertale"
-    self.check = "Weapon AT 0\n* Its bark is worse than\nits bite."
+    self.check = "Weapon AT 3\n* Made of plastic.\n* A rarity nowadays."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Default dark item conversion for this item
-    self.dark_item = "woodier_blade"
+    -- Equip bonuses (for weapons and armor)
+    self.bonuses = {
+        attack = 3
+    }
+
+    self.attack_speed = self.attack_speed * 1.25
+    self.direction = "random"
+
 end
 
 return item

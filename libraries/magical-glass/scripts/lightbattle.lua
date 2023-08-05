@@ -678,7 +678,7 @@ function LightBattle:processAction(action)
             end
             local text = item:getLightBattleText(battler, action.target)
             if text then
-                if item.display_healing then
+                if item:includes(HealItem) and item.display_healing then
                     local message
                     local amount = item.heal_amount
                     local chara = action.target.chara
@@ -1053,7 +1053,7 @@ function LightBattle:onStateChange(old,new)
                 local width_timer = self.arena.width
                 local height_timer = self.arena.height
 
-                self.timer:during(15 * DTMULT, function()
+                self.timer:during(1/2, function()
     
                     width_timer = Utils.approach(width_timer, arena_w, DTMULT * 30)
                     local prog_w = width_timer
@@ -1280,7 +1280,7 @@ function LightBattle:onStateChange(old,new)
 
         local width_timer = self.arena.width
         local height_timer = self.arena.height
-        self.timer:during(15 * DTMULT, function()
+        self.timer:during(1/2, function()
 
             width_timer = Utils.approach(width_timer, self.arena.default_dim[1], DTMULT * 30)
             height_timer = Utils.approach(height_timer, self.arena.default_dim[2], DTMULT * 30)
@@ -1785,14 +1785,13 @@ function LightBattle:updateAttacking()
 
         local all_done = true
         local attack = self.battle_ui.attack_box
+
         if not attack.attacked then
             local close = attack:getClose()
-            if close <= -295 or close >= 295 then -- move to attackbox
+            if attack:checkMiss() then
                 attack:miss()
 
                 local action = self:getActionBy(attack.battler)
---[[                 action.points = 0
-                action.stretch = 0 ]]
                 action.force_miss = true
 
                 if self:processAction(action) then
@@ -2629,7 +2628,7 @@ function LightBattle:onKeyPressed(key)
             if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
             if Kristal.callEvent("onBattleMenuSelect", self.state_reason, menu_item, can_select) then return end
             if can_select then
-                if menu_item.name ~= "Flee" then
+                if menu_item.name ~= "Flee" then -- probably should have a better way of doing this
                     self:playSelectSound()
                 end
                 menu_item["callback"](menu_item)
@@ -2921,15 +2920,17 @@ function LightBattle:handleAttackingInput(key)
                 end
             end
             if closest and closest > -295 and closest < 295 then
-                for _,attack in ipairs(closest_attacks) do
-                    local points, stretch = attack:hit()
-
-                    local action = self:getActionBy(attack.battler)
-                    action.points = points
-                    action.stretch = stretch
-
-                    if self:processAction(action) then
-                        self:finishAction(action)
+                for _,battler in ipairs(attack.attackers) do -- this should work for any amount of battlers
+                    for _,iattack in ipairs(closest_attacks) do
+                        local points, stretch = iattack:hit()
+    
+                        local action = self:getActionBy(battler)
+                        action.points = points
+                        action.stretch = stretch
+    
+                        if self:processAction(action) then
+                            self:finishAction(action)
+                        end
                     end
                 end
             end
