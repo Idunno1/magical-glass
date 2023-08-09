@@ -108,9 +108,12 @@ function LightBattleUI:endAttack()
         self.attack_box.fading = true
     end
 
-    if self.attack_box.bolt then
-        self.attack_box.bolt:remove()
+    for _,lane in ipairs(self.attack_box.lanes) do
+        for _,bolt in ipairs(lane.bolts) do
+            bolt:remove()
+        end
     end
+
     self.attacking = false
 end
 

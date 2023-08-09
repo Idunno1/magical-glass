@@ -5,6 +5,8 @@ local LightEquipItem, super = Class("LightEquipItem", true)
 function LightEquipItem:init()
     super.init(self)
 
+    self.target = "ally"
+
     self.attack_bolts = 1
 
     self.attack_speed = 11 -- negative if left, positive if right.
@@ -64,7 +66,6 @@ function LightEquipItem:showEquipText()
     Game.world:showText("* You equipped the "..self:getName()..".")
 end
 
--- why the fuck doesn't this work
 function LightEquipItem:onWorldUse(target)
     Assets.playSound("item")
     local chara = Game.party[1]
@@ -84,7 +85,7 @@ function LightEquipItem:onWorldUse(target)
         end
         chara:setArmor(1, self)
     else
-        error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        --error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)
@@ -106,6 +107,7 @@ function LightEquipItem:onLightBattleUse(user, target)
             replacing = chara:getWeapon()
             replacing:onUnequip(chara, self)
             Game.inventory:replaceItem(self, replacing)
+            print(replacing.name)
         end
         chara:setWeapon(self)
     elseif self.type == "armor" then
@@ -116,7 +118,7 @@ function LightEquipItem:onLightBattleUse(user, target)
         end
         chara:setArmor(1, self)
     else
-        error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        --error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)

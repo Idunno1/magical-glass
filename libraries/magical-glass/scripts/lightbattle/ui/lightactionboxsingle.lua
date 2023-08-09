@@ -7,6 +7,7 @@ function LightActionBoxSingle:init(x, y, index, battler)
     self.battler = battler
 
     self.selected_button = 1
+    self.last_button = 1
 
     self.revert_to = 40
 
@@ -94,6 +95,7 @@ end
 
 function LightActionBoxSingle:select()
     self.buttons[self.selected_button]:select()
+    self.last_button = self.selected_button
 end
 
 function LightActionBoxSingle:unselect()

@@ -569,7 +569,15 @@ function LightBattle:processAction(action)
 
         self.actions_done_timer = 1.2
 
-        if self.battle_ui.attack_box.attacked then
+        local lane
+        for _,ilane in ipairs(self.battle_ui.attack_box.lanes) do
+            if ilane.battler == battler then
+                lane = ilane
+                break
+            end
+        end
+
+        if lane.attacked then
 
             if action.target and action.target.done_state then
                 enemy = self:retargetEnemy()
@@ -583,9 +591,11 @@ function LightBattle:processAction(action)
 
             local weapon = battler.chara:getWeapon()
             local damage = 0
+            local crit
 
-            if not action.force_miss then
-                damage = Utils.round(enemy:getAttackDamage(action.damage or 0, battler, action.points, action.stretch))
+            if not action.force_miss and action.points > 0 then
+                damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
+                damage = Utils.round(damage)
 
                 if damage < 0 then
                     damage = 0
@@ -600,7 +610,7 @@ function LightBattle:processAction(action)
                 local src = Assets.stopAndPlaySound(weapon:getAttackSound() or "laz_c")
                 src:setPitch(weapon:getAttackPitch() or 1)
             
-                weapon:onAttack(battler, enemy, damage, action.stretch)
+                weapon:onAttack(battler, enemy, damage, action.stretch, crit)
             else
                 weapon:onMiss(battler, enemy)
             end
@@ -610,10 +620,6 @@ function LightBattle:processAction(action)
         return false
 
     elseif action.action == "ACT" then
- -- fun fact: this would have only been a single function call
-        -- if stupid multi-acts didn't exist
-
-        -- Check for other short acts
         local self_short = false
         self.short_actions = {}
         for _,iaction in ipairs(self.current_actions) do
@@ -672,10 +678,6 @@ function LightBattle:processAction(action)
         if item.instant then
             self:finishAction(action)
         else
-            local result = item:onLightBattleUse(battler, action.target)
-            if result or result == nil then
-                self:finishAction(action)
-            end
             local text = item:getLightBattleText(battler, action.target)
             if text then
                 if item:includes(HealItem) and item.display_healing then
@@ -701,6 +703,11 @@ function LightBattle:processAction(action)
                     text = text .. "\n" .. message
                 end
                 self:battleText(text)
+            end
+
+            local result = item:onLightBattleUse(battler, action.target)
+            if result or result == nil then
+                self:finishAction(action)
             end
         end
         return false
@@ -852,6 +859,7 @@ function LightBattle:onStateChange(old,new)
         if not self.soul then
             self:spawnSoul()
         end
+        self.soul.can_move = false
 
         if self.current_selecting < 1 or self.current_selecting > #self.party then
             self:nextTurn()
@@ -859,16 +867,11 @@ function LightBattle:onStateChange(old,new)
                 return
             end
         end
-
-        if not self.soul then
-            self:spawnSoul(0, 0)
-        end
-        self.soul.can_move = false
         
         self.fader:fadeIn(nil, {speed=5/30})
 
         if self.state_reason == "CANCEL" then
-            self.timer:after(2/30 *DTMULT, function()
+            self.timer:after(2/30 * DTMULT, function()
                 self.battle_ui.encounter_text.text.line_offset = 5
                 self.battle_ui:clearEncounterText()
                 self.battle_ui.encounter_text.text.state.typing_sound = "ut"
@@ -905,10 +908,6 @@ function LightBattle:onStateChange(old,new)
 
         if not self.soul then
             self:spawnSoul()
-        end
-
-        if not self.soul then
-            self:spawnSoul(0, 0)
         end
         self.soul.can_move = false
         
@@ -1385,6 +1384,7 @@ function LightBattle:nextTurn()
     self.auto_attackers = {}
 
     self.current_selecting = 1
+
     while not (self.party[self.current_selecting]:isActive()) do
         self.current_selecting = self.current_selecting + 1
         if self.current_selecting > #self.party then
@@ -1402,9 +1402,7 @@ function LightBattle:nextTurn()
 
     if self.battle_ui then
         for _,box in ipairs(self.battle_ui.action_boxes) do
-            box.selected_button = 1
-            --box:setHeadIcon("head")
-            --box:resetHeadIcon()
+            box.selected_button = box.last_button or 1
         end
         if not self.seen_encounter_text then
             self.seen_encounter_text = true
@@ -1414,10 +1412,6 @@ function LightBattle:nextTurn()
         end
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
     end
-
---[[     if self.soul then
-        self:returnSoul()
-    end ]]
 
     self.encounter:onTurnStart()
     for _,enemy in ipairs(self:getActiveEnemies()) do
@@ -1784,21 +1778,34 @@ function LightBattle:updateAttacking()
         end
 
         local all_done = true
-        local attack = self.battle_ui.attack_box
 
-        if not attack.attacked then
-            local close = attack:getClose()
-            if attack:checkMiss() then
-                attack:miss()
+        for _,attacker in ipairs(self.battle_ui.attack_box.lanes) do
+            if not attacker.attacked then
+                local box = self.battle_ui.attack_box
+                if box:checkMiss(attacker) and #attacker.bolts > 1 then
 
-                local action = self:getActionBy(attack.battler)
-                action.force_miss = true
+                    all_done = false
+                    box:miss(attacker)
 
-                if self:processAction(action) then
-                    self:finishAction(action)
+                elseif box:checkMiss(attacker) then
+                    local points = box:miss(attacker)
+                    local stretch = 2
+
+                    local action = self:getActionBy(attacker.battler)
+                    if attacker.attack_type == "slice" then
+                        action.force_miss = true
+                        action.points = points
+                        action.stretch = 0
+                    else
+                        action.points = points
+                    end
+
+                    if self:processAction(action) then
+                        self:finishAction(action)
+                    end
+                else
+                    all_done = false
                 end
-            else
-                all_done = false
             end
         end
 
@@ -2076,7 +2083,7 @@ function LightBattle:commitSingleAction(action)
                     Game:removeTension(-action.tp)
                 end
             end
-            battler:setAnimation("battle/"..anim.."_ready")
+            --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
         end
     else
@@ -2906,31 +2913,31 @@ function LightBattle:handleAttackingInput(key)
             local closest
             local closest_attacks = {}
 
-            local attack = self.battle_ui.attack_box
-            if not attack.attacked then
-                local close = attack:getClose()
-                if not closest then
-                    closest = close
-                    table.insert(closest_attacks, attack)
-                elseif close == closest then
-                    table.insert(closest_attacks, attack)
-                elseif close < closest then
-                    closest = close
-                    closest_attacks = {attack}
+            for _,attack in ipairs(self.battle_ui.attack_box.lanes) do
+                if not attack.attacked then
+                    local close = self.battle_ui.attack_box:getClose(attack)
+                    if not closest then
+                        closest = close
+                        table.insert(closest_attacks, attack)
+                    elseif close == closest then
+                        table.insert(closest_attacks, attack)
+                    elseif close < closest then
+                        closest = close
+                        closest_attacks = {attack}
+                    end
                 end
             end
-            if closest and closest > -295 and closest < 295 then
-                for _,battler in ipairs(attack.attackers) do -- this should work for any amount of battlers
-                    for _,iattack in ipairs(closest_attacks) do
-                        local points, stretch = iattack:hit()
-    
-                        local action = self:getActionBy(battler)
-                        action.points = points
-                        action.stretch = stretch
-    
-                        if self:processAction(action) then
-                            self:finishAction(action)
-                        end
+
+            if closest then
+                for _,attack in ipairs(closest_attacks) do
+                    local points, stretch = self.battle_ui.attack_box:hit(attack)
+
+                    local action = self:getActionBy(attack.battler)
+                    action.points = points
+                    action.stretch = stretch
+
+                    if self:processAction(action) then
+                        self:finishAction(action)
                     end
                 end
             end

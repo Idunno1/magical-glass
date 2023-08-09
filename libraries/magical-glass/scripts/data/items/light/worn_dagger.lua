@@ -26,7 +26,7 @@ function item:init()
         attack = 15
     }
 
-    self.direction = "random" -- i swear it only goes to the left though
+    self.attack_direction = "random" -- i swear it only goes to the left though
 
 end
 

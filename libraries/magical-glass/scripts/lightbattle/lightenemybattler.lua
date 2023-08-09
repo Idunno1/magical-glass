@@ -439,19 +439,38 @@ function LightEnemyBattler:getAttackTension(points)
     return points / 25
 end
 
-function LightEnemyBattler:getAttackDamage(damage, battler, points, stretch)
-    if damage > 0 then
-        return damage
-    end
+function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
-    local total_damage = (battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
-    if points <= 12 then
-        total_damage = Utils.round(total_damage * 2.2)
-    elseif points > 12 then
-        total_damage = Utils.round((total_damage * stretch) * 2)
+    local crit = false
+    local total_damage
+    if lane.attack_type == "slice" then
+        if damage > 0 then
+            return damage
+        end
+
+        total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
+        if points <= 12 then
+            total_damage = Utils.round(total_damage * 2.2)
+        elseif points > 12 then
+            total_damage = Utils.round((total_damage * stretch) * 2)
+        end
+
+    elseif lane.attack_type == "shoe" then
+        if damage > 0 then
+            return damage
+        end
+
+        total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense)
+
+        total_damage = total_damage * ((points / 160) * (4 / lane.weapon:getAttackBolts())) -- might not be the bolt count
+        total_damage = Utils.round(total_damage) + Utils.random(0, 2, 1)
+
+        if points > (400 * (lane.weapon:getAttackBolts() / 4)) then
+            crit = true
+        end
     end
     
-    return total_damage
+    return total_damage, crit
 end
 
 function LightEnemyBattler:getDamageSound() end
