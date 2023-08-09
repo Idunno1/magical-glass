@@ -7,7 +7,7 @@ function Dummy:init()
     self.text = "* Froggit hopped close!"
 
     -- Battle music ("battleut" is undertale)
-    self.music = "battle"
+    self.music = "battleut"
 
     -- Add the dummy enemy to the encounter
     self:addEnemy("froggit")
