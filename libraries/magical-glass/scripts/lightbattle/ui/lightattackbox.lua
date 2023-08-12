@@ -8,7 +8,7 @@ function LightAttackBox:init(x, y)
     self:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
-    self.bolt_target = self.target_sprite.x
+    self.bolt_target = -1
 
     self.attackers = Game.battle.normal_attackers -- deep copying crashes
     self.lanes = {}
@@ -32,9 +32,9 @@ function LightAttackBox:init(x, y)
 
         local start_x
         if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 2) - lane.weapon:getAttackStart()
+            start_x = (self.target_sprite.x + self.target_sprite.width / 2) 
         elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 2) + lane.weapon:getAttackStart()
+            start_x = (self.target_sprite.x - self.target_sprite.width / 2) 
         else
             error("Invalid attack direction")
         end
@@ -42,13 +42,18 @@ function LightAttackBox:init(x, y)
         for i = 1, lane.weapon:getAttackBolts() do
             local bolt
             if i == 1 then
-                bolt = LightAttackBar(start_x, 0, battler)
+                if lane.direction == "left" then
+                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 0, battler)
+                else
+                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 0, battler)
+                end
             else
                 if lane.direction == "left" then
                     bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 0, battler)
                 else
                     bolt = LightAttackBar(start_x - lane.weapon:getMultiboltVariance(i - 1), 0, battler)
                 end
+                bolt.sprite:setSprite(bolt.inactive_sprite)
             end
             bolt.layer = 1
             table.insert(lane.bolts, bolt)
@@ -61,13 +66,14 @@ end
 
 function LightAttackBox:getClose(battler)
     if battler.attack_type == "shoe" then
-        return math.abs(math.floor(battler.bolts[1].x / battler.speed) - math.floor(self.bolt_target / battler.speed))
+        return math.floor(battler.bolts[1].x / battler.speed) - math.floor(self.bolt_target / battler.speed)
     elseif battler.attack_type == "slice" then
         return Utils.round(battler.bolts[1].x - self.bolt_target)
     end
 end
 
 function LightAttackBox:evaluateHit(battler, close)
+    print(close)
     if close < 1 then
         return 110
     elseif close < 2 then
@@ -101,6 +107,9 @@ end
 
 function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
     if #bolts == 0 then
+        if battler.attack_type == "shoe" then
+            self.fading = true
+        end
         battler.attacked = true
         return self:evaluateScore(battler, score, bolts, close)
     end
@@ -108,14 +117,17 @@ end
 
 function LightAttackBox:hit(battler)
     local bolt = battler.bolts[1]
+    battler.weapon:onHit(battler)
     if battler.attack_type == "shoe" then
-        local close = self:getClose(battler)
+        local close = math.abs(self:getClose(battler))
 
         battler.score = battler.score + self:evaluateHit(battler, close)
         bolt:burst()
 
         if close < 1 then
+            bolt.x = self.bolt_target
             Assets.stopAndPlaySound("victor")
+            bolt.perfect = true
         elseif close < 5 then
             Assets.stopAndPlaySound("hit")
             bolt.sprite:setColor(128/255, 1, 1)
@@ -124,6 +136,9 @@ function LightAttackBox:hit(battler)
         end
 
         table.remove(battler.bolts, 1)
+        if #battler.bolts > 0 then
+            battler.bolts[1].sprite:setSprite(bolt.active_sprite)
+        end
 
         return self:checkAttackEnd(battler, battler.score, battler.bolts, close), 2
     elseif battler.attack_type == "slice" then
@@ -146,16 +161,27 @@ end
 
 function LightAttackBox:checkMiss(battler)
     if battler.attack_type == "shoe" then
-        return (battler.direction == "left" and self:getClose(battler) <= -29) or (battler.direction == "right" and self:getClose(battler) >= 29)
+        if battler.direction == "left" then
+            return self:getClose(battler) < -battler.weapon:getAttackMissZone()
+        else
+            return self:getClose(battler) > battler.weapon:getAttackMissZone()
+        end
     elseif battler.attack_type == "slice" then
         return (battler.direction == "left" and self:getClose(battler) <= -296 + 14) or (battler.direction == "right" and self:getClose(battler) >= 296)
     end
 end
 
 function LightAttackBox:miss(battler)
-    battler.bolts[1]:remove()
-    table.remove(battler.bolts, 1)
+    if battler.attack_type == "shoe" then
+        battler.bolts[1]:fade(battler.speed, battler.direction)
 
+        if #battler.bolts > 0 then
+            battler.bolts[1].sprite:setSprite(battler.bolts[1].active_sprite)
+        end
+    else
+        battler.bolts[1]:remove()
+    end
+    table.remove(battler.bolts, 1)
     return self:checkAttackEnd(battler, battler.score, battler.bolts)
 end
 
@@ -184,8 +210,10 @@ function LightAttackBox:update()
     end
 
     if self.fading or Game.battle.cancel_attack then
-        self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
-        self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+        if self.lanes[1].attack_type == "slice" then
+            self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
+            self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+        end
         self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
         if self.target_sprite.scale_x < 0.08 then
             self:remove()
@@ -205,6 +233,8 @@ function LightAttackBox:draw()
         for _,battler in ipairs(self.lanes) do
             Draw.setColor(1, 1, 1, 1)
             if not battler.attacked then
+                love.graphics.rectangle("line", self.bolt_target - 6, -100, battler.speed, 65)
+
                 Game.battle:debugPrintOutline("close: "    .. self:getClose(battler),         0, -200)
             end
             if battler.score then
@@ -216,7 +246,6 @@ function LightAttackBox:draw()
             Game.battle:debugPrintOutline("attacked: "     .. tostring(battler.attacked), 0, -200 + 48)
         end
 
-        love.graphics.rectangle("line", self.bolt_target, -100, 1, 65)
     end
 
     super.draw(self)

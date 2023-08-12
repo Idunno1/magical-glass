@@ -606,9 +606,6 @@ function LightBattle:processAction(action)
                 if Game:getFlag("enable_lw_tp") then
                     Game:giveTension(Utils.round(enemy:getAttackTension(points or 100)))
                 end
-
-                local src = Assets.stopAndPlaySound(weapon:getAttackSound() or "laz_c")
-                src:setPitch(weapon:getAttackPitch() or 1)
             
                 weapon:onAttack(battler, enemy, damage, action.stretch, crit)
             else
@@ -1816,7 +1813,7 @@ function LightBattle:updateAttacking()
                     local action = self:getActionBy(attacker.battler)
                     if attacker.attack_type == "slice" then
                         action.force_miss = true
-                        action.points = points
+                        action.points = points or 0
                         action.stretch = 0
                     else
                         action.points = points
@@ -2783,8 +2780,6 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
-            self.ui_move:stop()
-            self.ui_move:play()
             if self.state_reason == "SPELL" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then
@@ -2952,14 +2947,16 @@ function LightBattle:handleAttackingInput(key)
 
             if closest then
                 for _,attack in ipairs(closest_attacks) do
-                    local points, stretch = self.battle_ui.attack_box:hit(attack)
+                    if not self.battle_ui.attack_box:checkMiss(attack) then
+                        local points, stretch = self.battle_ui.attack_box:hit(attack)
 
-                    local action = self:getActionBy(attack.battler)
-                    action.points = points
-                    action.stretch = stretch
+                        local action = self:getActionBy(attack.battler)
+                        action.points = points
+                        action.stretch = stretch
 
-                    if self:processAction(action) then
-                        self:finishAction(action)
+                        if self:processAction(action) then
+                            self:finishAction(action)
+                        end
                     end
                 end
             end

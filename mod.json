@@ -13,7 +13,7 @@
     "map": "tundra3",
     "party": ["kris", /* "susie", "noelle" */],
     "inventory": {
-        "items": ["toy_knife", "ballet_shoes", "worn_dagger"],
+        "items": ["toy_knife", "tough_glove", "ballet_shoes", "torn_notebook", "burnt_pan", "empty_gun", "worn_dagger", "light/monster_candy"],
         "key_items": ["cell_phone"]
     },
 

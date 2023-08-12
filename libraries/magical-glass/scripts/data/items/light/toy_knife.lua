@@ -29,4 +29,8 @@ function item:init()
 
 end
 
+function item:getLightBattleText()
+    return "* You equipped Toy Knife."
+end
+
 return item

@@ -1,12 +1,12 @@
-local item, super = Class(LightEquipItem, "ballet_shoes")
+local item, super = Class(LightEquipItem, "tough_glove_2")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Ballet Shoes"
-    self.short_name = "BallShoes"
-    self.serious_name = "Shoes"
+    self.name = "Tough Glove 2"
+    self.short_name = "TuffGlove2"
+    self.serious_name = "Glove 2"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -14,36 +14,47 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 7\n* These used shoes make you feel\nextra dangerous."
+    self.check = "Weapon AT 5\n* A worn pink leather glove.\nFor five-fingered folk."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    self.bonuses = {
-        attack = 7
-    }
-
-    self.attack_bolts = 3
+    self.attack_bolts = 4
     self.attack_speed = 10
     self.attack_speed_variance = nil
-    self.attack_start = -50
-    self.attack_miss_zone = 2
+    self.attack_direction = "random"
+    self.multibolt_variance = {{15}, {50}, {85}}
 
     self.attack_sound = "punchstrong"
-    
+
 end
 
 function item:getLightBattleText()
-    return "* You equipped Ballet Shoes."
+    return "* You equipped Tough Glove 2."
+end
+
+function item:onHit(lane)
+    local battler = lane.battler
+    local enemy = Game.battle:getActionBy(lane.battler).target
+
+    Assets.playSound("punchweak")
+    local small_punch = Sprite("effects/attack/hyperfist")
+    small_punch:setOrigin(0.5, 0.5)
+    small_punch:setScale(0.5, 0.5)
+    small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
+    small_punch.color = battler.chara.color -- need to swap this to the get function
+    small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
+    enemy.parent:addChild(small_punch)
+    small_punch:play(2/30, false, function(s) s:remove() end)
 end
 
 function item:onAttack(battler, enemy, damage, stretch, crit)
     local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
     src:setPitch(self:getAttackPitch() or 1)
 
-    local sprite = Sprite("effects/attack/hyperfoot")
+    local sprite = Sprite("effects/attack/hyperfist")
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
@@ -52,7 +63,6 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     Game.battle:shakeCamera(3, 3, 2)
 
     if crit then
-        sprite:setColor(1, 1, 130/255)
         Assets.stopAndPlaySound("saber3", 0.7)
     end
 
@@ -76,7 +86,6 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
         Game.battle:endAttack()
 
     end)
-
 end
 
 return item

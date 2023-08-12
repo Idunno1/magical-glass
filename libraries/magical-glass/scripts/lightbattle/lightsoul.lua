@@ -298,7 +298,14 @@ function LightSoul:moveYExact(amount, move_x)
 end
 
 function LightSoul:onDamage(bullet, amount)
-    -- Can be overridden, called when the soul actually takes damage from a bullet
+    for _,party in ipairs(Game.battle.party) do
+        for _,equip in ipairs(party.chara:getEquipment()) do
+            local bonus = equip:getInvBonus()
+            if bonus > 0 then
+                self.inv_timer = self.inv_timer + bonus
+            end
+        end
+    end
 end
 
 function LightSoul:onCollide(bullet)

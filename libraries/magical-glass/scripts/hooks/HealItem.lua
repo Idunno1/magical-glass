@@ -2,16 +2,23 @@ local HealItem, super = Class("HealItem", true)
 
 function HealItem:onWorldUse(target)
 
+    local bonus = 0
+    for _,party in ipairs(Game.party) do
+        for _,equip in ipairs(party:getEquipment()) do
+            bonus = bonus + equip:getHealBonus()
+        end
+    end
+
     local text = self:getWorldUseText(target)
     if self.target == "ally" then
         self:worldUseSound(target)
-        local amount = self:getWorldHealAmount(target.id)
+        local amount = self:getWorldHealAmount(target.id) + bonus
         Game.world:heal(target, amount, text, self, self.display_healing)
         return true
     elseif self.target == "party" then
         self:worldUseSound(target)
         for _,party_member in ipairs(target) do
-            local amount = self:getWorldHealAmount(party_member.id)
+            local amount = self:getWorldHealAmount(party_member.id) + bonus
             Game.world:heal(party_member, amount, text, self, self.display_healing)
         end
         return true

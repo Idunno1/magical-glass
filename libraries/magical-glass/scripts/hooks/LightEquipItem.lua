@@ -7,13 +7,16 @@ function LightEquipItem:init()
 
     self.target = "ally"
 
+    self.heal_bonus = 0
+    self.inv_bonus = 0
+
     self.attack_bolts = 1
 
     self.attack_speed = 11 -- negative if left, positive if right.
     self.attack_speed_variance = 2
 
     self.attack_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
-    self.multibolt_variance = {{50, 75, 100}, {150, 175, 200}}
+    self.multibolt_variance = {{0, 25, 50}, {100, 125, 150}}
 
     self.attack_direction = "right" -- "right", "left", or "random"
 
@@ -25,6 +28,9 @@ function LightEquipItem:init()
     self.attack_pitch = 1
 
 end
+
+function LightEquipItem:getHealBonus() return self.heal_bonus end
+function LightEquipItem:getInvBonus() return self.inv_bonus end
 
 function LightEquipItem:getAttackBolts() return self.attack_bolts end
 
@@ -46,7 +52,7 @@ function LightEquipItem:getAttackStart()
 end
 
 function LightEquipItem:getMultiboltVariance(index)
-    return Utils.pick(self.multibolt_variance[index]) or 0
+    return Utils.pick(self.multibolt_variance[index])
 end
 
 function LightEquipItem:getAttackDirection() 
@@ -85,7 +91,7 @@ function LightEquipItem:onWorldUse(target)
         end
         chara:setArmor(1, self)
     else
-        --error("LightEquipItem "..self.id.." invalid type: "..self.type)
+        error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)
@@ -107,7 +113,6 @@ function LightEquipItem:onLightBattleUse(user, target)
             replacing = chara:getWeapon()
             replacing:onUnequip(chara, self)
             Game.inventory:replaceItem(self, replacing)
-            print(replacing.name)
         end
         chara:setWeapon(self)
     elseif self.type == "armor" then
@@ -124,14 +129,19 @@ function LightEquipItem:onLightBattleUse(user, target)
     self:onEquip(chara, replacing)
 end
 
+function LightEquipItem:onHit(battler) end
+
 function LightEquipItem:onAttack(battler, enemy, damage, stretch)
+
+    local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
+    src:setPitch(self:getAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/strike")
     local scale = (stretch * 2) - 0.5
     sprite:setScale(scale, scale)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
-    sprite.layer = enemy.layer + 0.01
+    sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = battler.chara.color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect    

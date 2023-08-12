@@ -21,8 +21,11 @@ MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
 function lib:postInit(new_file)
-    self.randomEncounter = love.math.random(20, 100)
-    if new_file then
+    self.random_encounter = love.math.random(20, 100)
+end
+
+function lib:load()
+    if Game.is_new_file then
         Game:setFlag("serious_mode", false)
         Game:setFlag("always_show_magic", false)
         Game:setFlag("undertale_textbox_skipping", true)
@@ -30,17 +33,14 @@ function lib:postInit(new_file)
         Game:setFlag("lw_stat_menu_portraits", true)
         Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
         Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
-    
+
         Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
-    
+
         Game:setFlag("undertale_currency", false)
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
-    
-        Game:setFlag("randomEncounterTable", {}) 
-    end
-end
 
-function lib:load()
+        Game:setFlag("random_encounter_table", {})
+    end
 end
 
 function lib:registerLightEncounter(id)
@@ -1154,6 +1154,13 @@ function lib:init()
         self.ut_money = data.ut_money or 0
     end)
 
+    Utils.hook(Inventory, "replaceItem", function(orig, self, item, new)
+        local storage, index = self:getItemIndex(item)
+        if storage and new then
+            return self:setItem(storage, index, new)
+        end
+    end)
+
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
     BATTLE_LAYERS["arena_frame"] = BATTLE_LAYERS["arena"] + 10
@@ -1208,11 +1215,11 @@ end
 
 function lib:onFootstep(chara, num)
     
-    if Game.world.map:getEvent("randomencounter") ~= nil then
+    if Game.world.map:getEvent("random_encounter") ~= nil then
 
-        self.randomEncounter = self.randomEncounter - 1
+        self.random_encounter = self.random_encounter - 1
 
-        if chara == Game.world.player and self.randomEncounter < 0 then
+        if chara == Game.world.player and self.random_encounter < 0 then
             if not Game.world.cutscene and not Game.battle then
                 Game.world:startCutscene(function(cutscene)
                     Assets.stopAndPlaySound("alert")
@@ -1225,7 +1232,7 @@ function lib:onFootstep(chara, num)
                     sprite:remove()
                     cutscene:startEncounter("dummy", true)
                 end)
-                self.randomEncounter = love.math.random(20, 100)
+                self.random_encounter = love.math.random(20, 100)
             end
         end
 

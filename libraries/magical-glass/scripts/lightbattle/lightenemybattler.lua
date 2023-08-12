@@ -443,19 +443,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
     local crit = false
     local total_damage
-    if lane.attack_type == "slice" then
-        if damage > 0 then
-            return damage
-        end
-
-        total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
-        if points <= 12 then
-            total_damage = Utils.round(total_damage * 2.2)
-        elseif points > 12 then
-            total_damage = Utils.round((total_damage * stretch) * 2)
-        end
-
-    elseif lane.attack_type == "shoe" then
+    if lane.attack_type == "shoe" then
         if damage > 0 then
             return damage
         end
@@ -467,6 +455,17 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
         if points > (400 * (lane.weapon:getAttackBolts() / 4)) then
             crit = true
+        end
+    else
+        if damage > 0 then
+            return damage
+        end
+
+        total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
+        if points <= 12 then
+            total_damage = Utils.round(total_damage * 2.2)
+        elseif points > 12 then
+            total_damage = Utils.round((total_damage * stretch) * 2)
         end
     end
     

@@ -30,4 +30,8 @@ function item:init()
 
 end
 
+function item:getLightBattleText()
+    return "* You equipped the dagger."
+end
+
 return item
