@@ -8,7 +8,7 @@
 
     "chapter": 2,
 
-    //"encounter": "dummy",
+    "encounter": "dummy",
 
     "map": "tundra3",
     "party": ["kris", /* "susie", "noelle" */],

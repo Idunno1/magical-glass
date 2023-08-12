@@ -31,28 +31,33 @@ end
 function HealItem:onLightBattleUse(user, target)
     local text = self:getLightBattleText(user, target)
 
+    local bonus = 0
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        bonus = bonus + equip:getHealBonus()
+    end
+
     if self.target == "ally" then
         self:battleUseSound(target)
         local amount = self:getBattleHealAmount(target.chara.id)
-        target:heal(amount)
+        target:heal(amount + bonus)
         return true
     elseif self.target == "party" then
         self:battleUseSound(target)
         for _,battler in ipairs(target) do
             local amount = self:getBattleHealAmount(battler.chara.id)
-            target:heal(amount)
+            target:heal(amount + bonus)
         end
         return true
     elseif self.target == "enemy" then
         -- Heal single enemy (why)
         local amount = self:getBattleHealAmount(target.id)
-        target:heal(amount)
+        target:heal(amount + bonus)
         return true
     elseif self.target == "enemies" then
         -- Heal all enemies (why????)
         for _,enemy in ipairs(target) do
             local amount = self:getBattleHealAmount(enemy.id)
-            enemy:heal(amount)
+            enemy:heal(amount + bonus)
         end
         return true
     else

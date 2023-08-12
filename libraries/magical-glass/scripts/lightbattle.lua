@@ -679,7 +679,11 @@ function LightBattle:processAction(action)
             if text then
                 if item:includes(HealItem) and item.display_healing then
                     local message
-                    local amount = item.heal_amount
+                    local bonus = 0
+                    for _,equip in ipairs(battler.chara:getEquipment()) do
+                        bonus = bonus + equip:getHealBonus()
+                    end
+                    local amount = item.heal_amount + bonus
                     local chara = action.target.chara
 
                     local maxed = chara:getHealth() >= chara:getStat("health")
