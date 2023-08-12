@@ -122,6 +122,7 @@ function LightAttackBox:hit(battler)
         local close = math.abs(self:getClose(battler))
 
         battler.score = battler.score + self:evaluateHit(battler, close)
+
         bolt:burst()
 
         if close < 1 then
@@ -168,6 +169,18 @@ function LightAttackBox:checkMiss(battler)
         end
     elseif battler.attack_type == "slice" then
         return (battler.direction == "left" and self:getClose(battler) <= -296 + 14) or (battler.direction == "right" and self:getClose(battler) >= 296)
+    end
+end
+
+function LightAttackBox:checkValid(battler)
+    if battler.attack_type == "shoe" then
+        if battler.direction == "left" then
+            return self:getClose(battler) < 28
+        else
+            return self:getClose(battler) > -28
+        end
+    else
+        return true
     end
 end
 

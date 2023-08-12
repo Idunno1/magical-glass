@@ -2933,10 +2933,11 @@ function LightBattle:handleAttackingInput(key)
         if not self.attack_done and not self.cancel_attack and self.battle_ui.attack_box then
             local closest
             local closest_attacks = {}
+            local close
 
             for _,attack in ipairs(self.battle_ui.attack_box.lanes) do
                 if not attack.attacked then
-                    local close = self.battle_ui.attack_box:getClose(attack)
+                    close = self.battle_ui.attack_box:getClose(attack)
                     if not closest then
                         closest = close
                         table.insert(closest_attacks, attack)
@@ -2951,7 +2952,7 @@ function LightBattle:handleAttackingInput(key)
 
             if closest then
                 for _,attack in ipairs(closest_attacks) do
-                    if not self.battle_ui.attack_box:checkMiss(attack) then
+                    if self.battle_ui.attack_box:evaluateHit(battler, close) then
                         local points, stretch = self.battle_ui.attack_box:hit(attack)
 
                         local action = self:getActionBy(attack.battler)
