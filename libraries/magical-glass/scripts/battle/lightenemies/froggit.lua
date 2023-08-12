@@ -21,6 +21,10 @@ function Dummy:init()
     -- Hide HP in UNDERTALE battles
     self.hidehp = false
 
+    -- The Speech bubble style
+    self.dialogue_bubble = "ut_tall_right"
+    self.dialogue_offset = {300, 60}
+
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
 

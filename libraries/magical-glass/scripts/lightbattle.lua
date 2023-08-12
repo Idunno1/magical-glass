@@ -1188,7 +1188,7 @@ function LightBattle:onStateChange(old,new)
         else
             win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. "."
 
-            Game.ut_money = Game.ut_money or 0 + self.money
+            Game.ut_money = Game.ut_money + self.money
 
             if (Game.ut_money < 0) then
                 Game.ut_money = 0

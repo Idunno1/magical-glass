@@ -54,7 +54,7 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
-    self.dialogue_bubble = "round"
+    self.dialogue_bubble = "ut_round"
 
     -- The offset for the speech bubble, also set in `battler.lua`
     self.dialogue_offset = {0, 0}
