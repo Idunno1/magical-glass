@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "empty_gun")
+local item, super = Class(LightEquipItem, "light/empty_gun")
 
 function item:init()
     super.init(self)
@@ -13,7 +13,7 @@ function item:init()
 
     -- Light world check text
     self.check = {
-        "Weapon AT 12\n* An antique revolver.\n* It has no ammo",
+        "Weapon AT 12\n* An antique revolver.\n* It has no ammo.",
         "* Must be used precisely, or\ndamage will be low."
     }
 

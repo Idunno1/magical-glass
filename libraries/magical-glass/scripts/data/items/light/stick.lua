@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "stick")
+local item, super = Class(LightEquipItem, "light/stick")
 
 function item:init()
     super.init(self)
@@ -20,8 +20,28 @@ function item:init()
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
+    self.target = "none"
+
     -- Default dark item conversion for this item
     self.dark_item = "woodier_blade"
 end
+
+function item:onWorldUse(target)
+    Game.world:showText("* You threw the stick away.\n* Then picked it back up.")
+end
+
+function item:onLightBattleUse(user, target)
+    return true
+end
+
+function item:getLightBattleText(user, target)
+    if Game.battle.encounter.onStickUse then
+        return Game.battle.encounter:onStickUse(self, user)
+    end
+    if user.id == Game.battle.party[1].id then
+        return "* You threw the stick away.\n* Then picked it back up."
+    end
+end
+
 
 return item

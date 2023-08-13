@@ -23,7 +23,7 @@ function item:init(inventory)
     self.check = "Heals 10 HP\n* Has a distinct,\nnon licorice flavor."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
-    self.target = "ally"
+    self.target = "party"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed

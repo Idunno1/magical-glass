@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "torn_notebook")
+local item, super = Class(LightEquipItem, "light/torn_notebook")
 
 function item:init()
     super.init(self)
@@ -35,7 +35,7 @@ function item:init()
     self.attack_miss_zone = 2
     self.attack_direction = "left"
     self.multibolt_variance = {{0, 25, 50}}
-    self.inv_bonus = 9/30
+    self.inv_bonus = 6/30
 
     self.attack_sound = "bookspin"
     self.attack_pitch = 0.9

@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "tough_glove")
+local item, super = Class(LightEquipItem, "light/tough_glove")
 
 function item:init()
     super.init(self)

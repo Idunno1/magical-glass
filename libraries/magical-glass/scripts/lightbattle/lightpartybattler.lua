@@ -28,6 +28,20 @@ function LightPartyBattler:canTarget()
     return (not self.is_down)
 end
 
+function LightPartyBattler:onTurnStart() end
+
+function LightPartyBattler:onTurnEnd()
+    for _,equip in ipairs(self.chara:getEquipment()) do
+        print("cum")
+        if Game.battle.turn_count % equip:getHealthRegenTurns() == 0 then
+            if equip:getHealthRegenSound() then
+                Assets.stopAndPlaySound(equip:getHealthRegenSound())
+            end
+            self:heal(equip:getHealthRegenAmount())
+        end
+    end
+end
+
 function LightPartyBattler:calculateDamage(amount, min, cap)
     local def = self.chara:getStat("defense")
     local max_hp = self.chara:getStat("health")

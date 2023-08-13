@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "ballet_shoes")
+local item, super = Class(LightEquipItem, "light/ballet_shoes")
 
 function item:init()
     super.init(self)
@@ -30,6 +30,7 @@ function item:init()
     self.attack_speed_variance = nil
     self.attack_start = -50
     self.attack_miss_zone = 2
+    self.display_healing = true
 
     self.attack_sound = "punchstrong"
     

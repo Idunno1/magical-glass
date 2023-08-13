@@ -1,36 +1,34 @@
-local item, super = Class(LightEquipItem, "light/toy_knife")
+local item, super = Class(LightEquipItem, "light/cowboy_hat")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Toy Knife"
+    self.name = "Cowboy Hat"
+    self.short_name = "CowboyHat"
 
     -- Item type (item, key, weapon, armor)
-    self.type = "weapon"
+    self.type = "armor"
     -- Whether this item is for the light world
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 3\n* Made of plastic.\n* A rarity nowadays."
+    self.check = {
+        "Armor DF 12\n* This battle-worn hat makes you\nwant to grow a beard.",
+        "* It also raises ATTACK by 5.",
+        --"* EIGHTEEN NAKED COWBOYS IN THE SHOWERS AT RAM RAAAANCH"
+    }
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 3
+        defense = 12,
+        attack = 5
     }
 
-    self.attack_speed = self.attack_speed * 1.25
-    self.attack_direction = "random"
-
-end
-
-function item:getLightBattleText()
-    return "* You equipped Toy Knife."
 end
 
 return item

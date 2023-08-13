@@ -13,14 +13,14 @@
     "map": "tundra3",
     "party": ["kris", /* "susie", "noelle" */],
     "inventory": {
-        "items": ["toy_knife", "tough_glove", "ballet_shoes", "torn_notebook", "burnt_pan", "empty_gun", "worn_dagger", "light/monster_candy"],
+        "items": ["light/monster_candy", "light/bandage_ut", "light/empty_gun"],
         "key_items": ["cell_phone"]
     },
 
     "equipment": {
         "kris": {
-            "weapon": "stick",
-            "armor": ["light/bandage"]
+            "weapon": "light/stick",
+            "armor": ["light/stained_apron"]
         }
     },
 

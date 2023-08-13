@@ -76,6 +76,10 @@ function lib:createLightEnemy(id, ...)
 end
 
 function lib:registerDebugOptions(debug)
+    local in_game = function() return Kristal.getState() == Game end
+    local in_battle = function() return in_game() and Game.state == "BATTLE" end
+    local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
+
     debug:registerOption("main", "Start Light Encounter", "Start a light encounter.", function()
         debug:enterMenu("light_encounter_select", 0)
     end, in_overworld)
@@ -514,6 +518,20 @@ function lib:init()
 
     Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
+
+    Utils.hook(Item, "onCheck", function(orig, self)
+        if type(self.check) == "string" then
+            Game.world:showText("* \""..self:getName().."\" - "..self:getCheck())
+        elseif type(self.check) == "table" then
+            local text = {}
+            for i, check in ipairs(self:getCheck()) do
+                if i > 1 then
+                    table.insert(text, check)
+                end
+            end
+            Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
+        end
+    end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
@@ -793,24 +811,44 @@ function lib:init()
 
             love.graphics.printf("Use " .. item:getName() .. " on...", 5, 233, 300, "center")
 
-            local offset = 0
-            for _,party in ipairs(Game.party) do
-                love.graphics.print(party.name, -2 + offset, 269)
-                offset = offset + 122
+            if #Game.party == 2 then
+                local offset = 0
+                for _,party in ipairs(Game.party) do
+                    love.graphics.print(party.name, 68 + offset, 269)
+                    offset = offset + 122
+                end
+
+                Draw.setColor(Game:getSoulColor())
+                if self.party_selecting == 1 then
+                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
+                elseif self.party_selecting == 2 then
+                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
+                else
+                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
+                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
+                end
+
+            elseif #Game.party == 3 then
+                local offset = 0
+                for _,party in ipairs(Game.party) do
+                    love.graphics.print(party.name, -2 + offset, 269)
+                    offset = offset + 122
+                end
+
+                Draw.setColor(Game:getSoulColor())
+                if self.party_selecting == 1 then
+                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
+                elseif self.party_selecting == 2 then
+                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
+                elseif self.party_selecting == 3 then
+                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
+                else
+                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
+                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
+                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
+                end
             end
 
-            Draw.setColor(Game:getSoulColor())
-            if self.party_selecting == 1 then
-                Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-            elseif self.party_selecting == 2 then
-                Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-            elseif self.party_selecting == 3 then
-                Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-            else
-                Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-                Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-                Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-            end
         end
 
         LightItemMenu.__super.draw(self)
@@ -821,7 +859,7 @@ function lib:init()
         
         if item.target == "ally" then
             local result = item:onWorldUse(Game.party[self.party_selecting])
-        elseif item.target == "party" then
+        elseif item.target == "party" or item.target == "none" then
             local result = item:onWorldUse(Game.party)
         end
         

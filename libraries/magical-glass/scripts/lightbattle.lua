@@ -677,7 +677,7 @@ function LightBattle:processAction(action)
         else
             local text = item:getLightBattleText(battler, action.target)
             if text then
-                if item:includes(HealItem) and item.display_healing then
+                if item.heal_amount and item.display_healing then
                     local message
                     local bonus = 0
                     for _,equip in ipairs(battler.chara:getEquipment()) do
@@ -1375,6 +1375,11 @@ function LightBattle:nextTurn()
     if self.turn_count > 1 then
         if self.encounter:onTurnEnd() then
             return
+        end
+        for _,party in ipairs(self.party) do
+            if party:onTurnEnd() then
+                return
+            end
         end
         for _,enemy in ipairs(self:getActiveEnemies()) do
             if enemy:onTurnEnd() then
@@ -2087,10 +2092,10 @@ function LightBattle:commitSingleAction(action)
                 local result_item = action.data:createResultItem()
                 Game.inventory:setItem(storage, index, result_item)
                 action.result_item = result_item
-            elseif action.data.type == "item" then
+            else
                 Game.inventory:removeItem(action.data)
-                action.consumed = true
             end
+            action.consumed = true
         else
             action.consumed = false
         end

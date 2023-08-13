@@ -98,7 +98,7 @@ function HealItem:useOnAllyWorldText(target)
     return "* " .. target.name .. " ate the " .. self:getName() .. "."
 end
 
-function HealItem:useOnEveryoneWorldText(target)
+function HealItem:useOnPartyWorldText(target)
     return "* Everyone ate the " .. self:getName() .. "."
 end
 

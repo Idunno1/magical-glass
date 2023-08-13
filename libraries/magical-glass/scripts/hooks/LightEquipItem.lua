@@ -10,6 +10,10 @@ function LightEquipItem:init()
     self.heal_bonus = 0
     self.inv_bonus = 0
 
+    self.regen_health = 0
+    self.regen_turns = 0
+    self.regen_sound = "power"
+
     self.attack_bolts = 1
 
     self.attack_speed = 11 -- negative if left, positive if right.
@@ -31,6 +35,10 @@ end
 
 function LightEquipItem:getHealBonus() return self.heal_bonus end
 function LightEquipItem:getInvBonus() return self.inv_bonus end
+
+function LightEquipItem:getHealthRegenAmount() return self.regen_health end
+function LightEquipItem:getHealthRegenTurns() return self.regen_turns end
+function LightEquipItem:getHealthRegenSound() return self.regen_sound end
 
 function LightEquipItem:getAttackBolts() return self.attack_bolts end
 
@@ -98,6 +106,10 @@ function LightEquipItem:onWorldUse(target)
     self:onEquip(chara, replacing)
 
     self:showEquipText()
+    return false
+end
+
+function LightEquipItem:onBattleSelect(user, target)
     return false
 end
 

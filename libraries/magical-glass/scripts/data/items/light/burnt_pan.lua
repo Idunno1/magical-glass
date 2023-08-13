@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "burnt_pan")
+local item, super = Class(LightEquipItem, "light/burnt_pan")
 
 function item:init()
     super.init(self)
@@ -12,7 +12,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 10\n* Damage is rather consistent.\nConsumable items heal 4 more HP."
+    self.check = "Weapon AT 10\n* Damage is rather consistent.\n* Consumable items heal 4 more HP."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"

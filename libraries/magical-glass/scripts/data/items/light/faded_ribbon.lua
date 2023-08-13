@@ -1,36 +1,35 @@
-local item, super = Class(LightEquipItem, "light/toy_knife")
+local item, super = Class(LightEquipItem, "light/faded_ribbon")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Toy Knife"
+    self.name = "Faded Ribbon"
+    self.short_name = "Ribbon"
 
     -- Item type (item, key, weapon, armor)
-    self.type = "weapon"
+    self.type = "armor"
     -- Whether this item is for the light world
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 3\n* Made of plastic.\n* A rarity nowadays."
+    self.check = "Armor DF 3\n* If you're cuter, monsters\nwon't hit you as hard."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 3
+        defense = 3
     }
 
-    self.attack_speed = self.attack_speed * 1.25
-    self.attack_direction = "random"
-
+    -- Default dark item conversion for this item
+    self.dark_item = "white_ribbon"
 end
 
-function item:getLightBattleText()
-    return "* You equipped Toy Knife."
+function item:showEquipText()
+    Game.world:showText("* You equipped the ribbon.")
 end
 
 return item
