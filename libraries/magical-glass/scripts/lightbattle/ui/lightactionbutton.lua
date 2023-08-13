@@ -145,7 +145,7 @@ function LightActionButton:select()
 
                         if not item.target or item.target == "none" then
                             Game.battle:pushAction("ITEM", nil, menu_item)
-                        elseif item.target == "ally" and #Game.battle:getActiveParty() == 1 then
+                        elseif item.target == "ally" and #Game.battle.party == 1 then
                             Game.battle:pushAction("ITEM", Game.battle.party[1], menu_item)
                         elseif item.target == "ally" then
                             Game.battle:setState("PARTYSELECT", "ITEM")

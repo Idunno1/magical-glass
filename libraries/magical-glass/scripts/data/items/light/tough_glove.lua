@@ -21,6 +21,10 @@ function item:init()
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
+    self.bonuses = {
+        attack = 5
+    }
+
     self.attack_speed = self.attack_speed * 1.2
     self.attack_punches = 4
     self.attack_punch_time = 2

@@ -21,10 +21,15 @@ function item:init()
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
+    self.bonuses = {
+        attack = 5
+    }
+
     self.attack_bolts = 4
-    self.attack_speed = 10
+    self.attack_speed = 8
     self.attack_speed_variance = nil
     self.attack_direction = "random"
+    self.attack_miss_zone = 22
     self.multibolt_variance = {{15}, {50}, {85}}
 
     self.attack_sound = "punchstrong"
@@ -37,7 +42,7 @@ end
 
 function item:onHit(lane)
     local battler = lane.battler
-    local enemy = Game.battle:getActionBy(lane.battler).target
+    local enemy = Game.battle:getActionBy(battler).target
 
     Assets.playSound("punchweak")
     local small_punch = Sprite("effects/attack/hyperfist")

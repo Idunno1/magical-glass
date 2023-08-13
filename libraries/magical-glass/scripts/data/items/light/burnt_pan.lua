@@ -53,6 +53,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     sprite.color = battler.chara.color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     --Game.battle:shakeCamera(3, 3, 2)
+    sprite:play(2/30, true)
 
     if crit then
         sprite:setColor(1, 1, 130/255)
@@ -78,7 +79,6 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
 
     Game.battle.timer:during(25/30, function()
 
-        sprite:play(2/30, true)
         sprite.rotation = sprite.rotation + math.rad(angle) * DTMULT
         if form == 0 then
             size = size + 0.3 * DTMULT

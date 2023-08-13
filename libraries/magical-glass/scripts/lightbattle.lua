@@ -2080,6 +2080,7 @@ function LightBattle:commitSingleAction(action)
         local result = action.data:onBattleSelect(battler, action.target)
         if result ~= false then
             local storage, index = Game.inventory:getItemIndex(action.data)
+
             action.item_storage = storage
             action.item_index = index
             if action.data:hasResultItem() then
@@ -2907,7 +2908,7 @@ function LightBattle:handleActionSelectInput(key)
     elseif Input.isCancel(key) then
         local old_selecting = self.current_selecting
 
-        --self:previousParty() character stack doesn't exist yet
+        --self:previousParty()
 
         if self.current_selecting ~= old_selecting then
             self:playMoveSound()
@@ -2952,16 +2953,14 @@ function LightBattle:handleAttackingInput(key)
 
             if closest then
                 for _,attack in ipairs(closest_attacks) do
-                    if self.battle_ui.attack_box:evaluateHit(battler, close) then
-                        local points, stretch = self.battle_ui.attack_box:hit(attack)
+                    local points, stretch = self.battle_ui.attack_box:hit(attack)
 
-                        local action = self:getActionBy(attack.battler)
-                        action.points = points
-                        action.stretch = stretch
+                    local action = self:getActionBy(attack.battler)
+                    action.points = points
+                    action.stretch = stretch
 
-                        if self:processAction(action) then
-                            self:finishAction(action)
-                        end
+                    if self:processAction(action) then
+                        self:finishAction(action)
                     end
                 end
             end

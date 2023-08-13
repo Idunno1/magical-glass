@@ -20,7 +20,7 @@ function LightEquipItem:init()
 
     self.attack_direction = "right" -- "right", "left", or "random"
 
-    self.attack_miss_zone = 295 -- negative if left, positive if right
+    self.attack_miss_zone = 296 -- negative if left, positive if right
 
     -- Sound played when attacking, defaults to laz_c
     self.attack_sound = "laz_c"
@@ -64,6 +64,7 @@ function LightEquipItem:getAttackDirection()
 end
 
 function LightEquipItem:getAttackMissZone() return self.attack_miss_zone end
+
 function LightEquipItem:getAttackSound() return self.attack_sound end
 function LightEquipItem:getAttackPitch() return self.attack_pitch end
 
@@ -112,6 +113,7 @@ function LightEquipItem:onLightBattleUse(user, target)
         if chara:getWeapon() then
             replacing = chara:getWeapon()
             replacing:onUnequip(chara, self)
+            local action = Game.battle:getCurrentAction()
             Game.inventory:replaceItem(self, replacing)
         end
         chara:setWeapon(self)

@@ -1154,6 +1154,21 @@ function lib:init()
         self.ut_money = data.ut_money or 0
     end)
 
+    Utils.hook(Inventory, "getItemIndex", function(orig, self, item)
+        if type(item) == "string" then
+            for k,v in pairs(self.stored_items) do
+                if k.id == item then
+                    return v.storage, v.index
+                end
+            end
+        else
+            local stored = self.stored_items[item]
+            if stored then
+                return stored.storage, stored.index
+            end
+        end
+    end)
+
     Utils.hook(Inventory, "replaceItem", function(orig, self, item, new)
         local storage, index = self:getItemIndex(item)
         if storage and new then

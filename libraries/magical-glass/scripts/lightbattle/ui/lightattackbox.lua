@@ -10,7 +10,7 @@ function LightAttackBox:init(x, y)
     -- called "fatal" for some reason in ut
     self.bolt_target = -1
 
-    self.attackers = Game.battle.normal_attackers -- deep copying crashes
+    self.attackers = Game.battle.normal_attackers
     self.lanes = {}
 
     for i,battler in ipairs(self.attackers) do
@@ -73,7 +73,6 @@ function LightAttackBox:getClose(battler)
 end
 
 function LightAttackBox:evaluateHit(battler, close)
-    print(close)
     if close < 1 then
         return 110
     elseif close < 2 then
@@ -121,7 +120,11 @@ function LightAttackBox:hit(battler)
     if battler.attack_type == "shoe" then
         local close = math.abs(self:getClose(battler))
 
-        battler.score = battler.score + self:evaluateHit(battler, close)
+        if not self:evaluateHit(battler, close) then
+            battler.score = battler.score + 10
+        else
+            battler.score = battler.score + self:evaluateHit(battler, close)
+        end
 
         bolt:burst()
 
@@ -168,19 +171,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > battler.weapon:getAttackMissZone()
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) <= -296 + 14) or (battler.direction == "right" and self:getClose(battler) >= 296)
-    end
-end
-
-function LightAttackBox:checkValid(battler)
-    if battler.attack_type == "shoe" then
-        if battler.direction == "left" then
-            return self:getClose(battler) < 28
-        else
-            return self:getClose(battler) > -28
-        end
-    else
-        return true
+        return (battler.direction == "left" and self:getClose(battler) <= -battler.weapon:getAttackMissZone() + 14) or (battler.direction == "right" and self:getClose(battler) >= battler.weapon:getAttackMissZone())
     end
 end
 
