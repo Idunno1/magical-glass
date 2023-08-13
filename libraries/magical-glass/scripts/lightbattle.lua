@@ -2084,13 +2084,13 @@ function LightBattle:commitSingleAction(action)
             action.item_storage = storage
             action.item_index = index
             if action.data:hasResultItem() then
-                local result_item = action.data:createResultItem()
+                local result_item = action.data:createResultIteequippm()
                 Game.inventory:setItem(storage, index, result_item)
                 action.result_item = result_item
-            else
+            elseif action.data.type == "item" then
                 Game.inventory:removeItem(action.data)
+                action.consumed = true
             end
-            action.consumed = true
         else
             action.consumed = false
         end
