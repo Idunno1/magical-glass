@@ -107,13 +107,12 @@ end
 
 function LightEquipItem:onLightBattleUse(user, target)
     Assets.playSound("item")
-    local chara = user.chara
+    local chara = target.chara
     local replacing = nil
     if self.type == "weapon" then
         if chara:getWeapon() then
             replacing = chara:getWeapon()
             replacing:onUnequip(chara, self)
-            local action = Game.battle:getCurrentAction()
             Game.inventory:replaceItem(self, replacing)
         end
         chara:setWeapon(self)

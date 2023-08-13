@@ -179,7 +179,7 @@ function LightActionButton:select()
                         if Game.battle.encounter.flee_chance >= 0 then
                             Game.battle:setState("FLEEING")
                         else
-                            Game.battle:setState("FLEEFAIL") -- in undertale it skips right to the enemy's turn when failing with no message
+                            Game.battle:setState("FLEEFAIL")
                         end
                     end
                 })

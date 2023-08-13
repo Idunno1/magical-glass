@@ -89,7 +89,9 @@ function LightAttackBox:evaluateHit(battler, close)
         return 20
     elseif close < 22 then
         return 15
-    elseif close < 28 then -- moves the bolt onto the target
+    elseif close < 28 then
+        return 10
+    else
         return 10
     end
 end
@@ -120,11 +122,7 @@ function LightAttackBox:hit(battler)
     if battler.attack_type == "shoe" then
         local close = math.abs(self:getClose(battler))
 
-        if not self:evaluateHit(battler, close) then
-            battler.score = battler.score + 10
-        else
-            battler.score = battler.score + self:evaluateHit(battler, close)
-        end
+        battler.score = battler.score + self:evaluateHit(battler, close)
 
         bolt:burst()
 
@@ -136,6 +134,8 @@ function LightAttackBox:hit(battler)
             Assets.stopAndPlaySound("hit")
             bolt.sprite:setColor(128/255, 1, 1)
         elseif close < 28 then
+            bolt.sprite:setColor(192/255, 0, 0)
+        else
             bolt.sprite:setColor(192/255, 0, 0)
         end
 
