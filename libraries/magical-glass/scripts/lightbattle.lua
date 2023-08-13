@@ -2084,7 +2084,7 @@ function LightBattle:commitSingleAction(action)
             action.item_storage = storage
             action.item_index = index
             if action.data:hasResultItem() then
-                local result_item = action.data:createResultIteequippm()
+                local result_item = action.data:createResultItem()
                 Game.inventory:setItem(storage, index, result_item)
                 action.result_item = result_item
             elseif action.data.type == "item" then
