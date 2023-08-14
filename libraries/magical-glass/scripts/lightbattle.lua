@@ -1838,10 +1838,13 @@ function LightBattle:updateAttacking()
 end
 
 function LightBattle:draw()
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
+    
     if self.encounter.background then
         self.encounter:drawBackground()
     end
-    
+
     super:draw(self)
 
     self.encounter:draw()

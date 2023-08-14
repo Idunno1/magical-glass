@@ -63,8 +63,8 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     end
     
     Game.battle.timer:during(27/30, function()
-        timer = timer + 1 * DTMULT
-        siner = siner + 1 * DTMULT
+        timer = timer + DTMULT
+        siner = siner + DTMULT
 
         if timer < 15 then
             sprite.scale_x = (math.cos(siner / 2) * 2)
