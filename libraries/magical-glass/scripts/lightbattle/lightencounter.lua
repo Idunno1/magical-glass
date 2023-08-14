@@ -123,7 +123,13 @@ function LightEncounter:getVictoryText(text, money, xp) end
 function LightEncounter:update() end
 
 function LightEncounter:draw(fade) end
-function LightEncounter:drawBackground(fade) end
+function LightEncounter:drawBackground(fade)
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(Assets.getTexture(self.background_image) or Assets.getTexture("ui/lightbattle/backgrounds/battle"), 15, 9)
+end
 
 -- Functions
 

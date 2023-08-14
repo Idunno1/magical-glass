@@ -213,7 +213,19 @@ function LightAttackBox:update()
         end
     end
 
-    if self.fading or Game.battle.cancel_attack then
+    if Game.battle.cancel_attack then
+        if self.lanes[1].attack_type == "slice" then
+            self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+        end
+        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
+        if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
+            Game.battle.timer:after(1, function()
+                self:remove()
+            end)
+        end
+    end
+
+    if self.fading then
         if self.lanes[1].attack_type == "slice" then
             self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
             self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT

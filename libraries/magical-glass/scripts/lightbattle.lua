@@ -1839,11 +1839,9 @@ end
 
 function LightBattle:draw()
     if self.encounter.background then
-        self:drawBackground()
+        self.encounter:drawBackground()
     end
-
-    --self.encounter:drawBackground(0)
-
+    
     super:draw(self)
 
     self.encounter:draw()
@@ -1851,14 +1849,6 @@ function LightBattle:draw()
     if DEBUG_RENDER then
         self:drawDebug()
     end
-end
-
-function LightBattle:drawBackground()
-    love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
-
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(Assets.getTexture(self.encounter.backgroundimage) or Assets.getTexture("ui/lightbattle/backgrounds/battle"), 15, 9)
 end
 
 function LightBattle:getItemIndex()
