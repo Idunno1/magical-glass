@@ -78,11 +78,7 @@ function item:getBattleHealingText(user, target, amount, maxed)
         if #Game.party > 1 then
             message = "* Everyone recovered " .. amount .. " HP."
         else
-            if maxed then
-                message = "* Your HP was maxed out."
-            else
-                message = "* You recovered " .. amount .. " HP."
-            end
+            message = "* You recovered " .. amount .. " HP."
         end
     end
     return message
@@ -100,15 +96,11 @@ function item:getWorldHealingText(target, amount, maxed)
         else
             message = target.name .. " recovered " .. amount .. " HP."
         end
-    elseif item.target == "party" then
+    elseif self.target == "party" then
         if #Game.party > 1 then
             message = "* Everyone recovered " .. amount .. " HP."
         else
-            if maxed then
-                message = "* Your HP was maxed out."
-            else
-                message = "* You recovered " .. amount .. " HP."
-            end
+            message = "* You recovered " .. amount .. " HP."
         end
     end
     return message
