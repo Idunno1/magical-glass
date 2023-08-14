@@ -1178,11 +1178,10 @@ function LightBattle:onStateChange(old,new)
             end
 
             for _,member in ipairs(self.party) do
-                member.chara.lw_exp = member.chara.lw_exp + self.xp
                 local lv = member.chara:getLightLV()
+                member.chara:gainLightEXP(self.xp, true)
 
-                if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                    member.chara:setLevel(lv + 1)
+                if lv ~= member.chara:getLightLV() then
                     win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
                 end
             end
@@ -1196,12 +1195,11 @@ function LightBattle:onStateChange(old,new)
             end
 
             for _,member in ipairs(self.party) do
-                member.chara.lw_exp = member.chara.lw_exp + self.xp
                 local lv = member.chara:getLightLV()
+                member.chara:gainLightEXP(self.xp, true)
 
-                if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                    member.chara:setLevel(lv + 1)
-                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. ".\n* Your LOVE increased."
+                if lv ~= member.chara:getLightLV() then
+                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
                 end
             end
         end

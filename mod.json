@@ -19,8 +19,8 @@
 
     "equipment": {
         "kris": {
-            "weapon": "light/stick",
-            "armor": ["light/stained_apron"]
+            "weapon": "light/pencil",
+            "armor": ["light/bandage"]
         }
     },
 

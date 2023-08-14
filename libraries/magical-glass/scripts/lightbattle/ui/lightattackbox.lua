@@ -219,8 +219,10 @@ function LightAttackBox:update()
             self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
         end
         self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-        if self.target_sprite.scale_x < 0.08 then
-            self:remove()
+        if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
+            Game.battle.timer:after(1, function()
+                self:remove()
+            end)
         end
     end
 

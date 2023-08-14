@@ -76,13 +76,12 @@ function LightEncounter:onFlee()
 
         self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency") .. "."
 
-        for _,member in ipairs(Game.battle.party) do
-            member.chara.lw_exp = member.chara.lw_exp + xp
+        for _,member in ipairs(self.party) do
             local lv = member.chara:getLightLV()
-    
-            if member.chara.lw_exp >= member.chara:getLightEXPNeeded(lv + 1) then
-                member.chara:setLevel(lv + 1)
-                --self.used_flee_message = "* Ran away with " .. Game.battle.xp .. " EXP\n  and " .. Game.battle.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+            member.chara:gainLightEXP(self.xp, true)
+
+            if lv ~= member.chara:getLightLV() then
+                win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
             end
         end
 
@@ -93,14 +92,10 @@ function LightEncounter:onFlee()
     -- todo: layer soul under arena while escaping
 
     Game.battle.arena.collider.colliders = {}
+    
     Game.battle.soul.y = Game.battle.soul.y + 4
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
-
---[[     Game.battle:battleText("[noskip]"..message.."[wait: 30]", function() -- this text is printed at the position of the spare option
-        Game.battle:setState("TRANSITIONOUT")
-        self:onBattleEnd()
-    end) ]]
 
     Game.battle.timer:script(function(wait)
         wait(1)

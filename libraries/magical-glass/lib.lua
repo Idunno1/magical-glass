@@ -926,6 +926,13 @@ function lib:init()
     
         orig(self)
 
+        self.dw_weapon_default = "wood_blade"
+        if Game.chapter >= 2 then
+            self.dw_armor_default = {"amber_card", "amber_card"}
+        else
+            self.dw_armor_default = {}
+        end
+
         self.lw_portrait = nil
 
         self.light_color = nil
@@ -946,30 +953,67 @@ function lib:init()
     
         Assets.stopAndPlaySound("levelup")
 
-        self.lw_stats = {
-            health = (16 + (self:getLightLV() * 4)),
-            attack = (8 + (self:getLightLV() * 2)),
-            defense = (9 + math.ceil(self:getLightLV() / 4)),
-            magic = 0
-        }
+        local old_lv = self:getLightLV()
 
-        if self:getLightLV() >= 20 then
+        local new_lv
+        for lv, exp in pairs(self.lw_exp_needed) do
+            if self.lw_exp >= exp then
+                new_lv = lv
+            end
+        end
+
+        if old_lv ~= new_lv then
+            self:setLightLV(new_lv)
+
             self.lw_stats = {
-                health = 99,
-                attack = 99,
-                defense = 99,
+                health = (16 + (self:getLightLV() * 4)),
+                attack = (8 + (self:getLightLV() * 2)),
+                defense = (9 + math.ceil(self:getLightLV() / 4)),
                 magic = 0
             }
+    
+            if self:getLightLV() >= 20 then
+                self.lw_stats = {
+                    health = 99,
+                    attack = 99,
+                    defense = 99,
+                    magic = 0
+                }
+            end
         end
 
     end)
 
-    Utils.hook(PartyMember, "setLevel", function(orig, self, level)
-    
-        self.lw_lv = level
-        self.lw_exp = self:getLightEXPNeeded(level)
-        self:onLightLevelUp()
+    Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
+        self.lw_exp = exp
 
+        if level_up then
+            self:onLightLevelUp()
+        end
+    end)
+
+    Utils.hook(PartyMember, "gainLightEXP", function(orig, self, exp, level_up)
+        self.lw_exp = self.lw_exp + exp
+
+        if level_up then
+            self:onLightLevelUp()
+        end
+    end)
+
+    Utils.hook(PartyMember, "setLightLV", function(orig, self, level)
+        self.lw_lv = level
+        if self.lw_lv > #self.lw_exp_needed then
+            self.lw_lv = #self.lw_exp_needed
+        end
+        self:onLightLevelUp()
+    end)
+
+    Utils.hook(PartyMember, "gainLightLV", function(orig, self, level)
+        self.lw_lv = self.lw_lv + level
+        if self.lw_lv > #self.lw_exp_needed then
+            self.lw_lv = #self.lw_exp_needed
+        end
+        self:onLightLevelUp()
     end)
 
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)

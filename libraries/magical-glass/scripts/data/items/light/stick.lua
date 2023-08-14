@@ -23,7 +23,7 @@ function item:init()
     self.target = "none"
 
     -- Default dark item conversion for this item
-    self.dark_item = "woodier_blade"
+    --self.dark_item = "woodier_blade"
 end
 
 function item:onWorldUse(target)

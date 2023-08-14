@@ -10,7 +10,7 @@ function Dummy:init()
 
     -- Enemy health
     self.max_health = 70
-    self.health = 900
+    self.health = 1
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
