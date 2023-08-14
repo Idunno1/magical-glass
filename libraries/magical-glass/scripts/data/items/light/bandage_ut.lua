@@ -33,9 +33,9 @@ function item:onWorldUse(target)
 
     Assets.playSound("power")
     if target.id == Game.party[1].id then
-        Game.world:heal(target, self.heal_amount + bonus, "* You re-applied the bandage.", self, true)
+        Game.world:heal(target, self.heal_amount + bonus, "* You re-applied the bandage.", self)
     else
-        Game.world:heal(target, self.heal_amount + bonus, "* " .. target:getName() .. " re-applied the bandage.", self, true)
+        Game.world:heal(target, self.heal_amount + bonus, "* " .. target:getName() .. " re-applied the bandage.", self)
     end
 
     Game.inventory:removeItem(self)
@@ -60,6 +60,58 @@ end
 
 function item:worldUseSound(target)
     Assets.stopAndPlaySound("power")
+end
+
+function item:getBattleHealingText(user, target, amount, maxed)
+    local message
+    if self.target == "ally" then
+        if target.id == Game.battle.party[1].chara.id and maxed then
+            message = "* Your HP was maxed out."
+        elseif target.id == Game.battle.party[1].chara.id and not maxed then
+            message = "* You recovered " .. amount .. " HP."
+        elseif maxed then
+            message = target.name .. "'s HP was maxed out."
+        else
+            message = target.name .. " recovered " .. amount .. " HP."
+        end
+    elseif self.target == "party" then
+        if #Game.party > 1 then
+            message = "* Everyone recovered " .. amount .. " HP."
+        else
+            if maxed then
+                message = "* Your HP was maxed out."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        end
+    end
+    return message
+end
+
+function item:getWorldHealingText(target, amount, maxed)
+    local message
+    if self.target == "ally" then
+        if target.id == Game.party[1].id and maxed then
+            message = "* Your HP was maxed out."
+        elseif target.id == Game.party[1].id and not maxed then
+            message = "* You recovered " .. amount .. " HP."
+        elseif maxed then
+            message = target.name .. "'s HP was maxed out."
+        else
+            message = target.name .. " recovered " .. amount .. " HP."
+        end
+    elseif item.target == "party" then
+        if #Game.party > 1 then
+            message = "* Everyone recovered " .. amount .. " HP."
+        else
+            if maxed then
+                message = "* Your HP was maxed out."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        end
+    end
+    return message
 end
 
 return item

@@ -677,7 +677,7 @@ function LightBattle:processAction(action)
         else
             local text = item:getLightBattleText(battler, action.target)
             if text then
-                if item.heal_amount and item.display_healing then
+                if item.heal_amount then
                     local message
                     local bonus = 0
                     for _,equip in ipairs(battler.chara:getEquipment()) do
@@ -685,23 +685,15 @@ function LightBattle:processAction(action)
                     end
                     local amount = item.heal_amount + bonus
                     local chara = action.target.chara
+                    local maxed = false
 
-                    local maxed = chara:getHealth() >= chara:getStat("health")
-
-                    if action.data.target == "ally" then
-                        if chara.id == self.party[1].chara.id and maxed then
-                            message = "* Your HP was maxed out."
-                        elseif chara.id == self.party[1].chara.id and not maxed then
-                            message = "* You recovered " .. amount .. " HP."
-                        elseif maxed then
-                            message = chara.name .. "'s HP was maxed out."
-                        else
-                            message = chara.name .. " recovered " .. amount .. " HP."
-                        end
-                    elseif action.data.target == "party" then
-                        message = "* Everyone recovered " .. amount .. " HP."
+                    if chara then
+                        maxed = chara:getHealth() >= chara:getStat("health")
                     end
-                    text = text .. "\n" .. message
+                    print(maxed)
+
+                    text = text .. "\n" .. item:getBattleHealingText(battler, chara, amount, maxed)
+
                 end
                 self:battleText(text)
             end

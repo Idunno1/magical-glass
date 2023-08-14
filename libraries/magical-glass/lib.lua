@@ -511,8 +511,6 @@ function lib:init()
         self.short_name = nil
         -- Serious name for the light battle item menu
         self.serious_name = nil
-        -- Should the item display how much HP was healed after its message?
-        self.display_healing = true
     
     end)
 
@@ -873,7 +871,7 @@ function lib:init()
 
     end)
 
-    Utils.hook(World, "heal", function(orig, self, target, amount, text, item, display_healing)
+    Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
   
         if type(target) == "string" then
             target = Game:getPartyMember(target)
@@ -888,18 +886,8 @@ function lib:init()
 
         if Game:isLight() then
             local message
-            if item.target == "ally" and display_healing then
-                if target.id == Game.party[1].id and maxed then
-                    message = "* Your HP was maxed out."
-                elseif target.id == Game.party[1].id and not maxed then
-                    message = "* You recovered " .. amount .. " HP."
-                elseif maxed then
-                    message = target.name .. "'s HP was maxed out."
-                else
-                    message = target.name .. " recovered " .. amount .. " HP."
-                end
-            elseif item.target == "party" and display_healing then
-                message = "* Everyone recovered " .. amount .. " HP."
+            if item and item:getWorldHealingText(target) then
+                item:getWorldHealingText(target, amount, maxed)
             end
 
             if text then

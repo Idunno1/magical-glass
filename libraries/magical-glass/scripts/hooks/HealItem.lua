@@ -13,13 +13,13 @@ function HealItem:onWorldUse(target)
     if self.target == "ally" then
         self:worldUseSound(target)
         local amount = self:getWorldHealAmount(target.id) + bonus
-        Game.world:heal(target, amount, text, self, self.display_healing)
+        Game.world:heal(target, amount, text, self)
         return true
     elseif self.target == "party" then
         self:worldUseSound(target)
         for _,party_member in ipairs(target) do
             local amount = self:getWorldHealAmount(party_member.id) + bonus
-            Game.world:heal(party_member, amount, text, self, self.display_healing)
+            Game.world:heal(party_member, amount, text, self)
         end
         return true
     else
@@ -45,7 +45,7 @@ function HealItem:onLightBattleUse(user, target)
         self:battleUseSound(target)
         for _,battler in ipairs(target) do
             local amount = self:getBattleHealAmount(battler.chara.id)
-            target:heal(amount + bonus)
+            battler:heal(amount + bonus)
         end
         return true
     elseif self.target == "enemy" then
@@ -72,7 +72,11 @@ function HealItem:getLightBattleText(user, target)
     elseif self.target == "ally" then
         return self:useOnAllyBattleText(user, target)
     elseif self.target == "party" then
-        return self:useOnPartyBattleText(user, target)
+        if #Game.party > 1 then
+            return self:useOnPartyBattleText(user, target)
+        else
+            return self:useOnPlayerBattleText(user, target)
+        end
     elseif self.target == "enemy" then
         return self:useOnEnemyBattleText(user, target)
     elseif self.target == "enemies" then
@@ -86,7 +90,11 @@ function HealItem:getWorldUseText(target)
     elseif self.target == "ally" then
         return self:useOnAllyWorldText(target)
     elseif self.target == "party" then
-        return self:useOnPartyWorldText(target)
+        if #Game.party > 1 then
+            return self:useOnPartyWorldText(target)
+        else
+            return self:useOnPlayerWorldText(target)
+        end
     end
 end
 
@@ -103,7 +111,7 @@ function HealItem:useOnPartyWorldText(target)
 end
 
 function HealItem:useOnPlayerBattleText(user, target)
-    return "* You ate the " .. self:getName() .. "!"
+    return "* You ate the " .. self:getName() .. "."
 end
 
 function HealItem:useOnAllyBattleText(user, target)
@@ -120,6 +128,50 @@ end
 
 function HealItem:useOnEnemiesBattleText(user, target)
     return "* " .. target.chara.name .. " used the " .. self:getName() .. "."
+end
+
+function HealItem:getWorldHealingText(target, amount, maxed)
+    local message
+    if self.target == "ally" then
+        if target.id == Game.party[1].id and maxed then
+            message = "* Your HP was maxed out."
+        elseif target.id == Game.party[1].id and not maxed then
+            message = "* You recovered " .. amount .. " HP."
+        elseif maxed then
+            message = target.name .. "'s HP was maxed out."
+        else
+            message = target.name .. " recovered " .. amount .. " HP."
+        end
+    elseif item.target == "party" then
+        if #Game.party > 1 then
+            message = "* Everyone recovered " .. amount .. " HP."
+        else
+            message = "* You recovered " .. amount .. " HP."
+        end
+    end
+    return message
+end
+
+function HealItem:getBattleHealingText(user, target, amount, maxed)
+    local message
+    if self.target == "ally" then
+        if target.id == Game.battle.party[1].chara.id and maxed then
+            message = "* Your HP was maxed out."
+        elseif target.id == Game.battle.party[1].chara.id and not maxed then
+            message = "* You recovered " .. amount .. " HP."
+        elseif maxed then
+            message = target.name .. "'s HP was maxed out."
+        else
+            message = target.name .. " recovered " .. amount .. " HP."
+        end
+    elseif self.target == "party" then
+        if #Game.battle.party > 1 then
+            message = "* Everyone recovered " .. amount .. " HP."
+        else
+            message = "* You recovered " .. amount .. " HP."
+        end
+    end
+    return message
 end
 
 function HealItem:battleUseSound(target)
