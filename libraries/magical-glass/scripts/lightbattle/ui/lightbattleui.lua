@@ -268,7 +268,7 @@ function LightBattleUI:drawState()
 
         -- Print information about currently selected item
         local tp_offset = 0
-        local current_item = Game.battle.menu_items[Game.battle:getItemIndex()]
+        local current_item = Game.battle.menu_items[Game.battle:getItemIndex()] or Game.battle.menu_items[1] -- crash prevention in case of an invalid option
         if current_item.description then
             Draw.setColor(COLORS.gray)
             local str = current_item.description:gsub('\n', ' ')

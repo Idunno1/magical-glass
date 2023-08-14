@@ -938,35 +938,36 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
-    
-        Assets.stopAndPlaySound("levelup")
 
-        local old_lv = self:getLightLV()
+        if self:getLightLV() < #self.lw_exp_needed then
+            local old_lv = self:getLightLV()
 
-        local new_lv
-        for lv, exp in pairs(self.lw_exp_needed) do
-            if self.lw_exp >= exp then
-                new_lv = lv
+            local new_lv
+            for lv, exp in pairs(self.lw_exp_needed) do
+                if self.lw_exp >= exp then
+                    new_lv = lv
+                end
             end
-        end
 
-        if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
-            self:setLightLV(new_lv)
+            if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
+                Assets.stopAndPlaySound("levelup")
+                self:setLightLV(new_lv)
 
-            self.lw_stats = {
-                health = (16 + (self:getLightLV() * 4)),
-                attack = (8 + (self:getLightLV() * 2)),
-                defense = (9 + math.ceil(self:getLightLV() / 4)),
-                magic = 0
-            }
-    
-            if self:getLightLV() >= 20 then
                 self.lw_stats = {
-                    health = 99,
-                    attack = 99,
-                    defense = 99,
+                    health = (16 + (self:getLightLV() * 4)),
+                    attack = (8 + (self:getLightLV() * 2)),
+                    defense = (9 + math.ceil(self:getLightLV() / 4)),
                     magic = 0
                 }
+        
+                if self:getLightLV() >= #self.lw_exp_needed then
+                    self.lw_stats = {
+                        health = 99,
+                        attack = 99,
+                        defense = 99,
+                        magic = 0
+                    }
+                end
             end
         end
 
@@ -993,9 +994,14 @@ function lib:init()
         self:onLightLevelUp(level)
     end)
 
-    Utils.hook(PartyMember, "forceLV", function(orig, self, level)
+    Utils.hook(PartyMember, "forceLV", function(orig, self, level, ignore_cap)
         self.lw_lv = level
-        self.lw_exp = self:getLightEXPNeeded(level)
+
+        if self.lw_lv >= #self.lw_exp_needed then
+            self.lw_exp = self.lw_exp_needed[#self.lw_exp_needed]
+        else
+            self.lw_exp = self:getLightEXPNeeded(level)
+        end
 
         self.lw_stats = {
             health = (16 + (self:getLightLV() * 4)),
@@ -1004,13 +1010,15 @@ function lib:init()
             magic = 0
         }
 
-        if self:getLightLV() >= 20 then
-            self.lw_stats = {
-                health = 99,
-                attack = 99,
-                defense = 99,
-                magic = 0
-            }
+        if not ignore_cap then
+            if self:getLightLV() >= #self.lw_exp_needed then
+                self.lw_stats = {
+                    health = 99,
+                    attack = 99,
+                    defense = 99,
+                    magic = 0
+                }
+            end
         end
     end)
 

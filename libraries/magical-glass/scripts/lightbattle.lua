@@ -1689,14 +1689,6 @@ function LightBattle:update()
         -- self:updateWaves()
     end
 
-    -- in case someone wants the dr battle background for some reason
-
-    self.offset = self.offset + 1 * DTMULT
-
-    if self.offset > 100 then
-        self.offset = self.offset - 100
-    end
-
     if self.state ~= "TRANSITIONOUT" then
         self.encounter:update()
     end
@@ -1840,7 +1832,7 @@ end
 function LightBattle:draw()
     love.graphics.setColor(0, 0, 0, 1)
     love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
-    
+
     if self.encounter.background then
         self.encounter:drawBackground()
     end
@@ -2603,6 +2595,12 @@ function LightBattle:addMenuItem(tbl)
 end
 
 function LightBattle:onKeyPressed(key)
+    if Kristal.Config["debug"] and key == "home" then
+        for _,party in ipairs(self.party) do
+            party.chara:setHealth(999)
+        end
+    end
+
     if Kristal.Config["debug"] and Input.ctrl() then
         if key == "h" then
             for _,party in ipairs(self.party) do
@@ -2658,18 +2656,24 @@ function LightBattle:onKeyPressed(key)
             self:setState("ACTIONSELECT", "CANCEL")
             return
         elseif Input.is("left", key) then
+            local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
             local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
 
             if self.current_menu_columns > 1 then
                 self:playMoveSound()
             end
             self.current_menu_x = self.current_menu_x - 1
-            if self.current_menu_x < 1 then
+            
+            if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns + (max_page + 1)
                 if not self:isValidMenuLocation() then
                     self.current_menu_x = self.current_menu_columns + (max_page + 1) - 1
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_x = self.current_menu_columns + (max_page + 1) - 2
+                    end
                 end
             end
+
         elseif Input.is("right", key) then
             if self.current_menu_columns > 1 then
                 self:playMoveSound()

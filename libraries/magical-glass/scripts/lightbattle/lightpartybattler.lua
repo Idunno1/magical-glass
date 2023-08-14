@@ -32,7 +32,6 @@ function LightPartyBattler:onTurnStart() end
 
 function LightPartyBattler:onTurnEnd()
     for _,equip in ipairs(self.chara:getEquipment()) do
-        print("cum")
         if Game.battle.turn_count % equip:getHealthRegenTurns() == 0 then
             if equip:getHealthRegenSound() then
                 Assets.stopAndPlaySound(equip:getHealthRegenSound())
@@ -47,22 +46,35 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
     local max_hp = self.chara:getStat("health")
 
     -- good shit toby
+--[[     if max_hp > 90 then
+        amount = amount + 1
+    end
+    if max_hp >= 80 then
+        amount = amount + 1
+    end
+    if max_hp >= 70 then
+        amount = amount + 1
+    end
+    if max_hp >= 60 then
+        amount = amount + 1
+    end
+    if max_hp >= 50 then
+        amount = amount + 1
+    end
+    if max_hp >= 40 then
+        amount = amount + 1
+    end
+    if max_hp >= 30 then
+        amount = amount + 1
+    end
     if max_hp > 20 then
         amount = amount + 1
-    elseif max_hp >= 30 then
-        amount = amount + 1
-    elseif max_hp >= 40 then
-        amount = amount + 1
-    elseif max_hp >= 50 then
-        amount = amount + 1
-    elseif max_hp >= 60 then
-        amount = amount + 1
-    elseif max_hp >= 70 then
-        amount = amount + 1
-    elseif max_hp >= 80 then
-        amount = amount + 1
-    elseif max_hp >= 90 then
-        amount = amount + 1
+    end ]]
+
+    for i = 0, max_hp do
+        if i > 20 and i % 10 == 0 then
+            amount = amount + 1
+        end
     end
 
     amount = Utils.round((amount - def) / 5)

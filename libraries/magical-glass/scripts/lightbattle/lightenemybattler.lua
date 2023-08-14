@@ -90,6 +90,14 @@ function LightEnemyBattler:setTired(bool)
     end ]]
 end
 
+function LightEnemyBattler:removeAct(name)
+    for _,act in ipairs(self.acts) do
+        if act.name == name then
+            act = nil
+        end
+    end
+end
+
 function LightEnemyBattler:registerAct(name, description, party, tp, highlight, icons)
     if type(party) == "string" then
         if party == "all" then

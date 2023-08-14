@@ -10,11 +10,11 @@ function Dummy:init()
 
     -- Enemy health
     self.max_health = 70
-    self.health = 1
+    self.health = 70
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
-    self.defense = 0
+    self.defense = 5
     -- Enemy reward
     self.money = 2
     self.experience = 10
@@ -26,8 +26,8 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
---[[         "basic",
-        "aiming",
+        "basic",
+--[[         "aiming",
         "movingarena" ]]
     }
 
@@ -50,6 +50,7 @@ function Dummy:init()
 
     -- Register act called "Smile"
     self:registerAct("Smile")
+    self:registerAct("deltarune")
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})
@@ -74,6 +75,10 @@ function Dummy:onAct(battler, name)
             enemy:setTired(true)
         end
         return "* You and Ralsei told the dummy\na bedtime story.\n* The enemies became [color:blue]TIRED[color:reset]..."
+
+    elseif name == "deltarune" then
+        Game.battle.encounter:setFlag("deltarune", true)
+        return "* deltrarune"
 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
