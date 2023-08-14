@@ -131,7 +131,7 @@ function HealItem:useOnEnemiesBattleText(user, target)
 end
 
 function HealItem:getWorldHealingText(target, amount, maxed)
-    local message
+    local message = ""
     if self.target == "ally" then
         if target.id == Game.party[1].id and maxed then
             message = "* Your HP was maxed out."
@@ -142,7 +142,7 @@ function HealItem:getWorldHealingText(target, amount, maxed)
         else
             message = target.name .. " recovered " .. amount .. " HP."
         end
-    elseif item.target == "party" then
+    elseif self.target == "party" then
         if #Game.party > 1 then
             message = "* Everyone recovered " .. amount .. " HP."
         else
@@ -153,7 +153,7 @@ function HealItem:getWorldHealingText(target, amount, maxed)
 end
 
 function HealItem:getBattleHealingText(user, target, amount, maxed)
-    local message
+    local message = ""
     if self.target == "ally" then
         if target.id == Game.battle.party[1].chara.id and maxed then
             message = "* Your HP was maxed out."

@@ -886,8 +886,8 @@ function lib:init()
 
         if Game:isLight() then
             local message
-            if item and item:getWorldHealingText(target) then
-                item:getWorldHealingText(target, amount, maxed)
+            if item then
+                message = item:getWorldHealingText(target, amount, maxed)
             end
 
             if text then
