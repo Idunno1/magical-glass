@@ -9,7 +9,7 @@ function LightEncounter:init()
 
     -- Whether the default grid background is drawn
     self.background = true
-    self.background_image = "ui/lightbattle/backgrounds/battle2"
+    self.background_image = "ui/lightbattle/backgrounds/battle"
 
     -- The music used for this encounter
     self.music = "battleut"
