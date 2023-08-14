@@ -949,7 +949,7 @@ function lib:init()
 
     end)
 
-    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self, level)
+    Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
     
         Assets.stopAndPlaySound("levelup")
 
@@ -962,7 +962,7 @@ function lib:init()
             end
         end
 
-        if old_lv ~= new_lv then
+        if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
             self:setLightLV(new_lv)
 
             self.lw_stats = {
@@ -1002,18 +1002,28 @@ function lib:init()
 
     Utils.hook(PartyMember, "setLightLV", function(orig, self, level)
         self.lw_lv = level
-        if self.lw_lv > #self.lw_exp_needed then
-            self.lw_lv = #self.lw_exp_needed
-        end
-        self:onLightLevelUp()
+        self:onLightLevelUp(level)
     end)
 
-    Utils.hook(PartyMember, "gainLightLV", function(orig, self, level)
-        self.lw_lv = self.lw_lv + level
-        if self.lw_lv > #self.lw_exp_needed then
-            self.lw_lv = #self.lw_exp_needed
+    Utils.hook(PartyMember, "forceLV", function(orig, self, level)
+        self.lw_lv = level
+        self.lw_exp = self:getLightEXPNeeded(level)
+
+        self.lw_stats = {
+            health = (16 + (self:getLightLV() * 4)),
+            attack = (8 + (self:getLightLV() * 2)),
+            defense = (9 + math.ceil(self:getLightLV() / 4)),
+            magic = 0
+        }
+
+        if self:getLightLV() >= 20 then
+            self.lw_stats = {
+                health = 99,
+                attack = 99,
+                defense = 99,
+                magic = 0
+            }
         end
-        self:onLightLevelUp()
     end)
 
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
