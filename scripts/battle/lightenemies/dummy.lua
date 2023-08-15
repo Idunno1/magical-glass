@@ -37,7 +37,7 @@ function Dummy:init()
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)
-    self.check = "AT 4 DF 0\n* Cotton heart and button eye\n* Looks just like a fluffy guy."
+    self.check = "ATK Some DEF Probably\n* Cotton heart and button eye\n* Looks just like a fluffy guy."
 
     -- Text randomly displayed at the bottom of the screen each turn
     self.text = {
@@ -77,8 +77,28 @@ function Dummy:onAct(battler, name)
         return "* You and Ralsei told the dummy\na bedtime story.\n* The enemies became [color:blue]TIRED[color:reset]..."
 
     elseif name == "deltarune" then
+        local fuck = self:getAct("deltarune")
+        fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
+        Game:setFlag("enable_lw_tp", true)
+
+        Game.battle.tension_bar = LightTensionBar(-25, 53, false)
+        Game.battle.tension_bar:show()
+        Game.battle:addChild(Game.battle.tension_bar)
         return "* deltrarune"
+
+    elseif name == "undertale" then
+        local fuck = self:getAct("undertale")
+        fuck.name = "deltarune"
+        Game.battle.encounter:setFlag("deltarune", false)
+        Game:setFlag("enable_lw_tp", false)
+
+        Game.battle.tension_bar:hide()
+--[[         Game.battle.timer:after(1, function()
+            Game.battle.tension_bar = nil
+        end) ]]
+        Game.battle:addChild(Game.battle.tension_bar)
+        return "* udnertal"
 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy

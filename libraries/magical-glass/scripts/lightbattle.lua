@@ -863,20 +863,11 @@ function LightBattle:onStateChange(old,new)
         
         self.fader:fadeIn(nil, {speed=5/30})
 
-        if self.state_reason == "CANCEL" then
-            self.timer:after(2/30 * DTMULT, function()
-                self.battle_ui.encounter_text.text.line_offset = 5
-                self.battle_ui:clearEncounterText()
-                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-                self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
-                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            end)
-        else
-            self.battle_ui:clearEncounterText()
-            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
-            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-        end
+        self.battle_ui.encounter_text.text.line_offset = 5
+        self.battle_ui:clearEncounterText()
+        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:3]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -906,20 +897,11 @@ function LightBattle:onStateChange(old,new)
         
         self.fader:fadeIn(nil, {speed=5/30})
 
-        if self.state_reason == "CANCEL" then
-            self.timer:after(2/30 *DTMULT, function()
-                self.battle_ui.encounter_text.text.line_offset = 5
-                self.battle_ui:clearEncounterText()
-                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-                self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
-                self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            end)
-        else
-            self.battle_ui:clearEncounterText()
-            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-            self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
-            self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-        end
+        self.battle_ui.encounter_text.text.line_offset = 5
+        self.battle_ui:clearEncounterText()
+        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
+        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:3]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -940,7 +922,7 @@ function LightBattle:onStateChange(old,new)
             self:tryProcessNextAction()
         end
     elseif new == "MENUSELECT" then
-        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
+        self.battle_ui:clearEncounterText()
         self.current_menu_x = 1
         self.current_menu_y = 1
 
@@ -949,12 +931,12 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_rows = 3
         end
     elseif new == "ENEMYSELECT" then
-        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
+        self.battle_ui:clearEncounterText()
         self.current_menu_x = 1
         self.current_menu_y = 1
         self.selected_enemy = 1
     elseif new == "PARTYSELECT" then
-        self.timer:after(2/30*DTMULT, function() self.battle_ui:clearEncounterText() end)
+        self.battle_ui:clearEncounterText()
         self.current_menu_x = 1
         self.current_menu_y = 1
     elseif new == "ATTACKING" then
