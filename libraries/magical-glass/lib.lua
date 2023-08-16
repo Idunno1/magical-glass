@@ -26,7 +26,7 @@ end
 
 function lib:load()
     if Game.is_new_file then
-        Game:setFlag("serious_mode", false)
+        Game:setFlag("serious_mode", false) -- useful for genocide or boss battles
         Game:setFlag("always_show_magic", false)
         Game:setFlag("undertale_textbox_skipping", true)
         Game:setFlag("enable_lw_tp", false)
@@ -36,8 +36,10 @@ function lib:load()
 
         Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
-        Game:setFlag("undertale_currency", false)
+        Game:setFlag("undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!)
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
+
+        Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
 
         Game:setFlag("random_encounter_table", {})
     end
@@ -1134,7 +1136,11 @@ function lib:init()
             end
         end
 
-        love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
+        if Game.save_name and Game:getFlag("savename_lw_menus", false) == true then
+            love.graphics.print("\"" .. Game.save_name .. "\"", 4, 8)
+        else
+            love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
+        end 
         love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
     
