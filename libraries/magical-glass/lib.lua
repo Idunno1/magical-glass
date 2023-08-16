@@ -505,6 +505,11 @@ function lib:init()
         end
 
     end)
+    
+    Utils.hook(Wave, "setTargetSize", function(orig, self, width, height)
+        self.arena_width = width
+        self.arena_height = height or width
+    end)
 
     Utils.hook(Item, "init", function(orig, self)
     
@@ -1062,13 +1067,7 @@ function lib:init()
     
         orig(self)
         self.party_selecting = 1
-
---[[         self.portrait = Sprite(Assets.getTexture("face/susie/neutral"), 20, 20)
-        self.portrait:setColor(1, 1, 1, 1)
-        self.portrait.layer = 1000
-        self.portrait:setOrigin(0.5, 1)
-        self:addChild(self.portrait)
- ]]
+        
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -1106,11 +1105,6 @@ function lib:init()
 
         LightStatMenu.__super.update(self)
 
-    end)
-
-    Utils.hook(Wave, "setTargetSize", function(orig, self, width, height)
-        self.arena_width = width
-        self.arena_height = height or width
     end)
 
     Utils.hook(LightStatMenu, "draw", function(orig, self)
