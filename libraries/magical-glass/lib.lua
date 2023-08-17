@@ -548,16 +548,6 @@ function lib:init()
         end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
-
-        if type ~= "msg" and self:getHPVisibility() then
-            if self.gauge then
-                self.gauge.amount = self.gauge.amount + arg
-                self.gauge.timer = 0
-            else
-                self.gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
-                self.parent:addChild(self.gauge)
-            end
-        end
     
         local percent = LightDamageNumber(type, arg, x + offset_x, y + offset_y - offset, color)
         if kill then
@@ -567,6 +557,11 @@ function lib:init()
     
         if not kill then
             self.hit_count = self.hit_count + 1
+        end
+
+        if type ~= "msg" and self:getHPVisibility() then
+            local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+            self.parent:addChild(gauge)
         end
     
         return percent

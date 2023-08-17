@@ -34,10 +34,6 @@ end
 function LightGauge:update()
     super.update(self)
 
-    if self.killing then
-        self:remove()
-    end
-
     if self.health > (self.real_health - self.amount) then
         self.health = self.health - (self.amount / 15) * DTMULT
     else
