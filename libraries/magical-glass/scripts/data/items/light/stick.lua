@@ -28,6 +28,7 @@ end
 
 function item:onWorldUse(target)
     Game.world:showText("* You threw the stick away.\n* Then picked it back up.")
+    return false
 end
 
 function item:onLightBattleUse(user, target)

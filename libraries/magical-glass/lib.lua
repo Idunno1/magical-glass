@@ -138,6 +138,8 @@ function lib:init()
         self.is_new_file = data == nil
 
         data = data or {}
+
+        self.ut_money = data.ut_money or 0
   
         if Game:getFlag("temporary_world_value#") then
             if Game:getFlag("temporary_world_value#") == "light" then
@@ -1238,16 +1240,6 @@ function lib:init()
         Kristal.callEvent("save", data)
 
         return data
-    end)
-
-    Utils.hook(Game, "load", function(orig, self, data, index, fade)
-        orig(self, data, index, fade)
-
-        self.is_new_file = data == nil
-
-        data = data or {}
-
-        self.ut_money = data.ut_money or 0
     end)
 
     Utils.hook(Inventory, "getItemIndex", function(orig, self, item)
