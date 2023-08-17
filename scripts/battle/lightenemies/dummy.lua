@@ -16,10 +16,8 @@ function Dummy:init()
     -- Enemy defense (usually 0)
     self.defense = 5
     -- Enemy reward
-    self.money = 2
-    self.experience = 10
-    -- Hide HP in UNDERTALE battles
-    self.hidehp = false
+    self.money = 69
+    self.experience = 420
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0

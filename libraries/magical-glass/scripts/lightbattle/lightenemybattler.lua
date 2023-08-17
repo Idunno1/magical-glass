@@ -43,7 +43,7 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     self.waves = {}
 
-    self.check = "Wake up and taste the [color:red]pain"
+    self.check = "Wake up and taste the [color:red]\npain"
 
     self.text = {}
 
@@ -75,7 +75,16 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.defeated = false
 
     self.current_target = "ANY"
+
+    self.gauge_size = {100, 15}
+    self.damage_offset = {0, -40}
+    self.show_hp = true
 end
+
+function LightEnemyBattler:getGaugeSize() return self.gauge_size end
+function LightEnemyBattler:getDamageOffset() return self.damage_offset end
+
+function LightEnemyBattler:getHPVisibility() return self.show_hp end
 
 function LightEnemyBattler:getExitDirection()
     return self.exit_direction or Utils.random(-2, 2, 1)
@@ -414,8 +423,8 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color)
-    self.health = self.health - amount
     self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+    self.health = self.health - amount
 
     self.hurt_timer = 1
     self:onHurt(amount, battler)
@@ -555,12 +564,13 @@ end
 
 function LightEnemyBattler:heal(amount)
     Assets.stopAndPlaySound("power")
+    self:lightStatusMessage("heal", "+" .. amount, {0, 1, 0})
+
     self.health = self.health + amount
 
     if self.health >= self.max_health then
         self.health = self.max_health
     end
-    self:lightStatusMessage("heal", "+" .. amount, {0, 1, 0})
 
 end
 

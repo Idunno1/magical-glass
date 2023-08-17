@@ -18,8 +18,6 @@ function Dummy:init()
     -- Enemy reward
     self.money = 2
     self.experience = 3
-    -- Hide HP in UNDERTALE battles
-    self.hidehp = false
 
     -- The Speech bubble style
     self.dialogue_bubble = "ut_tall_right"

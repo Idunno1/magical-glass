@@ -9,6 +9,7 @@ LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/ligh
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
 LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/lightdamagenumber")
+LightGauge               = libRequire("magical-glass", "scripts/lightbattle/ui/lightgauge")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
 LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
 LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
@@ -543,8 +544,20 @@ function lib:init()
         if not kill then
             offset = (self.hit_count * 20)
         end
+        
+        local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
+
+        if type ~= "msg" and self:getHPVisibility() then
+            if self.gauge then
+                self.gauge.amount = self.gauge.amount + arg
+                self.gauge.timer = 0
+            else
+                self.gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+                self.parent:addChild(self.gauge)
+            end
+        end
     
-        local percent = LightDamageNumber(type, arg, x + 4, y + 20 - offset, color)
+        local percent = LightDamageNumber(type, arg, x + offset_x, y + offset_y - offset, color)
         if kill then
             percent.kill_others = true
         end

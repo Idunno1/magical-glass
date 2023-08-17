@@ -5,16 +5,18 @@ local LightDamageNumber, super = Class(Object)
 -- Types: "mercy", "damage", "msg"
 -- Arg:
 --    "mercy"/"damage": amount
---    "msg": message sprite name ("down", "frozen", "lost", "max", "mercy", "miss", "recruit", and "up")
+--    "msg": message sprite name ("mercy", "miss")
 
-function LightDamageNumber:init(type, arg, x, y, color, bounce)
+function LightDamageNumber:init(type, arg, x, y, color)
     super.init(self, x, y)
 
-    self:setOrigin(1, 0)
+    self:setOrigin(0.5, 0.5)
 
     self.color = color or {1, 0, 0}
 
-    self.bounce = bounce or true
+    self.physics.speed_y = -4
+    self.physics.gravity = 0.5
+    self.physics.gravity_direction = math.rad(90)
 
     -- Halfway between UI and the layer above it
     self.layer = BATTLE_LAYERS["damage_numbers"]
@@ -33,7 +35,7 @@ function LightDamageNumber:init(type, arg, x, y, color, bounce)
             end
             self.text = "+"..self.amount.."%"
         elseif self.type == "miss" then
-            --self.color = {1, 1, 1}
+            self.color = {1, 1, 1}
         else
             self.text = tostring(self.amount)
         end
@@ -54,22 +56,15 @@ function LightDamageNumber:init(type, arg, x, y, color, bounce)
     self.start_x = nil
     self.start_y = nil
 
-    if self.bounce then
-        self.physics.speed_y = -4
-        self.physics.gravity = 0.5
-        self.physics.gravity_direction = math.rad(90)
-    end
-
     self.kill_timer = 0
-
     self.do_once = false
-
     self.kill_others = false
 end
 
 function LightDamageNumber:onAdd(parent)
+    self.parent = parent
     for _,v in ipairs(parent.children) do
-        if isClass(v) and v:includes(LightDamageNumber) then
+        if isClass(v) and (v:includes(LightDamageNumber)) then
             if self.kill_others then
                 if (v.timer >= 1) then
                     v.killing = true
@@ -94,36 +89,31 @@ function LightDamageNumber:update()
 
     if (self.timer >= self.delay) and (not self.do_once) then
         self.do_once = true
-        self.physics.speed_y = (-5 - (love.math.random() * 2))
         self.start_speed_y = self.physics.speed_y
     end
 
     if self.timer >= self.delay then
-        self.physics.speed_x = Utils.approach(self.physics.speed_x, 0, DTMULT)
 
-        if self.y > self.start_y then
-            self.y = self.start_y
-
-            self.physics.speed_y = self.start_speed_y / 2
-        end
-
-        if self.y == self.start_y then
-            self.physics.speed_y = 0
+        if self.y - 5 > self.start_y then
+            self:resetPhysics()
             self.y = self.start_y
         end
 
         self.kill_timer = self.kill_timer + DTMULT
         if self.kill_timer > 35 then
+            for _,obj in ipairs(self.parent.children) do
+                if isClass(obj) and obj:includes(LightGauge) then
+                    obj:remove()
+                end
+            end
             self:remove()
             return
         end
 
     end
 
-    if Game.state == "BATTLE" then
-        if self.x >= 600 then
-            self.x = 600
-        end
+    if self.x >= 600 then
+        self.x = 600
     end
 end
 
@@ -133,18 +123,12 @@ function LightDamageNumber:draw()
         Draw.setColor(r, g, b, a)
 
         if self.texture then
-            Draw.draw(self.texture, 30, 0)
+            Draw.draw(self.texture, 0, 0)
         elseif self.text then
             love.graphics.setFont(self.font)
-            love.graphics.print(self.text, 30, 0)
+            love.graphics.print(self.text, 0, 0)
         end
     end
-
-    -- need to pass in gauge max
---[[     if true and arg > 0 then -- if the enemy shows their health bar
-        Draw.setColor(COLORS["black"])
-        love.graphics.rectangle("fill", self.x - 1, self.y + 7, self.x + Utils.round())
-    end ]]
 
     super.draw(self)
 end

@@ -866,7 +866,7 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:3]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
         self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
@@ -2577,7 +2577,7 @@ function LightBattle:addMenuItem(tbl)
 end
 
 function LightBattle:onKeyPressed(key)
-    if Kristal.Config["debug"] and key == "home" then
+    if Kristal.Config["debug"] and key == "delete" then
         for _,party in ipairs(self.party) do
             party.chara:setHealth(999)
         end

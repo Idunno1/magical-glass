@@ -1,0 +1,45 @@
+lv1
+kris - hp 20, atk 0 (10?), df 0, mg, 0
+susie - hp 30, atk 2 (12?), df 0, mg 1
+noelle - hp 20, atk 0 (10?), df 0, mg 1
+
+lv2
+kris - hp 24, atk 2
+susie - hp 35, atk 4
+noelle - hp 24, atk 1, mg 2
+
+lv3
+kris - hp 28, atk 4
+susie - hp 40, atk 6
+noelle - hp 28, atk 3, mg 3
+
+paula (locked) - hp 20, at 3, df 0, mg 10
+
+lv4
+kris - hp 32, atk 6
+susie - hp 45, atk 9
+noelle - hp 32, atk 4, mg 4
+
+lv5
+kris - hp 36, atk 8, df 1
+susie - hp 50, atk 11, df 1, mg 2
+noelle - hp 36, atk 5, df 1, mg 5
+
+lv10
+kris - hp 56, atk 18, df 2
+susie - hp 75, atk 22, df 2, mg 3
+noelle - hp 56, atk 12, df 2, mg 10
+
+red buster damage to flowey - at lv1
+consistently 200
+did 250 after dying?
+
+heal prayer healing in peaceful rest valley
+lv 3 - 13 hp
+lv 4 - 15 hp
+
+happy happy village
+lv 5 - 16 hp
+
+shielded damage from blue cultists (20 at), seems to halve damage, rounded down
+lv 5 - to kris & paula: 3, to noelle: 1
