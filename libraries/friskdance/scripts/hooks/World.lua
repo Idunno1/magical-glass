@@ -391,7 +391,7 @@ function World:spawnPlayer(...)
         self:removeChild(self.soul)
     end
 
-    if Game.party[1]:getFlag("undertale", false) == true then
+    if Game.party[1]:getFlag("undertale", false) == true then -- i don't think we need to make an entire copy of the player object if we're changing a bit of its movement -sam
         self.player = PlayerUT(chara, x, y)
         self.player.layer = self.map.object_layer
         self.player:setFacing(facing)
