@@ -48,7 +48,6 @@ function character:init()
     self.weapon_icon = "ui/menu/equip/sword"
 
     -- Equipment (saved to the save file)
-    --self:setWeapon("splintered_spear")
     self:setWeapon("wood_blade")
     --self:setArmor(1, "amber_card")
     --self:setArmor(2, "amber_card")
@@ -105,30 +104,15 @@ function character:onLevelUp(level)
     end
 end
 
-function character:onPowerSelect(menu)
-    if Utils.random() < ((Game.chapter == 1) and 0.02 or 0.04) then
-        menu.frisk_dog = true
-    else
-        menu.frisk_dog = false
-    end
-end
-
 function character:drawPowerStat(index, x, y, menu)
-    if index == 1 and menu.frisk_dog then
-        local frames = Assets.getFrames("misc/dog_sleep")
-        local frame = math.floor(Kristal.getTime()) % #frames + 1
-        love.graphics.print("Dog:", x, y)
-        love.graphics.draw(frames[frame], x+120, y+5, 0, 2, 2)
-        return true
-    elseif index == 3 then
+    if index == 3 then
         local icon = Assets.getTexture("ui/menu/icon/fire")
         love.graphics.draw(icon, x-26, y+6, 0, 2, 2)
         love.graphics.print("Guts:", x, y)
 
         love.graphics.draw(icon, x+90, y+6, 0, 2, 2)
-        if Game.chapter >= 2 then
-            love.graphics.draw(icon, x+110, y+6, 0, 2, 2)
-        end
+        love.graphics.draw(icon, x+110, y+6, 0, 2, 2)
+        love.graphics.draw(icon, x+130, y+6, 0, 2, 2)
         return true
     end
 end
