@@ -19,8 +19,6 @@ function Dummy:init()
     self.money = 69
     self.experience = 420
 
-    self.spare_points = 100
-
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
 

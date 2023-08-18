@@ -221,7 +221,6 @@ function LightEnemyBattler:spare(pacify)
 
             dust.rightside = ((8 + x)) / (self.width / 2)
             dust.topside = ((8 + y)) / (self.height / 2)
-            print(dust.rightside, dust.topside)
 
             Game.battle.timer:after(1/30, function()
                 dust:spread()
@@ -276,6 +275,24 @@ function LightEnemyBattler:onSpareable()
 end
 
 function LightEnemyBattler:addMercy(amount)
+    
+    if Game:getConfig("mercyMessages") then
+        if amount > 0 and self.mercy < 100 then
+            local pitch = 0.8
+            if amount < 99 then pitch = 1 end
+            if amount <= 50 then pitch = 1.2 end
+            if amount <= 25 then pitch = 1.4 end
+
+            local src = Assets.playSound("mercyadd", 0.8)
+            src:setPitch(pitch)
+
+            self:lightStatusMessage("mercy", amount)
+        elseif self.mercy >= 100 then
+            local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
+            message:resetPhysics()
+        end
+    end
+
     if self.mercy >= 100 then
         -- We're already at full mercy; do nothing.
         return
@@ -297,21 +314,6 @@ function LightEnemyBattler:addMercy(amount)
         end
     end
 
-    if Game:getConfig("mercyMessages") then
-        if amount > 0 then
-            local pitch = 0.8
-            if amount < 99 then pitch = 1 end
-            if amount <= 50 then pitch = 1.2 end
-            if amount <= 25 then pitch = 1.4 end
-
-            local src = Assets.playSound("mercyadd", 0.8)
-            src:setPitch(pitch)
-
-            self:lightStatusMessage("mercy", amount)
-        else
-            --self:statusMessage("msg", "miss")
-        end
-    end
 end
 
 function LightEnemyBattler:onMercy(battler)

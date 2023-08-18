@@ -13,7 +13,7 @@ function SpareDust:init(x, y)
 end
 
 function SpareDust:spread()
-    --self.physics.direction = math.rad(Utils.random(360)) -- why
+    self.physics.direction = math.rad(Utils.random(360)) -- why
 
     local low = 0.75
     local high = 1.25

@@ -4,7 +4,6 @@ function LightGauge:init(type, amount, x, y, enemy, color)
     super.init(self, x, y)
 
     self.layer = BATTLE_LAYERS["damage_numbers"]
-    print("balls")
 
     self.type = type
     self:setOrigin(0.5, 0)
@@ -24,24 +23,43 @@ function LightGauge:init(type, amount, x, y, enemy, color)
 
     self.amount = amount
 
-    self.health = self.enemy.health
-    self.real_health = self.enemy.health
-    self.max_health = self.enemy.max_health
-    self.extra_width = (self.width / self.max_health)
+    if self.type == "damage" then
+        self.value = self.enemy.health
+        self.real_value = self.enemy.health
+        self.max_value = self.enemy.max_health
+        self.extra_width = (self.width / self.max_value)
+    elseif self.type == "mercy" then
+        self.value = self.enemy.mercy
+        self.real_value = self.enemy.mercy
+        self.max_value = 100
+        self.extra_width = (self.width / self.max_value)
+    end
 
 end
 
 function LightGauge:update()
     super.update(self)
 
-    if self.health > (self.real_health - self.amount) then
-        self.health = self.health - (self.amount / 15) * DTMULT
-    else
-        self.health = (self.real_health - self.amount)
-    end
+    if self.type == "damage" then
+        if self.value > (self.real_value - self.amount) then
+            self.value = self.value - (self.amount / 15) * DTMULT
+        else
+            self.value = (self.real_value - self.amount)
+        end
 
-    if self.health < 0 then
-        self.health = 0
+        if self.value < 0 then
+            self.value = 0
+        end
+    elseif self.type == "mercy" then
+        if self.value < (self.real_value + self.amount) then
+            self.value = self.value + (self.amount / 15) * DTMULT
+        else
+            self.value = (self.real_value + self.amount)
+        end
+
+        if self.value > 100 then
+            self.value = 100
+        end
     end
 end
 
@@ -49,12 +67,12 @@ function LightGauge:draw()
     super.draw(self)
 
     Draw.setColor(COLORS["black"])
-    love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_health * self.extra_width + 1), self.height + 1)
+    love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 1), self.height + 1)
     Draw.setColor(0.5, 0.5, 0.5) -- temp
-    love.graphics.rectangle("fill", 0, 8, Utils.round(self.max_health * self.extra_width), self.height)
-    if self.health > 0 then
-        Draw.setColor(COLORS["lime"])
-        love.graphics.rectangle("fill", 0, 8, Utils.round(self.health * self.extra_width), self.height)
+    love.graphics.rectangle("fill", 0, 8, Utils.round(self.max_value * self.extra_width), self.height)
+    if self.value > 0 then
+        Draw.setColor(self.color)
+        love.graphics.rectangle("fill", 0, 8, Utils.round(self.value * self.extra_width), self.height)
     end
 end
 
