@@ -22,6 +22,10 @@
         "kris": {
             "weapon": "light/pencil",
             "armor": ["light/bandage"]
+        },
+        "frisk": {
+            "weapon": "light/stick",
+            "armor": ["light/bandage_ut"]
         }
     },
 

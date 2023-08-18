@@ -13,6 +13,12 @@ function LightAttackBox:init(x, y)
     self.attackers = Game.battle.normal_attackers
     self.lanes = {}
 
+    self.timer = 0
+
+    self.done = nil
+end
+
+function LightAttackBox:createBolts()
     for i,battler in ipairs(self.attackers) do
         local lane = {}
         lane.battler = battler
@@ -32,9 +38,9 @@ function LightAttackBox:init(x, y)
 
         local start_x
         if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 2) 
+            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) 
         elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 2) 
+            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) 
         else
             error("Invalid attack direction")
         end
@@ -47,7 +53,7 @@ function LightAttackBox:init(x, y)
                 else
                     bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 0, battler)
                 end
-            else
+            else --todo: if multibolt variance can't return anything, have it repeat the last number in the table
                 if lane.direction == "left" then
                     bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 0, battler)
                 else
@@ -61,7 +67,6 @@ function LightAttackBox:init(x, y)
         end
         table.insert(self.lanes, lane)
     end
-    self.done = nil
 end
 
 function LightAttackBox:getClose(battler)
@@ -191,50 +196,59 @@ end
 
 function LightAttackBox:update()
 
-    self.done = true
+    self.timer = self.timer + DTMULT
 
-    for _,battler in ipairs(self.lanes) do
-        if not battler.attacked then
-            self.done = false
-        end
+    if self.timer > 6 and #self.lanes == 0 then
+        self:createBolts()
     end
+    
+    if #self.lanes ~= 0 then
 
-    if not self.done then
-        for _,lane in ipairs(self.lanes) do
-            if lane.direction == "right" then
-                for _,bolt in ipairs(lane.bolts) do
-                    bolt:move(lane.speed * DTMULT, 0)
-                end
-            elseif lane.direction == "left" then
-                for _,bolt in ipairs(lane.bolts) do
-                    bolt:move(-lane.speed * DTMULT, 0)
+        self.done = true
+
+        for _,battler in ipairs(self.lanes) do
+            if not battler.attacked then
+                self.done = false
+            end
+        end
+
+        if not self.done then
+            for _,lane in ipairs(self.lanes) do
+                if lane.direction == "right" then
+                    for _,bolt in ipairs(lane.bolts) do
+                        bolt:move(lane.speed * DTMULT, 0)
+                    end
+                elseif lane.direction == "left" then
+                    for _,bolt in ipairs(lane.bolts) do
+                        bolt:move(-lane.speed * DTMULT, 0)
+                    end
                 end
             end
         end
-    end
 
-    if Game.battle.cancel_attack then
-        if self.lanes[1].attack_type == "slice" then
-            self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+        if Game.battle.cancel_attack then
+            if self.lanes[1].attack_type == "slice" then
+                self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+            end
+            self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
+            if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
+                Game.battle.timer:after(1, function()
+                    self:remove()
+                end)
+            end
         end
-        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-        if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
-            Game.battle.timer:after(1, function()
-                self:remove()
-            end)
-        end
-    end
 
-    if self.fading then
-        if self.lanes[1].attack_type == "slice" then
-            self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
-            self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
-        end
-        self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-        if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
-            Game.battle.timer:after(1, function()
-                self:remove()
-            end)
+        if self.fading then
+            if self.lanes[1].attack_type == "slice" then
+                self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
+                self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
+            end
+            self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
+            if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
+                Game.battle.timer:after(1, function()
+                    self:remove()
+                end)
+            end
         end
     end
 

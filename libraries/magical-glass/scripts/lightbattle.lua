@@ -1768,7 +1768,7 @@ function LightBattle:updateAttacking()
                 end
             end
         end
-
+        
         local all_done = true
 
         for _,attacker in ipairs(self.battle_ui.attack_box.lanes) do
@@ -1801,7 +1801,7 @@ function LightBattle:updateAttacking()
             end
         end
 
-        if all_done then
+        if #self.battle_ui.attack_box.lanes ~= 0 and all_done then
             self.attack_done = true
         end
     else
@@ -2905,6 +2905,7 @@ end
 
 function LightBattle:handleAttackingInput(key)
     if Input.isConfirm(key) then
+
         if not self.attack_done and not self.cancel_attack and self.battle_ui.attack_box then
             local closest
             local closest_attacks = {}
