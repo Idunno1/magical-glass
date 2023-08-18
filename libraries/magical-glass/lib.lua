@@ -551,7 +551,7 @@ function lib:init()
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
     
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + offset_y - offset, color)
+        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
         if kill then
             percent.kill_others = true
         end

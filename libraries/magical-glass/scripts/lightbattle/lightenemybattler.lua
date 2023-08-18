@@ -76,8 +76,8 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     self.current_target = "ANY"
 
-    self.gauge_size = {100, 15}
-    self.damage_offset = {0, -40}
+    self.gauge_size = {100, 13}
+    self.damage_offset = {5, -40}
     self.show_hp = true
 end
 
@@ -210,18 +210,22 @@ function LightEnemyBattler:spare(pacify)
         Game.battle.spare_sound:stop()
         Game.battle.spare_sound:play()
 
-        -- this still seems to break for bigger enemies, but it works so eh
         for i = 0, 15 do
-            local x = ((Utils.random((self.width / 2)) + (self.width / 4)) + self.x) - 32
-            local y = ((Utils.random((self.height / 2)) + (self.height / 4)) + self.y) - 64
+            local x = ((Utils.random((self.width / 2)) + (self.width / 4))) - 8
+            local y = ((Utils.random((self.height / 2)) + (self.height / 4))) - 8
 
-            local dust = SpareDust(x, y)
+            local sx, sy = self:getRelativePos(x, y)
+
+            local dust = SpareDust(sx, sy)
             self.parent:addChild(dust)
 
-            dust.rightside = ((32 + dust.x) - self.x) / (self.width / 2)
-            dust.topside = ((64 + dust.y) - self.y) / (self.height / 2)
+            dust.rightside = ((8 + x)) / (self.width / 2)
+            dust.topside = ((8 + y)) / (self.height / 2)
+            print(dust.rightside, dust.topside)
 
-            dust:spread()
+            Game.battle.timer:after(1/30, function()
+                dust:spread()
+            end)
 
             dust.layer = BATTLE_LAYERS["above_ui"] + 3
         end

@@ -10,6 +10,8 @@ function Dummy:init()
     self.music = "funky_town"
 
     -- Add the dummy enemy to the encounter
+    -- self:addEnemy("dummy", SCREEN_WIDTH/2, 240)
+
     self:addEnemy("dummy", SCREEN_WIDTH/2, 240)
 
     self.bg_siners = {0, 15, 30, 45, 60, 75}

@@ -4,9 +4,9 @@ function Dummy:init()
     super:init(self)
 
     -- Enemy name
-    self.name = "Dummy"
+    self.name = "Dummy XL"
     -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
-    self:setActor("dummy")
+    self:setActor("dummy_XL")
 
     -- Enemy health
     self.max_health = 500
@@ -19,15 +19,15 @@ function Dummy:init()
     self.money = 69
     self.experience = 420
 
-    self.spare_points = 100
+    self.mercy = 100
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "basic",
---[[         "aiming",
+--[[         "basic",
+        "aiming",
         "movingarena" ]]
     }
 
