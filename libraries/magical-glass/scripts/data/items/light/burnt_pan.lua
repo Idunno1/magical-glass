@@ -24,9 +24,9 @@ function item:init()
     }
 
     self.attack_bolts = 4
-    self.attack_speed = 10
+    self.attack_speed = 7
     self.attack_speed_variance = 2
-    self.attack_start = -50
+    self.attack_start = -80
     self.attack_miss_zone = 2
     self.multibolt_variance = {{0, 25, 50}, {100, 125, 150}, {200}}
     self.heal_bonus = 4
@@ -53,7 +53,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     sprite.color = battler.chara.color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     --Game.battle:shakeCamera(3, 3, 2)
-    sprite:play(2/30, true)
+    sprite:play(1/30, true)
 
     if crit then
         sprite:setColor(1, 1, 130/255)
@@ -95,7 +95,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
 
         sprite:setScale(size)
 
-        for _,star in ipairs(stars) do
+        for _,star in ipairs(stars) do -- stars spin more
             if star.physics.speed < 6 then
                 star.alpha = star.alpha - 0.05 * DTMULT 
                 if star.ang > 1 then

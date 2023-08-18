@@ -423,6 +423,10 @@ function LightBattleUI:drawState()
                     local hp_percent = enemy.health / enemy.max_health
                     local hp_x = self.style ~= "undertale" and 400 or 318
 
+                    if namewidth >= 192 then -- we're gonna say this is accurate for now
+                        hp_x = hp_x + (#enemy.name * 8)
+                    end
+
                     if enemy.selectable then
                         -- I swear, the kristal team using math.ceil for the gauges here despite people asking them to change it to floor
                         -- is an in-joke

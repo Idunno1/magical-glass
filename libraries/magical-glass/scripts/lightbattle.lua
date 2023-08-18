@@ -2934,6 +2934,8 @@ function LightBattle:handleAttackingInput(key)
                     action.points = points
                     action.stretch = stretch
 
+                    print(action.points)
+
                     if self:processAction(action) then
                         self:finishAction(action)
                     end

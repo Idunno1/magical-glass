@@ -8,7 +8,7 @@ function LightAttackBox:init(x, y)
     self:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
-    self.bolt_target = -1
+    self.bolt_target = 0
 
     self.attackers = Game.battle.normal_attackers
     self.lanes = {}
@@ -61,7 +61,7 @@ function LightAttackBox:createBolts()
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
-            bolt.layer = 1
+            bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             self:addChild(bolt)
         end
@@ -78,37 +78,30 @@ function LightAttackBox:getClose(battler)
 end
 
 function LightAttackBox:evaluateHit(battler, close)
+    local value = 0
     if close < 1 then
-        return 110
+        value = value + 110
     elseif close < 2 then
-        return 90
+        value = value + 90
     elseif close < 3 then
-        return 80
+        value = value + 80 
     elseif close < 4 then
-        return 70
+        value = value + 70
     elseif close < 5 then
-        return 50
+        value = value + 50
     elseif close < 10 then
-        return 40
+        value = value + 40
     elseif close < 16 then
-        return 20
+        value = value + 20
     elseif close < 22 then
-        return 15
+        value = value + 15
     elseif close < 28 then
-        return 10
+        value = value + 10
     else
-        return 10
+        value = value + 10
     end
-end
 
-function LightAttackBox:evaluateScore(battler, score, bolts, close)
-    local new_score = score
-    if score > 430 then
-        new_score = new_score * 1.8
-    elseif score >= 400 then
-        new_score = new_score * 1.25
-    end
-    return new_score
+    return value
 end
 
 function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
@@ -117,7 +110,7 @@ function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
             self.fading = true
         end
         battler.attacked = true
-        return self:evaluateScore(battler, score, bolts, close)
+        return battler.score
     end
 end
 
@@ -128,6 +121,13 @@ function LightAttackBox:hit(battler)
         local close = math.abs(self:getClose(battler))
 
         battler.score = battler.score + self:evaluateHit(battler, close)
+
+        if battler.score > 430 then
+            battler.score = battler.score * 1.8
+        end
+        if battler.score >= 400 then
+            battler.score = battler.score * 1.25
+        end
 
         bolt:burst()
 
@@ -198,7 +198,7 @@ function LightAttackBox:update()
 
     self.timer = self.timer + DTMULT
 
-    if self.timer > 6 and #self.lanes == 0 then
+    if self.timer > 1 and #self.lanes == 0 then
         self:createBolts()
     end
     

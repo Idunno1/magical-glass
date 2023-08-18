@@ -24,7 +24,7 @@
             "armor": ["light/bandage"]
         },
         "frisk": {
-            "weapon": "light/stick",
+            "weapon": "light/burnt_pan",
             "armor": ["light/bandage_ut"]
         }
     },
