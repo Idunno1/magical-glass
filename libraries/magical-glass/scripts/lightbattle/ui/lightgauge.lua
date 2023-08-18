@@ -12,7 +12,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         if self.type == "damage" then
             self.color = PALETTE["action_health"]
         elseif self.type == "mercy" then
-            self.color = PALETTE["battle_mercy_text"]
+            self.color = COLORS["yellow"]
         end
     else
         self.color = color

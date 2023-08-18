@@ -24,7 +24,7 @@ function item:init()
     }
 
     self.attack_bolts = 4
-    self.attack_speed = 7
+    self.attack_speed = 8
     self.attack_speed_variance = 2
     self.attack_start = -80
     self.attack_miss_zone = 2
@@ -95,15 +95,15 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
 
         sprite:setScale(size)
 
-        for _,star in ipairs(stars) do -- stars spin more
+        for _,star in ipairs(stars) do
             if star.physics.speed < 6 then
                 star.alpha = star.alpha - 0.05 * DTMULT 
                 if star.ang > 1 then
-                    star.ang = star.ang + 0.5 * DTMULT
+                    star.ang = star.ang - 0.5 * DTMULT
                 end
             end
 
-            star.rotation = math.rad(star.ang)
+            star.rotation = star.rotation + math.rad(star.ang) * DTMULT
             if star.alpha < 0.05 then
                 star:remove()
             end

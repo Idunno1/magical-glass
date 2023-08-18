@@ -690,7 +690,6 @@ function LightBattle:processAction(action)
                     if chara then
                         maxed = chara:getHealth() >= chara:getStat("health")
                     end
-                    print(maxed)
 
                     text = text .. "\n" .. item:getBattleHealingText(battler, chara, amount, maxed)
 
@@ -2933,8 +2932,6 @@ function LightBattle:handleAttackingInput(key)
                     local action = self:getActionBy(attack.battler)
                     action.points = points
                     action.stretch = stretch
-
-                    print(action.points)
 
                     if self:processAction(action) then
                         self:finishAction(action)
