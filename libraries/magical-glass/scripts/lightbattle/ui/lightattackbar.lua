@@ -47,7 +47,7 @@ function LightAttackBar:update()
     if self.fading then
         self:move(self.fade_speed * DTMULT, 0)
 
-        self.sprite.alpha = self.sprite.alpha - 0.2 * DTMULT
+        self.sprite.alpha = self.sprite.alpha - 0.6 * DTMULT
         if self.sprite.alpha < 0.1 then
             self.sprite.alpha = 0
             self:remove()

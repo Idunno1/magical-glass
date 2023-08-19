@@ -28,7 +28,7 @@ function item:init()
     self.attack_bolts = 3
     self.attack_speed = 10
     self.attack_speed_variance = nil
-    self.attack_start = -50
+    self.attack_start = -90
     self.attack_miss_zone = 2
 
     self.attack_sound = "punchstrong"

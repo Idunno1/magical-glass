@@ -43,3 +43,16 @@ lv 5 - 16 hp
 
 shielded damage from blue cultists (20 at), seems to halve damage, rounded down
 lv 5 - to kris & paula: 3, to noelle: 1
+
+no damage variance
+
+pencil - kris lv1
+max damage - 22
+
+clean pan - kris lv1
+max damage - 88
+max score - 35.000
+
+tough glove - kris lv1
+max damage - 41
+max score - 25.000

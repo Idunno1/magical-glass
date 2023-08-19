@@ -3,12 +3,16 @@ local LightAttackBox, super = Class(Object)
 function LightAttackBox:init(x, y)
     super.init(self, x, y)
 
+    self.arena = Game.battle.arena
+
     self.target_sprite = Sprite("ui/lightbattle/dumbtarget")
     self.target_sprite:setOrigin(0.5, 0.5)
-    self:addChild(self.target_sprite)
+    self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
+    self.target_sprite.layer = BATTLE_LAYERS["above_ui"]
+    Game.battle:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
-    self.bolt_target = 0
+    self.bolt_target = self.arena.x
 
     self.attackers = Game.battle.normal_attackers
     self.lanes = {}
@@ -49,21 +53,21 @@ function LightAttackBox:createBolts()
             local bolt
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 0, battler)
+                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 318, battler)
                 else
-                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 0, battler)
+                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 318, battler)
                 end
             else --todo: if multibolt variance can't return anything, have it repeat the last number in the table
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 0, battler)
+                    bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 318, battler)
                 else
-                    bolt = LightAttackBar(start_x - lane.weapon:getMultiboltVariance(i - 1), 0, battler)
+                    bolt = LightAttackBar(start_x - lane.weapon:getMultiboltVariance(i - 1), 318, battler)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
             bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
-            self:addChild(bolt)
+            Game.battle:addChild(bolt)
         end
         table.insert(self.lanes, lane)
     end
@@ -160,9 +164,6 @@ function LightAttackBox:hit(battler)
 
         bolt:flash()
         battler.attacked = true
-        bolt.layer = 1
-        bolt:setPosition(bolt:getRelativePos(0, 0, self.parent))
-        bolt:setParent(self.parent)
     
         return battler.score, battler.stretch
     end
@@ -226,21 +227,8 @@ function LightAttackBox:update()
             end
         end
 
-        if Game.battle.cancel_attack then
+        if Game.battle.cancel_attack or self.fading then
             if self.lanes[1].attack_type == "slice" then
-                self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
-            end
-            self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
-            if self.target_sprite.scale_x < 0.08 or self.target_sprite.alpha < 0.08 then
-                Game.battle.timer:after(1, function()
-                    self:remove()
-                end)
-            end
-        end
-
-        if self.fading then
-            if self.lanes[1].attack_type == "slice" then
-                self.target_sprite.x = self.target_sprite.x - 15.8 * DTMULT -- yes, this is off-center
                 self.target_sprite.scale_x = self.target_sprite.scale_x - 0.06 * DTMULT
             end
             self.target_sprite.alpha = self.target_sprite.alpha - 0.08 * DTMULT
@@ -265,8 +253,6 @@ function LightAttackBox:draw()
         for _,battler in ipairs(self.lanes) do
             Draw.setColor(1, 1, 1, 1)
             if not battler.attacked then
-                love.graphics.rectangle("line", self.bolt_target - 6, -100, battler.speed, 65)
-
                 Game.battle:debugPrintOutline("close: "    .. self:getClose(battler),         0, -200)
             end
             if battler.score then

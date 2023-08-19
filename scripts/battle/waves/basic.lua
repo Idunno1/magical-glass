@@ -4,7 +4,6 @@ function Basic:init()
     super.init(self)
 
     --self:setTargetSize(400)
-    --self.arena_x = 400
 end
 
 function Basic:onStart()

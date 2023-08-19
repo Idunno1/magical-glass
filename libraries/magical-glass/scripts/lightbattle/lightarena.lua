@@ -3,6 +3,9 @@ local LightArena, super = Class(Arena)
 function LightArena:init(x, y, shape)
     super:init(self, x, y)
 
+    self.home_x = x
+    self.home_y = y
+
     self.color = {1, 1, 1}
     self.bg_color = {0, 0, 0}
 
@@ -10,9 +13,18 @@ function LightArena:init(x, y, shape)
     self.default_dim = {565, 130}
     self:setShape(shape or {{0, 0}, {self.default_dim[1], 0}, {self.default_dim[1], self.default_dim[2]}, {0, self.default_dim[2]}})
 
-    self.mask.layer = BATTLE_LAYERS["above_ui"] + 2000
+    self.mask.layer = BATTLE_LAYERS["above_ui"]
 
+--[[     self.border_mask = ArenaSprite(self)
+    self.border_mask:setOrigin(0.5, 1)
+    self.border_mask:setPosition(self:getRelativePos(self.width / 2, self.height / 2))
+    self.border_mask.color = self.color
+    self.border_mask.background = false
+    Game.battle:addChild(self.border_mask)
+    self.border_mask.layer = BATTLE_LAYERS["above_bullets"] ]]
+    
     self:setOrigin(0.5, 1)
+
 end
 
 function LightArena:setSize(width, height)
@@ -127,6 +139,8 @@ function LightArena:drawMask()
     self.sprite:preDraw()
     self.sprite:drawBackground()
     self.sprite:postDraw()
+    self.border_mask:preDraw()
+    self.border_mask:postDraw()
     love.graphics.pop()
 end
 

@@ -1001,8 +1001,8 @@ function LightBattle:onStateChange(old,new)
                 soul_y = wave.soul_start_y or soul_y
                 soul_offset_x = wave.soul_offset_x or soul_offset_x
                 soul_offset_y = wave.soul_offset_y or soul_offset_y
-                arena_x = wave.arena_x or arena_x
-                arena_y = wave.arena_y or arena_y
+                arena_x = wave.arena_x or arena_x or self.arena.home_x
+                arena_y = wave.arena_y or arena_y or self.arena.home_y
                 arena_w = wave.arena_width and math.max(wave.arena_width, arena_w or 0) or arena_w
                 arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
                 if wave.arena_shape then
@@ -1022,27 +1022,33 @@ function LightBattle:onStateChange(old,new)
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
     
-                self.arena.layer = BATTLE_LAYERS["arena"]
                 local width_timer = self.arena.width
-                local height_timer = self.arena.height
+                local x_timer = self.arena.x
+                local y_timer = self.arena.y
+
+                print(arena_x)
 
                 self.timer:during(1/2, function()
     
                     width_timer = Utils.approach(width_timer, arena_w, DTMULT * 30)
-                    local prog_w = width_timer
-                    self.arena:setSize(prog_w, self.arena.height)
+                    x_timer = Utils.approach(x_timer, arena_x, DTMULT * 30)
+                    y_timer = Utils.approach(y_timer, arena_y, DTMULT * 30)
 
-                    if prog_w == arena_w then
-                        height_timer = Utils.approach(height_timer, arena_h, DTMULT * 30)
-                        local prog_h = height_timer
-                        self.arena:setSize(self.arena.width, prog_h)
-                    end
+                    local prog_w = width_timer
+                    local prog_x = x_timer
+                    local prog_y = y_timer
+
+                    self.arena:setSize(prog_w, self.arena.height)
+                    self.arena:setPosition(prog_x, prog_y)
     
-                end, function() self.arena:setSize(arena_w, arena_h) end)
+                end, function()
+                    self.arena:setSize(arena_w, self.arena.height)
+                    self.arena:setPosition(arena_x, arena_y)
+                end)
 
                 center_x, center_y = self.arena:getCenter()
             else
-                center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 + 10
+                center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 --+ 10
             end
     
             self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
@@ -1076,6 +1082,8 @@ function LightBattle:onStateChange(old,new)
             end
         end
     elseif new == "DIALOGUEEND" then
+
+        self.arena.layer = BATTLE_LAYERS["arena"]
 
         self.timer:after(2/30, function()
             self.soul.can_move = true
@@ -1203,10 +1211,34 @@ function LightBattle:onStateChange(old,new)
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
 
+        local arena_h, arena_shape
+        local has_arena = true
         for _,wave in ipairs(Game.battle.waves) do
+            arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
+            if wave.arena_shape then
+                arena_shape = wave.arena_shape
+            end
+            if not wave.has_arena then
+                has_arena = false
+            end
             if wave:onArenaEnter() then
                 wave.active = true
             end
+        end
+
+        if not arena_shape then
+            arena_h = arena_h or 130
+            arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
+        end
+
+        if has_arena then
+            local height_timer = self.arena.height
+
+            self.timer:during(1/2, function()
+                height_timer = Utils.approach(height_timer, arena_h, DTMULT * 30)
+                local prog_h = height_timer
+                self.arena:setSize(self.arena.width, prog_h)
+            end, function() self.arena:setSize(self.arena.width, arena_h) end)
         end
 
         self.defending_begin_timer = 0
@@ -1273,15 +1305,28 @@ function LightBattle:onStateChange(old,new)
 
         local width_timer = self.arena.width
         local height_timer = self.arena.height
+        local x_timer = self.arena.x
+        local y_timer = self.arena.y
+
         self.timer:during(1/2, function()
 
             width_timer = Utils.approach(width_timer, self.arena.default_dim[1], DTMULT * 30)
             height_timer = Utils.approach(height_timer, self.arena.default_dim[2], DTMULT * 30)
+            x_timer = Utils.approach(x_timer, self.arena.home_x, DTMULT * 15)
+            y_timer = Utils.approach(y_timer, self.arena.home_y, DTMULT * 15)
+
             local prog_w = width_timer
             local prog_h = height_timer
-            self.arena:setSize(prog_w, prog_h)
+            local prog_x = x_timer
+            local prog_y = y_timer
 
-        end, function() self.arena:setSize(self.arena.default_dim[1], self.arena.default_dim[2]) end)
+            self.arena:setSize(prog_w, prog_h)
+            self.arena:setPosition(prog_x, prog_y)
+
+        end, function()
+            self.arena:setSize(self.arena.default_dim[1], self.arena.default_dim[2]) 
+            self.arena:setPosition(self.arena.home_x, self.arena.home_y)
+        end)
     end
 
     -- List of states that should remove the arena.
@@ -2670,7 +2715,7 @@ function LightBattle:onKeyPressed(key)
             if (self.current_menu_y < 1) or (not self:isValidMenuLocation()) then
                 self.current_menu_y = self.current_menu_rows
                 if not self:isValidMenuLocation() then
-                    self.current_menu_y = self.current_menu_rows - 1
+                    self.current_menu_y = self.current_menu_rows - (self.current_menu_rows - 1)
                 end
             end
         elseif Input.is("down", key) then
