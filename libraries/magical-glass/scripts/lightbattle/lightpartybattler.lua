@@ -42,8 +42,8 @@ function LightPartyBattler:onTurnEnd()
 end
 
 function LightPartyBattler:calculateDamage(amount, min, cap)
-    local def = self.chara:getStat("defense")
-    local max_hp = self.chara:getStat("health")
+    local def = self.chara:getStat("defense", default, true)
+    local max_hp = self.chara:getStat("health", default, true)
 
     -- good shit toby
 --[[     if max_hp > 90 then
@@ -76,9 +76,8 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
             amount = amount + 1
         end
     end
-
     amount = Utils.round((amount - def) / 5)
-
+    
     if min and amount < min then
         amount = min
     end

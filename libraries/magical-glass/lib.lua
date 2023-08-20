@@ -27,9 +27,10 @@ end
 
 function lib:load()
     if Game.is_new_file then
-        Game:setFlag("serious_mode", false) -- useful for genocide or boss battles
+        Game:setFlag("serious_mode", false) -- useful for serious battles
         Game:setFlag("always_show_magic", false)
         Game:setFlag("undertale_textbox_skipping", true)
+        Game:setFlag("undertale_textbox_pause", true)
         Game:setFlag("enable_lw_tp", false)
         Game:setFlag("lw_stat_menu_portraits", true)
         Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
@@ -79,13 +80,6 @@ function lib:createLightEnemy(id, ...)
 end
 
 function lib:registerDebugOptions(debug)
-    local in_game = function() return Kristal.getState() == Game end
-    local in_battle = function() return in_game() and Game.state == "BATTLE" end
-    local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
-
-    debug:registerOption("main", "Start Light Encounter", "Start a light encounter.", function()
-        debug:enterMenu("light_encounter_select", 0)
-    end, in_overworld)
 
     debug:registerMenu("encounter_select", "Encounter Select", "search")
     -- loop through registry and add menu options for all encounters
@@ -113,6 +107,24 @@ function lib:registerDebugOptions(debug)
             end)
         end
     end
+
+    debug:registerMenu("wave_select_light", "Wave Select", "search")
+
+    local waves_list = {}
+    for id,_ in pairs(Registry.waves) do
+        table.insert(waves_list, id)
+    end
+
+    table.sort(waves_list, function(a, b)
+        return a < b
+    end)
+
+    for _,id in ipairs(waves_list) do
+        debug:registerOption("wave_select_light", id, "Start this wave.", function()
+            Game.battle:setState("ENEMYDIALOGUE", {id})
+            debug:closeMenu()
+        end)
+    end
 end
 
 function lib:init()
@@ -131,6 +143,96 @@ function lib:init()
         light_enemy.id = light_enemy.id or path
         self.light_enemies[light_enemy.id] = light_enemy
     end
+
+    Utils.hook(DebugSystem, "registerDefaults", function(orig, self)
+        -- wish i didn't have to do this but
+    
+        local in_game = function() return Kristal.getState() == Game end
+        local in_battle = function() return in_game() and Game.state == "BATTLE" end
+        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle:isLight() end
+        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle:isLight() end
+        local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
+
+        self:registerConfigOption("main", "Object Selection Pausing", "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
+
+        self:registerOption("main", "Engine Options", "Configure various noningame options.", function()
+            self:enterMenu("engine_options", 1)
+        end)
+
+        self:registerOption("main", "Fast Forward", function() return self:appendBool("Speed up the engine.", FAST_FORWARD) end, function() FAST_FORWARD = not FAST_FORWARD end)
+        self:registerOption("main", "Debug Rendering", function() return self:appendBool("Draw debug information.", DEBUG_RENDER) end, function() DEBUG_RENDER = not DEBUG_RENDER end)
+        self:registerOption("main", "Hotswap", "Swap out code from the files. Might be unstable.", function() Hotswapper.scan(); self:refresh() end)
+        self:registerOption("main", "Reload", "Reload the mod. Hold shift to\nnot temporarily save.", function()
+            if Kristal.getModOption("hardReset") then
+                love.event.quit("restart")
+            else
+                if Mod then
+                    Kristal.quickReload(Input.shift() and "save" or "temp")
+                else
+                    Kristal.returnToMenu()
+                end
+            end
+        end)
+
+        self:registerOption("main", "Noclip",
+            function() return self:appendBool("Toggle interaction with solids.", NOCLIP) end,
+            function() NOCLIP = not NOCLIP end,
+            in_game
+        )
+
+        self:registerOption("main", "Give Item", "Give an item.", function()
+            self:enterMenu("give_item", 0)
+        end, in_game)
+
+        self:registerOption("main", "Portrait Viewer", "Enter the portrait viewer menu.", function()
+            self:setState("FACES")
+        end, in_game)
+
+        self:registerOption("main", "Flag Editor", "Enter the flag editor menu.", function()
+            self:setState("FLAGS")
+        end, in_game)
+
+        self:registerOption("main", "Sound Test", "Enter the sound test menu.", function()
+            self:fadeMusicOut()
+            self:enterMenu("sound_test", 0)
+        end, in_game)
+
+
+        -- World specific
+        self:registerOption("main", "Select Map", "Switch to a new map.", function()
+            self:enterMenu("select_map", 0)
+        end, in_overworld)
+
+        self:registerOption("main", "Start Encounter", "Start an encounter.", function()
+            self:enterMenu("encounter_select", 0)
+        end, in_overworld)
+
+        self:registerOption("main", "Start Light Encounter", "Start a light encounter.", function()
+            self:enterMenu("light_encounter_select", 0)
+        end, in_overworld)
+
+        self:registerOption("main", "Enter Shop", "Enter a shop.", function()
+            self:enterMenu("select_shop", 0)
+        end, in_overworld)
+
+        self:registerOption("main", "Play Cutscene", "Play a cutscene.", function()
+            self:enterMenu("cutscene_select", 0)
+        end, in_overworld)
+
+        -- Battle specific
+        self:registerOption("main", "Start Wave", "Start a wave.", function()
+            self:enterMenu("wave_select", 0)
+        end, in_dark_battle)
+
+        self:registerOption("main", "Start Wave", "Start a wave.", function()
+            self:enterMenu("wave_select_light", 0)
+        end, in_light_battle)
+
+        self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
+            Game.battle:setState("VICTORY")
+        end, in_battle)
+
+    end)
 
     Utils.hook(Game, "load", function(orig, self, data, index, fade)
 

@@ -348,7 +348,7 @@ function World:stopCutscene()
     self.cutscene = nil
 end
 
-function World:showText(text, after)
+--[[ function World:showText(text, after)
     if type(text) ~= "table" then
         text = {text}
     end
@@ -360,7 +360,7 @@ function World:showText(text, after)
             after(cutscene)
         end
     end)
-end
+end ]]
 
 function World:spawnPlayer(...)
     local args = {...}

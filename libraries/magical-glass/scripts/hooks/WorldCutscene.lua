@@ -85,10 +85,17 @@ function WorldCutscene:text(text, portrait, actor, options)
     self.textbox:setAdvance(options["advance"] or options["advance"] == nil)
     self.textbox:setAuto(options["auto"])
 
-    self.textbox:setText(text, function()
-        self.textbox:remove()
-        self:tryResume()
-    end)
+    if Game:getFlag("undertale_textbox_pause") then
+        self.textbox:setText("[wait:3]"..text, function()
+            self.textbox:remove()
+            self:tryResume()
+        end)
+    else
+        self.textbox:setText(text, function()
+            self.textbox:remove()
+            self:tryResume()
+        end)
+    end
 
     local wait = options["wait"] or options["wait"] == nil
     if not self.textbox.text.can_advance then

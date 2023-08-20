@@ -193,8 +193,10 @@ function LightTensionBar:drawText()
     if (tamt >= 100) then
         self.maxed = true
 
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.print("MAX", self.x - 36, self.height - 4)
         Draw.setColor(PALETTE["tension_maxtext"])
-        love.graphics.print("MAX", self.x - 40, self.height - 4)
+        love.graphics.print("MAX", self.x - 37, self.height - 5)
     end
 end
 

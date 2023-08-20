@@ -3,7 +3,7 @@ local Basic, super = Class(Wave)
 function Basic:init()
     super.init(self)
 
-    --self:setTargetSize(400)
+    self:setTargetSize(400)
 end
 
 function Basic:onStart()

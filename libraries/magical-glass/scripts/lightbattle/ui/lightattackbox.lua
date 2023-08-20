@@ -53,15 +53,15 @@ function LightAttackBox:createBolts()
             local bolt
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 318, battler)
+                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 318, battler)
+                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 319, battler)
                 end
             else --todo: if multibolt variance can't return anything, have it repeat the last number in the table
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 318, battler)
+                    bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - lane.weapon:getMultiboltVariance(i - 1), 318, battler)
+                    bolt = LightAttackBar(start_x - lane.weapon:getMultiboltVariance(i - 1), 319, battler)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end

@@ -130,6 +130,10 @@ function LightBattle:init()
     self.darkify = false
 end
 
+function LightBattle:isLight()
+    return true
+end
+
 function LightBattle:playSelectSound()
     self.ui_select:stop()
     self.ui_select:play()
@@ -1019,14 +1023,13 @@ function LightBattle:onStateChange(old,new)
                 
                 if not arena_shape then
                     arena_w, arena_h = arena_w or 160, arena_h or 130
+                    arena_x, arena_y = self.arena.home_x, self.arena.home_y
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
     
                 local width_timer = self.arena.width
                 local x_timer = self.arena.x
                 local y_timer = self.arena.y
-
-                print(arena_x)
 
                 self.timer:during(1/2, function()
     
