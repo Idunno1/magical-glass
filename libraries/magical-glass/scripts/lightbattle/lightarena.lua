@@ -3,7 +3,6 @@ local LightArena, super = Class(Object)
 function LightArena:init(x, y, shape)
     super:init(self, x, y)
 
-    self:setOrigin(0.5, 1)
 
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
@@ -31,10 +30,13 @@ function LightArena:init(x, y, shape)
     self.border = LightArenaBorder(self)
     self.border:setOrigin(0.5, 1)
     self.border.color = {1, 1, 1}
-    self.border:setPosition(self:getRelativePos(self.sprite.width / 2, self.sprite.height))
     self.border.layer = BATTLE_LAYERS["above_bullets"]
     Game.battle:addChild(self.border)
+
+    self:setOrigin(0.5, 1)
+
     
+    self.target_shape = {}
     self.timer = 0
 end
 

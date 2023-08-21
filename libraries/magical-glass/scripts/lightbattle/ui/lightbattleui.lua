@@ -9,7 +9,7 @@ function LightBattleUI:init()
 
     self.style = Game:getFlag("gauge_styles")
 
-    self.arena = LightArena(SCREEN_WIDTH/2 - 1, 385)
+    self.arena = LightArena(SCREEN_WIDTH/2, 385)
     self.arena.layer = BATTLE_LAYERS["ui"]
     Game.battle:addChild(self.arena)
 

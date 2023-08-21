@@ -9,8 +9,11 @@ function LightArenaBorder:init(arena, x, y)
 end
 
 function LightArenaBorder:update()
-    self.width = self.arena.sprite.width
-    self.height = self.arena.sprite.height
+    self.x = math.floor(self.arena.x)
+    self.y = math.floor(self.arena.y)
+
+    self.width = self.arena.width
+    self.height = self.arena.height
 
     super.update(self)
 end

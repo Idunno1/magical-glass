@@ -92,8 +92,7 @@ function LightEncounter:onFlee()
 
     -- todo: layer soul under arena while escaping
 
-    Game.battle.arena.collider.colliders = {}
-    
+    Game.battle.soul.collidable = false
     Game.battle.soul.y = Game.battle.soul.y + 4
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
