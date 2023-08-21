@@ -23,7 +23,7 @@ MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
 function lib:postInit(new_file)
-    Game.random_encounter_value = love.math.random(20, 100)
+    Game.random_encounter_value = love.math.random(5, 10)
 end
 
 function lib:load()
@@ -43,8 +43,6 @@ function lib:load()
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
         Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
-
-        Game:setFlag("random_encounter_table", {})
     end
 end
 
@@ -1081,10 +1079,12 @@ function lib:init()
 
         self.lw_portrait = nil
 
-        self.light_color = nil
-        self.light_dmg_color = nil
-        self.light_attack_bar_color = nil
-        self.light_xact_color = nil
+        self.light_color = {1,1,1}
+        self.light_miss_color = {192/255, 192/255, 192/255}
+        self.light_dmg_color = {1,0,0}
+        self.light_slash_color = {1, 105/255, 105/255}
+        self.light_attack_bar_color = {1,1,1}
+        self.light_xact_color = {1,1,1}
 
         self.lw_stats = {
             health = 20,
@@ -1195,6 +1195,14 @@ function lib:init()
             return Utils.unpackColor(self.light_dmg_color)
         else
             return self:getLightColor()
+        end
+    end)
+
+    Utils.hook(PartyMember, "getLightSlashColor", function(orig, self)
+        if self.light_slash_color then
+            return Utils.unpackColor(self.light_slash_color)
+        else
+            return self:getLightDamageColor()
         end
     end)
 

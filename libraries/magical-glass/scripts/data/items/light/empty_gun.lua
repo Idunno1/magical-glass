@@ -47,7 +47,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara.color -- need to swap this to the get function
+    sprite.color = battler.chara.light_color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     sprite:play(2/30, true)
 
@@ -73,7 +73,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
             star.layer = BATTLE_LAYERS["above_ui"] + 5
             star.init_x = star.x
             star.init_y = star.y
-            star.color = battler.chara.color
+            star.color = battler.chara.light_color
             if crit then
                 star:setColor(1, 1, 130/255)
                 Assets.stopAndPlaySound("saber3", 0.8)
@@ -121,7 +121,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
             ring:setOrigin(0.5, 0.5)
             ring:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
             ring.layer = BATTLE_LAYERS["above_ui"] + 5
-            ring.color = battler.chara.color
+            ring.color = battler.chara.light_color
             enemy.parent:addChild(ring)
     
             if crit then

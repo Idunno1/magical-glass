@@ -155,7 +155,7 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara.color -- need to swap this to the get function
+    sprite.color = battler.chara.light_slash_color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect    
         local sound = enemy:getDamageSound() or "damage"
@@ -174,7 +174,7 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 end
 
 function LightEquipItem:onMiss(battler, enemy)
-    local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.color}) -- needs a special miss message that doesn't animate
+    local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color}) -- needs a special miss message that doesn't animate
     message:resetPhysics()
     Game.battle:endAttack()
 end

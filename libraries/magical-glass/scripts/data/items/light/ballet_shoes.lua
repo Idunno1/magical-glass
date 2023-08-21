@@ -47,7 +47,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara.color -- need to swap this to the get function
+    sprite.color = battler.chara.light_color -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     Game.battle:shakeCamera(3, 3, 2)
 

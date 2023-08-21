@@ -103,7 +103,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
                     small_punch:setOrigin(0.5, 0.5)
                     small_punch:setScale(0.5, 0.5)
                     small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
-                    small_punch.color = battler.chara.color -- need to swap this to the get function
+                    small_punch.color = battler.chara.light_color -- need to swap this to the get function
                     small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
                     enemy.parent:addChild(small_punch)
                     small_punch:play(2/30, false, function(s) s:remove() end)
@@ -115,7 +115,7 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
                     local punch = Sprite("effects/attack/hyperfist")
                     punch:setOrigin(0.5, 0.5)
                     punch.layer = BATTLE_LAYERS["above_ui"] + 5
-                    punch.color = battler.chara.color -- need to swap this to the get function
+                    punch.color = battler.chara.light_color -- need to swap this to the get function
                     punch:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
                     enemy.parent:addChild(punch)
                     punch:play(2/30, false, function(s) s:remove() finishAttack() end)

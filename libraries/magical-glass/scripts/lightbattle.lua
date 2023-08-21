@@ -1167,8 +1167,8 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        if not Game:getFlag("undertale_currency") then
-            win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        if Game:getFlag("undertale_currency", false) ~= true then
+            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
             Game.lw_money = Game.lw_money + self.money
 
@@ -1181,11 +1181,11 @@ function LightBattle:onStateChange(old,new)
                 member.chara:gainLightEXP(self.xp, true)
 
                 if lv ~= member.chara:getLightLV() then
-                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
                 end
             end
         else
-            win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. "."
+            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. "."
 
             Game.ut_money = Game.ut_money + self.money
 
@@ -1198,7 +1198,7 @@ function LightBattle:onStateChange(old,new)
                 member.chara:gainLightEXP(self.xp, true)
 
                 if lv ~= member.chara:getLightLV() then
-                    win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. ".\n* Your LOVE increased."
                 end
             end
         end

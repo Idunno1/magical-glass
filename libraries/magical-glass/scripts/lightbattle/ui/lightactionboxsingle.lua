@@ -118,7 +118,12 @@ end
 
 function LightActionBoxSingle:drawStatusStrip()
     local x, y = 10, 130
-    local name = self.battler.chara.name:upper()
+    local name
+    if Game.save_name and Game:getFlag("savename_lw_menus", false) == true and self.battler.chara.name == Game.party[1].name then
+        name = Game.save_name:upper()
+    else
+        name = self.battler.chara.name:upper()
+    end 
     local level = self.battler.chara:getLightLV()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))

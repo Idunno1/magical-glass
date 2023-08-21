@@ -9,8 +9,8 @@ function Dummy:init()
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 10000
-    self.health = 10000
+    self.max_health = 10
+    self.health = 10
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
@@ -80,7 +80,7 @@ function Dummy:onAct(battler, name)
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
         Game:setFlag("enable_lw_tp", true)
-
+        Game:setFlag("enable_focus", true)
         Game.battle.tension_bar = LightTensionBar(-25, 53, false)
         Game.battle.tension_bar:show()
         Game.battle:addChild(Game.battle.tension_bar)
@@ -91,6 +91,7 @@ function Dummy:onAct(battler, name)
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
         Game:setFlag("enable_lw_tp", false)
+        Game:setFlag("enable_focus", false)
 
         Game.battle.tension_bar:hide()
 --[[         Game.battle.timer:after(1, function()
