@@ -3,7 +3,6 @@ local LightArena, super = Class(Object)
 function LightArena:init(x, y, shape)
     super:init(self, x, y)
 
-
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
 
@@ -17,7 +16,6 @@ function LightArena:init(x, y, shape)
     self.line_width = 5 -- must call setShape again if u change this
     self:setShape(shape or {{0, 0}, {self.init_width, 0}, {self.init_width, self.init_height}, {0, self.init_height}})
 
-    self.color = {0, 0, 0}
     self.bg_color = {0, 0, 0}
 
     self.sprite = LightArenaSprite(self)
@@ -35,9 +33,11 @@ function LightArena:init(x, y, shape)
 
     self:setOrigin(0.5, 1)
 
-    
     self.target_shape = {}
-    self.timer = 0
+    self.target_position = {}
+
+    self.target_shape_callback = nil
+    self.target_position_callback = nil
 end
 
 function LightArena:setSize(width, height)
@@ -83,7 +83,7 @@ function LightArena:setShape(shape)
 end
 
 function LightArena:setBorderColor(r, g, b, a)
-    self.border_color = {r, g, b, a or 1}
+    self.border.color = {r, g, b, a or 1}
 end
 
 function LightArena:setBackgroundColor(r, g, b, a)
@@ -91,7 +91,7 @@ function LightArena:setBackgroundColor(r, g, b, a)
 end
 
 function LightArena:getBorderColor()
-    return self.border_color
+    return self.border.color
 end
 
 function LightArena:getBackgroundColor()
@@ -122,6 +122,51 @@ function LightArena:onRemove(parent)
 end
 
 function LightArena:update()
+    if #self.target_shape > 0 then
+        if self.width ~= self.target_shape[1] then
+            self.width = Utils.approach(self.width, self.target_shape[1], DTMULT * 30)
+        end
+
+        if self.height ~= self.target_shape[2] then
+            self.height = Utils.approach(self.height, self.target_shape[2], DTMULT * 15)
+        end
+
+        if self.width == self.target_shape[1] and self.height == self.target_shape[2] then
+            self.width = self.target_shape[1]
+            self.height = self.target_shape[2]
+            self.target_shape = {}
+
+            if self.target_shape_callback then
+                self.target_shape_callback()
+                self.target_shape_callback = nil
+            end
+        end
+    end
+
+    if #self.target_position > 0 then
+        if self.move_soul and Game.battle.soul then
+            Game.battle.soul:setPosition(self:getCenter())
+        end
+
+        if self.x ~= self.target_position[1] then
+            self.x = Utils.approach(self.x, self.target_position[1], DTMULT * 15)
+        end
+
+        if self.y ~= self.target_position[2] then
+            self.y = Utils.approach(self.y, self.target_position[2], DTMULT * 15)
+        end
+
+        if self.x == self.target_position[1] and self.y == self.target_position[2] then
+            self.x = self.target_position[1]
+            self.y = self.target_position[2]
+            self.target_position = {}
+            if self.target_position_callback then
+                self.target_position_callback()
+                self.target_position_callback = nil
+            end
+        end
+    end
+
     if not Utils.equal(self.processed_shape, self.shape, true) then
         self:setShape(self.shape)
     elseif self.processed_width ~= self.width or self.processed_height ~= self.height then
@@ -155,12 +200,23 @@ function LightArena:update()
     end
 end
 
+function LightArena:changeShape(shape, callback)
+    self.target_shape = shape
+    self.target_shape_callback = callback
+end
+
+function LightArena:changePosition(pos, move_soul, callback)
+    self.target_position = pos
+    self.move_soul = move_soul or true
+    self.target_position_callback = callback
+end
+
 function LightArena:drawMask()
     love.graphics.push()
     self.sprite:preDraw()
+    self.border:preDraw()
     self.sprite:drawBackground()
     self.sprite:postDraw()
-    self.border:preDraw()
     self.border:postDraw()
     love.graphics.pop()
 end

@@ -1034,7 +1034,7 @@ function LightBattle:onStateChange(old,new)
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
     
-                local width_timer = self.arena.width
+--[[                 local width_timer = self.arena.width
                 local x_timer = self.arena.x
                 local y_timer = self.arena.y
 
@@ -1054,7 +1054,9 @@ function LightBattle:onStateChange(old,new)
                 end, function()
                     self.arena:setSize(arena_w, self.arena.height)
                     self.arena:setPosition(arena_x, arena_y)
-                end)
+                end) ]]
+
+                self.arena:changeShape({arena_w, self.arena.height})
 
                 center_x, center_y = self.arena:getCenter()
             else
@@ -1083,6 +1085,7 @@ function LightBattle:onStateChange(old,new)
                     if dialogue then
                         any_dialogue = true
                         local bubble = enemy:spawnSpeechBubble(dialogue)
+                        bubble:setSkippable(false)
                         table.insert(self.enemy_dialogue, bubble)
                     end
                 end
@@ -1092,6 +1095,11 @@ function LightBattle:onStateChange(old,new)
             end
         end
     elseif new == "DIALOGUEEND" then
+
+        for _,bubble in ipairs(self.enemy_dialogue) do
+            bubble:remove()
+        end
+        self.enemy_dialogue = {}
 
         self.arena.layer = BATTLE_LAYERS["arena"]
 
@@ -1221,9 +1229,16 @@ function LightBattle:onStateChange(old,new)
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
 
-        local arena_h, arena_shape
+        local soul_x, soul_y, soul_offset_x, soul_offset_y
+        local arena_x, arena_y, arena_h, arena_shape
         local has_arena = true
-        for _,wave in ipairs(Game.battle.waves) do
+        for _,wave in ipairs(self.waves) do
+            soul_x = wave.soul_start_x or soul_x
+            soul_y = wave.soul_start_y or soul_y
+            soul_offset_x = wave.soul_offset_x or soul_offset_x
+            soul_offset_y = wave.soul_offset_y or soul_offset_y
+            arena_x = wave.arena_x or arena_x
+            arena_y = wave.arena_y or arena_y
             arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
             if wave.arena_shape then
                 arena_shape = wave.arena_shape
@@ -1231,24 +1246,16 @@ function LightBattle:onStateChange(old,new)
             if not wave.has_arena then
                 has_arena = false
             end
-            if wave:onArenaEnter() then
-                wave.active = true
-            end
         end
 
         if not arena_shape then
-            arena_h = arena_h or 130
-            arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
+            arena_w, arena_h = arena_w or 160, arena_h or 130
         end
+        local center_x, center_y = self.arena:getCenter()
 
-        if has_arena then
-            local height_timer = self.arena.height
-
-            self.timer:during(1/2, function()
-                height_timer = Utils.approach(height_timer, arena_h, DTMULT * 30)
-                local prog_h = height_timer
-                self.arena:setSize(self.arena.width, prog_h)
-            end, function() self.arena:setSize(self.arena.width, arena_h) end)
+        if has_arena and #self.arena.target_position == 0 then
+            self.arena:changeShape({self.arena.width, arena_h})
+            self.arena:changePosition({arena_x, arena_y})
         end
 
         self.defending_begin_timer = 0
@@ -1313,7 +1320,7 @@ function LightBattle:onStateChange(old,new)
         end
     elseif new == "DEFENDINGEND" then
 
-        local width_timer = self.arena.width
+--[[         local width_timer = self.arena.width
         local height_timer = self.arena.height
         local x_timer = self.arena.x
         local y_timer = self.arena.y
@@ -1336,7 +1343,16 @@ function LightBattle:onStateChange(old,new)
         end, function()
             self.arena:setSize(self.arena.init_width, self.arena.init_height) 
             self.arena:setPosition(self.arena.home_x, self.arena.home_y)
+        end) ]]
+        self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
+        function()
+            print("A")
+            self.arena:changeShape({self.arena.width, self.arena.init_height},
+            function()
+                self.arena:changeShape({self.arena.init_width, self.arena.height})
+            end)
         end)
+
     end
 
     -- List of states that should remove the arena.
@@ -1383,7 +1399,7 @@ function LightBattle:onStateChange(old,new)
                 end
             end)
         else
-            self.timer:after(15/30, function()
+            self.timer:after(1, function()
                 exitWaves()
                 if ending_wave then
                     self:nextTurn()
@@ -1702,12 +1718,12 @@ function LightBattle:update()
     elseif self.state == "ENEMYDIALOGUE" then
 
         self.textbox_timer = self.textbox_timer - DTMULT
-        if (self.textbox_timer <= 0) and self.use_textbox_timer then
+        if (self.textbox_timer <= 0) and self.use_textbox_timer and #self.arena.target_shape == 0 then
             self:advanceBoxes()
         else
             local all_done = true
             for _,textbox in ipairs(self.enemy_dialogue) do
-                if not textbox:isDone() then
+                if #self.arena.target_shape > 0 or not textbox:isDone() then
                     all_done = false
                     break
                 end
@@ -1751,7 +1767,7 @@ function LightBattle:update()
     ]]
     
     -- Always sort
-    --self.update_child_list = true
+    self.update_child_list = true
     super.update(self)
 
 end
@@ -1913,6 +1929,7 @@ function LightBattle:advanceBoxes()
             break
         end
     end
+
     -- Nothing is typing, try to advance
     if all_done then
         self.textbox_timer = 3 * 30
@@ -1928,7 +1945,9 @@ function LightBattle:advanceBoxes()
     end
     -- Remove leftover dialogue
     for _,dialogue in ipairs(to_remove) do
-        Utils.removeFromTable(self.enemy_dialogue, dialogue)
+        if #self.arena.target_shape == 0 then
+            Utils.removeFromTable(self.enemy_dialogue, dialogue)
+        end
     end
     -- If all dialogue is done, go to DIALOGUEEND state
     if all_done then

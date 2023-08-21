@@ -611,9 +611,22 @@ function lib:init()
 
     end)
     
-    Utils.hook(Wave, "setTargetSize", function(orig, self, width, height)
-        self.arena_width = width
-        self.arena_height = height or width
+    Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
+        if Game.battle:isLight() then
+            self.arena_width = width
+            self.arena_height = height or width
+        else
+            orig(self, x, y)
+        end
+    end)
+
+    Utils.hook(Wave, "setArenaPosition", function(orig, self, x, y)
+        if Game.battle:isLight() then
+            self.arena_x = x
+            self.arena_y = y
+        else
+            orig(self, x, y)
+        end
     end)
 
     Utils.hook(Item, "init", function(orig, self)

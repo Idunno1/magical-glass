@@ -90,8 +90,6 @@ function LightEncounter:onFlee()
         self.used_flee_message = self:getFleeMessage()
     end
 
-    -- todo: layer soul under arena while escaping
-
     Game.battle.soul.collidable = false
     Game.battle.soul.y = Game.battle.soul.y + 4
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
@@ -221,14 +219,12 @@ function LightEncounter:onWavesDone()
 
     if Game.battle.turn_count > 2 then
         if chance == 0 or chance == nil then
-            chance = Utils.random(0, 100, 1)
+            self.flee_chance = Utils.random(0, 100, 1)
         else
-            chance = chance + 10
+            self.flee_chance = self.flee_chance + 10
         end
     end
 
-
-    --Game.battle.arena:setShape(arena_shape)
     Game.battle.soul:remove()
     Game.battle.arena.layer = BATTLE_LAYERS["ui"] - 1
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")

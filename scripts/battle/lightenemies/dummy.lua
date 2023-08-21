@@ -24,14 +24,14 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
---[[         "basic",
-        "aiming",
+        "basic",
+--[[         "aiming",
         "movingarena" ]]
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
-        "..."
+        "AAAAAAA"
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)

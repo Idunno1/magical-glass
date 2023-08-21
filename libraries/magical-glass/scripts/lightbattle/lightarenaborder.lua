@@ -9,18 +9,16 @@ function LightArenaBorder:init(arena, x, y)
 end
 
 function LightArenaBorder:update()
-    self.x = math.floor(self.arena.x)
-    self.y = math.floor(self.arena.y)
+    self.x = self.arena.x
+    self.y = self.arena.y
 
-    self.width = self.arena.width
-    self.height = self.arena.height
+    self.width = self.arena.sprite.width + 1  -- FUCKING WHY
+    self.height = self.arena.sprite.height
 
     super.update(self)
 end
 
 function LightArenaBorder:draw()
-
-    super.draw(self)
 
     local r,g,b,a = self:getDrawColor()
 
@@ -28,6 +26,8 @@ function LightArenaBorder:draw()
     love.graphics.setLineStyle("rough")
     love.graphics.setLineWidth(self.arena.line_width)
     love.graphics.line(unpack(self.arena.border_line))
+    
+    super.draw(self)
 
 end
 
