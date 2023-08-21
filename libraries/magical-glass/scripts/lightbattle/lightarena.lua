@@ -1,30 +1,41 @@
-local LightArena, super = Class(Arena)
+local LightArena, super = Class(Object)
 
 function LightArena:init(x, y, shape)
     super:init(self, x, y)
 
-    self.home_x = x
-    self.home_y = y
-
-    self.color = {1, 1, 1}
-    self.bg_color = {0, 0, 0}
-
-    self.line_width = 5 -- must call setShape again if u change this
-    self.default_dim = {565, 130}
-    self:setShape(shape or {{0, 0}, {self.default_dim[1], 0}, {self.default_dim[1], self.default_dim[2]}, {0, self.default_dim[2]}})
-
-    self.mask.layer = BATTLE_LAYERS["above_ui"]
-
---[[     self.border_mask = ArenaSprite(self)
-    self.border_mask:setOrigin(0.5, 1)
-    self.border_mask:setPosition(self:getRelativePos(self.width / 2, self.height / 2))
-    self.border_mask.color = self.color
-    self.border_mask.background = false
-    Game.battle:addChild(self.border_mask)
-    self.border_mask.layer = BATTLE_LAYERS["above_bullets"] ]]
-    
     self:setOrigin(0.5, 1)
 
+    self.x = math.floor(self.x)
+    self.y = math.floor(self.y)
+
+    self.home_x = self.x
+    self.home_y = self.y
+    self.init_width = 565
+    self.init_height = 130
+
+    self.collider = ColliderGroup(self)
+
+    self.line_width = 5 -- must call setShape again if u change this
+    self:setShape(shape or {{0, 0}, {self.init_width, 0}, {self.init_width, self.init_height}, {0, self.init_height}})
+
+    self.color = {0, 0, 0}
+    self.bg_color = {0, 0, 0}
+
+    self.sprite = LightArenaSprite(self)
+    self:addChild(self.sprite)
+
+    self.mask = ArenaMask(1, 0, 0, self)
+    self.mask.layer = BATTLE_LAYERS["above_ui"]
+    self:addChild(self.mask)
+
+    self.border = LightArenaBorder(self)
+    self.border:setOrigin(0.5, 1)
+    self.border.color = {1, 1, 1}
+    self.border:setPosition(self:getRelativePos(self.sprite.width / 2, self.sprite.height))
+    self.border.layer = BATTLE_LAYERS["above_bullets"]
+    Game.battle:addChild(self.border)
+    
+    self.timer = 0
 end
 
 function LightArena:setSize(width, height)
@@ -34,7 +45,7 @@ end
 function LightArena:setShape(shape)
     self.shape = Utils.copy(shape, true)
     self.processed_shape = Utils.copy(shape, true)
-
+    
     local min_x, min_y, max_x, max_y
     for _,point in ipairs(self.shape) do
         min_x, min_y = math.min(min_x or point[1], point[1]), math.min(min_y or point[2], point[2])
@@ -69,8 +80,16 @@ function LightArena:setShape(shape)
     end
 end
 
+function LightArena:setBorderColor(r, g, b, a)
+    self.border_color = {r, g, b, a or 1}
+end
+
 function LightArena:setBackgroundColor(r, g, b, a)
     self.bg_color = {r, g, b, a or 1}
+end
+
+function LightArena:getBorderColor()
+    return self.border_color
 end
 
 function LightArena:getBackgroundColor()
@@ -139,8 +158,8 @@ function LightArena:drawMask()
     self.sprite:preDraw()
     self.sprite:drawBackground()
     self.sprite:postDraw()
-    self.border_mask:preDraw()
-    self.border_mask:postDraw()
+    self.border:preDraw()
+    self.border:postDraw()
     love.graphics.pop()
 end
 

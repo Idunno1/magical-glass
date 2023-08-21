@@ -11,13 +11,6 @@ function LightArenaSprite:init(arena, x, y)
     self:setScaleOrigin(0.5, 0.5)
     self:setRotationOrigin(0.5, 0.5)
 
-    self:setLayer(BATTLE_LAYERS["below_ui"] - 5)
-
-    self.border = LightArenaBorder(arena, x, y)
-    self:addChild(self.border)
-
-    self.background = true
-
     self.debug_select = false
 end
 
@@ -29,10 +22,8 @@ function LightArenaSprite:update()
 end
 
 function LightArenaSprite:draw()
-    if self.background then
-        Draw.setColor(self.arena:getBackgroundColor())
-        self:drawBackground()
-    end
+    Draw.setColor(self.arena:getBackgroundColor())
+    self:drawBackground()
 
     super.draw(self)
 end

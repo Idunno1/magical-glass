@@ -1,6 +1,6 @@
 ---@class World : Object
 ---@overload fun(...) : World
-local World, super = Class(Object)
+local World, super = Class("World", true)
 
 function World:init(map)
     super.init(self)
@@ -348,7 +348,7 @@ function World:stopCutscene()
     self.cutscene = nil
 end
 
---[[ function World:showText(text, after)
+function World:showText(text, after)
     if type(text) ~= "table" then
         text = {text}
     end
@@ -360,7 +360,7 @@ end
             after(cutscene)
         end
     end)
-end ]]
+end
 
 function World:spawnPlayer(...)
     local args = {...}

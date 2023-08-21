@@ -134,6 +134,14 @@ function LightBattle:isLight()
     return true
 end
 
+function LightBattle:isPagerMenu()
+    for _,menu in ipairs(self.pager_menus) do
+        if menu == self.state_reason then
+            return true
+        end
+    end
+end
+
 function LightBattle:playSelectSound()
     self.ui_select:stop()
     self.ui_select:play()
@@ -851,7 +859,6 @@ function LightBattle:onStateChange(old,new)
 
     -- we still kind of need an intro phase for self.encounter:onBattleStart()
     if new == "ACTIONSELECT" then
-
         if not self.soul then
             self:spawnSoul()
         end
@@ -903,7 +910,7 @@ function LightBattle:onStateChange(old,new)
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
         self.battle_ui.encounter_text.text.state.typing_sound = "ut"
-        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:3]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
         self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
@@ -1313,8 +1320,8 @@ function LightBattle:onStateChange(old,new)
 
         self.timer:during(1/2, function()
 
-            width_timer = Utils.approach(width_timer, self.arena.default_dim[1], DTMULT * 30)
-            height_timer = Utils.approach(height_timer, self.arena.default_dim[2], DTMULT * 30)
+            width_timer = Utils.approach(width_timer, self.arena.init_width, DTMULT * 30)
+            height_timer = Utils.approach(height_timer, self.arena.init_height, DTMULT * 30)
             x_timer = Utils.approach(x_timer, self.arena.home_x, DTMULT * 15)
             y_timer = Utils.approach(y_timer, self.arena.home_y, DTMULT * 15)
 
@@ -1327,7 +1334,7 @@ function LightBattle:onStateChange(old,new)
             self.arena:setPosition(prog_x, prog_y)
 
         end, function()
-            self.arena:setSize(self.arena.default_dim[1], self.arena.default_dim[2]) 
+            self.arena:setSize(self.arena.init_width, self.arena.init_height) 
             self.arena:setPosition(self.arena.home_x, self.arena.home_y)
         end)
     end
@@ -2708,9 +2715,23 @@ function LightBattle:onKeyPressed(key)
                 self:playMoveSound()
             end
             self.current_menu_x = self.current_menu_x + 1
-            if not self:isValidMenuLocation() then
-                self.current_menu_x = 1
+            if not self:isPagerMenu() and not self:isValidMenuLocation() and self.current_menu_columns > 1 then
+                if self.current_menu_x % 2 == 0 then
+                    self.current_menu_y = self.current_menu_y - 1
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_y = 1
+                        self.current_menu_x = 2
+                        if not self:isValidMenuLocation() then
+                            self.current_menu_x = 1
+                        end
+                    end
+                elseif not self:isValidMenuLocation() then
+                    self.current_menu_x = 1
+                end
+            elseif not self:isValidMenuLocation() then
+                self.current_menu_x = 1  
             end
+            
         end
         if Input.is("up", key) then
             self:playMoveSound()
@@ -2718,7 +2739,10 @@ function LightBattle:onKeyPressed(key)
             if (self.current_menu_y < 1) or (not self:isValidMenuLocation()) then
                 self.current_menu_y = self.current_menu_rows
                 if not self:isValidMenuLocation() then
-                    self.current_menu_y = self.current_menu_rows - (self.current_menu_rows - 1)
+                    self.current_menu_y = self.current_menu_rows - 1
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_y = self.current_menu_rows - 2
+                    end
                 end
             end
         elseif Input.is("down", key) then
@@ -2830,8 +2854,7 @@ function LightBattle:onKeyPressed(key)
             until (self.enemies[self.current_menu_y].selectable)
 
             if self.current_menu_y ~= old_location then
-                self.ui_move:stop()
-                self.ui_move:play()
+                self:playMoveSound()
             end
         elseif Input.is("down", key) then
             local old_location = self.current_menu_y
@@ -2848,14 +2871,12 @@ function LightBattle:onKeyPressed(key)
             until (self.enemies[self.current_menu_y].selectable)
 
             if self.current_menu_y ~= old_location then
-                self.ui_move:stop()
-                self.ui_move:play()
+                self:playMoveSound()
             end
         end
     elseif self.state == "PARTYSELECT" then
         if Input.isConfirm(key) then
-            self.ui_select:stop()
-            self.ui_select:play()
+            self:playSelectSound()
             if self.state_reason == "SPELL" then
                 self:pushAction("SPELL", self.party[self.current_menu_y], self.selected_spell)
             elseif self.state_reason == "ITEM" then
@@ -2867,8 +2888,7 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
-            self.ui_move:stop()
-            self.ui_move:play()
+            self:playMoveSound()
             if self.state_reason == "SPELL" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then
@@ -2879,15 +2899,13 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.is("up", key) then
-            self.ui_move:stop()
-            self.ui_move:play()
+            self:playMoveSound()
             self.current_menu_y = self.current_menu_y - 1
             if self.current_menu_y < 1 then
                 self.current_menu_y = #self.party
             end
         elseif Input.is("down", key) then
-            self.ui_move:stop()
-            self.ui_move:play()
+            self:playMoveSound()
             self.current_menu_y = self.current_menu_y + 1
             if self.current_menu_y > #self.party then
                 self.current_menu_y = 1

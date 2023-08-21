@@ -25,8 +25,8 @@ function Dummy:init()
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
 --[[         "basic",
-        "aiming", ]]
-        "movingarena"
+        "aiming",
+        "movingarena" ]]
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
@@ -49,6 +49,7 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
+
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})

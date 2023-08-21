@@ -3,8 +3,8 @@ LightPartyBattler        = libRequire("magical-glass", "scripts/lightbattle/ligh
 LightEnemyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightenemybattler")
 LightEnemySprite         = libRequire("magical-glass", "scripts/lightbattle/lightenemysprite")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
---LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
---LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
+LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
+LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
@@ -29,8 +29,8 @@ function lib:load()
     if Game.is_new_file then
         Game:setFlag("serious_mode", false) -- useful for serious battles
         Game:setFlag("always_show_magic", false)
-        Game:setFlag("undertale_textbox_skipping", true)
-        Game:setFlag("undertale_textbox_pause", true)
+        Game:setFlag("undertale_textbox_skipping", true) -- disables skipping
+        Game:setFlag("undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("enable_lw_tp", false)
         Game:setFlag("lw_stat_menu_portraits", true)
         Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
@@ -38,7 +38,7 @@ function lib:load()
 
         Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
-        Game:setFlag("undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!)
+        Game:setFlag("undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
         Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.

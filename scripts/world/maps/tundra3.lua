@@ -1,7 +1,7 @@
 return {
   version = "1.10",
   luaversion = "5.1",
-  tiledversion = "1.10.1",
+  tiledversion = "1.10.2",
   class = "",
   orientation = "orthogonal",
   renderorder = "right-down",
@@ -136,6 +136,251 @@ return {
           visible = true,
           properties = {}
         }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 5,
+      name = "markers",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 20,
+          name = "spawn",
+          type = "",
+          shape = "point",
+          x = 260,
+          y = 360,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 75,
+          name = "entry2",
+          type = "",
+          shape = "point",
+          x = 720,
+          y = 360,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 77,
+          name = "entry3",
+          type = "",
+          shape = "point",
+          x = 420,
+          y = 110,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 76,
+          name = "entry",
+          type = "",
+          shape = "point",
+          x = 80,
+          y = 400,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 4,
+      name = "objects",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 68,
+          name = "savepoint",
+          type = "",
+          shape = "rectangle",
+          x = 180,
+          y = 300,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["text1"] = "* (The convenience of that\nlamp still fills you\nwith determination.)",
+            ["ut"] = true
+          }
+        },
+        {
+          id = 70,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 510,
+          y = 230,
+          width = 40,
+          height = 40,
+          rotation = 0,
+          gid = 676,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 71,
+          name = "interactable",
+          type = "",
+          shape = "rectangle",
+          x = 510,
+          y = 198,
+          width = 40,
+          height = 32,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["solid"] = true,
+            ["text1"] = "* (This is a box.)",
+            ["text2"] = "* (You can put an item\ninside or take an item\nout.)",
+            ["text3"] = "* (The same box will appear\nlater, so don't worry\nabout coming back.)",
+            ["text4"] = "* (Sincerely,[wait:5] a box lover.)"
+          }
+        },
+        {
+          id = 72,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 0,
+          y = 320,
+          width = 40,
+          height = 120,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra2",
+            ["marker"] = "entry2"
+          }
+        },
+        {
+          id = 74,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 760,
+          y = 280,
+          width = 40,
+          height = 160,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra4",
+            ["marker"] = "entry"
+          }
+        },
+        {
+          id = 78,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 360,
+          y = 0,
+          width = 120,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra3A",
+            ["marker"] = "spawn"
+          }
+        }
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 12,
+      id = 7,
+      name = "tiles3",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        361, 362, 363, 362, 363, 362, 363, 364, 363, 364, 365, 0, 0, 0, 0, 361, 362, 363, 362, 363,
+        370, 371, 372, 371, 372, 371, 372, 373, 372, 373, 374, 0, 0, 0, 0, 370, 371, 372, 371, 372
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 12,
+      id = 6,
+      name = "tiles4",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 298, 299, 300, 301, 302, 303, 304, 304, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 307, 308, 309, 310, 311, 312, 313, 313, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 308, 309, 318, 319, 320, 321, 322, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 308, 317, 318, 327, 328, 329, 328, 311, 312, 0, 0, 0, 0, 0,
+        309, 308, 309, 308, 309, 308, 317, 308, 309, 336, 337, 338, 329, 320, 321, 309, 308, 309, 308, 309
       }
     },
     {
@@ -504,251 +749,6 @@ return {
           visible = true,
           properties = {}
         }
-      }
-    },
-    {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 5,
-      name = "markers",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      objects = {
-        {
-          id = 20,
-          name = "spawn",
-          type = "",
-          shape = "point",
-          x = 260,
-          y = 360,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 75,
-          name = "entry2",
-          type = "",
-          shape = "point",
-          x = 720,
-          y = 360,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 77,
-          name = "entry3",
-          type = "",
-          shape = "point",
-          x = 420,
-          y = 110,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 76,
-          name = "entry",
-          type = "",
-          shape = "point",
-          x = 80,
-          y = 400,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        }
-      }
-    },
-    {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 4,
-      name = "objects",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      objects = {
-        {
-          id = 68,
-          name = "savepoint",
-          type = "",
-          shape = "rectangle",
-          x = 180,
-          y = 300,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["text1"] = "* (The convenience of that\nlamp still fills you\nwith determination.)",
-            ["ut"] = true
-          }
-        },
-        {
-          id = 70,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 510,
-          y = 230,
-          width = 40,
-          height = 40,
-          rotation = 0,
-          gid = 676,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 71,
-          name = "interactable",
-          type = "",
-          shape = "rectangle",
-          x = 510,
-          y = 198,
-          width = 40,
-          height = 32,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["solid"] = true,
-            ["text1"] = "* (This is a box.)",
-            ["text2"] = "* (You can put an item\ninside or take an item\nout.)",
-            ["text3"] = "* (The same box will appear\nlater, so don't worry\nabout coming back.)",
-            ["text4"] = "* (Sincerely,[wait:5] a box lover.)"
-          }
-        },
-        {
-          id = 72,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 0,
-          y = 320,
-          width = 40,
-          height = 120,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra2",
-            ["marker"] = "entry2"
-          }
-        },
-        {
-          id = 74,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 760,
-          y = 280,
-          width = 40,
-          height = 160,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra4",
-            ["marker"] = "entry"
-          }
-        },
-        {
-          id = 78,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 360,
-          y = 0,
-          width = 120,
-          height = 40,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra3A",
-            ["marker"] = "spawn"
-          }
-        }
-      }
-    },
-    {
-      type = "tilelayer",
-      x = 0,
-      y = 0,
-      width = 20,
-      height = 12,
-      id = 7,
-      name = "tiles3",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      encoding = "lua",
-      data = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        361, 362, 363, 362, 363, 362, 363, 364, 363, 364, 365, 0, 0, 0, 0, 361, 362, 363, 362, 363,
-        370, 371, 372, 371, 372, 371, 372, 373, 372, 373, 374, 0, 0, 0, 0, 370, 371, 372, 371, 372
-      }
-    },
-    {
-      type = "tilelayer",
-      x = 0,
-      y = 0,
-      width = 20,
-      height = 12,
-      id = 6,
-      name = "tiles4",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      encoding = "lua",
-      data = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 298, 299, 300, 301, 302, 303, 304, 304, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 307, 308, 309, 310, 311, 312, 313, 313, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 308, 309, 318, 319, 320, 321, 322, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 308, 317, 318, 327, 328, 329, 328, 311, 312, 0, 0, 0, 0, 0,
-        309, 308, 309, 308, 309, 308, 317, 308, 309, 336, 337, 338, 329, 320, 321, 309, 308, 309, 308, 309
       }
     }
   }
