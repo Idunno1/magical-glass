@@ -17,12 +17,13 @@ LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxdisplay")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
+RandomEncounter          = libRequire("magical-glass", "scripts/lightbattle/randomencounter")
 
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
 function lib:postInit(new_file)
-    self.random_encounter = love.math.random(20, 100)
+    Game.random_encounter_value = love.math.random(20, 100)
 end
 
 function lib:load()
@@ -44,6 +45,22 @@ function lib:load()
         Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
 
         Game:setFlag("random_encounter_table", {})
+    end
+end
+
+function lib:registerRandomEncounter(id)
+    self.random_encounters[id] = class
+end
+
+function lib:getRandomEncounter(id)
+    return self.random_encounters[id]
+end
+
+function lib:createRandomEncounter(id, ...)
+    if self.random_encounters[id] then
+        return self.random_encounters[id](...)
+    else
+        error("Attempt to create non existent random encounter \"" .. tostring(id) .. "\"")
     end
 end
 
@@ -129,8 +146,15 @@ end
 
 function lib:init()
 
+    self.random_encounters = {}
     self.light_encounters = {}
     self.light_enemies = {}
+
+    for _,path,rnd_enc in Registry.iterScripts("battle/randomencounters") do
+        assert(rnd_enc ~= nil, '"randomencounters/'..path..'.lua" does not return value')
+        rnd_enc.id = rnd_enc.id or path
+        self.random_encounters[rnd_enc.id] = rnd_enc
+    end
 
     for _,path,light_enc in Registry.iterScripts("battle/lightencounters") do
         assert(light_enc ~= nil, '"lightencounters/'..path..'.lua" does not return value')
@@ -242,6 +266,8 @@ function lib:init()
         data = data or {}
 
         self.ut_money = data.ut_money or 0
+
+        self.murder_level = data.murder_level or 0
   
         if Game:getFlag("temporary_world_value#") then
             if Game:getFlag("temporary_world_value#") == "light" then
@@ -1323,6 +1349,8 @@ function lib:init()
 
             level_up_count = self.level_up_count,
 
+            murder_level = self.murder_level,
+
             border = self.border,
 
             temp_followers = self.temp_followers,
@@ -1435,24 +1463,8 @@ function lib:onFootstep(chara, num)
     
     if Game.world.map:getEvent("random_encounter") ~= nil then
 
-        self.random_encounter = self.random_encounter - 1
+        Game.random_encounter_value = Game.random_encounter_value - 1
 
-        if chara == Game.world.player and self.random_encounter < 0 then
-            if not Game.world.cutscene and not Game.battle then
-                Game.world:startCutscene(function(cutscene)
-                    Assets.stopAndPlaySound("alert")
-                    local sprite = Sprite("effects/alert", Game.world.player.width/2)
-                    sprite:setScale(1,1)
-                    sprite:setOrigin(0.5, 1)
-                    Game.world.player:addChild(sprite)
-                    sprite.layer = WORLD_LAYERS["above_events"]
-                    cutscene:wait(0.75)
-                    sprite:remove()
-                    cutscene:startEncounter("dummy", true)
-                end)
-                self.random_encounter = love.math.random(20, 100)
-            end
-        end
 
     end
 
