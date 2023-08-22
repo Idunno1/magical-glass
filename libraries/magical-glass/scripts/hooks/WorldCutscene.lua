@@ -86,7 +86,7 @@ function WorldCutscene:text(text, portrait, actor, options)
     self.textbox:setAuto(options["auto"])
 
     if Game:getFlag("undertale_textbox_pause") then
-        self.textbox:setText("[wait:3]"..text, function()
+        self.textbox:setText("[wait:2]"..text, function()
             self.textbox:remove()
             self:tryResume()
         end)

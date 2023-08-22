@@ -434,7 +434,7 @@ function LightBattleUI:drawState()
                         -- is an in-joke
 
                         if self.style == "undertale" then
-                            Draw.setColor(PALETTE["action_health_bg"])
+                            Draw.setColor(1,0,0,1)
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
 
                             Draw.setColor(PALETTE["action_health"])

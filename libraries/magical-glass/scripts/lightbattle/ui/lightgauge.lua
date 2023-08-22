@@ -67,8 +67,8 @@ function LightGauge:draw()
     super.draw(self)
 
     Draw.setColor(COLORS["black"])
-    love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 1), self.height + 1)
-    Draw.setColor(0.5, 0.5, 0.5) -- temp
+    love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 2), self.height + 2)
+    Draw.setColor(64/255, 64/255, 64/255) -- temp
     love.graphics.rectangle("fill", 0, 8, Utils.round(self.max_value * self.extra_width), self.height)
     if self.value > 0 then
         Draw.setColor(self.color)
