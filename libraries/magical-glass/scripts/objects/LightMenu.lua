@@ -155,12 +155,7 @@ function LightMenu:draw()
 
     love.graphics.setFont(self.font)
     Draw.setColor(PALETTE["world_text"])
-    if Game.save_name and Game:getFlag("savename_lw_menus", false) == true then
-        love.graphics.print(Game.save_name, 46, 60 + offset)
-    else
-        love.graphics.print(chara:getName(), 46, 60 + offset)
-    end 
-
+    love.graphics.print(chara:getName(), 46, 60 + offset)
     love.graphics.setFont(self.font_small)
     love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
     love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)

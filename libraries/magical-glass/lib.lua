@@ -1070,6 +1070,8 @@ function lib:init()
     
         orig(self)
 
+        self.use_player_name = false
+
         self.dw_weapon_default = "wood_blade"
         if Game.chapter >= 2 then
             self.dw_armor_default = {"amber_card", "amber_card"}
@@ -1093,6 +1095,18 @@ function lib:init()
             magic = 0
         }
 
+    end)
+
+    Utils.hook(PartyMember, "getName", function(orig, self)
+        if Game:getFlag("savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
+            return Game.save_name
+        else
+            return self.name
+        end
+    end)
+
+    Utils.hook(PartyMember, "shouldUsePlayerName", function(orig, self)
+        return self.use_player_name
     end)
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
@@ -1289,11 +1303,7 @@ function lib:init()
             end
         end
 
-        if Game.save_name and Game:getFlag("savename_lw_menus", false) == true then
-            love.graphics.print("\"" .. Game.save_name .. "\"", 4, 8)
-        else
-            love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
-        end 
+        love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
         love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
     

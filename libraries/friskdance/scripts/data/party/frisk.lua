@@ -5,6 +5,7 @@ function character:init()
 
     -- Display name
     self.name = "Frisk"
+    self.use_player_name = true
 
     -- Actor (handles overworld/battle sprites)
     self:setActor("frisk_lw")
