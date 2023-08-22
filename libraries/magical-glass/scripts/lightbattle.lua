@@ -1399,7 +1399,7 @@ function LightBattle:onStateChange(old,new)
                 end
             end)
         else
-            self.timer:after(1, function()
+            self.timer:after(1, function() -- need a better way of doing this
                 exitWaves()
                 if ending_wave then
                     self:nextTurn()

@@ -58,7 +58,7 @@ function Dummy:drawBackground()
     else
         local offset = 0
         for i = 1, 6 do
-            local sine = (math.sin(self.bg_siners[i] / 14) * 6) + 12
+            local sine = (math.sin(self.bg_siners[i] / 14) * 8) + 12
             Draw.setColor(0, 107/255, 183/255)
             love.graphics.setLineWidth(1)
             love.graphics.rectangle("line", 18 + offset, sine, 101, 118)

@@ -132,10 +132,8 @@ function LightArena:update()
         end
 
         if self.width == self.target_shape[1] and self.height == self.target_shape[2] then
-            self.width = self.target_shape[1]
-            self.height = self.target_shape[2]
+            self:setSize(self.target_shape[1], self.target_shape[2])
             self.target_shape = {}
-
             if self.target_shape_callback then
                 self.target_shape_callback()
                 self.target_shape_callback = nil
