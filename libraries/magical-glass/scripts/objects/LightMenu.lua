@@ -159,6 +159,7 @@ function LightMenu:draw()
     love.graphics.setFont(self.font_small)
     love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
     love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
+    -- pastency when -sam, to sam
     if not Game:getFlag("undertale_currency", false) then
         love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4) .. Game.lw_money, 46, 136 + offset)
     else

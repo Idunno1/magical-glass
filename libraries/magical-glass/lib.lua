@@ -27,6 +27,10 @@ function lib:postInit(new_file)
 end
 
 function lib:load()
+    if Kristal.getModOption("encounter") then
+        Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
+    end
+    
     if Game.is_new_file then
         Game:setFlag("serious_mode", false) -- useful for serious battles
         Game:setFlag("always_show_magic", false)
