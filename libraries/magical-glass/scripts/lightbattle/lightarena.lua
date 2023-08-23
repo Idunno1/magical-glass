@@ -123,15 +123,15 @@ end
 
 function LightArena:update()
     if #self.target_shape > 0 then
-        if self.width ~= self.target_shape[1] then
+        if not Utils.equal(self.width, self.target_shape[1], true) then
             self.width = Utils.approach(self.width, self.target_shape[1], DTMULT * 30)
         end
 
-        if self.height ~= self.target_shape[2] then
+        if not Utils.equal(self.height, self.target_shape[2], true) then
             self.height = Utils.approach(self.height, self.target_shape[2], DTMULT * 15)
         end
 
-        if self.width == self.target_shape[1] and self.height == self.target_shape[2] then
+        if Utils.equal(self.width, self.target_shape[1], true) and Utils.equal(self.height, self.target_shape[2], true) then
             self:setSize(self.target_shape[1], self.target_shape[2])
             self.target_shape = {}
             if self.target_shape_callback then
@@ -146,15 +146,15 @@ function LightArena:update()
             Game.battle.soul:setPosition(self:getCenter())
         end
 
-        if self.x ~= self.target_position[1] then
+        if not Utils.equal(self.x, self.target_position[1], true) then
             self.x = Utils.approach(self.x, self.target_position[1], DTMULT * 15)
         end
 
-        if self.y ~= self.target_position[2] then
+        if not Utils.equal(self.y, self.target_position[2], true) then
             self.y = Utils.approach(self.y, self.target_position[2], DTMULT * 15)
         end
 
-        if self.x == self.target_position[1] and self.y == self.target_position[2] then
+        if Utils.equal(self.x, self.target_position[1], true) and Utils.equal(self.y, self.target_position[2], true) then
             self.x = self.target_position[1]
             self.y = self.target_position[2]
             self.target_position = {}

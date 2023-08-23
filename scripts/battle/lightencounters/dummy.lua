@@ -17,9 +17,21 @@ function Dummy:init()
     self.bg_siners = {0, 15, 30, 45, 60, 75}
 
     self.offset = 0
+
+--[[     self.shader = love.graphics.newShader([[
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+        {
+           vec4 pixel = Texel(texture, texture_coords);
+           texture.x *= width;
+           return pixel;
+        }
+    ]] --]])
+
 end
 
 function Dummy:update()
+--[[     self.shader:send("width", SCREEN_WIDTH)
+    self.shader:send("height", SCREEN_HEIGHT) ]]
     super.update(self)
 
     if self:getFlag("deltarune") then
@@ -56,6 +68,7 @@ function Dummy:drawBackground()
             love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
         end
     else
+        --love.graphics.setShader(self.shader)
         local offset = 0
         for i = 1, 6 do
             local sine = (math.sin(self.bg_siners[i] / 14) * 8) + 12
@@ -65,6 +78,7 @@ function Dummy:drawBackground()
             love.graphics.rectangle("line", 18 + offset, sine + 118, 101, 118)
             offset = offset + 101
         end
+        --love.graphics.setShader()
     end
 end
 
