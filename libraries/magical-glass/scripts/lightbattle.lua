@@ -1167,7 +1167,7 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        if Game:getFlag("undertale_currency", false) ~= true then
+        if not Game:getFlag("undertale_currency") then
             win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
             Game.lw_money = Game.lw_money + self.money

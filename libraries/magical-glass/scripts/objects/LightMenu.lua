@@ -76,8 +76,8 @@ function LightMenu:onKeyPressed(key)
         if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
         if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
         local max_selecting
-        if not Game:getFlag("hide_cell", false) then
-            max_selecting = Game:getFlag("has_cell_phone", false) and 3 or 2
+        if not Game:getFlag("hide_cell") then
+            max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
         else
             max_selecting = 2
         end
@@ -160,7 +160,7 @@ function LightMenu:draw()
     love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
     love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
     -- pastency when -sam, to sam
-    if not Game:getFlag("undertale_currency", false) then
+    if not Game:getFlag("undertale_currency") then
         love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4) .. Game.lw_money, 46, 136 + offset)
     else
         love.graphics.print(Utils.padString(Kristal.getLibConfig("magical-glass", "undertaleCurrencyShort"), 4) .. Game.ut_money or 0, 46, 136 + offset)
@@ -176,8 +176,8 @@ function LightMenu:draw()
     Draw.setColor(PALETTE["world_text"])
     love.graphics.print("STAT", 84, 188 + (36 * 1))
 
-    if not Game:getFlag("hide_cell", false) then
-        if Game:getFlag("has_cell_phone", false) then
+    if not Game:getFlag("hide_cell") then
+        if Game:getFlag("has_cell_phone") then
             if #Game.world.calls > 0 then
                 Draw.setColor(PALETTE["world_text"])
             else
@@ -186,7 +186,7 @@ function LightMenu:draw()
             love.graphics.print("CELL", 84, 188 + (36 * 2))
         end
     else
-        if Game:getFlag("has_cell_phone", false) then
+        if Game:getFlag("has_cell_phone") then
             if #Game.world.calls > 0 then
                 Draw.setColor(PALETTE["world_text"])
                 love.graphics.print("CELL", 84, 188 + (36 * 2))

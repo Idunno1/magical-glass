@@ -1336,7 +1336,7 @@ function lib:init()
         love.graphics.print("ARMOR: "..armor_name, 4, 288)
     
         --love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
-        if not Game:getFlag("undertale_currency", false) then
+        if Game:getFlag("undertale_currency") then
             love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
         else
             love.graphics.print(Kristal.getLibConfig("magical-glass", "undertaleCurrency"):upper()..": "..Game.ut_money or 0, 4, 328)
