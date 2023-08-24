@@ -12,7 +12,7 @@
 
     "map": "tundra3",
     //"party": ["kris", /* "susie", "noelle" */],
-    "party": ["frisk"],
+    "party": ["kris"],
     "inventory": {
         "items": ["light/monster_candy", "light/bandage_ut", "light/empty_gun"],
         "key_items": ["cell_phone"]
@@ -20,8 +20,8 @@
 
     "equipment": {
         "kris": {
-            "weapon": "light/stick",
-            "armor": ["light/bandage"]
+            "weapon": "light/real_knife",
+            "armor": ["light/temy_armor"]
         },
         "frisk": {
             "weapon": "light/burnt_pan",

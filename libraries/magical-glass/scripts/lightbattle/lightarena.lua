@@ -16,20 +16,22 @@ function LightArena:init(x, y, shape)
     self.line_width = 5 -- must call setShape again if u change this
     self:setShape(shape or {{0, 0}, {self.init_width, 0}, {self.init_width, self.init_height}, {0, self.init_height}})
 
+    self.color = {1, 1, 1}
     self.bg_color = {0, 0, 0}
 
-    self.sprite = LightArenaSprite(self)
+    self.sprite = ArenaSprite(self)
     self:addChild(self.sprite)
 
     self.mask = ArenaMask(1, 0, 0, self)
     self.mask.layer = BATTLE_LAYERS["above_ui"]
     self:addChild(self.mask)
 
-    self.border = LightArenaBorder(self)
+    -- this STILL sucks
+--[[     self.border = LightArenaBorder(self)
     self.border:setOrigin(0.5, 1)
     self.border.color = {1, 1, 1}
     self.border.layer = BATTLE_LAYERS["above_bullets"]
-    Game.battle:addChild(self.border)
+    Game.battle:addChild(self.border) ]]
 
     self:setOrigin(0.5, 1)
 
@@ -155,6 +157,7 @@ function LightArena:update()
         end
 
         if Utils.equal(self.x, self.target_position[1], true) and Utils.equal(self.y, self.target_position[2], true) then
+            self:setSize(self.width, self.height) -- needs to be called so top, bottom, left, and right work
             self.x = self.target_position[1]
             self.y = self.target_position[2]
             self.target_position = {}

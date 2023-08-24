@@ -28,7 +28,20 @@ function LightPartyBattler:canTarget()
     return (not self.is_down)
 end
 
-function LightPartyBattler:onTurnStart() end
+function LightPartyBattler:onBattleStart()
+    if self.chara:getWeapon() then
+        self.chara:getWeapon():onBattleStart(self)
+    end
+    if self.chara:getArmor(1) then
+        self.chara:getArmor(1):onBattleStart(self)
+    end
+end
+
+function LightPartyBattler:onTurnStart()
+    if Game.battle.turn_count == 1 then
+        self:onBattleStart()
+    end
+end
 
 function LightPartyBattler:onTurnEnd()
     for _,equip in ipairs(self.chara:getEquipment()) do

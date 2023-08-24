@@ -7,11 +7,9 @@ function LightBattleUI:init()
 
     self.current_encounter_text = Game.battle.encounter.text
 
-    self.style = Game:getFlag("gauge_styles")
+    self.arena = Game.battle.arena
 
-    self.arena = LightArena(SCREEN_WIDTH/2, 385)
-    self.arena.layer = BATTLE_LAYERS["ui"]
-    Game.battle:addChild(self.arena)
+    self.style = Game:getFlag("gauge_styles")
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
     self.encounter_text.text.hold_skip = false
@@ -21,19 +19,19 @@ function LightBattleUI:init()
     self.encounter_text:setText("")
     self.encounter_text.text.state.typing_sound = "ut"
     self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH+1, 124}
-    self.arena:addChild(self.encounter_text)
+    Game.battle.arena:addChild(self.encounter_text)
 
     self.choice_box = Choicebox(56, 49, 529, 103, true)
     self.choice_box.active = false
     self.choice_box.visible = false
-    self:addChild(self.choice_box)
+    Game.battle.arena:addChild(self.choice_box)
 
-    self.short_act_text_1 = DialogueText("", 30, 51, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
-    self.short_act_text_2 = DialogueText("", 30, 51 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
-    self.short_act_text_3 = DialogueText("", 30, 51 + 30 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
-    self:addChild(self.short_act_text_1)
-    self:addChild(self.short_act_text_2)
-    self:addChild(self.short_act_text_3)
+    self.short_act_text_1 = DialogueText("", 14, 15, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
+    self.short_act_text_2 = DialogueText("", 14, 15 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
+    self.short_act_text_3 = DialogueText("", 14, 15 + 30 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
+    Game.battle.arena:addChild(self.short_act_text_1)
+    Game.battle.arena:addChild(self.short_act_text_2)
+    Game.battle.arena:addChild(self.short_act_text_3)
 
     self.attack_box = nil
     self.action_boxes = {}
@@ -305,20 +303,10 @@ function LightBattleUI:drawState()
         local font_main = Assets.getFont("main")
         local font_mono = Assets.getFont("main_mono")
 
-        local draw_mercy = Kristal.getLibConfig("magical-glass", "mercyBar")
-        local draw_percents = Kristal.getLibConfig("magical-glass", "enemyBarPercentages")
+        local draw_mercy = Game:getConfig("mercyBar")
+        local draw_percents = Game:getConfig("enemyBarPercentages")
 
         Draw.setColor(1, 1, 1, 1)
-
-        --[[
-        if draw_mercy and draw_percents and self.style ~= "undertale" then
-            love.graphics.setFont(font_main)
-            if Game.battle.state == "ENEMYSELECT" and self.style ~= "undertale" and Game.battle.state_reason ~= "ACT" then
-                love.graphics.print("HP", 400, -10, 0, 1, 0.5)
-            end
-            love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
-        end
-        --]]
 
         if draw_percents and self.style ~= "undertale" then
             love.graphics.setFont(font_main)
@@ -423,17 +411,17 @@ function LightBattleUI:drawState()
                     end
 
                     local hp_percent = enemy.health / enemy.max_health
-                    local hp_x = self.style ~= "undertale" and 400 or 318
 
-                    if namewidth >= 192 then -- we're gonna say this is accurate for now
-                        hp_x = hp_x + (#enemy.name * 8)
-                    end
+                    local max_width = 0
+                    local hp_x = self.style == "undertale" and 190 or 400
 
                     if enemy.selectable then
                         -- I swear, the kristal team using math.ceil for the gauges here despite people asking them to change it to floor
                         -- is an in-joke
 
                         if self.style == "undertale" then
+                            hp_x = hp_x + (#enemy.name * 16)
+
                             Draw.setColor(1,0,0,1)
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
 
@@ -453,28 +441,28 @@ function LightBattleUI:drawState()
                         end
                     end
                 end
+            end
 
-                if draw_mercy and self.style ~= "undertale" then
-                    if enemy.selectable then
-                        Draw.setColor(PALETTE["battle_mercy_bg"])
-                    else
-                        Draw.setColor(127/255, 127/255, 127/255, 1)
-                    end
-                    love.graphics.rectangle("fill", 500, 10 + y_offset, 81, 16)
-    
-                    if enemy.disable_mercy then
+            if draw_mercy and self.style ~= "undertale" then
+                if enemy.selectable then
+                    Draw.setColor(PALETTE["battle_mercy_bg"])
+                else
+                    Draw.setColor(127/255, 127/255, 127/255, 1)
+                end
+                love.graphics.rectangle("fill", 500, 10 + y_offset, 81, 16)
+
+                if enemy.disable_mercy then
+                    Draw.setColor(PALETTE["battle_mercy_text"])
+                    love.graphics.setLineWidth(2)
+                    love.graphics.line(500, 11 + y_offset, 500 + 81, 10 + y_offset + 16 - 1)
+                    love.graphics.line(500, 10 + y_offset + 16 - 1, 500 + 81, 11 + y_offset)
+                else
+                    Draw.setColor(1, 1, 0, 1)
+                    love.graphics.rectangle("fill", 500, 10 + y_offset, ((enemy.mercy / 100) * 81), 16)
+
+                    if draw_percents and enemy.selectable then
                         Draw.setColor(PALETTE["battle_mercy_text"])
-                        love.graphics.setLineWidth(2)
-                        love.graphics.line(500, 11 + y_offset, 500 + 81, 10 + y_offset + 16 - 1)
-                        love.graphics.line(500, 10 + y_offset + 16 - 1, 500 + 81, 11 + y_offset)
-                    else
-                        Draw.setColor(1, 1, 0, 1)
-                        love.graphics.rectangle("fill", 500, 10 + y_offset, ((enemy.mercy / 100) * 81), 16)
-    
-                        if draw_percents and enemy.selectable then
-                            Draw.setColor(PALETTE["battle_mercy_text"])
-                            love.graphics.print(math.floor(enemy.mercy) .. "%", 504, 10 + y_offset, 0, 1, 0.5)
-                        end
+                        love.graphics.print(math.floor(enemy.mercy) .. "%", 504, 10 + y_offset, 0, 1, 0.5)
                     end
                 end
             end

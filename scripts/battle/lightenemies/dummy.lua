@@ -4,7 +4,7 @@ function Dummy:init()
     super:init(self)
 
     -- Enemy name
-    self.name = "Dummy"
+    self.name = "Dummyy"
     -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
     self:setActor("dummy")
 
@@ -24,9 +24,9 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "basic",
---[[         "aiming",
-        "movingarena" ]]
+--[[         "basic",
+        "aiming", ]]
+        "movingarena"
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble

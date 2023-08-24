@@ -514,7 +514,7 @@ function LightEnemyBattler:onHurtEnd()
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
-    if self.exit_on_defeat then
+    if self.exit_on_defeat and not self.can_freeze then
         --self:onDefeatRun(damage, battler)
         Game.battle.timer:after(self.hurt_timer, function()
             self:onDefeatVaporized(damage, battler)        
@@ -581,7 +581,8 @@ end
 
 function LightEnemyBattler:freeze()
     if not self.can_freeze then
-        self:onDefeatRun()
+        self:onDefeat()
+        return
     end
 
     Assets.playSound("petrify")
@@ -611,9 +612,9 @@ function LightEnemyBattler:lightStatusMessage(...)
     return super.lightStatusMessage(self, (self.width/2), (self.height/2) - 10, ...)
 end
 
---[[ function LightEnemyBattler:recruitMessage(...)
-    return super.recruitMessage(self, self.width/2, self.height/2, ...)
-end ]]
+function LightEnemyBattler:recruitMessage(...)
+    return super.recruitMessage(self, self.width/2, self.height, ...)
+end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"

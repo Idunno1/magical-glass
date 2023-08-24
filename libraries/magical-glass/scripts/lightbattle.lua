@@ -8,8 +8,8 @@ function LightBattle:init()
 
     self.party = {}
 
-    -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, ENEMYSELECT, ACTSELECT, ITEMSELECT,
-    -- MERCYSELECT, ENEMYDIALOGUE, DEFENDING, DEFENDINGEND, VICTORY, TRANSITIONOUT, ATTACKING, FLEEING, FLEEFAIL
+    -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, MENUSELECT, ENEMYSELECT, PARTYSELECT, TURNDONE
+    -- ENEMYDIALOGUE, DEFENDING, DEFENDINGEND, VICTORY, TRANSITIONOUT, ATTACKING, FLEEING, FLEEFAIL
 
     self.state = "NONE"
     self.substate = "NONE"
@@ -271,9 +271,12 @@ function LightBattle:postInit(state, encounter)
         --self.transition_timer = 10
     end
 
+    self.arena = LightArena(SCREEN_WIDTH/2, 385)
+    self.arena.layer = BATTLE_LAYERS["ui"]
+    self:addChild(self.arena)
+
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
-    self.arena = self.battle_ui.arena
     
     if Game:getFlag("enable_lw_tp") then
         self.tension_bar = LightTensionBar(29, 53, true)
@@ -892,7 +895,7 @@ function LightBattle:onStateChange(old,new)
 
         if not had_started then
             for _,party in ipairs(self.party) do
-                party.chara:onTurnStart(party)
+                party:onTurnStart()
             end
             local party = self.party[self.current_selecting]
             party.chara:onActionSelect(party, false)
@@ -1006,7 +1009,8 @@ function LightBattle:onStateChange(old,new)
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
             local arena_x, arena_y, arena_w, arena_h, arena_shape
-            local has_arena = true
+            local has_arena = false
+            local has_soul = false
             for _,wave in ipairs(self.waves) do
                 soul_x = wave.soul_start_x or soul_x
                 soul_y = wave.soul_start_y or soul_y
@@ -1019,8 +1023,11 @@ function LightBattle:onStateChange(old,new)
                 if wave.arena_shape then
                     arena_shape = wave.arena_shape
                 end
-                if not wave.has_arena then
-                    has_arena = false
+                if wave.has_arena then
+                    has_arena = true
+                end
+                if wave.has_soul then
+                    has_soul = true
                 end
             end
     
@@ -1033,28 +1040,6 @@ function LightBattle:onStateChange(old,new)
                     arena_x, arena_y = self.arena.home_x, self.arena.home_y
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
-    
---[[                 local width_timer = self.arena.width
-                local x_timer = self.arena.x
-                local y_timer = self.arena.y
-
-                self.timer:during(1/2, function()
-    
-                    width_timer = Utils.approach(width_timer, arena_w, DTMULT * 30)
-                    x_timer = Utils.approach(x_timer, arena_x, DTMULT * 30)
-                    y_timer = Utils.approach(y_timer, arena_y, DTMULT * 30)
-
-                    local prog_w = width_timer
-                    local prog_x = x_timer
-                    local prog_y = y_timer
-
-                    self.arena:setSize(prog_w, self.arena.height)
-                    self.arena:setPosition(prog_x, prog_y)
-    
-                end, function()
-                    self.arena:setSize(arena_w, self.arena.height)
-                    self.arena:setPosition(arena_x, arena_y)
-                end) ]]
 
                 self.arena:changeShape({arena_w, self.arena.height})
 
@@ -1063,12 +1048,14 @@ function LightBattle:onStateChange(old,new)
                 center_x, center_y = SCREEN_WIDTH/2, (SCREEN_HEIGHT - 155)/2 --+ 10
             end
     
-            self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
-                soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
-                soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-                self:spawnSoul(soul_x or center_x, soul_y or center_y)
-                self.soul.can_move = false
-            end)
+            if has_soul then
+                self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
+                    soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
+                    soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
+                    self:spawnSoul(soul_x or center_x, soul_y or center_y)
+                    self.soul.can_move = false
+                end)
+            end
 
             for _,enemy in ipairs(active_enemies) do
                 enemy.current_target = enemy:getTarget()
@@ -1103,9 +1090,11 @@ function LightBattle:onStateChange(old,new)
 
         self.arena.layer = BATTLE_LAYERS["arena"]
 
-        self.timer:after(2/30, function()
-            self.soul.can_move = true
-        end)
+        if self.soul then
+            self.timer:after(2/30, function()
+                self.soul.can_move = true
+            end)
+        end
 
         self.battle_ui:clearEncounterText()
 
@@ -1131,7 +1120,10 @@ function LightBattle:onStateChange(old,new)
 
             wave.active = true
         end
-        self.soul:onWaveStart()
+
+        if self.soul then
+            self.soul:onWaveStart()
+        end
     elseif new == "VICTORY" then
         self.music:stop()
         self.current_selecting = 0
@@ -1346,7 +1338,6 @@ function LightBattle:onStateChange(old,new)
         end) ]]
         self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
         function()
-            print("A")
             self.arena:changeShape({self.arena.width, self.arena.init_height},
             function()
                 self.arena:changeShape({self.arena.init_width, self.arena.height})
@@ -1358,7 +1349,7 @@ function LightBattle:onStateChange(old,new)
     -- List of states that should remove the arena.
     -- A whitelist is better than a blacklist in case the modder adds more states.
     -- And in case the modder adds more states and wants the arena to be removed, they can remove the arena themselves.
-    local remove_arena = {"DEFENDINGEND", "TRANSITIONOUT", "ACTIONSELECT", "VICTORY", "INTRO", "ACTIONS", "ENEMYSELECT", "XACTENEMYSELECT", "PARTYSELECT", "MENUSELECT", "ATTACKING"}
+    local remove_arena = {}
 
     local should_end = true
     if Utils.containsValue(remove_arena, new) then
@@ -1374,8 +1365,6 @@ function LightBattle:onStateChange(old,new)
         end
     end
 
-    local ending_wave = self.state_reason == "WAVEENDED"
-
     if old == "DEFENDING" and new ~= "ENEMYDIALOGUE" and should_end then
         for _,wave in ipairs(self.waves) do
             if not wave:onEnd(false) then
@@ -1384,26 +1373,13 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
-        local function exitWaves()
-            for _,wave in ipairs(self.waves) do
-                wave:onArenaExit()
-            end
-            self.waves = {}
-        end
-
         if self:hasCutscene() then
             self.cutscene:after(function()
-                exitWaves()
-                if ending_wave then
-                    self:nextTurn()
-                end
+                self:setState("TURNDONE", "WAVEENDED")
             end)
         else
-            self.timer:after(1, function() -- need a better way of doing this
-                exitWaves()
-                if ending_wave then
-                    self:nextTurn()
-                end
+            self.timer:after(15/30, function()
+                self:setState("TURNDONE", "WAVEENDED")
             end)
         end
     end
@@ -1693,11 +1669,6 @@ function LightBattle:update()
             end
         end
         if self.actions_done_timer == 0 and not any_hurt then
---[[             for _,battler in ipairs(self.attackers) do
-                if not battler:setAnimation("battle/attack_end") then
-                    battler:resetSprite()
-                end
-            end ]]
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
@@ -1716,7 +1687,6 @@ function LightBattle:update()
     elseif self.state == "DEFENDING" then
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
-
         self.textbox_timer = self.textbox_timer - DTMULT
         if (self.textbox_timer <= 0) and self.use_textbox_timer and #self.arena.target_shape == 0 then
             self:advanceBoxes()
@@ -1739,13 +1709,22 @@ function LightBattle:update()
         end
         -- might be needed for enemies that attack you while it's your turn
         -- self:updateWaves()
+    elseif self.state == "TURNDONE" then
+        for _,wave in ipairs(self.waves) do
+            wave:onArenaExit()
+        end
+        self.waves = {}
+
+        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 then
+            self:nextTurn()
+        end
     end
 
     if self.state ~= "TRANSITIONOUT" then
         self.encounter:update()
     end
 
-    -- used in deltatraveler
+    -- some enemies darken in ut
 --[[     if (self.state == "ENEMYDIALOGUE") or (self.state == "DEFENDING") then
         self.background_fade_alpha = math.min(self.background_fade_alpha + (0.05 * DTMULT), 0.75)
         if not self.darkify then

@@ -638,6 +638,11 @@ function lib:init()
         end
 
     end)
+
+    Utils.hook(Wave, "init", function(orig, self)
+        orig(self)
+        self.has_soul = true
+    end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
         if Game.battle:isLight() then
@@ -683,6 +688,8 @@ function lib:init()
             Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
         end
     end)
+
+    Utils.hook(Item, "onBattleStart", function(orig, self, battler) end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
@@ -1088,7 +1095,7 @@ function lib:init()
         self.light_color = {1,1,1}
         self.light_miss_color = {192/255, 192/255, 192/255}
         self.light_dmg_color = {1,0,0}
-        self.light_slash_color = {1, 105/255, 105/255}
+        self.light_attack_color = {1, 105/255, 105/255}
         self.light_attack_bar_color = {1,1,1}
         self.light_xact_color = {1,1,1}
 
@@ -1201,50 +1208,39 @@ function lib:init()
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
-        if self.light_color then
+        if self.light_color and type(self.light_color) == "table" then
             return Utils.unpackColor(self.light_color)
-        else
-            return self:getColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
-        if self.light_dmg_color then
-            return Utils.unpackColor(self.light_dmg_color)
-        else
-            return self:getLightColor()
+        if self.light_dmg_color and type(self.light_dmg_color) == "table" then
+            return Utils.unpackColor({self.light_dmg_color})
         end
     end)
 
-    Utils.hook(PartyMember, "getLightSlashColor", function(orig, self)
-        if self.light_slash_color then
-            return Utils.unpackColor(self.light_slash_color)
-        else
-            return self:getLightDamageColor()
+    Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
+        if self.light_attack_color and type(self.light_attack_color) == "table" then
+            print(self.light_attack_color)
+            return Utils.unpackColor({self.light_attack_color})
         end
     end)
 
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
-        if self.light_attack_bar_color then
+        if self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
             return Utils.unpackColor(self.light_attack_bar_color)
-        else
-            return self:getLightColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
-        if self.light_xact_color then
+        if self.light_xact_color and type(self.light_xact_color) == "table" then
             return Utils.unpackColor(self.light_xact_color)
-        else
-            return self:getLightColor()
         end
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
-    
         orig(self)
-        self.party_selecting = 1
-        
+        self.party_selecting = 1 
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -1407,32 +1403,61 @@ function lib:init()
         return data
     end)
 
-    Utils.hook(Inventory, "getItemIndex", function(orig, self, item)
-        if type(item) == "string" then
-            for k,v in pairs(self.stored_items) do
-                if k.id == item then
-                    return v.storage, v.index
-                end
+    Utils.hook(Spell, "onStart", function(orig, self, user, target)
+        if Game.battle:isLight() then
+            if self.tags["heal"] then
+                
+            end
+            local result = self:onLightCast(user, target)
+            Game.battle:battleText(self:getLightCastMessage(user, target))
+            if result or result == nil then
+                Game.battle:finishActionBy(user)
             end
         else
-            local stored = self.stored_items[item]
-            if stored then
-                return stored.storage, stored.index
+            orig(self, user, target)
+        end
+    end)
+
+    Utils.hook(Spell, "onLightCast", function(orig, self, user, target) end)
+
+    Utils.hook(Spell, "getLightCastMessage", function(orig, self, user, target)
+        return "* "..user.chara:getName().." cast "..self:getName().."."
+    end)
+
+    Utils.hook(Spell, "getHealMessage", function(orig, self, user, target, maxed)
+        local message = ""
+        if self.target == "ally" then
+            if target.id == Game.party[1].id and maxed then
+                message = "* Your HP was maxed out."
+            elseif target.id == Game.party[1].id and not maxed then
+                message = "* You recovered " .. amount .. " HP."
+            elseif maxed then
+                message = target.name .. "'s HP was maxed out."
+            else
+                message = target.name .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "party" then
+            if #Game.party > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemy" then
+            if maxed then
+                message = target.name .. "'s HP was maxed out."
+            else
+                message = target.name .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemies" then
+            if #Game.battle.enemies > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            else
+                message = "* You recovered " .. amount .. " HP."
             end
         end
     end)
 
-    Utils.hook(Inventory, "replaceItem", function(orig, self, item, new)
-        local storage, index = self:getItemIndex(item)
-        if storage and new then
-            return self:setItem(storage, index, new)
-        end
-    end)
-
-
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
-    BATTLE_LAYERS["arena_frame"] = BATTLE_LAYERS["arena"] + 10
-
 end
 
 function lib:changeSpareColor(color)

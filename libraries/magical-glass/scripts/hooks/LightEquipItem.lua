@@ -26,6 +26,8 @@ function LightEquipItem:init()
 
     self.attack_miss_zone = 296 -- negative if left, positive if right
 
+    self.attack_sprite = "effects/attack/strike"
+
     -- Sound played when attacking, defaults to laz_c
     self.attack_sound = "laz_c"
 
@@ -72,6 +74,8 @@ function LightEquipItem:getAttackDirection()
 end
 
 function LightEquipItem:getAttackMissZone() return self.attack_miss_zone end
+
+function LightEquipItem:getAttackSprite() return self.attack_sprite end
 
 function LightEquipItem:getAttackSound() return self.attack_sound end
 function LightEquipItem:getAttackPitch() return self.attack_pitch end
@@ -146,16 +150,16 @@ function LightEquipItem:onHit(battler) end
 
 function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 
-    local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
+    local src = Assets.stopAndPlaySound(self:getAttackSound())
     src:setPitch(self:getAttackPitch() or 1)
 
-    local sprite = Sprite("effects/attack/strike")
+    local sprite = Sprite(self:getAttackSprite())
     local scale = (stretch * 2) - 0.5
     sprite:setScale(scale, scale)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara.light_slash_color -- need to swap this to the get function
+    sprite.color = battler.chara:getLightAttackColor() -- need to swap this to the get function
     enemy.parent:addChild(sprite)
     sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect    
         local sound = enemy:getDamageSound() or "damage"
