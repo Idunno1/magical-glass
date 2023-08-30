@@ -4,28 +4,28 @@ function Dummy:init()
     super:init(self)
 
     -- Enemy name
-    self.name = "Dummyy"
+    self.name = "Dummy"
     -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 10
-    self.health = 10
+    self.max_health = 1
+    self.health = 1
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
-    self.defense = 1
+    self.defense = 0
     -- Enemy reward
     self.money = 69
-    self.experience = 420
+    self.experience = 1
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
---[[         "basic",
-        "aiming", ]]
+        "basic",
+        "aiming",
         "movingarena"
     }
 
@@ -53,6 +53,12 @@ function Dummy:init()
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})
+
+    -- can be a table or a number. if it's a number, it determines the width, and the height will be 13 (the ut default).
+    -- if it's a table, the first value is the width, and the second is the height
+    self.gauge_size = 150
+
+    self.damage_offset = {5, -70}
 end
 
 function Dummy:onAct(battler, name)
@@ -69,7 +75,7 @@ function Dummy:onAct(battler, name)
 
     elseif name == "Tell Story" then
         -- Loop through all enemies
-        for _, enemy in ipairs(Game.battle.enemies) do
+        for _,enemy in ipairs(Game.battle.enemies) do
             -- Make the enemy tired
             enemy:setTired(true)
         end

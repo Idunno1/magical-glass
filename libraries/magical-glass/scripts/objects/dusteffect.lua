@@ -40,8 +40,8 @@ function DustEffect:init(texture, x, y, after)
                 Game.battle.timer:after(math.floor(delay / 3) / 30, function()
                     particle:play(1/30, false, function() particle:remove() end)
                     particle.physics.gravity_direction = math.rad(-90)
-                    particle.physics.gravity = (Utils.random(0.5) + 0.2)
-                    particle.physics.speed_x = (Utils.random(4) - 2)
+                    particle.physics.gravity = (Utils.random(0.25) + 0.1)
+                    particle.physics.speed_x = (Utils.random(2) - 1)
                 end)
             end
         end

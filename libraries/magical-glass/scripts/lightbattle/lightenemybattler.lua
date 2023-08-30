@@ -76,12 +76,18 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     self.current_target = "ANY"
 
-    self.gauge_size = {100, 13}
+    self.gauge_size = 100
     self.damage_offset = {5, -40}
     self.show_hp = true
 end
 
-function LightEnemyBattler:getGaugeSize() return self.gauge_size end
+function LightEnemyBattler:getGaugeSize()
+    if type(self.gauge_size) == "number" then
+        return {self.gauge_size, 13}
+    elseif type(self.gauge_size) == "table" then
+        return self.gauge_size
+    end
+end
 function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
 function LightEnemyBattler:getHPVisibility() return self.show_hp end
@@ -205,6 +211,9 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
 end
 
 function LightEnemyBattler:spare(pacify)
+    self.sprite.visible = false
+    self.overlay_sprite.visible = true
+
     if self.exit_on_defeat then
         self.alpha = 0.5
         Game.battle.spare_sound:stop()
@@ -230,7 +239,7 @@ function LightEnemyBattler:spare(pacify)
         end
     end
 
-    self.sprite:setAnimation("spared")
+    self.overlay_sprite:setAnimation("spared")
     self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end
@@ -267,11 +276,10 @@ function LightEnemyBattler:canSpare()
 end
 
 function LightEnemyBattler:onSpared()
-    self:setAnimation("spared")
+    self.overlay_sprite:setAnimation("spared")
 end
 
 function LightEnemyBattler:onSpareable()
-    self:setAnimation("spared")
 end
 
 function LightEnemyBattler:addMercy(amount)
@@ -549,6 +557,8 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
 end
 
 function LightEnemyBattler:onDefeatVaporized(damage, battler)
+    self.sprite.visible = false
+    self.overlay_sprite.visible = true
     self.hurt_timer = -1
 
     Assets.playSound("vaporized", 1.2)
@@ -629,7 +639,26 @@ function LightEnemyBattler:defeat(reason, violent)
 end
 
 function LightEnemyBattler:setActor(actor, use_overlay)
-    super.setActor(self, actor, use_overlay)
+    if type(actor) == "string" then
+        self.actor = Registry.createActor(actor)
+    else
+        self.actor = actor
+    end
+
+    self.width = self.actor:getWidth()
+    self.height = self.actor:getHeight()
+
+    if self.sprite         then self:removeChild(self.sprite)         end
+    if self.overlay_sprite then self:removeChild(self.overlay_sprite) end
+
+    self.sprite = self.actor:createLightBattleSprite()
+    self:addChild(self.sprite)
+
+    if use_overlay ~= false then
+        self.overlay_sprite = self.actor:createSprite()
+        self.overlay_sprite.visible = false
+        self:addChild(self.overlay_sprite)
+    end
 
     if self.sprite then
         self.sprite.facing = "left"

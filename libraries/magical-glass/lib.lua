@@ -146,8 +146,8 @@ function lib:registerDebugOptions(debug)
     end
 end
 
-function lib:init()
-
+function lib:preInit()
+    
     self.random_encounters = {}
     self.light_encounters = {}
     self.light_enemies = {}
@@ -169,6 +169,23 @@ function lib:init()
         light_enemy.id = light_enemy.id or path
         self.light_enemies[light_enemy.id] = light_enemy
     end
+    
+end
+
+function lib:init()
+
+    Utils.hook(Actor, "init", function(orig, self)
+        orig(self)
+        self.light_battler_parts = {}
+    end)
+
+    Utils.hook(Actor, "addLightBattlerPart", function(orig, self, id, data)
+        self.light_battler_parts[id] = data
+    end)
+
+    Utils.hook(Actor, "createLightBattleSprite", function(orig, self)
+        return LightEnemySprite(self, self.light_battler_parts)
+    end)
 
     Utils.hook(DebugSystem, "registerDefaults", function(orig, self)
         -- wish i didn't have to do this but

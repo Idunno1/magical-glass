@@ -227,7 +227,6 @@ function LightEncounter:onWavesDone()
 
     if Game.battle.soul then
         Game.battle.soul:remove()
-        Game.battle.arena.layer = BATTLE_LAYERS["ui"] - 1
     end
 
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")

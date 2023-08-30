@@ -272,7 +272,7 @@ function LightBattle:postInit(state, encounter)
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
-    self.arena.layer = BATTLE_LAYERS["ui"]
+    self.arena.layer = BATTLE_LAYERS["ui"] - 1
     self:addChild(self.arena)
 
     self.battle_ui = LightBattleUI()
@@ -862,6 +862,8 @@ function LightBattle:onStateChange(old,new)
 
     -- we still kind of need an intro phase for self.encounter:onBattleStart()
     if new == "ACTIONSELECT" then
+        self.arena.layer = BATTLE_LAYERS["ui"] - 1
+
         if not self.soul then
             self:spawnSoul()
         end

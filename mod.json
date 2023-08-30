@@ -20,8 +20,8 @@
 
     "equipment": {
         "kris": {
-            "weapon": "light/real_knife",
-            "armor": ["light/temy_armor"]
+            "weapon": "light/stick",
+            "armor": ["light/bandage_ut"]
         },
         "frisk": {
             "weapon": "light/burnt_pan",

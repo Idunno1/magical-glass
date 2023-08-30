@@ -215,10 +215,8 @@ end
 function LightArena:drawMask()
     love.graphics.push()
     self.sprite:preDraw()
-    self.border:preDraw()
     self.sprite:drawBackground()
     self.sprite:postDraw()
-    self.border:postDraw()
     love.graphics.pop()
 end
 
