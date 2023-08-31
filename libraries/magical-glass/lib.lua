@@ -183,8 +183,12 @@ function lib:init()
         self.light_battler_parts[id] = data
     end)
 
+    Utils.hook(Actor, "getLightBattlerPart", function(orig, self, part)
+        return self.light_battler_parts[part]
+    end)
+
     Utils.hook(Actor, "createLightBattleSprite", function(orig, self)
-        return LightEnemySprite(self, self.light_battler_parts)
+        return LightEnemySprite(self)
     end)
 
     Utils.hook(DebugSystem, "registerDefaults", function(orig, self)

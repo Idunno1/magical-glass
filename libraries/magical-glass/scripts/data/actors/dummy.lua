@@ -44,10 +44,10 @@ function actor:init()
     self:addLightBattlerPart("body", {
         -- path, function that returns a path, or a function that returns a sprite object
         -- if one's not defined, get the default animation
---[[         ["sprite"] = function()
+        ["sprite"] = function()
             self.sprite = Sprite(self.path.."/"..self.default)
             return self.sprite
-        end, ]]
+        end,
 
         ["init"] = function() 
             self.siner = 0
