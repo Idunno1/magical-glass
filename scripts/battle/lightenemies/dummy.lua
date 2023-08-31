@@ -31,11 +31,11 @@ function Dummy:init()
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
-        "AAAAAAA"
+        "[wave:2].[wait:5].[wait:5].[wait:5]"
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)
-    self.check = "ATK Some DEF Probably\n* Cotton heart and button eye\n* Looks just like a fluffy guy."
+    self.check = "ATK Some DEF Probably\n* Cotton heart and button eye\n* You are the apple of my eye"
 
     -- Text randomly displayed at the bottom of the screen each turn
     self.text = {
@@ -49,8 +49,6 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
-    self:registerAct("Smile")
-    self:registerAct("Smile")
 
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)

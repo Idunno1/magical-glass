@@ -2697,16 +2697,6 @@ function LightBattle:onKeyPressed(key)
             local old = self.current_menu_x
 
             self.current_menu_x = self.current_menu_x - 1
-            
---[[             if self.current_menu_x < 1 then -- vomit
-                self.current_menu_x = self.current_menu_columns + (max_page + 1)
-                if not self:isValidMenuLocation() then
-                    self.current_menu_x = self.current_menu_columns + (max_page + 1) - 1
-                    if not self:isValidMenuLocation() then
-                        self.current_menu_x = self.current_menu_columns + (max_page + 1) - 2
-                    end
-                end
-            end ]]
 
             if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns + (max_page + 1)
@@ -2717,8 +2707,7 @@ function LightBattle:onKeyPressed(key)
                     end
                 end
 
-                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 then
-                    print("cum")
+                if not self:isPagerMenu() and self.current_menu_columns > 1 and self.current_menu_x % 2 ~= 0 then
                     self.current_menu_y = self.current_menu_y - 1
                     self.current_menu_x = self.current_menu_columns
 
@@ -2728,7 +2717,7 @@ function LightBattle:onKeyPressed(key)
                 end
             end
 
-            if self.current_menu_columns > 1 and self.current_menu_x ~= old then
+            if self.current_menu_x ~= old then
                 self:playMoveSound()
             end
 

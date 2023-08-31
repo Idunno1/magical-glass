@@ -54,7 +54,7 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
-    self.dialogue_bubble = "ut_round"
+    self.dialogue_bubble = "ut_tall_left"
 
     -- The offset for the speech bubble, also set in `battler.lua`
     self.dialogue_offset = {0, 0}
@@ -624,6 +624,35 @@ end
 
 function LightEnemyBattler:recruitMessage(...)
     return super.recruitMessage(self, self.width/2, self.height, ...)
+end
+
+function LightEnemyBattler:spawnSpeechBubble(text, options)
+    options = options or {}
+    local bubble
+    if not options["style"] and self.dialogue_bubble then
+        options["style"] = self.dialogue_bubble
+    end
+    if not options["right"] then
+        local x, y = self.sprite:getRelativePos(0, self.actor:getHeight()/2, Game.battle)
+        x, y = x + self.dialogue_offset[1], y + self.dialogue_offset[2]
+        bubble = SpeechBubble(text, x, y, options, self)
+    else
+        local x, y = self.sprite:getRelativePos(self.actor:getWidth(), self.actor:getHeight()/2, Game.battle)
+        x, y = x - self.dialogue_offset[1], y + self.dialogue_offset[2]
+        bubble = SpeechBubble(text, x, y, options, self)
+    end
+    self.bubble = bubble
+    self:onBubbleSpawn(bubble)
+    bubble:setCallback(function()
+        self:onBubbleRemove(bubble)
+        bubble:remove()
+        self.bubble = nil
+    end)
+    bubble:setLineCallback(function(index)
+        Game.battle.textbox_timer = 3 * 30
+    end)
+    Game.battle:addChild(bubble)
+    return bubble
 end
 
 function LightEnemyBattler:defeat(reason, violent)
