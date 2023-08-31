@@ -2632,6 +2632,7 @@ end
 
 function LightBattle:onKeyPressed(key)
     if Kristal.Config["debug"] and key == "delete" then
+        Assets.playSound("levelup")
         for _,party in ipairs(self.party) do
             party.chara:setHealth(999)
         end
@@ -2639,6 +2640,7 @@ function LightBattle:onKeyPressed(key)
 
     if Kristal.Config["debug"] and Input.ctrl() then
         if key == "h" then
+            Assets.playSound("power")
             for _,party in ipairs(self.party) do
                 party:heal(math.huge)
             end
