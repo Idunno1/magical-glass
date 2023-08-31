@@ -2694,12 +2694,20 @@ function LightBattle:onKeyPressed(key)
         elseif Input.is("left", key) then
             local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
             local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
+            local old = self.current_menu_x
 
-            if self.current_menu_columns > 1 then
-                self:playMoveSound()
-            end
             self.current_menu_x = self.current_menu_x - 1
             
+--[[             if self.current_menu_x < 1 then -- vomit
+                self.current_menu_x = self.current_menu_columns + (max_page + 1)
+                if not self:isValidMenuLocation() then
+                    self.current_menu_x = self.current_menu_columns + (max_page + 1) - 1
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_x = self.current_menu_columns + (max_page + 1) - 2
+                    end
+                end
+            end ]]
+
             if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns + (max_page + 1)
                 if not self:isValidMenuLocation() then
@@ -2708,6 +2716,20 @@ function LightBattle:onKeyPressed(key)
                         self.current_menu_x = self.current_menu_columns + (max_page + 1) - 2
                     end
                 end
+
+                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 then
+                    print("cum")
+                    self.current_menu_y = self.current_menu_y - 1
+                    self.current_menu_x = self.current_menu_columns
+
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_y = 1
+                    end
+                end
+            end
+
+            if self.current_menu_columns > 1 and self.current_menu_x ~= old then
+                self:playMoveSound()
             end
 
         elseif Input.is("right", key) then

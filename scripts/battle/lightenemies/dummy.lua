@@ -49,6 +49,8 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
+    self:registerAct("Smile")
+    self:registerAct("Smile")
 
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)

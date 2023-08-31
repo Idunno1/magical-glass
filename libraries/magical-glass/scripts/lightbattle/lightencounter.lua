@@ -47,6 +47,7 @@ function LightEncounter:onBattleInit()
 
     self.flee_chance = Utils.random(0, 100, 1)
     -- needs to account for lightequipitems that affect flee chance
+    -- needs to work
 
 end
 function LightEncounter:onBattleStart() end
