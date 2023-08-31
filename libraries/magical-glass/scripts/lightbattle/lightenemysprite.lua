@@ -11,8 +11,31 @@ function LightEnemySprite:init(actor, parts)
     self.parts = parts
     
     for _,part in pairs(self.parts) do
-        part.sprite = part:init()
-        self:addChild(part.sprite)
+        if part.sprite then
+            local sprite
+            if type(part.sprite) == "string" then
+                sprite = Sprite(part.sprite)
+            elseif type(part.sprite) == "function" then
+                if type(part.sprite()) == "string" then
+                    sprite = Sprite(part.sprite())
+                elseif part.sprite():includes(Sprite) then
+                    sprite = part:sprite()
+                end
+            end
+            self:addChild(sprite)
+        else
+            local sprite
+            if self.actor:getDefaultAnim() then
+                sprite = Sprite(self.actor.path .. "/" ..self.actor:getDefaultAnim())
+            elseif self.actor:getDefaultSprite() then
+                sprite = Sprite(self.actor.path .. "/" ..self.actor:getDefaultSprite())
+            else
+                sprite = Sprite((self.actor.path .. "/" .. self.actor:getDefault()))
+            end
+            self:addChild(sprite)
+        end
+
+        part:init()
     end
 
     if actor then
