@@ -22,15 +22,17 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        attack = 5
+        attack = 1
     }
 
     self.attack_speed = self.attack_speed * 1.2
-    self.attack_punches = 4
-    self.attack_punch_time = 2
+    self.attack_punches = 99
+    self.attack_punch_time = 50
     self.attack_direction = "random"
 
     self.attack_sound = "punchstrong"
+
+    self.ignore_no_damage = true
 
 end
 
@@ -52,6 +54,10 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     local function finishAttack()
         if press_z then
             press_z:remove()
+        end
+
+        if damage <= 0 then
+            return self:onMiss(battler, enemy, true)
         end
 
         if punches > 0 then

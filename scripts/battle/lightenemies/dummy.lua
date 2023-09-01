@@ -9,12 +9,12 @@ function Dummy:init()
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 1
-    self.health = 999
+    self.max_health = 10
+    self.health = 10
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
-    self.defense = 0
+    self.defense = 999
     -- Enemy reward
     self.money = 69
     self.experience = 1
@@ -29,7 +29,7 @@ function Dummy:init()
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
---[[         "[wave:2].[wait:5].[wait:5].[wait:5]" ]]
+        "[wave:2].[wait:5].[wait:5].[wait:5]"
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)

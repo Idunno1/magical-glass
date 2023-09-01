@@ -33,6 +33,9 @@ function LightEquipItem:init()
 
     self.attack_pitch = 1
 
+    -- Whether the weapon should miss instantly if its damage is going to be less than or equal to 0
+    self.ignore_no_damage = false
+
 end
 
 function LightEquipItem:getHealBonus() return self.heal_bonus end
@@ -161,7 +164,8 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
     sprite.color = battler.chara:getLightAttackColor() -- need to swap this to the get function
     enemy.parent:addChild(sprite)
-    sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect    
+    sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
+        
         local sound = enemy:getDamageSound() or "damage"
         if sound and type(sound) == "string" then
             Assets.stopAndPlaySound(sound)
@@ -177,9 +181,11 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 
 end
 
-function LightEquipItem:onMiss(battler, enemy)
-    local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color}) -- needs a special miss message that doesn't animate
-    message:resetPhysics()
+function LightEquipItem:onMiss(battler, enemy, no_anim)
+    local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color})
+    if no_anim == nil or no_anim then
+        message:resetPhysics()
+    end
     Game.battle:endAttack()
 end
 

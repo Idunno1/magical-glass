@@ -239,7 +239,11 @@ function LightEnemyBattler:spare(pacify)
         end
     end
 
-    self.overlay_sprite:setAnimation("spared")
+    if self.actor:getAnimation("lightbattle_spared") then
+        self.overlay_sprite:setAnimation("lightbattle_spared")
+    else
+        self.overlay_sprite:setAnimation("lightbattle_hurt")
+    end
     self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end
@@ -276,7 +280,11 @@ function LightEnemyBattler:canSpare()
 end
 
 function LightEnemyBattler:onSpared()
-    self.overlay_sprite:setAnimation("spared")
+    if self.actor:getAnimation("lightbattle_spared") then
+        self.overlay_sprite:setAnimation("lightbattle_spared")
+    else
+        self.overlay_sprite:setAnimation("lightbattle_hurt")
+    end
 end
 
 function LightEnemyBattler:onSpareable()
@@ -506,7 +514,7 @@ function LightEnemyBattler:getDamageSound() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
-    if not self:getActiveSprite():setAnimation("hurt") then
+    if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
         self:toggleOverlay(false)
     end
     self:getActiveSprite():shake(9) -- not sure if this should be different
