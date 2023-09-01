@@ -1242,7 +1242,6 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
         if self.light_attack_color and type(self.light_attack_color) == "table" then
-            print(self.light_attack_color)
             return Utils.unpackColor({self.light_attack_color})
         end
     end)

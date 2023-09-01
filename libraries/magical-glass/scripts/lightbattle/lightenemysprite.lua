@@ -26,11 +26,11 @@ function LightEnemySprite:init(actor)
         else
             local sprite
             if self.actor:getDefaultAnim() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultAnim())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultAnim())
             elseif self.actor:getDefaultSprite() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultSprite())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultSprite())
             else
-                sprite = Sprite((self.actor:getPath() .. "/" .. self.actor:getDefault()))
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefault())
             end
             self:addChild(sprite)
         end
@@ -91,11 +91,11 @@ function LightEnemySprite:resetSprite(ignore_actor_callback)
         else
             local sprite
             if self.actor:getDefaultAnim() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultAnim())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultAnim())
             elseif self.actor:getDefaultSprite() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultSprite())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultSprite())
             else
-                sprite = Sprite((self.actor:getPath() .. "/" .. self.actor:getDefault()))
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefault())
             end
             self:addChild(sprite)
         end

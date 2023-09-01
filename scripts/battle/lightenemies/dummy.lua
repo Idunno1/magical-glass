@@ -10,7 +10,7 @@ function Dummy:init()
 
     -- Enemy health
     self.max_health = 1
-    self.health = 1
+    self.health = 999
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
@@ -24,14 +24,12 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "basic",
-        "aiming",
-        "movingarena"
+        "_none"
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
-        "[wave:2].[wait:5].[wait:5].[wait:5]"
+--[[         "[wave:2].[wait:5].[wait:5].[wait:5]" ]]
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)
