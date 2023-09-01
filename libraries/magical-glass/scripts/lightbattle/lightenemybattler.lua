@@ -211,8 +211,7 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
 end
 
 function LightEnemyBattler:spare(pacify)
-    self.sprite.visible = false
-    self.overlay_sprite.visible = true
+    self:toggleOverlay(true)
 
     if self.exit_on_defeat then
         self.alpha = 0.5
@@ -445,13 +444,19 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color)
-    self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-    self.health = self.health - amount
+    -- if only the tough glove didn't exist
+    if amount <= 0 then
+        battler.chara:getWeapon():onMiss(battler, self, false)
+    else
+        self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+        self.health = self.health - amount
+    
+        self.hurt_timer = 1
+        self:onHurt(amount, battler)
+    
+        self:checkHealth(on_defeat, amount, battler)
+    end
 
-    self.hurt_timer = 1
-    self:onHurt(amount, battler)
-
-    self:checkHealth(on_defeat, amount, battler)
 end
 
 function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
@@ -565,8 +570,8 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
 end
 
 function LightEnemyBattler:onDefeatVaporized(damage, battler)
-    self.sprite.visible = false
-    self.overlay_sprite.visible = true
+    self:toggleOverlay(true)
+
     self.hurt_timer = -1
 
     Assets.playSound("vaporized", 1.2)

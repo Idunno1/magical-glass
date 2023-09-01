@@ -37,7 +37,6 @@ function actor:init()
     -- Table of sprite animations
     self.animations = {
         ["lightbattle_hurt"] = {"lightbattle/hurt", 1, true},
-        ["lightbattle_spared"] = {"lightbattle/hurt", 1, true}
     }
 
     self.light_battle_width = 49

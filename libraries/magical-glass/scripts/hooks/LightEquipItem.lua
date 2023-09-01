@@ -33,9 +33,6 @@ function LightEquipItem:init()
 
     self.attack_pitch = 1
 
-    -- Whether the weapon should miss instantly if its damage is going to be less than or equal to 0
-    self.ignore_no_damage = false
-
 end
 
 function LightEquipItem:getHealBonus() return self.heal_bonus end
@@ -181,12 +178,15 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 
 end
 
-function LightEquipItem:onMiss(battler, enemy, no_anim)
+function LightEquipItem:onMiss(battler, enemy, anim, finish)
     local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color})
-    if no_anim == nil or no_anim then
+    if anim == nil or anim then
         message:resetPhysics()
     end
-    Game.battle:endAttack()
+
+    if finish then
+        Game.battle:endAttack()
+    end
 end
 
 return LightEquipItem
