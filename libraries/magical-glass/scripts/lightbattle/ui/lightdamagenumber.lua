@@ -118,15 +118,29 @@ function LightDamageNumber:update()
 end
 
 function LightDamageNumber:draw()
-    if self.timer >= self.delay then
-        local r, g, b, a = self:getDrawColor()
-        Draw.setColor(r, g, b, a)
-
-        if self.texture then
-            Draw.draw(self.texture, 0, 0)
-        elseif self.text then
-            love.graphics.setFont(self.font)
-            love.graphics.print(self.text, 0, 0)
+    if self.type == "mercy" and Game:getFlag("gauge_styles", "deltarune") == "deltarune" then
+        if self.timer >= self.delay then
+            local r, g, b, a = self:getDrawColor()
+            Draw.setColor(r, g, b, a)
+    
+            if self.texture then
+                Draw.draw(self.texture, 0, 0)
+            elseif self.text then
+                love.graphics.setFont(self.font)
+                love.graphics.print(self.text, 0, 0)
+            end
+        end
+    elseif self.type == "damage" or self.type == "msg" then
+        if self.timer >= self.delay then
+            local r, g, b, a = self:getDrawColor()
+            Draw.setColor(r, g, b, a)
+    
+            if self.texture then
+                Draw.draw(self.texture, 0, 0)
+            elseif self.text then
+                love.graphics.setFont(self.font)
+                love.graphics.print(self.text, 0, 0)
+            end
         end
     end
 
