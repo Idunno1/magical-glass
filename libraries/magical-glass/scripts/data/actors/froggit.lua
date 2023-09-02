@@ -35,8 +35,8 @@ function actor:init()
             self.sprite.layer = 500
             self.sprite:play(2, true)
             -- local path = {{264, 300}, {272, 296}, {280, 300}, {272, 304}, {272, 292}}
-            local path =    {{0, 0},     {4, -2},    {8, 0},    {4, 2},    {4, -4},   {0, 0}}
-            self.sprite:slidePath(path, {speed = 1/3, loop = true, relative = true})
+            local path =    {{0, -2},     {4, -4},    {8, -2},    {4, 0},    {4, -6},   {0, -2}}
+            self.sprite:slidePath(path, {speed = 1/6, loop = true, relative = true})
             return self.sprite
         end
     })
