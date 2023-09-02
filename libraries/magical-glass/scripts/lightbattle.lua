@@ -1067,7 +1067,7 @@ function LightBattle:onStateChange(old,new)
                     local dialogue = enemy:getEnemyDialogue()
                     if dialogue then
                         any_dialogue = true
-                        local bubble = enemy:spawnSpeechBubble(dialogue)
+                        local bubble = enemy:spawnSpeechBubble(dialogue) -- add a side thing
                         bubble:setSkippable(false)
                         table.insert(self.enemy_dialogue, bubble)
                     end

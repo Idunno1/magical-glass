@@ -35,7 +35,9 @@ function LightEnemySprite:init(actor)
             self:addChild(sprite)
         end
 
-        part:init()
+        if part.init then
+            part:init()
+        end
     end
 
     if actor then
@@ -73,6 +75,10 @@ end
 function LightEnemySprite:resetSprite(ignore_actor_callback)
     if not ignore_actor_callback and self.actor:preResetSprite(self) then
         return
+    end
+
+    for _,child in ipairs(self.children) do
+        self:removeChild(child)
     end
 
     for _,part in pairs(self.parts) do
