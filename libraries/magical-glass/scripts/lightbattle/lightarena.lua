@@ -130,7 +130,7 @@ function LightArena:update()
         end
 
         if not Utils.equal(self.height, self.target_shape[2], true) then
-            self.height = Utils.approach(self.height, self.target_shape[2], DTMULT * 15)
+            self.height = Utils.approach(self.height, self.target_shape[2], DTMULT * 30)
         end
 
         if Utils.equal(self.width, self.target_shape[1], true) and Utils.equal(self.height, self.target_shape[2], true) then

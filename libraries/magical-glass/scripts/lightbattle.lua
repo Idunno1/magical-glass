@@ -615,16 +615,11 @@ function LightBattle:processAction(action)
                 if damage < 0 then
                     damage = 0
                 end
-            end
 
-            if damage > 0 then
-                if Game:getFlag("enable_lw_tp") then
-                    Game:giveTension(Utils.round(enemy:getAttackTension(points or 100)))
-                end
-            
+                Game:giveTension(Utils.round(enemy:getAttackTension(points or 100)))  
                 weapon:onAttack(battler, enemy, damage, action.stretch, crit)
             else
-                weapon:onMiss(battler, enemy)
+                weapon:onMiss(battler, enemy, true, true)
             end
 
         end
@@ -983,7 +978,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ENEMYDIALOGUE" then
-
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -1073,7 +1067,7 @@ function LightBattle:onStateChange(old,new)
                     local dialogue = enemy:getEnemyDialogue()
                     if dialogue then
                         any_dialogue = true
-                        local bubble = enemy:spawnSpeechBubble(dialogue)
+                        local bubble = enemy:spawnSpeechBubble(dialogue) -- add a side thing
                         bubble:setSkippable(false)
                         table.insert(self.enemy_dialogue, bubble)
                     end
@@ -1084,19 +1078,10 @@ function LightBattle:onStateChange(old,new)
             end
         end
     elseif new == "DIALOGUEEND" then
-
         for _,bubble in ipairs(self.enemy_dialogue) do
             bubble:remove()
         end
         self.enemy_dialogue = {}
-
-        self.arena.layer = BATTLE_LAYERS["arena"]
-
-        if self.soul then
-            self.timer:after(2/30, function()
-                self.soul.can_move = true
-            end)
-        end
 
         self.battle_ui:clearEncounterText()
 
@@ -1110,6 +1095,8 @@ function LightBattle:onStateChange(old,new)
 
         self.encounter:onDialogueEnd()
     elseif new == "DEFENDING" then
+        self.arena.layer = BATTLE_LAYERS["arena"]
+
         self.wave_length = 0
         self.wave_timer = 0
 
@@ -1222,35 +1209,6 @@ function LightBattle:onStateChange(old,new)
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
-
-        local soul_x, soul_y, soul_offset_x, soul_offset_y
-        local arena_x, arena_y, arena_h, arena_shape
-        local has_arena = true
-        for _,wave in ipairs(self.waves) do
-            soul_x = wave.soul_start_x or soul_x
-            soul_y = wave.soul_start_y or soul_y
-            soul_offset_x = wave.soul_offset_x or soul_offset_x
-            soul_offset_y = wave.soul_offset_y or soul_offset_y
-            arena_x = wave.arena_x or arena_x
-            arena_y = wave.arena_y or arena_y
-            arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
-            if wave.arena_shape then
-                arena_shape = wave.arena_shape
-            end
-            if not wave.has_arena then
-                has_arena = false
-            end
-        end
-
-        if not arena_shape then
-            arena_w, arena_h = arena_w or 160, arena_h or 130
-        end
-        local center_x, center_y = self.arena:getCenter()
-
-        if has_arena and #self.arena.target_position == 0 then
-            self.arena:changeShape({self.arena.width, arena_h})
-            self.arena:changePosition({arena_x, arena_y})
-        end
 
         self.defending_begin_timer = 0
 
@@ -1682,20 +1640,57 @@ function LightBattle:update()
             end
         end
     elseif self.state == "DEFENDINGBEGIN" then
+
+        if #self.arena.target_shape == 0 and #self.arena.target_position == 0 then
+
+            local soul_x, soul_y, soul_offset_x, soul_offset_y
+            local arena_x, arena_y, arena_h, arena_shape
+            local has_arena = true
+            for _,wave in ipairs(self.waves) do
+                soul_x = wave.soul_start_x or soul_x
+                soul_y = wave.soul_start_y or soul_y
+                soul_offset_x = wave.soul_offset_x or soul_offset_x
+                soul_offset_y = wave.soul_offset_y or soul_offset_y
+                arena_x = wave.arena_x or arena_x
+                arena_y = wave.arena_y or arena_y
+                arena_h = wave.arena_height and math.max(wave.arena_height, arena_h or 0) or arena_h
+                if wave.arena_shape then
+                    arena_shape = wave.arena_shape
+                end
+                if not wave.has_arena then
+                    has_arena = false
+                end
+            end
+
+            if not arena_shape then
+                arena_w, arena_h = arena_w or 160, arena_h or 130
+            end
+            local center_x, center_y = self.arena:getCenter()
+
+            if has_arena and not (self.arena.width == arena_w and self.arena.height == arena_h) then
+                self.arena:changeShape({self.arena.width, arena_h})
+                self.arena:changePosition({arena_x, arena_y})
+            end
+        end
+
         self.defending_begin_timer = self.defending_begin_timer + DTMULT
         if self.defending_begin_timer >= 15 then -- look into this in ut
+            if self.soul then
+                self.soul.can_move = true
+            end
             self:setState("DEFENDING")
         end
+
     elseif self.state == "DEFENDING" then
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
         self.textbox_timer = self.textbox_timer - DTMULT
-        if (self.textbox_timer <= 0) and self.use_textbox_timer and #self.arena.target_shape == 0 then
+        if (self.textbox_timer <= 0) and self.use_textbox_timer then
             self:advanceBoxes()
         else
             local all_done = true
             for _,textbox in ipairs(self.enemy_dialogue) do
-                if #self.arena.target_shape > 0 or not textbox:isDone() then
+                if not textbox:isDone() then
                     all_done = false
                     break
                 end

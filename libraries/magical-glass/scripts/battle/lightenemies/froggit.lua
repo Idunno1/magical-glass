@@ -6,31 +6,29 @@ function Dummy:init()
     -- Enemy name
     self.name = "Froggit"
     -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
-    self:setActor("froggit_battle")
+    self:setActor("froggit")
 
     -- Enemy health
     self.max_health = 30
     self.health = 30
     -- Enemy attack (determines bullet damage)
-    self.attack = 5
+    self.attack = 4
     -- Enemy defense (usually 0)
-    self.defense = 4
+    self.defense = 5
     -- Enemy reward
     self.money = 2
     self.experience = 3
 
     -- The Speech bubble style
     self.dialogue_bubble = "ut_tall_right"
-    self.dialogue_offset = {300, 60}
+    self.dialogue_offset = {210, 0}
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
---[[         "basic",
-        "aiming",
-        "movingarena" ]]
+        "leapfrog",
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
@@ -57,6 +55,8 @@ function Dummy:init()
 
     self:registerAct("Compliment")
     self:registerAct("Threaten")
+
+    self.damage_offset = {0, -65}
 end
 
 function Dummy:onAct(battler, name)

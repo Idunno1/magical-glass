@@ -232,7 +232,7 @@ function LightActionButton:draw()
             love.graphics.draw(self.hover_tex or self.tex)
         else
             love.graphics.draw(self.tex)
-            if self.selectable and self.special_tex and self:hasSpecial() then
+            if Game:getFlag("deltarune_mercy_flashing") and self.selectable and self.special_tex and self:hasSpecial() then
                 local r, g, b, a = self:getDrawColor()
                 love.graphics.setColor(r, g, b, a * (0.4 + math.sin((Kristal.getTime() * 30) / 6) * 0.4))
                 love.graphics.draw(self.special_tex)

@@ -81,6 +81,20 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.show_hp = true
 end
 
+function LightEnemyBattler:toggleOverlay(overlay, reset)
+    if overlay == nil then
+        overlay = self.sprite.visible
+    end
+    if reset then
+        self.sprite:resetSprite()
+        self.overlay_sprite:resetSprite()
+    end
+    if self.overlay_sprite then
+        self.overlay_sprite.visible = overlay
+        self.sprite.visible = not overlay
+    end
+end
+
 function LightEnemyBattler:getGaugeSize()
     if type(self.gauge_size) == "number" then
         return {self.gauge_size, 13}
@@ -211,8 +225,7 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
 end
 
 function LightEnemyBattler:spare(pacify)
-    self.sprite.visible = false
-    self.overlay_sprite.visible = true
+    self:toggleOverlay(true)
 
     if self.exit_on_defeat then
         self.alpha = 0.5
@@ -239,7 +252,11 @@ function LightEnemyBattler:spare(pacify)
         end
     end
 
-    self.overlay_sprite:setAnimation("spared")
+    if self.actor:getAnimation("lightbattle_spared") then
+        self.overlay_sprite:setAnimation("lightbattle_spared")
+    else
+        self.overlay_sprite:setAnimation("lightbattle_hurt")
+    end
     self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end
@@ -276,7 +293,11 @@ function LightEnemyBattler:canSpare()
 end
 
 function LightEnemyBattler:onSpared()
-    self.overlay_sprite:setAnimation("spared")
+    if self.actor:getAnimation("lightbattle_spared") then
+        self.overlay_sprite:setAnimation("lightbattle_spared")
+    else
+        self.overlay_sprite:setAnimation("lightbattle_hurt")
+    end
 end
 
 function LightEnemyBattler:onSpareable()
@@ -437,13 +458,24 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color)
-    self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-    self.health = self.health - amount
+    -- if only the tough glove didn't exist
+    if amount <= 0 then
+        battler.chara:getWeapon():onMiss(battler, self, false)
 
-    self.hurt_timer = 1
-    self:onHurt(amount, battler)
+        self.hurt_timer = 1
+        self:onHurt(amount, battler)
 
-    self:checkHealth(on_defeat, amount, battler)
+        self:checkHealth(on_defeat, amount, battler)
+    else
+        self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+        self.health = self.health - amount
+    
+        self.hurt_timer = 1
+        self:onHurt(amount, battler)
+    
+        self:checkHealth(on_defeat, amount, battler)
+    end
+
 end
 
 function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
@@ -506,7 +538,7 @@ function LightEnemyBattler:getDamageSound() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
-    if not self:getActiveSprite():setAnimation("hurt") then
+    if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
         self:toggleOverlay(false)
     end
     self:getActiveSprite():shake(9) -- not sure if this should be different
@@ -518,7 +550,9 @@ end
 
 function LightEnemyBattler:onHurtEnd()
     self:getActiveSprite():stopShake()
-    self:toggleOverlay(false)
+    if self.health > 0 then
+        self:toggleOverlay(false, true)
+    end
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
@@ -557,8 +591,6 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
 end
 
 function LightEnemyBattler:onDefeatVaporized(damage, battler)
-    self.sprite.visible = false
-    self.overlay_sprite.visible = true
     self.hurt_timer = -1
 
     Assets.playSound("vaporized", 1.2)

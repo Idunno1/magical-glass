@@ -37,6 +37,7 @@ function lib:load()
         Game:setFlag("undertale_textbox_skipping", true) -- disables skipping
         Game:setFlag("undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("enable_lw_tp", false)
+        Game:setFlag("deltarune_mercy_flash", false)
         Game:setFlag("lw_stat_menu_portraits", true)
         Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
         Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
@@ -176,7 +177,26 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
+        self.light_battle_width = 0
+        self.light_battle_height = 0
         self.light_battler_parts = {}
+    end)
+
+    Utils.hook(Actor, "getWidth", function(orig, self)
+        if Game.battle and Game.battle.isLight then
+            return self.light_battle_width
+        else
+            return self.width
+        end
+    end)
+
+    Utils.hook(Actor, "getHeight", function(orig, self)
+        if Game.battle and Game.battle.isLight then
+            print(self.light_battle_height)
+            return self.light_battle_height
+        else
+            return self.height
+        end
     end)
 
     Utils.hook(Actor, "addLightBattlerPart", function(orig, self, id, data)
@@ -1242,7 +1262,6 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
         if self.light_attack_color and type(self.light_attack_color) == "table" then
-            print(self.light_attack_color)
             return Utils.unpackColor({self.light_attack_color})
         end
     end)

@@ -1,12 +1,14 @@
 local actor, super = Class(Actor, "froggit")
 
 function actor:init()
+    super.init(self)
+
     -- Display name (optional)
     self.name = "Froggit"
 
     -- Width and height for this actor, used to determine its center
-    self.width = 112
-    self.height = 112
+    self.light_battle_width = 55
+    self.light_battle_height = 55
 
     self.hitbox = {0, 0, 16, 16}
 
@@ -15,7 +17,32 @@ function actor:init()
     self.path = "enemies/froggit"
     self.default = "idle"
 
-    self.light_battle_actor = "enemies/froggit_battle"
+    self.animations = {
+        ["lightbattle_hurt"] = {"lightbattle/hurt", 1, true},
+        ["defeat"] = {"lightbattle/hurt", 1, true}
+    }
+    self:addLightBattlerPart("legs", {
+        ["sprite"] = function()
+            local sprite = Sprite(self.path.."/lightbattle/legs")
+            sprite:play(1, true)
+            return sprite
+        end
+    })
+    
+    self:addLightBattlerPart("head", {
+        ["sprite"] = function()
+            self.sprite = Sprite(self.path.."/lightbattle/head", -4, 5)
+            self.sprite.layer = 500
+            self.sprite:play(2, true)
+            -- local path = {{264, 300}, {272, 296}, {280, 300}, {272, 304}, {272, 292}}
+            local path =    {{0, 0},     {4, -2},    {8, 0},    {4, 2},    {4, -4},   {0, 0}}
+            self.sprite:slidePath(path, {speed = 1/3, loop = true, relative = true})
+            return self.sprite
+        end
+    })
+
+
+
 end
 
 return actor

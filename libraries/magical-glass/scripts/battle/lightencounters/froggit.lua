@@ -10,7 +10,7 @@ function Dummy:init()
     self.music = "battleut"
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("froggit")
+    self:addEnemy("froggit", SCREEN_WIDTH/2 - 50, 246)
 end
 
 return Dummy

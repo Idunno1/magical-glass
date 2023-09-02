@@ -7,8 +7,8 @@ function actor:init()
     self.name = "Dummy"
 
     -- Width and height for this actor, used to determine its center
-    self.width = 49
-    self.height = 53
+    self.width = 20
+    self.height = 30
 
     -- Hitbox for this actor in the overworld (optional, uses width and height by default)
     self.hitbox = {0, 25, 19, 14}
@@ -22,7 +22,7 @@ function actor:init()
     -- Path to this actor's sprites (defaults to "")
     self.path = "enemies/dummy_ut"
     -- This actor's default sprite or animation, relative to the path (defaults to "")
-    self.default = "body"
+    self.default = "idle"
 
     -- Sound to play when this actor speaks (optional)
     self.voice = nil
@@ -36,16 +36,17 @@ function actor:init()
 
     -- Table of sprite animations
     self.animations = {
-        -- Looping animation with 0.25 seconds between each frame
-        -- (even though there's only 1 idle frame)
-        ["hurt"] = {"hurt", 1, true}
+        ["lightbattle_hurt"] = {"lightbattle/hurt", 1, true},
     }
+
+    self.light_battle_width = 49
+    self.light_battle_height = 53
 
     self:addLightBattlerPart("body", {
         -- path, function that returns a path, or a function that returns a sprite object
         -- if one's not defined, get the default animation
         ["sprite"] = function()
-            self.sprite = Sprite(self.path.."/"..self.default)
+            self.sprite = Sprite(self.path.."/lightbattle/body")
             return self.sprite
         end,
 

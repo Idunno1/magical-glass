@@ -26,16 +26,18 @@ function LightEnemySprite:init(actor)
         else
             local sprite
             if self.actor:getDefaultAnim() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultAnim())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultAnim())
             elseif self.actor:getDefaultSprite() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultSprite())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultSprite())
             else
-                sprite = Sprite((self.actor:getPath() .. "/" .. self.actor:getDefault()))
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefault())
             end
             self:addChild(sprite)
         end
 
-        part:init()
+        if part.init then
+            part:init()
+        end
     end
 
     if actor then
@@ -75,6 +77,10 @@ function LightEnemySprite:resetSprite(ignore_actor_callback)
         return
     end
 
+    for _,child in ipairs(self.children) do
+        self:removeChild(child)
+    end
+
     for _,part in pairs(self.parts) do
         if part.sprite then
             local sprite
@@ -91,11 +97,11 @@ function LightEnemySprite:resetSprite(ignore_actor_callback)
         else
             local sprite
             if self.actor:getDefaultAnim() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultAnim())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultAnim())
             elseif self.actor:getDefaultSprite() then
-                sprite = Sprite(self.actor:getPath() .. "/" .. self.actor:getDefaultSprite())
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefaultSprite())
             else
-                sprite = Sprite((self.actor:getPath() .. "/" .. self.actor:getDefault()))
+                sprite = Sprite(self.actor.path .. "/" .. self.actor:getDefault())
             end
             self:addChild(sprite)
         end
