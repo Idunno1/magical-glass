@@ -1,7 +1,7 @@
 local wave, super = Class(Wave)
 
 function wave:onStart()
-    self.time = 3 -- ?
+    self.time = 3.3
 
     local x = Utils.random(Game.battle.arena.left, Game.battle.arena.right)
 
