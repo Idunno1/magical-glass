@@ -12,7 +12,7 @@ function Dummy:init()
     self.background_image = "ui/lightbattle/backgrounds/battle2"
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("toriel", SCREEN_WIDTH/2, 245)
+    self:addEnemy("toriel", SCREEN_WIDTH/2 - 70, 45)
 end
 
 return Dummy
