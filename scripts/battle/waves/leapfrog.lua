@@ -1,6 +1,7 @@
 local wave, super = Class(Wave)
 
 function wave:onStart()
+    self.time = 0
     local arena = Game.battle.arena
     self.frog = self:spawnBullet("leapfrog", arena.x + 60, arena.y)
 
@@ -10,13 +11,13 @@ function wave:onStart()
     end)
 end
 
-function wave:update()
-    super.update(self)
+function wave:canEnd()
     if self.frog.x < (Game.battle.arena.x - Game.battle.arena.width / 2) + 22 then
-        self.time = 0
+        return true
+    elseif self.frog.collided then
+        return true
     end
+    return false
 end
-
-
 
 return wave
