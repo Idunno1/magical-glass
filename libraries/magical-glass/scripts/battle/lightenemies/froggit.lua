@@ -28,7 +28,8 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "leapfrog",
+--[[         "froggit/leapfrog", ]]
+        "froggit/flies"
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble

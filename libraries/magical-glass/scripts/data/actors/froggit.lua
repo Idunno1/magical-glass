@@ -12,8 +12,6 @@ function actor:init()
 
     self.hitbox = {0, 0, 16, 16}
 
-    self.flip = "right"
-
     self.path = "enemies/froggit"
     self.default = "idle"
 
@@ -21,6 +19,7 @@ function actor:init()
         ["lightbattle_hurt"] = {"lightbattle/hurt", 1, true},
         ["defeat"] = {"lightbattle/hurt", 1, true}
     }
+
     self:addLightBattlerPart("legs", {
         ["sprite"] = function()
             local sprite = Sprite(self.path.."/lightbattle/legs")
@@ -31,17 +30,15 @@ function actor:init()
     
     self:addLightBattlerPart("head", {
         ["sprite"] = function()
-            self.sprite = Sprite(self.path.."/lightbattle/head", -4, 5)
-            self.sprite.layer = 500
-            self.sprite:play(2, true)
+            local sprite = Sprite(self.path.."/lightbattle/head", -2, 3)
+            sprite.layer = 500
+            sprite:play(2, true)
             -- local path = {{264, 300}, {272, 296}, {280, 300}, {272, 304}, {272, 292}}
-            local path =    {{0, -2},     {4, -4},    {8, -2},    {4, 0},    {4, -6},   {0, -2}}
-            self.sprite:slidePath(path, {speed = 1/6, loop = true, relative = true})
-            return self.sprite
+            local path =    {{0, 0},     {2, -2},    {4, -1},    {2, 0},    {2, -3},   {0, 0}} -- still not accurate
+            sprite:slidePath(path, {speed = 0.25, loop = true, relative = true})
+            return sprite
         end
     })
-
-
 
 end
 

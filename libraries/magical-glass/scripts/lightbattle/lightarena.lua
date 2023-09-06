@@ -65,8 +65,8 @@ function LightArena:setShape(shape)
     self.processed_width = self.width
     self.processed_height = self.height
 
-    self.left = math.floor(self.x - self.width)
-    self.right = math.floor(self.x)
+    self.left = math.floor(self.x - self.width / 2)
+    self.right = math.floor(self.x + self.width / 2)
     self.top = math.floor(self.y - self.height)
     self.bottom = math.floor(self.y)
 
