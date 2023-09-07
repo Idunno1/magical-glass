@@ -23,24 +23,22 @@ function LightSoul:init(x, y, color)
 
     self.collider = CircleCollider(self, 0, 0, 8)
 
-    if Game:getFlag("enable_lw_tp") then
-        self.graze_tp_factor   = 1
-        self.graze_time_factor = 1
-        self.graze_size_factor = 1
-        for _,party in ipairs(Game.party) do
-            self.graze_tp_factor   = math.min(3, self.graze_tp_factor   + party:getStat("graze_tp"))
-            self.graze_time_factor = math.min(3, self.graze_time_factor + party:getStat("graze_time"))
-            self.graze_size_factor = math.min(3, self.graze_size_factor + party:getStat("graze_size"))
-        end
-
-        self.graze_sprite = GrazeSprite()
-        self.graze_sprite:setOrigin(0.5, 0.5)
-        self.graze_sprite.inherit_color = true
-        self.graze_sprite.graze_scale = self.graze_size_factor
-        self:addChild(self.graze_sprite)
-
-        self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
+    self.graze_tp_factor   = 1
+    self.graze_time_factor = 1
+    self.graze_size_factor = 1
+    for _,party in ipairs(Game.party) do
+        self.graze_tp_factor   = math.min(3, self.graze_tp_factor   + party:getStat("graze_tp"))
+        self.graze_time_factor = math.min(3, self.graze_time_factor + party:getStat("graze_time"))
+        self.graze_size_factor = math.min(3, self.graze_size_factor + party:getStat("graze_size"))
     end
+
+    self.graze_sprite = GrazeSprite()
+    self.graze_sprite:setOrigin(0.5, 0.5)
+    self.graze_sprite.inherit_color = true
+    self.graze_sprite.graze_scale = self.graze_size_factor
+    self:addChild(self.graze_sprite)
+
+    self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
 
     self.original_x = x
     self.original_y = y
@@ -388,7 +386,7 @@ function LightSoul:update()
             -- to avoid issues with cacheing inside onCollide
             table.insert(collided_bullets, bullet)
         end
-        if self.inv_timer == 0 then
+        if Game:getFlag("enable_lw_tp") and self.inv_timer == 0 then
             if bullet.tp ~= 0 and bullet:collidesWith(self.graze_collider) then
                 if bullet.grazed then
                     Game:giveTension(bullet.tp * DT * self.graze_tp_factor)
@@ -436,7 +434,7 @@ function LightSoul:draw()
 
     if DEBUG_RENDER then
         self.collider:draw(0, 1, 0)
-        if self.graze_collider then
+        if self.graze_collider and Game:getFlag("enable_lw_tp") then
             self.graze_collider:draw(1, 1, 1, 0.33)
         end
     end

@@ -226,9 +226,7 @@ function LightEncounter:onWavesDone()
         end
     end
 
-    if Game.battle.soul then
-        Game.battle.soul:remove()
-    end
+    Game.battle:toggleSoul(false)
 
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")
 end

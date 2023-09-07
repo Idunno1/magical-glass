@@ -192,7 +192,6 @@ function lib:init()
 
     Utils.hook(Actor, "getHeight", function(orig, self)
         if Game.battle and Game.battle.isLight then
-            print(self.light_battle_height)
             return self.light_battle_height
         else
             return self.height
@@ -444,7 +443,7 @@ function lib:init()
             end
         end
     
-        if Game:getFlag("temporary_world_value#") then
+        if not Game:getFlag("temporary_world_value#") then
             local ball = Registry.createItem("light/ball_of_junk", self)
             new_inventory:addItemTo("items", 1, ball)
         end
@@ -1276,6 +1275,49 @@ function lib:init()
         if self.light_xact_color and type(self.light_xact_color) == "table" then
             return Utils.unpackColor(self.light_xact_color)
         end
+    end)
+
+    Utils.hook(PartyMember, "convertToDark", function(orig, self)
+        local last_weapon = self:getWeapon()
+        local last_armor = self:getArmor(1)
+    
+        self.equipped = {weapon = nil, armor = {}}
+    
+        if last_weapon then
+            local result = last_weapon:convertToDarkEquip(self)
+            if result then
+                if type(result) == "string" then
+                    result = Registry.createItem(result)
+                end
+                if isClass(result) then
+                    self.equipped.weapon = result
+                end
+            end
+        end
+        if last_armor then
+            local result = last_armor:convertToDarkEquip(self)
+            if result then
+                if type(result) == "string" then
+                    result = Registry.createItem(result)
+                end
+                if isClass(result) then
+                    self.equipped.armor[1] = result
+                end
+            end
+        end
+
+        if not self.equipped.weapon then
+            self.equipped.weapon = Registry.createItem(self.dw_weapon_default)
+        end
+        if not self.equipped.armor[1] then
+            self.equipped.armor[1] = Registry.createItem(self.dw_armor_default[1])
+        end
+        if not self.equipped.armor[2] then
+            self.equipped.armor[2] = Registry.createItem(self.dw_armor_default[2])
+        end
+        self.equipped.armor[1]:setFlag("light_armors", {
+            ["1"] = last_armor[1] and last_armors[1]:save(),
+        })
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)

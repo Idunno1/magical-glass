@@ -157,6 +157,14 @@ function LightBattle:playVaporizedSound()
     self.vaporized:play()
 end
 
+function LightBattle:toggleSoul(soul)
+    if soul then
+        self.soul.visible = true
+    else
+        self.soul.visible = false
+    end
+end
+
 function LightBattle:createPartyBattlers()
     for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
@@ -571,7 +579,7 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
 
-        self.soul:remove()
+        self:toggleSoul(false)
 
         for _,act_enemy in ipairs(self:getActiveEnemies()) do
             local worked = act_enemy:canSpare()
@@ -862,6 +870,11 @@ function LightBattle:onStateChange(old,new)
         if not self.soul then
             self:spawnSoul()
         end
+
+        if self.soul.visible == false then
+            self:toggleSoul(true)
+        end
+
         self.soul.can_move = false
 
         if self.current_selecting < 1 or self.current_selecting > #self.party then
@@ -899,9 +912,12 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onCharacterTurn(party, false)
         end
     elseif new == "BUTNOBODYCAME" then
-
         if not self.soul then
             self:spawnSoul()
+        end
+
+        if self.soul.visible == false then
+            self:toggleSoul(true)
         end
         self.soul.can_move = false
         
@@ -1048,7 +1064,8 @@ function LightBattle:onStateChange(old,new)
                 self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
                     soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                     soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-                    self:spawnSoul(soul_x or center_x, soul_y or center_y)
+                    self.soul:setPosition(soul_x or center_x, soul_y or center_y)
+                    self:toggleSoul(true)
                     self.soul.can_move = false
                 end)
             end
@@ -1110,9 +1127,7 @@ function LightBattle:onStateChange(old,new)
             wave.active = true
         end
 
-        if self.soul then
-            self.soul:onWaveStart()
-        end
+        self.soul:onWaveStart()
     elseif new == "VICTORY" then
         self.music:stop()
         self.current_selecting = 0
@@ -1541,7 +1556,7 @@ function LightBattle:battleText(text,post_func)
     end)
 
     if self.state ~= "FLEEING" and self.soul then
-        self.soul:remove()
+        self:toggleSoul(false)
     end
 
     self.battle_ui.encounter_text.text.state.typing_sound = "ut"
@@ -1559,7 +1574,7 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
-    self.soul:remove()
+    self:toggleSoul(false)
     if self.cutscene then
         local cutscene_name = ""
         if type(group) == "string" then
@@ -1797,7 +1812,7 @@ function LightBattle:updateAttacking()
 
     if not self.attack_done then
         if not self.battle_ui.attacking then
-            self.soul:remove()
+            self:toggleSoul(false)
             self.battle_ui:beginAttack()
         end
 
