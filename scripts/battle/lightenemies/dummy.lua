@@ -47,6 +47,7 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
+    self:registerAct("Susie")
 
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
@@ -103,7 +104,9 @@ function Dummy:onAct(battler, name)
         end) ]]
         Game.battle:addChild(Game.battle.tension_bar)
         return "* udnertal"
-
+    elseif name == "Susie" then
+        Game.battle:startActCutscene("dummy", "susie_punch")
+        return 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
         self:addMercy(50)

@@ -871,10 +871,6 @@ function LightBattle:onStateChange(old,new)
             self:spawnSoul()
         end
 
-        if self.soul.visible == false then
-            self:toggleSoul(true)
-        end
-
         self.soul.can_move = false
 
         if self.current_selecting < 1 or self.current_selecting > #self.party then
@@ -888,9 +884,7 @@ function LightBattle:onStateChange(old,new)
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -916,18 +910,13 @@ function LightBattle:onStateChange(old,new)
             self:spawnSoul()
         end
 
-        if self.soul.visible == false then
-            self:toggleSoul(true)
-        end
         self.soul.can_move = false
         
         self.fader:fadeIn(nil, {speed=5/30})
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -941,8 +930,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ACTIONS" then
-        -- this could possibly cause the double text shit again, but if it has the timer,
-        -- the dialogue just doesn't show up
         self.battle_ui:clearEncounterText()
         if self.state_reason ~= "DONTPROCESS" then
             self:tryProcessNextAction()
@@ -1558,8 +1545,6 @@ function LightBattle:battleText(text,post_func)
     if self.state ~= "FLEEING" and self.soul then
         self:toggleSoul(false)
     end
-
-    self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
     self.battle_ui.encounter_text:setAdvance(true)
     self:setState("BATTLETEXT")

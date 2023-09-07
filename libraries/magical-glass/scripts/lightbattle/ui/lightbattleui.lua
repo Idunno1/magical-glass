@@ -12,12 +12,11 @@ function LightBattleUI:init()
     self.style = Game:getFlag("gauge_styles")
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
+    self.encounter_text.text.default_sound = "ut"
     self.encounter_text.text.hold_skip = false
     self.encounter_text.text.line_offset = 5
     self.encounter_text.text.style = "none"
-    self.encounter_text.text.state.typing_sound = "ut"
     self.encounter_text:setText("")
-    self.encounter_text.text.state.typing_sound = "ut"
     self.encounter_text.debug_rect = {-30, -12, SCREEN_WIDTH+1, 124}
     Game.battle.arena:addChild(self.encounter_text)
 
