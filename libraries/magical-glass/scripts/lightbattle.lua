@@ -687,7 +687,6 @@ function LightBattle:processAction(action)
         action.data:onStart(battler, action.target)
 
         return false
-
     elseif action.action == "ITEM" then
         local item = action.data
         if item.instant then
@@ -2137,9 +2136,6 @@ function LightBattle:commitSingleAction(action)
         if (action.action == "ITEM" and action.data and (not action.data.instant)) or (action.action ~= "ITEM") then
             --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
-            if action.action == "AUTOATTACK" or action.action == "SKIP" then
-                action.icon = nil
-            end
         end
     end
 end

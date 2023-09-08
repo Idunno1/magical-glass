@@ -67,8 +67,8 @@ function Dummy:drawBackground()
         end
     else
         --love.graphics.setShader(self.shader)
---[[         Draw.setColor(0.5, 0.5, 0.5)
-        love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16) ]]
+        Draw.setColor(0.5, 0.5, 0.5)
+        love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
         local offset = 0
         for i = 1, 6 do
             local sine = (math.sin(self.bg_siners[i] / 14) * 8) + 12

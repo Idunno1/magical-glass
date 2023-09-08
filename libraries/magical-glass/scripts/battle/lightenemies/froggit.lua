@@ -1,11 +1,11 @@
-local Dummy, super = Class(LightEnemyBattler)
+local Froggit, super = Class(LightEnemyBattler)
 
-function Dummy:init()
+function Froggit:init()
     super:init(self)
 
     -- Enemy name
     self.name = "Froggit"
-    -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
+    -- Sets the actor, which handles the enemy's sprites
     self:setActor("froggit")
 
     -- Enemy health
@@ -60,7 +60,7 @@ function Dummy:init()
     self.damage_offset = {0, -65}
 end
 
-function Dummy:onAct(battler, name)
+function Froggit:onAct(battler, name)
     if name == "Compliment" then
         -- Give the enemy 100% mercy
         self:addMercy(100)
@@ -76,6 +76,10 @@ function Dummy:onAct(battler, name)
         self.dialogue_override = "[wave:2]Shiver,\nshiver."
 
         return "* Froggit didn't understand\nwhat you said,[wait:5] but was\nscared anyway."
+    elseif name == "Standard" then
+        self:addMercy(100)
+        self.dialogue_override = "[wave:2](Blushes\ndeeply.)\nRibbit.."
+        return "* Froggit didn't understand\nwhat "..battler.chara:getName().." did,[wait:5] but was\nsated anyway."
     end
 
     -- If the act is none of the above, run the base onAct function
@@ -83,4 +87,4 @@ function Dummy:onAct(battler, name)
     return super:onAct(self, battler, name)
 end
 
-return Dummy
+return Froggit

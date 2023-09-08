@@ -100,7 +100,7 @@ function LightDamageNumber:update()
         end
 
         self.kill_timer = self.kill_timer + DTMULT
-        if self.kill_timer > 35 then
+        if self.kill_timer > 40 then
             for _,obj in ipairs(self.parent.children) do
                 if isClass(obj) and obj:includes(LightGauge) then
                     obj:remove()

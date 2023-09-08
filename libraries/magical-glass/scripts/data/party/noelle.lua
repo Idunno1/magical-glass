@@ -34,6 +34,7 @@ self.xact_name = "N-Action"
 self:addSpell("heal_prayer")
 self:addSpell("sleep_mist")
 self:addSpell("ice_shock")
+self:addSpell("snowgrave")
 
 -- Current health (saved to the save file)
 self.health = 90
@@ -51,11 +52,10 @@ self.max_stats = {
     health = 166
 }
 
-
 self.lw_stats = {
     health = 20,
-    attack = 3,
-    defense = 5,
+    attack = 10,
+    defense = 10,
     magic = 3
 }
 

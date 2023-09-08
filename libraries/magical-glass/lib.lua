@@ -1605,10 +1605,7 @@ function lib:init()
     end)
 
     Utils.hook(Spell, "onStart", function(orig, self, user, target)
-        if Game.battle:isLight() then
-            if self.tags["heal"] then
-                
-            end
+        if Game.battle.isLight then
             local result = self:onLightCast(user, target)
             Game.battle:battleText(self:getLightCastMessage(user, target))
             if result or result == nil then

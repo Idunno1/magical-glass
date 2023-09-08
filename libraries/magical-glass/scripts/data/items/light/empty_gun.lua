@@ -30,7 +30,7 @@ function item:init()
     self.attack_speed = 15
     self.attack_speed_variance = nil
     self.attack_start = 120
-    self.attack_miss_zone = 2
+    self.attack_miss_zone = 3
     self.multibolt_variance = {{180, 210, 240}, {300, 330, 360}, {400, 430, 460}}
 
     self.attack_sound = "gunshot"
