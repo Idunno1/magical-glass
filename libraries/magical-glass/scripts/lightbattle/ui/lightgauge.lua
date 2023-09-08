@@ -42,7 +42,7 @@ function LightGauge:update()
 
     if self.type == "damage" then
         if self.value > (self.real_value - self.amount) then
-            self.value = self.value - (self.amount / 15) * DTMULT
+            self.value = self.value - (self.amount / 15) * DTMULT / 1.2
         else
             self.value = (self.real_value - self.amount)
         end
@@ -52,7 +52,7 @@ function LightGauge:update()
         end
     elseif self.type == "mercy" then
         if self.value < (self.real_value + self.amount) then
-            self.value = self.value + (self.amount / 15) * DTMULT
+            self.value = self.value + (self.amount / 15) * DTMULT / 1.2
         else
             self.value = (self.real_value + self.amount)
         end
