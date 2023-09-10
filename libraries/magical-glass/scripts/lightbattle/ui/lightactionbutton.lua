@@ -114,6 +114,8 @@ function LightActionButton:select()
 
                         if not spell.target or spell.target == "none" then
                             Game.battle:pushAction("SPELL", nil, menu_item)
+                        elseif spell.target == "ally" and #Game.battle.party == 1 then
+                            Game.battle:pushAction("SPELL", Game.battle.party[1], menu_item)
                         elseif spell.target == "ally" then
                             Game.battle:setState("PARTYSELECT", "SPELL")
                         elseif spell.target == "enemy" then
@@ -232,7 +234,7 @@ function LightActionButton:draw()
             love.graphics.draw(self.hover_tex or self.tex)
         else
             love.graphics.draw(self.tex)
-            if Game:getFlag("deltarune_mercy_flashing") and self.selectable and self.special_tex and self:hasSpecial() then
+            if Game:getFlag("#deltarune_mercy_flashing") and self.selectable and self.special_tex and self:hasSpecial() then
                 local r, g, b, a = self:getDrawColor()
                 love.graphics.setColor(r, g, b, a * (0.4 + math.sin((Kristal.getTime() * 30) / 6) * 0.4))
                 love.graphics.draw(self.special_tex)

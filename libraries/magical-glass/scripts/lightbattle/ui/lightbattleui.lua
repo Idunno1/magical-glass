@@ -9,7 +9,7 @@ function LightBattleUI:init()
 
     self.arena = Game.battle.arena
 
-    self.style = Game:getFlag("gauge_styles")
+    self.style = Game:getFlag("#gauge_styles")
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
     self.encounter_text.text.default_sound = "ut"
@@ -215,13 +215,13 @@ function LightBattleUI:drawState()
             end
 
             if highlight_spare and item.name == "Spare" then
-                love.graphics.setColor(Game:getFlag("name_color"))
+                love.graphics.setColor(Game:getFlag("#name_color"))
             end
 
             local name = item.name
             if item.shortname then
                 name = item.shortname
-            elseif item.seriousname and Game:getFlag("serious_mode") then
+            elseif item.seriousname and Game:getFlag("#serious_mode") then
                 name = item.seriousname
             end
 

@@ -4,7 +4,7 @@
     "subtitle": "...What fucking game am I playing again?",
 
     "version": "v4.2.0",
-    "engineVer": "v0.8.1-dev",
+    "engineVer": "v0.9.0-dev",
 
     "chapter": 2,
 
@@ -12,7 +12,7 @@
 
     "map": "tundra3",
     //"party": ["kris", /* "susie", "noelle" */],
-    "party": ["noelle"],
+    "party": ["kris"],
     "inventory": {
         "items": ["light/monster_candy", "light/bandage_ut", "light/empty_gun"],
         "key_items": ["cell_phone"]

@@ -305,7 +305,7 @@ end
 
 function LightEnemyBattler:addMercy(amount)
     
-    if Game:getFlag("gauge_styles", "deltarune") == "deltarune" then
+    if Game:getFlag("#gauge_styles") == "deltarune" then
         if Game:getConfig("mercyMessages") then
             if amount > 0 and self.mercy < 100 then
                 local pitch = 0.8
@@ -360,7 +360,7 @@ end
 function LightEnemyBattler:getNameColors()
     local result = {}
     if self:canSpare() then -- pink name shit goes here
-        table.insert(result, Game:getFlag("name_color"))
+        table.insert(result, Game:getFlag("#name_color"))
     end
     if self.tired then
         table.insert(result, {0, 0.7, 1})

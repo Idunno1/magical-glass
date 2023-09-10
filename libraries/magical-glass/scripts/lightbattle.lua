@@ -194,6 +194,12 @@ function LightBattle:createPartyBattlers()
                 table.insert(self.party, chara_battler)
             end
         end
+
+        if Game:getFlag("#remove_overheal") then
+            if party_member.lw_health > party_member:getStat("health") + 15 then
+                party_member.lw_health = party_member:getStat("health") + 15
+            end
+        end
     end
 end
 
@@ -286,7 +292,7 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
     
-    if Game:getFlag("enable_lw_tp") then
+    if Game:getFlag("#enable_lw_tp") then
         self.tension_bar = LightTensionBar(29, 53, true)
         self:addChild(self.tension_bar)
     end
@@ -1481,6 +1487,7 @@ function LightBattle:returnToWorld()
         if not Game.inventory then
             Game:setupInventory()
         end
+
         Game:setLight(false) -- crashes if the battle was restarted
         Game:setFlag("temporary_world_value#", nil)
     end

@@ -32,22 +32,23 @@ function lib:load()
     end
     
     if Game.is_new_file then
-        Game:setFlag("serious_mode", false) -- useful for serious battles
-        Game:setFlag("always_show_magic", false)
-        Game:setFlag("undertale_textbox_skipping", true) -- disables skipping
-        Game:setFlag("undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
-        Game:setFlag("enable_lw_tp", false)
-        Game:setFlag("deltarune_mercy_flash", false)
-        Game:setFlag("lw_stat_menu_portraits", true)
-        Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
-        Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
+        Game:setFlag("#serious_mode", false) -- useful for serious battles
+        Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
+        Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
+        Game:setFlag("#enable_lw_tp", false)
+        Game:setFlag("#deltarune_mercy_flash", false)
+        Game:setFlag("#lw_stat_menu_portraits", true)
+        Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
+        Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
+        Game:setFlag("#remove_overheal", true)
 
-        Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
+        Game:setFlag("#lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
-        Game:setFlag("undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
+        Game:setFlag("#undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
-        Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
+        Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
     end
 end
 
@@ -1242,13 +1243,6 @@ function lib:init()
 
         self.use_player_name = false
 
-        self.dw_weapon_default = "wood_blade"
-        if Game.chapter >= 2 then
-            self.dw_armor_default = {"amber_card", "amber_card"}
-        else
-            self.dw_armor_default = {}
-        end
-
         self.lw_portrait = nil
 
         self.light_color = {1,1,1}
@@ -1268,7 +1262,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)
-        if Game:getFlag("savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
+        if Game:getFlag("#savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
             return Game.save_name
         else
             return self.name
@@ -1395,7 +1389,7 @@ function lib:init()
             return Utils.unpackColor(self.light_xact_color)
         end
     end)
-
+--[[ 
     Utils.hook(PartyMember, "convertToDark", function(orig, self)
         local last_weapon = self:getWeapon()
         local last_armor = self:getArmor(1)
@@ -1437,7 +1431,7 @@ function lib:init()
         self.equipped.armor[1]:setFlag("light_armors", {
             ["1"] = last_armor[1] and last_armors[1]:save(),
         })
-    end)
+    end) ]]
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
         orig(self)
@@ -1489,7 +1483,7 @@ function lib:init()
         local chara = Game.party[self.party_selecting]
         local offset = 0
 
-        if Game:getFlag("lw_stat_menu_portraits") then
+        if Game:getFlag("#lw_stat_menu_portraits") then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
@@ -1512,7 +1506,7 @@ function lib:init()
     
         love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
-        if Game:getFlag("always_show_magic") or chara.lw_stats.magic > 0 then
+        if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
             --love.graphics.print("MG  ", 4, 228)
             --love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
             love.graphics.print("MG  ", 4, 132)
@@ -1660,11 +1654,11 @@ end
 
 function lib:changeSpareColor(color)
     if color == "yellow" then
-        Game:setFlag("name_color", COLORS.yellow)
+        Game:setFlag("#name_color", COLORS.yellow)
     elseif color == "pink" then
-        Game:setFlag("name_color", PALETTE["pink_spare"])
+        Game:setFlag("#name_color", PALETTE["pink_spare"])
     elseif color == "white" then
-        Game:setFlag("name_color", COLORS.white)
+        Game:setFlag("#name_color", COLORS.white)
     end
 end
 
