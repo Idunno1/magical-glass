@@ -107,8 +107,8 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
-                Game:setLight(false)
                 Game:setFlag("temporary_world_value#", "light")
+                Game:setLight(false)
             end
             Game:encounter(id)
             debug:closeMenu()
@@ -120,8 +120,8 @@ function lib:registerDebugOptions(debug)
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 if not Game:isLight() then
-                    Game:setLight(true)
                     Game:setFlag("temporary_world_value#", "dark")
+                    Game:setLight(true)
                 end
                 Game:encounter(id)
                 debug:closeMenu()
@@ -216,8 +216,8 @@ function lib:init()
     
         local in_game = function() return Kristal.getState() == Game end
         local in_battle = function() return in_game() and Game.state == "BATTLE" end
-        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle:isLight() end
-        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle:isLight() end
+        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle.isLight end
+        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle.isLight end
         local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
 
         self:registerConfigOption("main", "Object Selection Pausing", "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
@@ -302,7 +302,6 @@ function lib:init()
     end)
 
     Utils.hook(Game, "load", function(orig, self, data, index, fade)
-
         orig(self, data, index, fade)
         self.is_new_file = data == nil
 
@@ -435,7 +434,9 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            result.dark_item = item
+                            if not Game:getFlag("temporary_world_value#") then
+                                result.dark_item = item
+                            end
                             result.dark_location = {storage = storage.id, index = i}
                             new_inventory:addItem(result)
                         end
@@ -454,9 +455,73 @@ function lib:init()
         return new_inventory
     end)
 
-    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        orig(self)
-        
+    Utils.hook(LightInventory, "convertToDark", function(orig, self)
+        local new_inventory = DarkInventory()
+
+        local was_storage_enabled = new_inventory.storage_enabled
+        new_inventory.storage_enabled = true
+    
+        Kristal.callEvent("onConvertToDark", new_inventory)
+    
+        for _,storage_id in ipairs(self.convert_order) do
+            local storage = Utils.copy(self:getStorage(storage_id))
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    local result = item:convertToDark(new_inventory)
+    
+                    if result then
+                        self:removeItem(item)
+    
+                        if type(result) == "string" then
+                            result = Registry.createItem(result)
+                        end
+                        if isClass(result) then
+                            new_inventory:addItem(result)
+                        end
+                    end
+                end
+            end
+        end
+    
+        for _,base_storage in pairs(self.storages) do
+            local storage = Utils.copy(base_storage)
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    if not Game:getFlag("temporary_world_value#") then
+                        item.light_item = item
+                    end
+                    item.light_location = {storage = storage.id, index = i}
+    
+                    new_inventory:addItemTo("light", item)
+    
+                    self:removeItem(item)
+                end
+            end
+        end
+    
+        new_inventory.storage_enabled = was_storage_enabled
+    
+        return new_inventory
+    end)
+
+    Utils.hook(Game, "setLight", function(orig, self, light)
+        light = light or false
+        if not self.started then
+            self.light = light
+            return
+        end
+    
+        if self.light == light then return end
+    
+        self.light = light
+    
+        if self.light then
+            self:convertToLight()
+        else
+            self:convertToDark()
+        end
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -686,7 +751,7 @@ function lib:init()
     end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
-        if Game.battle:isLight() then
+        if Game.battle.isLight then
             self.arena_width = width
             self.arena_height = height or width
         else
@@ -695,7 +760,7 @@ function lib:init()
     end)
 
     Utils.hook(Wave, "setArenaPosition", function(orig, self, x, y)
-        if Game.battle:isLight() then
+        if Game.battle.isLight then
             self.arena_x = x
             self.arena_y = y
         else
@@ -1389,49 +1454,6 @@ function lib:init()
             return Utils.unpackColor(self.light_xact_color)
         end
     end)
---[[ 
-    Utils.hook(PartyMember, "convertToDark", function(orig, self)
-        local last_weapon = self:getWeapon()
-        local last_armor = self:getArmor(1)
-    
-        self.equipped = {weapon = nil, armor = {}}
-    
-        if last_weapon then
-            local result = last_weapon:convertToDarkEquip(self)
-            if result then
-                if type(result) == "string" then
-                    result = Registry.createItem(result)
-                end
-                if isClass(result) then
-                    self.equipped.weapon = result
-                end
-            end
-        end
-        if last_armor then
-            local result = last_armor:convertToDarkEquip(self)
-            if result then
-                if type(result) == "string" then
-                    result = Registry.createItem(result)
-                end
-                if isClass(result) then
-                    self.equipped.armor[1] = result
-                end
-            end
-        end
-
-        if not self.equipped.weapon then
-            self.equipped.weapon = Registry.createItem(self.dw_weapon_default)
-        end
-        if not self.equipped.armor[1] then
-            self.equipped.armor[1] = Registry.createItem(self.dw_armor_default[1])
-        end
-        if not self.equipped.armor[2] then
-            self.equipped.armor[2] = Registry.createItem(self.dw_armor_default[2])
-        end
-        self.equipped.armor[1]:setFlag("light_armors", {
-            ["1"] = last_armor[1] and last_armors[1]:save(),
-        })
-    end) ]]
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
         orig(self)

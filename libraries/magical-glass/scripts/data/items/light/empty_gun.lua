@@ -34,7 +34,6 @@ function item:init()
     self.multibolt_variance = {{180, 210, 240}, {300, 330, 360}, {400, 430, 460}}
 
     self.attack_sound = "gunshot"
-    
 end
 
 function item:onAttack(battler, enemy, damage, stretch, crit)
@@ -42,7 +41,6 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
     src:setPitch(self:getAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/gunshot_stab")
-    local sprite_size = 2
     sprite:setScale(2, 2)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))

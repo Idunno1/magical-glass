@@ -121,8 +121,8 @@ function LightEncounter:getVictoryText(text, money, xp) end
 
 function LightEncounter:update() end
 
-function LightEncounter:draw(fade) end
-function LightEncounter:drawBackground(fade)
+function LightEncounter:draw() end
+function LightEncounter:drawBackground()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(Assets.getTexture(self.background_image) or Assets.getTexture("ui/lightbattle/backgrounds/battle"), 15, 9)
 end
