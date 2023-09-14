@@ -556,7 +556,7 @@ function LightEnemyBattler:onHurt(damage, battler)
     if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
         self:toggleOverlay(false)
     end
-    self:getActiveSprite():shake(9) -- not sure if this should be different
+    self:getActiveSprite():shake(9, 0, 0.5, 2/30) -- not sure if this should be different
 
 --[[     if self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)

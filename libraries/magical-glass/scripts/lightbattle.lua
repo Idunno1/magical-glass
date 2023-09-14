@@ -630,7 +630,9 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                Game:giveTension(Utils.round(enemy:getAttackTension(points or 100)))  
+                if Game:getFlag("#enable_lw_tp") then
+                    Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
+                end
                 weapon:onAttack(battler, enemy, damage, action.stretch, crit)
             else
                 weapon:onMiss(battler, enemy, true, true)
