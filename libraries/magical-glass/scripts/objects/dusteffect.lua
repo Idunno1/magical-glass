@@ -33,12 +33,10 @@ function DustEffect:init(texture, x, y, after)
             local r, g, b, a = data:getPixel(x-1, y-1)
             if --[[(a == 1) and]] not (r == 0 and g == 0 and b == 0) then
 
-                local particle = Sprite("dust/dust", x - 1, y - 1)
-                particle:setColor(r, g, b, a)
-                particle:setScale(0.5)
+                local particle = DustEffectParticle({r, g, b, a}, x - 1, y - 1)
                 self:addChild(particle)
                 Game.battle.timer:after(math.floor(delay / 3) / 30, function()
-                    particle:play(1/30, false, function() particle:remove() end)
+                    particle.activated = true
                     particle.physics.gravity_direction = math.rad(-90)
                     particle.physics.gravity = (Utils.random(0.25) + 0.1)
                     particle.physics.speed_x = (Utils.random(2) - 1)

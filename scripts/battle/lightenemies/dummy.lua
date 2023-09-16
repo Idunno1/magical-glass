@@ -14,7 +14,7 @@ function Dummy:init()
     -- Enemy attack (determines bullet damage)
     self.attack = 7
     -- Enemy defense (usually 0)
-    self.defense = 999
+    self.defense = 0
     -- Enemy reward
     self.money = 69
     self.experience = 1
@@ -24,7 +24,8 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "_none"
+        "basic",
+        "movingarena"
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
@@ -47,6 +48,7 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
+    self:registerAct("Susie")
 
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
@@ -83,8 +85,7 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("deltarune")
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
-        Game:setFlag("enable_lw_tp", true)
-        Game:setFlag("enable_focus", true)
+        Game:setFlag("#enable_lw_tp", true)
         Game.battle.tension_bar = LightTensionBar(-25, 53, false)
         Game.battle.tension_bar:show()
         Game.battle:addChild(Game.battle.tension_bar)
@@ -94,8 +95,7 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("undertale")
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
-        Game:setFlag("enable_lw_tp", false)
-        Game:setFlag("enable_focus", false)
+        Game:setFlag("#enable_lw_tp", false)
 
         Game.battle.tension_bar:hide()
 --[[         Game.battle.timer:after(1, function()
@@ -103,7 +103,9 @@ function Dummy:onAct(battler, name)
         end) ]]
         Game.battle:addChild(Game.battle.tension_bar)
         return "* udnertal"
-
+    elseif name == "Susie" then
+        Game.battle:startActCutscene("dummy", "susie_punch")
+        return 
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
         self:addMercy(50)

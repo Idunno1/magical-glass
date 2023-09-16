@@ -18,4 +18,9 @@ function bullet:jump()
     self.physics.speed = 7 + Utils.random(3)
 end
 
+function bullet:onCollide(soul)
+    super.onCollide(self, soul)
+    self.collided = true
+end
+
 return bullet

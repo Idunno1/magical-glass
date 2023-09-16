@@ -157,6 +157,14 @@ function LightBattle:playVaporizedSound()
     self.vaporized:play()
 end
 
+function LightBattle:toggleSoul(soul)
+    if soul then
+        self.soul.visible = true
+    else
+        self.soul.visible = false
+    end
+end
+
 function LightBattle:createPartyBattlers()
     for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
@@ -184,6 +192,12 @@ function LightBattle:createPartyBattlers()
                 local chara_battler = LightPartyBattler(party_member, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                 self:addChild(chara_battler)
                 table.insert(self.party, chara_battler)
+            end
+        end
+
+        if Game:getFlag("#remove_overheal") then
+            if party_member.lw_health > party_member:getStat("health") + 15 then
+                party_member.lw_health = party_member:getStat("health") + 15
             end
         end
     end
@@ -278,7 +292,7 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
     
-    if Game:getFlag("enable_lw_tp") then
+    if Game:getFlag("#enable_lw_tp") then
         self.tension_bar = LightTensionBar(29, 53, true)
         self:addChild(self.tension_bar)
     end
@@ -571,7 +585,7 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
 
-        self.soul:remove()
+        self:toggleSoul(false)
 
         for _,act_enemy in ipairs(self:getActiveEnemies()) do
             local worked = act_enemy:canSpare()
@@ -616,7 +630,9 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                Game:giveTension(Utils.round(enemy:getAttackTension(points or 100)))  
+                if Game:getFlag("#enable_lw_tp") then
+                    Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
+                end
                 weapon:onAttack(battler, enemy, damage, action.stretch, crit)
             else
                 weapon:onMiss(battler, enemy, true, true)
@@ -679,7 +695,6 @@ function LightBattle:processAction(action)
         action.data:onStart(battler, action.target)
 
         return false
-
     elseif action.action == "ITEM" then
         local item = action.data
         if item.instant then
@@ -862,6 +877,7 @@ function LightBattle:onStateChange(old,new)
         if not self.soul then
             self:spawnSoul()
         end
+
         self.soul.can_move = false
 
         if self.current_selecting < 1 or self.current_selecting > #self.party then
@@ -875,9 +891,7 @@ function LightBattle:onStateChange(old,new)
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -899,19 +913,17 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onCharacterTurn(party, false)
         end
     elseif new == "BUTNOBODYCAME" then
-
         if not self.soul then
             self:spawnSoul()
         end
+
         self.soul.can_move = false
         
         self.fader:fadeIn(nil, {speed=5/30})
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
         self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
-        self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -925,8 +937,6 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ACTIONS" then
-        -- this could possibly cause the double text shit again, but if it has the timer,
-        -- the dialogue just doesn't show up
         self.battle_ui:clearEncounterText()
         if self.state_reason ~= "DONTPROCESS" then
             self:tryProcessNextAction()
@@ -1048,7 +1058,8 @@ function LightBattle:onStateChange(old,new)
                 self.timer:after(2/30, function() -- ut has a 5 frame window where the soul isn't in the arena
                     soul_x = soul_x or (soul_offset_x and center_x + soul_offset_x)
                     soul_y = soul_y or (soul_offset_y and center_y + soul_offset_y)
-                    self:spawnSoul(soul_x or center_x, soul_y or center_y)
+                    self.soul:setPosition(soul_x or center_x, soul_y or center_y)
+                    self:toggleSoul(true)
                     self.soul.can_move = false
                 end)
             end
@@ -1110,9 +1121,7 @@ function LightBattle:onStateChange(old,new)
             wave.active = true
         end
 
-        if self.soul then
-            self.soul:onWaveStart()
-        end
+        self.soul:onWaveStart()
     elseif new == "VICTORY" then
         self.music:stop()
         self.current_selecting = 0
@@ -1480,6 +1489,7 @@ function LightBattle:returnToWorld()
         if not Game.inventory then
             Game:setupInventory()
         end
+
         Game:setLight(false) -- crashes if the battle was restarted
         Game:setFlag("temporary_world_value#", nil)
     end
@@ -1541,10 +1551,8 @@ function LightBattle:battleText(text,post_func)
     end)
 
     if self.state ~= "FLEEING" and self.soul then
-        self.soul:remove()
+        self:toggleSoul(false)
     end
-
-    self.battle_ui.encounter_text.text.state.typing_sound = "ut"
 
     self.battle_ui.encounter_text:setAdvance(true)
     self:setState("BATTLETEXT")
@@ -1559,7 +1567,7 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
-    self.soul:remove()
+    self:toggleSoul(false)
     if self.cutscene then
         local cutscene_name = ""
         if type(group) == "string" then
@@ -1797,7 +1805,7 @@ function LightBattle:updateAttacking()
 
     if not self.attack_done then
         if not self.battle_ui.attacking then
-            self.soul:remove()
+            self:toggleSoul(false)
             self.battle_ui:beginAttack()
         end
 
@@ -2137,9 +2145,6 @@ function LightBattle:commitSingleAction(action)
         if (action.action == "ITEM" and action.data and (not action.data.instant)) or (action.action ~= "ITEM") then
             --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
-            if action.action == "AUTOATTACK" or action.action == "SKIP" then
-                action.icon = nil
-            end
         end
     end
 end
@@ -2627,7 +2632,6 @@ end
 
 function LightBattle:onKeyPressed(key)
     if Kristal.Config["debug"] and key == "delete" then
-        Assets.playSound("levelup")
         for _,party in ipairs(self.party) do
             party.chara:setHealth(999)
         end

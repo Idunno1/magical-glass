@@ -4,11 +4,11 @@
     "subtitle": "...What fucking game am I playing again?",
 
     "version": "v4.2.0",
-    "engineVer": "v0.8.1-dev",
+    "engineVer": "v0.9.0-dev",
 
     "chapter": 2,
 
-    "encounter": "froggit",
+    //"encounter": "froggit",
 
     "map": "tundra3",
     //"party": ["kris", /* "susie", "noelle" */],
@@ -18,7 +18,7 @@
         "key_items": ["cell_phone"]
     },
 
-    "equipment": {
+/*     "equipment": {
         "kris": {
             "weapon": "light/stick",
             "armor": ["light/bandage_ut"]
@@ -27,7 +27,7 @@
             "weapon": "light/burnt_pan",
             "armor": ["light/bandage_ut"]
         }
-    },
+    }, */
 
     "config": {
         "kristal": {

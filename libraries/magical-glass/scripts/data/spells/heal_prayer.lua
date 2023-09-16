@@ -24,35 +24,37 @@ function spell:init()
 end
 
 function spell:onLightCast(user, target)
-    target:heal(user.chara:getStat("magic") * 3, false, true)
+    self.amount = math.ceil((user.chara:getStat("magic") * 2))
+    target:heal(self.amount, false, true)
 end
 
---[[ function spell:getLightCastMessage(user, target)
+function spell:getLightCastMessage(user, target)
     local message = "* "..user.chara:getName().." cast "..self:getName().."."
     local heal_text = self:getLightBattleHealingText(user, target)
     return message .. "\n" .. heal_text
 end
 
-function spell:getLightBattleHealingText(user, target, amount, maxed)
+function spell:getLightBattleHealingText(user, target)
     local message = ""
     if self.target == "ally" then
+        local maxed = target.chara.lw_health >= target.chara:getStat("health")
         if target.id == Game.battle.party[1].chara.id and maxed then
             message = "* Your HP was maxed out."
         elseif target.id == Game.battle.party[1].chara.id and not maxed then
-            message = "* You recovered " .. amount .. " HP."
+            message = "* You recovered " .. self.amount .. " HP."
         elseif maxed then
-            message = target.name .. "'s HP was maxed out."
+            message = target.chara.name .. "'s HP was maxed out."
         else
-            message = target.name .. " recovered " .. amount .. " HP."
+            message = target.chara.name .. " recovered " .. self.amount .. " HP."
         end
     elseif self.target == "party" then
         if #Game.battle.party > 1 then
-            message = "* Everyone recovered " .. amount .. " HP."
+            message = "* Everyone recovered " .. self.amount .. " HP."
         else
-            message = "* You recovered " .. amount .. " HP."
+            message = "* You recovered " .. self.amount .. " HP."
         end
     end
     return message
-end ]]
+end
 
 return spell

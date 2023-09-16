@@ -1,5 +1,3 @@
----@class LightEquipItem : Item
----@overload fun(...) : LightEquipItem
 local LightEquipItem, super = Class("LightEquipItem", true)
 
 function LightEquipItem:init()
@@ -16,7 +14,7 @@ function LightEquipItem:init()
 
     self.attack_bolts = 1
 
-    self.attack_speed = 11 -- negative if left, positive if right.
+    self.attack_speed = 11
     self.attack_speed_variance = 2
 
     self.attack_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
@@ -24,7 +22,7 @@ function LightEquipItem:init()
 
     self.attack_direction = "right" -- "right", "left", or "random"
 
-    self.attack_miss_zone = 296 -- negative if left, positive if right
+    self.attack_miss_zone = 296
 
     self.attack_sprite = "effects/attack/strike"
 

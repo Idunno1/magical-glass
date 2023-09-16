@@ -1,6 +1,6 @@
-local Dummy, super = Class(LightEncounter)
+local encounter, super = Class(LightEncounter)
 
-function Dummy:init()
+function encounter:init()
     super:init(self)
 
     -- Text displayed at the bottom of the screen at the start of the encounter
@@ -10,7 +10,7 @@ function Dummy:init()
     self.music = "battleut"
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("froggit", SCREEN_WIDTH/2 - 50, 246)
+    self:addEnemy("froggit", SCREEN_WIDTH/2 - 49, 246)
 end
 
-return Dummy
+return encounter

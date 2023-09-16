@@ -80,7 +80,7 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("deltarune")
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
-        Game:setFlag("enable_lw_tp", true)
+        Game:setFlag("#enable_lw_tp", true)
 
         Game.battle.tension_bar = LightTensionBar(-25, 53, false)
         Game.battle.tension_bar:show()
@@ -91,7 +91,7 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("undertale")
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
-        Game:setFlag("enable_lw_tp", false)
+        Game:setFlag("#enable_lw_tp", false)
 
         Game.battle.tension_bar:hide()
 --[[         Game.battle.timer:after(1, function()

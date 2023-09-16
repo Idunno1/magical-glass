@@ -16,24 +16,24 @@ function Dummy:init()
 
     self.offset = 0
 
---[[     self.shader = love.graphics.newShader([[
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+    self.shader = love.graphics.newShader([[
+        float edge_stretch_str = 1; // the higher the more stretched
+        float edge_stretch_lim = 2; // the higher the less stretched
+
+        vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
         {
-           vec4 pixel = Texel(texture, texture_coords);
-           texture.x *= width;
-           return pixel;
+            texture_coords.y -= (texture_coords.y - .5) * edge_stretch_str * pow(abs(texture_coords.x - .5), edge_stretch_lim);
+            return Texel(tex, texture_coords) * color / 2;
         }
-    ]] --]])
+    ]])
 
 end
 
 function Dummy:update()
---[[     self.shader:send("width", SCREEN_WIDTH)
-    self.shader:send("height", SCREEN_HEIGHT) ]]
     super.update(self)
 
     if self:getFlag("deltarune") then
-        self.offset = self.offset + 1 * DTMULT
+        self.offset = self.offset + DTMULT
 
         if self.offset > 100 then
             self.offset = self.offset - 100
@@ -48,6 +48,7 @@ end
 
 function Dummy:drawBackground()
     if self:getFlag("deltarune") then
+        local canvas = Draw.pushCanvas()
         Draw.setColor(0, 0, 0, 0)
         love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
     
@@ -55,18 +56,21 @@ function Dummy:drawBackground()
         love.graphics.setLineWidth(1)
     
         for i = 2, 16 do
-            Draw.setColor(66 / 255, 0, 66 / 255, 0.5)
+            Draw.setColor(1, 0, 1, 0.3)
             love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
             love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
         end
     
         for i = 3, 16 do
-            Draw.setColor(66 / 255, 0, 66 / 255, 1)
+            Draw.setColor(1, 0, 1, 0.8)
             love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
             love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
         end
+        Draw.popCanvas()
+        love.graphics.setShader(self.shader)
+        Draw.drawCanvas(canvas)
+        love.graphics.setShader()
     else
-        --love.graphics.setShader(self.shader)
 --[[         Draw.setColor(0.5, 0.5, 0.5)
         love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16) ]]
         local offset = 0
@@ -78,7 +82,6 @@ function Dummy:drawBackground()
             love.graphics.rectangle("line", 18 + offset, sine + 118, 101, 118)
             offset = offset + 101
         end
-        --love.graphics.setShader()
     end
 end
 

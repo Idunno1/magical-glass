@@ -32,22 +32,23 @@ function lib:load()
     end
     
     if Game.is_new_file then
-        Game:setFlag("serious_mode", false) -- useful for serious battles
-        Game:setFlag("always_show_magic", false)
-        Game:setFlag("undertale_textbox_skipping", true) -- disables skipping
-        Game:setFlag("undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
-        Game:setFlag("enable_lw_tp", false)
-        Game:setFlag("deltarune_mercy_flash", false)
-        Game:setFlag("lw_stat_menu_portraits", true)
-        Game:setFlag("gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
-        Game:setFlag("name_color", COLORS.yellow) -- yellow, white, pink
+        Game:setFlag("#serious_mode", false) -- useful for serious battles
+        Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
+        Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
+        Game:setFlag("#enable_lw_tp", false)
+        Game:setFlag("#deltarune_mercy_flash", false)
+        Game:setFlag("#lw_stat_menu_portraits", true)
+        Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
+        Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
+        Game:setFlag("#remove_overheal", true)
 
-        Game:setFlag("lw_stat_menu_style", "undertale") -- undertale, deltatraveler
+        Game:setFlag("#lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
-        Game:setFlag("undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
+        Game:setFlag("#undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
         Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
-        Game:setFlag("savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
+        Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
     end
 end
 
@@ -106,8 +107,8 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
-                Game:setLight(false)
                 Game:setFlag("temporary_world_value#", "light")
+                Game:setLight(false)
             end
             Game:encounter(id)
             debug:closeMenu()
@@ -119,8 +120,8 @@ function lib:registerDebugOptions(debug)
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 if not Game:isLight() then
-                    Game:setLight(true)
                     Game:setFlag("temporary_world_value#", "dark")
+                    Game:setLight(true)
                 end
                 Game:encounter(id)
                 debug:closeMenu()
@@ -192,7 +193,6 @@ function lib:init()
 
     Utils.hook(Actor, "getHeight", function(orig, self)
         if Game.battle and Game.battle.isLight then
-            print(self.light_battle_height)
             return self.light_battle_height
         else
             return self.height
@@ -216,8 +216,8 @@ function lib:init()
     
         local in_game = function() return Kristal.getState() == Game end
         local in_battle = function() return in_game() and Game.state == "BATTLE" end
-        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle:isLight() end
-        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle:isLight() end
+        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle.isLight end
+        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle.isLight end
         local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
 
         self:registerConfigOption("main", "Object Selection Pausing", "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
@@ -302,7 +302,6 @@ function lib:init()
     end)
 
     Utils.hook(Game, "load", function(orig, self, data, index, fade)
-
         orig(self, data, index, fade)
         self.is_new_file = data == nil
 
@@ -435,7 +434,9 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            result.dark_item = item
+                            if not Game:getFlag("temporary_world_value#") then
+                                result.dark_item = item
+                            end
                             result.dark_location = {storage = storage.id, index = i}
                             new_inventory:addItem(result)
                         end
@@ -444,7 +445,7 @@ function lib:init()
             end
         end
     
-        if Game:getFlag("temporary_world_value#") then
+        if not Game:getFlag("temporary_world_value#") then
             local ball = Registry.createItem("light/ball_of_junk", self)
             new_inventory:addItemTo("items", 1, ball)
         end
@@ -454,9 +455,73 @@ function lib:init()
         return new_inventory
     end)
 
-    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        orig(self)
-        
+    Utils.hook(LightInventory, "convertToDark", function(orig, self)
+        local new_inventory = DarkInventory()
+
+        local was_storage_enabled = new_inventory.storage_enabled
+        new_inventory.storage_enabled = true
+    
+        Kristal.callEvent("onConvertToDark", new_inventory)
+    
+        for _,storage_id in ipairs(self.convert_order) do
+            local storage = Utils.copy(self:getStorage(storage_id))
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    local result = item:convertToDark(new_inventory)
+    
+                    if result then
+                        self:removeItem(item)
+    
+                        if type(result) == "string" then
+                            result = Registry.createItem(result)
+                        end
+                        if isClass(result) then
+                            new_inventory:addItem(result)
+                        end
+                    end
+                end
+            end
+        end
+    
+        for _,base_storage in pairs(self.storages) do
+            local storage = Utils.copy(base_storage)
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    if not Game:getFlag("temporary_world_value#") then
+                        item.light_item = item
+                    end
+                    item.light_location = {storage = storage.id, index = i}
+    
+                    new_inventory:addItemTo("light", item)
+    
+                    self:removeItem(item)
+                end
+            end
+        end
+    
+        new_inventory.storage_enabled = was_storage_enabled
+    
+        return new_inventory
+    end)
+
+    Utils.hook(Game, "setLight", function(orig, self, light)
+        light = light or false
+        if not self.started then
+            self.light = light
+            return
+        end
+    
+        if self.light == light then return end
+    
+        self.light = light
+    
+        if self.light then
+            self:convertToLight()
+        else
+            self:convertToDark()
+        end
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -686,7 +751,7 @@ function lib:init()
     end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
-        if Game.battle:isLight() then
+        if Game.battle.isLight then
             self.arena_width = width
             self.arena_height = height or width
         else
@@ -695,7 +760,7 @@ function lib:init()
     end)
 
     Utils.hook(Wave, "setArenaPosition", function(orig, self, x, y)
-        if Game.battle:isLight() then
+        if Game.battle.isLight then
             self.arena_x = x
             self.arena_y = y
         else
@@ -760,11 +825,130 @@ function lib:init()
         return percent
     end)
 
-    Utils.hook(DialogueText, "init", function(orig, self, ...)
-    
-        orig(self, ...)
-        self.hold_skip = true
+    Utils.hook(Textbox, "init", function(orig, self, x, y, width, height, default_font, default_font_size, battle_box)
+        Textbox.__super.init(self, x, y, width, height)
 
+        self.box = UIBox(0, 0, width, height)
+        self.box.layer = -1
+        self.box.debug_select = false
+        self:addChild(self.box)
+    
+        self.battle_box = battle_box
+        if battle_box then
+            self.box.visible = false
+        end
+    
+        if battle_box then
+            if Game.battle.isLight then
+                self.face_x = 6
+                self.face_y = -2
+        
+                self.text_x = 0
+                self.text_y = -2 
+            else
+                self.face_x = -4
+                self.face_y = 2
+        
+                self.text_x = 0
+                self.text_y = -2 -- TODO: This was changed 2px lower with the new font, but it was 4px offset. Why? (Used to be 0)
+            end
+        elseif Game:isLight() then
+            self.face_x = 13
+            self.face_y = 6
+    
+            self.text_x = 2
+            self.text_y = -4
+        else
+            self.face_x = 18
+            self.face_y = 6
+    
+            self.text_x = 2
+            self.text_y = -4  -- TODO: This was changed with the new font but it's accurate anyways
+        end
+    
+        self.actor = nil
+    
+        self.default_font = default_font or "main_mono"
+        self.default_font_size = default_font_size
+    
+        self.font = self.default_font
+        self.font_size = self.default_font_size
+    
+        self.face = Sprite(nil, self.face_x, self.face_y, nil, nil, "face")
+        self.face:setScale(2, 2)
+        self.face.getDebugOptions = function(self2, context)
+            context = super.getDebugOptions(self2, context)
+            if Kristal.DebugSystem then
+                context:addMenuItem("Change", "Change this portrait to a different one", function()
+                    Kristal.DebugSystem:setState("FACES", self)
+                end)
+            end
+            return context
+        end
+        self:addChild(self.face)
+    
+        -- Added text width for autowrapping
+        self.wrap_add_w = battle_box and 0 or 14
+    
+        self.text = DialogueText("", self.text_x, self.text_y, width + self.wrap_add_w, SCREEN_HEIGHT)
+        self:addChild(self.text)
+    
+        self.reactions = {}
+        self.reaction_instances = {}
+    
+        self.text:registerCommand("face", function(text, node, dry)
+            if self.actor and self.actor:getPortraitPath() then
+                self.face.path = self.actor:getPortraitPath()
+            end
+            self:setFace(node.arguments[1], tonumber(node.arguments[2]), tonumber(node.arguments[3]))
+        end)
+        self.text:registerCommand("facec", function(text, node, dry)
+            self.face.path = "face"
+            local ox, oy = tonumber(node.arguments[2]), tonumber(node.arguments[3])
+            if self.actor then
+                local actor_ox, actor_oy = self.actor:getPortraitOffset()
+                ox = (ox or 0) - actor_ox
+                oy = (oy or 0) - actor_oy
+            end
+            self:setFace(node.arguments[1], ox, oy)
+        end)
+    
+        self.text:registerCommand("react", function(text, node, dry)
+            local react_data
+            if #node.arguments > 1 then
+                react_data = {
+                    text = node.arguments[1],
+                    x = tonumber(node.arguments[2]) or (self.battle_box and self.REACTION_X_BATTLE[node.arguments[2]] or self.REACTION_X[node.arguments[2]]),
+                    y = tonumber(node.arguments[3]) or (self.battle_box and self.REACTION_Y_BATTLE[node.arguments[3]] or self.REACTION_Y[node.arguments[3]]),
+                    face = node.arguments[4],
+                    actor = node.arguments[5] and Registry.createActor(node.arguments[5]),
+                }
+            else
+                react_data = tonumber(node.arguments[1]) and self.reactions[tonumber(node.arguments[1])] or self.reactions[node.arguments[1]]
+            end
+            local reaction = SmallFaceText(react_data.text, react_data.x, react_data.y, react_data.face, react_data.actor)
+            reaction.layer = 0.1 + (#self.reaction_instances) * 0.01
+            self:addChild(reaction)
+            table.insert(self.reaction_instances, reaction)
+        end, {instant = false})
+    
+        self.advance_callback = nil
+    end)
+
+
+    Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
+    
+        orig(self, text, x, y, w, h, options)
+        options = options or {}
+
+        self.hold_skip = true
+        self.default_sound = options["default_sound"] or "default"
+
+    end)
+
+    Utils.hook(DialogueText, "resetState", function(orig, self)
+        DialogueText.__super.resetState(self)
+        self.state["typing_sound"] = self.default_sound
     end)
 
     Utils.hook(DialogueText, "update", function(orig, self)
@@ -1124,13 +1308,6 @@ function lib:init()
 
         self.use_player_name = false
 
-        self.dw_weapon_default = "wood_blade"
-        if Game.chapter >= 2 then
-            self.dw_armor_default = {"amber_card", "amber_card"}
-        else
-            self.dw_armor_default = {}
-        end
-
         self.lw_portrait = nil
 
         self.light_color = {1,1,1}
@@ -1150,7 +1327,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)
-        if Game:getFlag("savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
+        if Game:getFlag("#savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
             return Game.save_name
         else
             return self.name
@@ -1328,7 +1505,7 @@ function lib:init()
         local chara = Game.party[self.party_selecting]
         local offset = 0
 
-        if Game:getFlag("lw_stat_menu_portraits") then
+        if Game:getFlag("#lw_stat_menu_portraits") then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
@@ -1351,7 +1528,7 @@ function lib:init()
     
         love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
-        if Game:getFlag("always_show_magic") or chara.lw_stats.magic > 0 then
+        if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
             --love.graphics.print("MG  ", 4, 228)
             --love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
             love.graphics.print("MG  ", 4, 132)
@@ -1444,10 +1621,7 @@ function lib:init()
     end)
 
     Utils.hook(Spell, "onStart", function(orig, self, user, target)
-        if Game.battle:isLight() then
-            if self.tags["heal"] then
-                
-            end
+        if Game.battle.isLight then
             local result = self:onLightCast(user, target)
             Game.battle:battleText(self:getLightCastMessage(user, target))
             if result or result == nil then
@@ -1502,11 +1676,11 @@ end
 
 function lib:changeSpareColor(color)
     if color == "yellow" then
-        Game:setFlag("name_color", COLORS.yellow)
+        Game:setFlag("#name_color", COLORS.yellow)
     elseif color == "pink" then
-        Game:setFlag("name_color", PALETTE["pink_spare"])
+        Game:setFlag("#name_color", PALETTE["pink_spare"])
     elseif color == "white" then
-        Game:setFlag("name_color", COLORS.white)
+        Game:setFlag("#name_color", COLORS.white)
     end
 end
 

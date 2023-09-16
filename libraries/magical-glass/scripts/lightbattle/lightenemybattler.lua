@@ -48,9 +48,11 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.text = {}
 
     self.low_health_text = nil
+    self.tired_text = nil
     self.spareable_text = nil
 
     self.tired_percentage = 0.5
+    self.low_health_percentage = 0.5
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -305,20 +307,22 @@ end
 
 function LightEnemyBattler:addMercy(amount)
     
-    if Game:getConfig("mercyMessages") then
-        if amount > 0 and self.mercy < 100 then
-            local pitch = 0.8
-            if amount < 99 then pitch = 1 end
-            if amount <= 50 then pitch = 1.2 end
-            if amount <= 25 then pitch = 1.4 end
-
-            local src = Assets.playSound("mercyadd", 0.8)
-            src:setPitch(pitch)
-
-            self:lightStatusMessage("mercy", amount)
-        elseif self.mercy >= 100 then
-            local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
-            message:resetPhysics()
+    if Game:getFlag("#gauge_styles") == "deltarune" then
+        if Game:getConfig("mercyMessages") then
+            if amount > 0 and self.mercy < 100 then
+                local pitch = 0.8
+                if amount < 99 then pitch = 1 end
+                if amount <= 50 then pitch = 1.2 end
+                if amount <= 25 then pitch = 1.4 end
+    
+                local src = Assets.playSound("mercyadd", 0.8)
+                src:setPitch(pitch)
+    
+                self:lightStatusMessage("mercy", amount)
+            elseif self.mercy >= 100 then
+                local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
+                message:resetPhysics()
+            end
         end
     end
 
@@ -358,7 +362,7 @@ end
 function LightEnemyBattler:getNameColors()
     local result = {}
     if self:canSpare() then -- pink name shit goes here
-        table.insert(result, Game:getFlag("name_color"))
+        table.insert(result, Game:getFlag("#name_color"))
     end
     if self.tired then
         table.insert(result, {0, 0.7, 1})
@@ -367,12 +371,23 @@ function LightEnemyBattler:getNameColors()
 end
 
 function LightEnemyBattler:getEncounterText()
-    if self.low_health_text and self.health <= (self.max_health * self.tired_percentage) then
-        return self.low_health_text
-    end
-    if self.spareable_text and self:canSpare() then
+    local has_spareable_text = self.spareable_text and self:canSpare()
+
+    local priority_spareable_text = Game:getConfig("prioritySpareableText")
+    if priority_spareable_text and has_spareable_text then
         return self.spareable_text
     end
+
+    if self.low_health_text and self.health <= (self.max_health * self.low_health_percentage) then
+        return self.low_health_text
+
+    elseif self.tired_text and self.tired then
+        return self.tired_text
+
+    elseif has_spareable_text then
+        return self.spareable_text
+    end
+
     return Utils.pick(self.text)
 end
 
@@ -541,7 +556,7 @@ function LightEnemyBattler:onHurt(damage, battler)
     if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
         self:toggleOverlay(false)
     end
-    self:getActiveSprite():shake(9) -- not sure if this should be different
+    self:getActiveSprite():shake(9, 0, 0.5, 2/30) -- not sure if this should be different
 
 --[[     if self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
