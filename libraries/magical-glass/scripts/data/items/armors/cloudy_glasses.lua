@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "light/armors/cloudy_glasses")
+local item, super = Class(LightEquipItem, "armors/cloudy_glasses")
 
 function item:init()
     super.init(self)
@@ -16,7 +16,7 @@ function item:init()
     -- Light world check text
     self.check = {
         "Weapon DF 6\n* Glasses marred with wear.\n* Increases INV by 9.",
-        "* (After you get hurt by an attack,\nyou stay invulnerable for longer.)" -- doesn't show up in UT???
+        "* (After you get hurt by an attack[wait:2],\nyou stay invulnerable for longer.)" -- doesn't show up in UT???
     }
 
     -- Where this item can be used (world, battle, all, or none)

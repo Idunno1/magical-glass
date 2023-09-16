@@ -1,12 +1,12 @@
-local item, super = Class(LightEquipItem, "light/armors/stained_apron")
+local item, super = Class(LightEquipItem, "armors/manly_bandanna")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Stained Apron"
-    self.short_name = "StainApro"
-    self.serious_name = "Apron"
+    self.name = "Manly Bandanna"
+    self.short_name = "Mandanna"
+    self.serious_name = "Bandanna"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -14,24 +14,17 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Armor DF 11\n* Heals 1 HP every other\nturn."
+    self.check = "Armor DF 7\n* It has seen some wear.\nIt has abs drawn on it."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    self.regen_health = 1
-    self.regen_turns = 2
-
     self.bonuses = {
-        defense = 11
+        defense = 7
     }
 
-end
-
-function item:showEquipText()
-    Game.world:showText("* You equipped the apron.")
 end
 
 return item

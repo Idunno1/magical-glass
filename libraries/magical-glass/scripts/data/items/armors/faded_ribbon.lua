@@ -1,11 +1,11 @@
-local item, super = Class(LightEquipItem, "light/armors/cowboy_hat")
+local item, super = Class(LightEquipItem, "armors/faded_ribbon")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Cowboy Hat"
-    self.short_name = "CowboyHat"
+    self.name = "Faded Ribbon"
+    self.short_name = "Ribbon"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -13,11 +13,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = {
-        "Armor DF 12\n* This battle-worn hat makes you\nwant to grow a beard.",
-        "* It also raises ATTACK by 5.",
-        --"* EIGHTEEN NAKED COWBOYS IN THE SHOWERS AT RAM RAAAANCH"
-    }
+    self.check = "Armor DF 3\n* If you're cuter, monsters\nwon't hit you as hard."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -25,10 +21,15 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        defense = 12,
-        attack = 5
+        defense = 3
     }
 
+    -- Default dark item conversion for this item
+    self.dark_item = "white_ribbon"
+end
+
+function item:showEquipText()
+    Game.world:showText("* You equipped the ribbon.")
 end
 
 return item
