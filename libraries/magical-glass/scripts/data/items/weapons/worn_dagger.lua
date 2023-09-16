@@ -1,11 +1,12 @@
-local item, super = Class(LightEquipItem, "light/weapons/real_knife")
+local item, super = Class(LightEquipItem, "weapons/worn_dagger")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Real Knife"
-    self.short_name = "RealKnife"
+    self.name = "Worn Dagger"
+    self.short_name = "WornDG"
+    self.serious_name = "W. Dagger"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -13,7 +14,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 99\n* Here we are!"
+    self.check = "Weapon AT 15\n* Perfect for cutting plants\nand vines."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -22,20 +23,15 @@ function item:init()
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 99
+        attack = 15
     }
 
-    self.attack_direction = "random"
+    self.attack_direction = "random" -- i swear it only goes to the left though
+
 end
 
-function item:showEquipText()
-    Game.world:showText("* About time.")
-end
-
-function item:onBattleStart(battler)
-    for _,enemy in ipairs(Game.battle.enemies) do
-        enemy.mercy = 999
-    end
+function item:getLightBattleText()
+    return "* You equipped the dagger."
 end
 
 return item
