@@ -1,10 +1,12 @@
-local item, super = Class(LightEquipItem, "light/pencil")
+local item, super = Class(LightEquipItem, "light/weapons/worn_dagger")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Pencil"
+    self.name = "Worn Dagger"
+    self.short_name = "WornDG"
+    self.serious_name = "W. Dagger"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -12,7 +14,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon 1 AT\n* Mightier than a sword?\n* Maybe equal at best."
+    self.check = "Weapon AT 15\n* Perfect for cutting plants\nand vines."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -21,16 +23,15 @@ function item:init()
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 1,
-        defense = 0
+        attack = 15
     }
 
-    self.attack_speed = 13
+    self.attack_direction = "random" -- i swear it only goes to the left though
 
-    self.attack_direction = "left"
+end
 
-    -- Default dark item conversion for this item
-    self.dark_item = "wood_blade"
+function item:getLightBattleText()
+    return "* You equipped the dagger."
 end
 
 return item

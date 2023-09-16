@@ -14,18 +14,18 @@
     //"party": ["kris", /* "susie", "noelle" */],
     "party": ["kris"],
     "inventory": {
-        "items": ["light/monster_candy", "light/bandage_ut", "light/empty_gun"],
+        "items": ["light/items/monster_candy", "light/items/spider_donut", "light/items/spider_cider", "light/items/butterscotch_pie", "light/armors/bandage_ut", "light/weapons/empty_gun"],
         "key_items": ["cell_phone"]
     },
 
 /*     "equipment": {
         "kris": {
-            "weapon": "light/stick",
-            "armor": ["light/bandage_ut"]
+            "weapon": "light/weapons/stick",
+            "armor": ["light/armors/bandage_ut"]
         },
         "frisk": {
-            "weapon": "light/burnt_pan",
-            "armor": ["light/bandage_ut"]
+            "weapon": "light/weapons/burnt_pan",
+            "armor": ["light/armors/bandage_ut"]
         }
     }, */
 

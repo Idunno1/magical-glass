@@ -1,12 +1,11 @@
-local item, super = Class(LightEquipItem, "light/heart_locket")
+local item, super = Class(LightEquipItem, "light/armors/the_locket")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Heart Locket"
-    self.short_name = "<--Locket"
-    self.serious_name = "H. Locket"
+    self.name = "The Locket"
+    self.short_name = "TheLocket"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -14,7 +13,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Armor DF 15\n* It says \"Best Friends Forever.\""
+    self.check = "Armor DF 99\n* You can feel it beating."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -22,13 +21,13 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        defense = 15
+        defense = 99
     }
 
 end
 
 function item:showEquipText()
-    Game.world:showText("* You equipped the locket.")
+    Game.world:showText("* Right where it belongs.")
 end
 
 return item

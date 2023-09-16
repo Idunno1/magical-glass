@@ -1,26 +1,27 @@
-local item, super = Class(HealItem, "light/monster_candy")
+local item, super = Class(HealItem, "light/items/butterscotch_pie")
 
 function item:init(inventory)
     super.init(self)
 
     -- Display name
-    self.name = "Monster Candy"
-    self.short_name = "MnstrCndy"
+    self.name = "Butterscotch Pie"
+    self.short_name = "ButtsPie"
+    self.serious_name = "Pie"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
     self.light = true
 
-    self.heal_amount = 10
+    self.heal_amount = math.huge
 
     -- Default shop price (sell price is halved)
-    self.price = 25
+    self.price = 0
     -- Whether the item can be sold
     self.can_sell = true
 
     -- Light world check text
-    self.check = "Heals 10 HP\n* Has a distinct,\nnon licorice flavor."
+    self.check = "All HP\n* Butterscotch-cinnamon\n  pie[wait:2], one slice."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "party"
@@ -36,7 +37,7 @@ function item:init(inventory)
 end
 
 function item:onToss()
-    Game.world:showText("* The Monster Candy was\n  yeeted.")
+    Game.world:showText("* The Butterscotch Pie was\n  thrown away.")
     return false
 end
 
