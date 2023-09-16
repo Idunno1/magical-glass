@@ -1,11 +1,12 @@
-local item, super = Class(LightEquipItem, "light/faded_ribbon")
+local item, super = Class(LightEquipItem, "light/armors/heart_locket")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Faded Ribbon"
-    self.short_name = "Ribbon"
+    self.name = "Heart Locket"
+    self.short_name = "<--Locket"
+    self.serious_name = "H. Locket"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -13,7 +14,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Armor DF 3\n* If you're cuter, monsters\nwon't hit you as hard."
+    self.check = "Armor DF 15\n* It says \"Best Friends Forever.\""
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -21,15 +22,13 @@ function item:init()
     self.result_item = nil
 
     self.bonuses = {
-        defense = 3
+        defense = 15
     }
 
-    -- Default dark item conversion for this item
-    self.dark_item = "white_ribbon"
 end
 
 function item:showEquipText()
-    Game.world:showText("* You equipped the ribbon.")
+    Game.world:showText("* You equipped the locket.")
 end
 
 return item
