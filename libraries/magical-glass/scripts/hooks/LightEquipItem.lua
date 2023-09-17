@@ -8,10 +8,6 @@ function LightEquipItem:init()
     self.heal_bonus = 0
     self.inv_bonus = 0
 
-    self.regen_health = 0
-    self.regen_turns = 0
-    self.regen_sound = "power"
-
     self.attack_bolts = 1
 
     self.attack_speed = 11
@@ -30,15 +26,12 @@ function LightEquipItem:init()
     self.attack_sound = "laz_c"
 
     self.attack_pitch = 1
-
 end
+
+function LightEquipItem:getFleeBonus() return 0 end
 
 function LightEquipItem:getHealBonus() return self.heal_bonus end
 function LightEquipItem:getInvBonus() return self.inv_bonus end
-
-function LightEquipItem:getHealthRegenAmount() return self.regen_health end
-function LightEquipItem:getHealthRegenTurns() return self.regen_turns end
-function LightEquipItem:getHealthRegenSound() return self.regen_sound end
 
 function LightEquipItem:getAttackBolts() return self.attack_bolts end
 
@@ -77,6 +70,8 @@ function LightEquipItem:getAttackSprite() return self.attack_sprite end
 
 function LightEquipItem:getAttackSound() return self.attack_sound end
 function LightEquipItem:getAttackPitch() return self.attack_pitch end
+
+function LightEquipItem:onTurnEnd() end
 
 -- these need to be modified for more than one party member
 function LightEquipItem:showEquipText()

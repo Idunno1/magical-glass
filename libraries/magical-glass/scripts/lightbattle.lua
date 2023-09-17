@@ -1173,6 +1173,9 @@ function LightBattle:onStateChange(old,new)
         self.encounter:onFlee()
 
     elseif new == "FLEEFAIL" then
+        self:toggleSoul(false)
+        self.current_selecting = 0
+
         self.actions_done_timer = Utils.approach(self.actions_done_timer, 0, DT)
         local any_hurt = false
         for _,enemy in ipairs(self.enemies) do
@@ -1181,6 +1184,7 @@ function LightBattle:onStateChange(old,new)
                 break
             end
         end
+
         if self.actions_done_timer == 0 and not any_hurt then
             for _,battler in ipairs(self.attackers) do
                 if not battler:setAnimation("battle/attack_end") then

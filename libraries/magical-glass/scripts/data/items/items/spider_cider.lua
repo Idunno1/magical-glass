@@ -21,7 +21,7 @@ function item:init(inventory)
     self.can_sell = true
 
     -- Light world check text
-    self.check = "Heals 24 HP\n* Made with whole spiders[wait:2],\n  not just the juice."
+    self.check = "Heals 24 HP\n* Made with whole spiders[wait:2],\nnot just the juice."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "party"

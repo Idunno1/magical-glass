@@ -178,7 +178,15 @@ function LightActionButton:select()
                 Game.battle:addMenuItem({
                     ["name"] = "Flee",
                     ["callback"] = function(menu, item)
-                        if Game.battle.encounter.flee_chance >= 0 then
+                        local chance = Game.battle.encounter.flee_chance
+
+                        for _,party in ipairs(Game.battle.party) do
+                            for _,equip in ipairs(party.chara:getEquipment()) do
+                                chance = chance + equip:getFleeBonus() 
+                            end
+                        end
+
+                        if chance > 50 then
                             Game.battle:setState("FLEEING")
                         else
                             Game.battle:setState("FLEEFAIL")

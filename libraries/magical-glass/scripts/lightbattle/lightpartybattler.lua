@@ -45,12 +45,7 @@ end
 
 function LightPartyBattler:onTurnEnd()
     for _,equip in ipairs(self.chara:getEquipment()) do
-        if Game.battle.turn_count % equip:getHealthRegenTurns() == 0 then
-            if equip:getHealthRegenSound() then
-                Assets.stopAndPlaySound(equip:getHealthRegenSound())
-            end
-            self:heal(equip:getHealthRegenAmount())
-        end
+        equip:onTurnEnd(self)
     end
 end
 

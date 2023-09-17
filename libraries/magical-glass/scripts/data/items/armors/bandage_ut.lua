@@ -22,6 +22,8 @@ function item:init()
     self.heal_amount = 10
 end
 
+function item:getFleeBonus() return 100 end
+
 function item:onWorldUse(target)
 
     local bonus = 0

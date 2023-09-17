@@ -34,7 +34,7 @@ function LightEncounter:init()
 
     self.can_flee = true
 
-    self.flee_chance = nil
+    self.flee_chance = 0
     self.flee_messages = {
         "* I'm outta here.", -- 1/20
         "* I've got better to do.", --1/20
@@ -116,13 +116,7 @@ function LightEncounter:isLight()
     return true
 end
 
-function LightEncounter:onBattleInit()
-
-    self.flee_chance = Utils.random(0, 100, 1)
-    -- needs to account for lightequipitems that affect flee chance
-    -- needs to work
-
-end
+function LightEncounter:onBattleInit() end
 
 function LightEncounter:storyWave()
     return "_story"
@@ -132,7 +126,17 @@ function LightEncounter:onBattleStart() end
 function LightEncounter:onBattleEnd() end
 
 function LightEncounter:onTurnStart() end
-function LightEncounter:onTurnEnd() end
+function LightEncounter:onTurnEnd()
+    if Game:getFlag("#prevent_turn_1_flee") then
+        if Game.battle.turn_count <= 1 then
+            self.flee_chance = 0
+        else
+            self.flee_chance = Utils.random(0, 100, 1) + (10 * Game.battle.turn_count - 1)
+        end
+    else
+        self.flee_chance = Utils.random(0, 100, 1) + (10 * Game.battle.turn_count - 2)
+    end
+end
 
 function LightEncounter:onActionsStart() end
 function LightEncounter:onActionsEnd() end

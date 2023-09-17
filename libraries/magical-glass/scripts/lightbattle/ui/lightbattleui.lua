@@ -25,6 +25,12 @@ function LightBattleUI:init()
     self.choice_box.visible = false
     Game.battle.arena:addChild(self.choice_box)
 
+    self.text_choice_box = TextChoicebox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, default_font, default_font_size, true)
+    self.text_choice_box:setText("")
+    self.text_choice_box.active = false
+    self.text_choice_box.visible = false
+    Game.battle.arena:addChild(self.text_choice_box)
+
     self.short_act_text_1 = DialogueText("", 14, 15, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
     self.short_act_text_2 = DialogueText("", 14, 15 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})
     self.short_act_text_3 = DialogueText("", 14, 15 + 30 + 30, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, {wrap = false})

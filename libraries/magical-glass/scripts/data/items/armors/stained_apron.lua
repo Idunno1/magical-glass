@@ -21,13 +21,17 @@ function item:init()
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    self.regen_health = 1
-    self.regen_turns = 2
-
     self.bonuses = {
         defense = 11
     }
 
+end
+
+function item:onTurnEnd(battler)
+    if Game.battle.turn_count % 2 == 0 then
+        Assets.stopAndPlaySound("power")
+        battler:heal(1)
+    end
 end
 
 function item:showEquipText()

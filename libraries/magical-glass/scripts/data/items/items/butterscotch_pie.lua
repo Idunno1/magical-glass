@@ -21,7 +21,7 @@ function item:init(inventory)
     self.can_sell = true
 
     -- Light world check text
-    self.check = "All HP\n* Butterscotch-cinnamon\n  pie[wait:2], one slice."
+    self.check = "All HP\n* Butterscotch-cinnamon\npie[wait:2], one slice."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "party"

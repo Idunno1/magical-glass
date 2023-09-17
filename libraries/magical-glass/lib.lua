@@ -43,6 +43,8 @@ function lib:load()
         Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
         Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
         Game:setFlag("#remove_overheal", true)
+        Game:setFlag("#prevent_turn_1_flee", false) -- used for the first froggit encounter
+        Game:setFlag("#limit_hp_gauge_length", false) -- false: no limit, true: 99, integer
 
         Game:setFlag("#lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 

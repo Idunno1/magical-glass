@@ -131,14 +131,37 @@ function LightActionBoxSingle:drawStatusStripStory()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara.lw_health
+
     if current < 10 then
         current = "0" .. tostring(current)
     end
+
     local size = max * 1.25
+
+    local length = current
+    if type(Game:getFlag("#limit_hp_gauge_length")) == "boolean" and Game:getFlag("#limit_hp_gauge_length") == true then
+        print("99 cap")
+        if length >= 99 then
+            length = 99
+        end
+
+        if size >= 99 then
+            size = 99
+        end
+    elseif type(Game:getFlag("#limit_hp_gauge_length")) == "number" then
+        if length >= Game:getFlag("#limit_hp_gauge_length") then
+            length = Game:getFlag("#limit_hp_gauge_length")
+        end
+
+        if size >= Game:getFlag("#limit_hp_gauge_length") then
+            size = Game:getFlag("#limit_hp_gauge_length")
+        end
+    end
+
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.rectangle("fill", x + 110, y, size, 21)
     love.graphics.setColor(1, 1, 0, 1)
-    love.graphics.rectangle("fill", x + 110, y, current * 1.25, 21)
+    love.graphics.rectangle("fill", x + 110, y, length * 1.25, 21)
 
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(current .. " / " .. max, x + 115 + size + 14, y)
@@ -160,11 +183,31 @@ function LightActionBoxSingle:drawStatusStrip()
     if current < 10 then
         current = "0" .. tostring(current) -- do i need to even do this
     end
-    local size = max * 1.2
+    local size = max * 1.25
+
+    local length = current
+    if type(Game:getFlag("#limit_hp_gauge_length")) == "boolean" and Game:getFlag("#limit_hp_gauge_length") then
+        if length >= 99 then
+            length = 99
+        end
+
+        if size >= 99 then
+            size = 99
+        end
+    elseif type(Game:getFlag("#limit_hp_gauge_length")) == "number" then
+        if length >= Game:getFlag("#limit_hp_gauge_length") then
+            length = Game:getFlag("#limit_hp_gauge_length")
+        end
+
+        if size >= Game:getFlag("#limit_hp_gauge_length") then
+            size = Game:getFlag("#limit_hp_gauge_length")
+        end
+    end
+
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.rectangle("fill", x + 245, y, size, 21)
     love.graphics.setColor(1, 1, 0, 1)
-    love.graphics.rectangle("fill", x + 245, y, current * 1.25, 21)
+    love.graphics.rectangle("fill", x + 245, y, length * 1.25, 21)
 
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(current .. " / " .. max, x + 245 + size + 14, y)

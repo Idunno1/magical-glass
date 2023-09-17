@@ -26,14 +26,18 @@ function item:init()
 
     self.inv_bonus = 15/30
 
-    self.regen_health = 1
-    self.regen_turns = 2
-
     self.bonuses = {
         defense = 20,
         attack = 10
     }
 
+end
+
+function item:onTurnEnd(battler)
+    if Game.battle.turn_count % 2 == 0 then
+        Assets.stopAndPlaySound("power")
+        battler:heal(1)
+    end
 end
 
 return item
