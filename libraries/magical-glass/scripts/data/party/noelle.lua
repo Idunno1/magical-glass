@@ -70,8 +70,8 @@ if Game.chapter >= 2 then
 end
 
 -- Default light world equipment item IDs (saves current equipment)
-self.lw_weapon_default = "light/ring"
-self.lw_armor_default = "light/wristwatch"
+self.lw_weapon_default = "weapons/ring"
+self.lw_armor_default = "armors/wristwatch"
 
 -- Character color (for action box outline and hp bar)
 self.color = {1, 1, 0}

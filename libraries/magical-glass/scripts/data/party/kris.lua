@@ -78,7 +78,7 @@ function character:init()
     end
 
     -- Default light world equipment item IDs (saves current equipment)
-    self.lw_weapon_default = "light/pencil"
+    self.lw_weapon_default = "weapons/pencil"
     self.lw_armor_default = "light/bandage"
 
     -- Character color (for action box outline and hp bar)

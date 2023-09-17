@@ -1654,7 +1654,7 @@ function lib:init()
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)
         if not self.auto then
-            if self.right then
+            if self.right and Game.battle.isLight then
                 local width = self:getSpriteSize()
                 Draw.draw(self:getSprite(), width - 12, 0, 0, -1, 1)
             else
