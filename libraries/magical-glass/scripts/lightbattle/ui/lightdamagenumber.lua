@@ -118,7 +118,7 @@ function LightDamageNumber:update()
 end
 
 function LightDamageNumber:draw()
-    if self.type == "mercy" and Game:getFlag("#gauge_styles") == "deltarune" then
+    if self.type == "mercy" then
         if self.timer >= self.delay then
             local r, g, b, a = self:getDrawColor()
             Draw.setColor(r, g, b, a)

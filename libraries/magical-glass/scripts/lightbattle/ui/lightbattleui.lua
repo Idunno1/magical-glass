@@ -369,14 +369,17 @@ function LightBattleUI:drawState()
                 local tired_icon = false
 
                 if enemy.tired and enemy:canSpare() then
-                    Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 20, 10 + y_offset)
+                    if enemy:getMercyVisibility() then
+                        Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 20, 10 + y_offset)
+                        spare_icon = true
+                    end
+                    
                     Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 40, 10 + y_offset)
-                    spare_icon = true
                     tired_icon = true
                 elseif enemy.tired then
                     Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 40, 10 + y_offset)
                     tired_icon = true
-                elseif enemy.mercy >= 100 then
+                elseif enemy.mercy >= 100 and enemy:getMercyVisibility() then
                     Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 20, 10 + y_offset)
                     spare_icon = true
                 end
@@ -425,24 +428,35 @@ function LightBattleUI:drawState()
                         -- is an in-joke
 
                         if self.style == "undertale" then
-                            hp_x = hp_x + (#enemy.name * 16)
+                            if enemy:getHPVisibility() then
+                                hp_x = hp_x + (#enemy.name * 16)
 
-                            Draw.setColor(1,0,0,1)
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
+                                Draw.setColor(1,0,0,1)
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
 
-                            Draw.setColor(PALETTE["action_health"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 101), 17)
+                                Draw.setColor(PALETTE["action_health"])
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 101), 17)
+                            end
                         else
-                            Draw.setColor(PALETTE["action_health_bg"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
-        
-                            Draw.setColor(PALETTE["action_health"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 81), 17)
+                            if enemy:getHPVisibility() then
+                                Draw.setColor(PALETTE["action_health_bg"])
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
+            
+                                Draw.setColor(PALETTE["action_health"])
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 81), 17)
+                            else
+                                Draw.setColor(PALETTE["action_health_bg"])
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
+                            end
                         end
 
                         if draw_percents and self.style ~= "undertale" then
                             Draw.setColor(PALETTE["action_health_text"])
-                            love.graphics.print(math.floor(hp_percent * 100) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            if enemy:getHPVisibility() then
+                                love.graphics.print(math.floor(hp_percent * 100) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            else
+                                love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            end
                         end
                     end
                 end
@@ -463,11 +477,17 @@ function LightBattleUI:drawState()
                     love.graphics.line(500, 10 + y_offset + 16 - 1, 500 + 81, 11 + y_offset)
                 else
                     Draw.setColor(1, 1, 0, 1)
-                    love.graphics.rectangle("fill", 500, 10 + y_offset, ((enemy.mercy / 100) * 81), 16)
+                    if enemy:getMercyVisibility() then
+                        love.graphics.rectangle("fill", 500, 10 + y_offset, ((enemy.mercy / 100) * 81), 16)
+                    end
 
                     if draw_percents and enemy.selectable then
                         Draw.setColor(PALETTE["battle_mercy_text"])
-                        love.graphics.print(math.floor(enemy.mercy) .. "%", 504, 10 + y_offset, 0, 1, 0.5)
+                        if enemy:getMercyVisibility() then
+                            love.graphics.print(math.floor(enemy.mercy) .. "%", 504, 10 + y_offset, 0, 1, 0.5)
+                        else
+                            love.graphics.print("???", 504, 10 + y_offset, 0, 1, 0.5)
+                        end
                     end
                 end
             end

@@ -40,7 +40,7 @@ function lib:load()
         Game:getFlag("#enable_low_hp_tired", false)
         Game:setFlag("#deltarune_mercy_flash", false)
         Game:setFlag("#lw_stat_menu_portraits", true)
-        Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
+        Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune
         Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
         Game:setFlag("#remove_overheal", true)
         Game:setFlag("#prevent_turn_1_flee", false) -- used for the first froggit encounter
@@ -805,20 +805,25 @@ function lib:init()
         end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
-    
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
-        if kill then
-            percent.kill_others = true
-        end
-        self.parent:addChild(percent)
-    
-        if not kill then
-            self.hit_count = self.hit_count + 1
+        
+        if (type == "mercy" and self:getMercyVisibility()) or type == "damage" then
+            local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
+
+            if kill then
+                percent.kill_others = true
+            end
+            self.parent:addChild(percent)
+        
+            if not kill then
+                self.hit_count = self.hit_count + 1
+            end
         end
 
-        if type ~= "msg" and self:getHPVisibility() then
-            local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
-            self.parent:addChild(gauge)
+        if type ~= "msg" then
+            if (type == "damage" and self:getHPVisibility()) or (type == "mercy" and self:getMercyVisibility()) then
+                local gauge = LightGauge(type, arg, x + offset_x, y + offset_y + 8, self)
+                self.parent:addChild(gauge)
+            end
         end
     
         return percent

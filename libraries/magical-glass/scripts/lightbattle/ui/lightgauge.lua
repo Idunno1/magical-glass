@@ -66,7 +66,7 @@ end
 function LightGauge:draw()
     super.draw(self)
 
-    if self.type == "mercy" and Game:getFlag("#gauge_styles") == "deltarune" then
+    if self.type == "mercy" then
         Draw.setColor(COLORS["black"])
         love.graphics.rectangle("fill", -1, 7, Utils.round(self.max_value * self.extra_width + 2), self.height + 2)
         Draw.setColor(64 / 255, 64 / 255, 64 / 255) -- temp

@@ -31,8 +31,9 @@
 
     "config": {
         "kristal": {
-            "mercyBar": true,
-            "enemyBarPercentages": true
+            "mercyBar": false,
+            "mercyMessages": false,
+            "enemyBarPercentages": false
             // End of config
         }
     }

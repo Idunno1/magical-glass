@@ -83,7 +83,9 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     self.gauge_size = 100
     self.damage_offset = {5, -40}
+
     self.show_hp = true
+    self.show_mercy = true
 end
 
 function LightEnemyBattler:toggleOverlay(overlay, reset)
@@ -110,6 +112,7 @@ end
 function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
 function LightEnemyBattler:getHPVisibility() return self.show_hp end
+function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
 
 function LightEnemyBattler:getExitDirection()
     return self.exit_direction or Utils.random(-2, 2, 1)
@@ -310,27 +313,25 @@ end
 
 function LightEnemyBattler:addMercy(amount)
     
-    if Game:getFlag("#gauge_styles") == "deltarune" then
-        if Game:getConfig("mercyMessages") then
-            if amount > 0 and self.mercy < 100 then
-                local pitch = 0.8
-                if amount < 99 then pitch = 1 end
-                if amount <= 50 then pitch = 1.2 end
-                if amount <= 25 then pitch = 1.4 end
-    
-                local src = Assets.playSound("mercyadd", 0.8)
-                src:setPitch(pitch)
-    
-                self:lightStatusMessage("mercy", amount)
-            elseif self.mercy >= 100 then
-                local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
-                message:resetPhysics()
-            end
+    if Game:getConfig("mercyMessages") then
+        if amount > 0 and self.mercy < 100 then
+            local pitch = 0.8
+            if amount < 99 then pitch = 1 end
+            if amount <= 50 then pitch = 1.2 end
+            if amount <= 25 then pitch = 1.4 end
+
+            local src = Assets.playSound("mercyadd", 0.8)
+            src:setPitch(pitch)
+
+            self:lightStatusMessage("mercy", amount)
+        elseif self.mercy >= 100 then
+            local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
+            message:resetPhysics()
         end
     end
 
     if self.mercy >= 100 then
-        -- We're already at full mercy; do nothing.
+        -- We're already at full mercy; who cares
         return
     end
 
@@ -364,7 +365,7 @@ end
 
 function LightEnemyBattler:getNameColors()
     local result = {}
-    if self:canSpare() then -- pink name shit goes here
+    if self:canSpare() and self:getMercyVisibility() then
         table.insert(result, Game:getFlag("#name_color"))
     end
     if self.tired then

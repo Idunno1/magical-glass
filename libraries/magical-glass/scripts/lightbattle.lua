@@ -99,6 +99,7 @@ function LightBattle:init()
     self.seen_encounter_text = false
 
     self.waves = {}
+    self.selecting_waves = {}
     self.finished_waves = false
     self.story_wave = nil
 
