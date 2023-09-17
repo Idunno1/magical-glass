@@ -1,6 +1,6 @@
-local Dummy, super = Class(LightEnemyBattler)
+local Toriel, super = Class(LightEnemyBattler)
 
-function Dummy:init()
+function Toriel:init()
     super:init(self)
 
     -- Enemy name
@@ -53,7 +53,7 @@ function Dummy:init()
     self.spare_count = 0
 end
 
-function Dummy:onAct(battler, name)
+function Toriel:onAct(battler, name)
     if name == "Talk" then
 		self.talk_count = self.talk_count + 1
 	    if self.talk_count == 1 then
@@ -73,4 +73,4 @@ function Dummy:onAct(battler, name)
     return super:onAct(self, battler, name)
 end
 
-return Dummy
+return Toriel

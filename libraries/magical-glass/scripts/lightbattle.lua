@@ -100,6 +100,7 @@ function LightBattle:init()
 
     self.waves = {}
     self.finished_waves = false
+    self.story_wave = nil
 
     self.state_reason = nil
     self.substate_reason = nil
@@ -127,7 +128,9 @@ function LightBattle:init()
     self.wave_length = 0
     self.wave_timer = 0
 
-    self.darkify = false
+    self.darkify_fader = Fader()
+    self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
+    self:addChild(self.darkify_fader)
 end
 
 function LightBattle:isLight()
@@ -213,7 +216,7 @@ function LightBattle:postInit(state, encounter)
     end
 
     if self.encounter.includes(Encounter) then
-        error("fuck")
+        error("Attempted to use Encounter in a LightBattle. Convert the encounter file to a LightEncounter.")
     end
 
     if Game.world.music:isPlaying() and self.encounter.music then
@@ -229,60 +232,14 @@ function LightBattle:postInit(state, encounter)
     end
 
     if state == "TRANSITION" then
-
-        self.fake_player = self:addChild(FakeClone(Game.world.player, Game.world.player:getScreenPos()))
-        self.fake_player.layer = self.fader.layer + 1
-
         self.transitioned = true
         self.transition_timer = 0
 
-        self.timer:script(function(wait)
-            -- Black bg
-            wait(1/30)
-            -- Show heart
-            Assets.playSound("noise")
-            local player = self.fake_player.ref
-            local x, y = player:localToScreenPos((player.sprite.width/2), player.sprite.height/2)
-            self:spawnSoul(x, y)
-            self.soul.sprite:set("player/heart_menu")
-            self.soul.layer = self.fader.layer + 2
-            self.soul:setScale(2)
-            self.soul.can_move = false
-            wait(2/30)
-            -- Hide heart
-            self.soul.visible = false
-            wait(2/30)
-            -- Show heart
-            self.soul.visible = true
-            Assets.playSound("noise")
-            wait(2/30)
-            -- Hide heart
-            self.soul.visible = false
-            wait(2/30)
-            -- Show heart
-            self.soul.visible = true
-            Assets.playSound("noise")
-            wait(2/30)
-            -- Do transition
-            self.fake_player:remove()
-            Assets.playSound("battlefall")
-            self.soul:slideTo(49, 455, 17/30) -- TODO: maybe just give soul:transition a speed argument...?
-            wait(17/30)
-            -- Wait
-            wait(5/30)
-            self.soul.sprite:set("player/heart_light")
-            self.soul:setScale(1)
-            self.soul.x = self.soul.x - 1
-            self.soul.y = self.soul.y - 1
-            if self.encounter.nobody_came == true then
-                self:setState("BUTNOBODYCAME")
-            else
-                self:setState("ACTIONSELECT")
-            end
-            self.fader:fadeIn(nil, {speed=5/30})
-        end)
-    else
-        --self.transition_timer = 10
+        if self.encounter.story then
+            self.story_wave = self.encounter:storyWave()
+        end
+
+        self.encounter:onSoulTransition()
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
@@ -870,7 +827,6 @@ function LightBattle:onStateChange(old,new)
         end
     end
 
-    -- we still kind of need an intro phase for self.encounter:onBattleStart()
     if new == "ACTIONSELECT" then
         self.arena.layer = BATTLE_LAYERS["ui"] - 1
 
@@ -1047,7 +1003,11 @@ function LightBattle:onStateChange(old,new)
                     arena_shape = {{0, 0}, {arena_w, 0}, {arena_w, arena_h}, {0, arena_h}}
                 end
 
-                self.arena:changeShape({arena_w, self.arena.height})
+                if self.encounter.story then
+                    self.arena:setSize(arena_w, arena_h)
+                else
+                    self.arena:changeShape({arena_w, self.arena.height})
+                end
 
                 center_x, center_y = self.arena:getCenter()
             else
@@ -1136,10 +1096,6 @@ function LightBattle:onStateChange(old,new)
                 battler.chara:setHealth(battler.chara:autoHealAmount())
             end
 
-            --battler:setAnimation("battle/victory")
-
---[[             local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
-            box:resetHeadIcon() ]]
         end
 
         self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
@@ -1157,39 +1113,20 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        if not Game:getFlag("undertale_currency") then
-            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
-            Game.lw_money = Game.lw_money + self.money
+        Game.lw_money = Game.lw_money + self.money
 
-            if (Game.lw_money < 0) then
-                Game.lw_money = 0
-            end
+        if (Game.lw_money < 0) then
+            Game.lw_money = 0
+        end
 
-            for _,member in ipairs(self.party) do
-                local lv = member.chara:getLightLV()
-                member.chara:gainLightEXP(self.xp, true)
+        for _,member in ipairs(self.party) do
+            local lv = member.chara:getLightLV()
+            member.chara:gainLightEXP(self.xp, true)
 
-                if lv ~= member.chara:getLightLV() then
-                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
-                end
-            end
-        else
-            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. "."
-
-            Game.ut_money = Game.ut_money + self.money
-
-            if (Game.ut_money < 0) then
-                Game.ut_money = 0
-            end
-
-            for _,member in ipairs(self.party) do
-                local lv = member.chara:getLightLV()
-                member.chara:gainLightEXP(self.xp, true)
-
-                if lv ~= member.chara:getLightLV() then
-                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Kristal.getLibConfig("magical-glass", "undertaleCurrency") .. ".\n* Your LOVE increased."
-                end
+            if lv ~= member.chara:getLightLV() then
+                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
             end
         end
 
@@ -1209,10 +1146,6 @@ function LightBattle:onStateChange(old,new)
     elseif new == "TRANSITIONOUT" then
         self.current_selecting = 0
 
-        if self.tension_bar and self.tension_bar.shown then
-            self.tension_bar:hide()
-        end
-
         Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 5/30})
 
     elseif new == "DEFENDINGBEGIN" then
@@ -1224,10 +1157,6 @@ function LightBattle:onStateChange(old,new)
     elseif new == "FLEEING" then
         self.current_selecting = 0
 
-        if self.tension_bar and self.tension_bar.shown then
-            self.tension_bar:hide()
-        end
-
         for _,battler in ipairs(self.party) do
             battler:setSleeping(false)
             battler.defending = false
@@ -1238,10 +1167,7 @@ function LightBattle:onStateChange(old,new)
                 battler.chara:setHealth(battler.chara:autoHealAmount())
             end
 
-            --battler:setAnimation("battle/victory")
-
             local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
-            --box:resetHeadIcon()
         end
 
         self.encounter:onFlee()
@@ -1268,43 +1194,13 @@ function LightBattle:onStateChange(old,new)
                 self.battle_ui:endAttack()
             end
 
+            self.encounter:onFleeFail()
+
             if not self.encounter:onActionsEnd() then
                 self:setState("ENEMYDIALOGUE")
             end
-            
---[[             self:battleText("* You tried to escape,\nbut you failed!", function()
-                if not self.encounter:onActionsEnd() then
-                    self:setState("ENEMYDIALOGUE")
-                end
-                return true
-            end) ]]
         end
     elseif new == "DEFENDINGEND" then
-
---[[         local width_timer = self.arena.width
-        local height_timer = self.arena.height
-        local x_timer = self.arena.x
-        local y_timer = self.arena.y
-
-        self.timer:during(1/2, function()
-
-            width_timer = Utils.approach(width_timer, self.arena.init_width, DTMULT * 30)
-            height_timer = Utils.approach(height_timer, self.arena.init_height, DTMULT * 30)
-            x_timer = Utils.approach(x_timer, self.arena.home_x, DTMULT * 15)
-            y_timer = Utils.approach(y_timer, self.arena.home_y, DTMULT * 15)
-
-            local prog_w = width_timer
-            local prog_h = height_timer
-            local prog_x = x_timer
-            local prog_y = y_timer
-
-            self.arena:setSize(prog_w, prog_h)
-            self.arena:setPosition(prog_x, prog_y)
-
-        end, function()
-            self.arena:setSize(self.arena.init_width, self.arena.init_height) 
-            self.arena:setPosition(self.arena.home_x, self.arena.home_y)
-        end) ]]
         self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
         function()
             self.arena:changeShape({self.arena.width, self.arena.init_height},
@@ -1312,25 +1208,17 @@ function LightBattle:onStateChange(old,new)
                 self.arena:changeShape({self.arena.init_width, self.arena.height})
             end)
         end)
-
     end
 
-    -- List of states that should remove the arena.
-    -- A whitelist is better than a blacklist in case the modder adds more states.
-    -- And in case the modder adds more states and wants the arena to be removed, they can remove the arena themselves.
-    local remove_arena = {}
-
     local should_end = true
-    if Utils.containsValue(remove_arena, new) then
-        for _,wave in ipairs(self.waves) do
-            if wave:beforeEnd() then
-                should_end = false
-            end
+    for _,wave in ipairs(self.waves) do
+        if wave:beforeEnd() then
+            should_end = false
         end
-        if should_end then
-            for _,battler in ipairs(self.party) do
-                battler.targeted = false
-            end
+    end
+    if should_end then
+        for _,battler in ipairs(self.party) do
+            battler.targeted = false
         end
     end
 
@@ -1486,11 +1374,12 @@ function LightBattle:returnToWorld()
     Game.state = "OVERWORLD"
 
     if Game:getFlag("temporary_world_value#") == "dark" then
+        -- todo: save the inventory before battles, then reload it here
         if not Game.inventory then
             Game:setupInventory()
         end
 
-        Game:setLight(false) -- crashes if the battle was restarted
+        Game:setLight(false)
         Game:setFlag("temporary_world_value#", nil)
     end
 end
@@ -1567,7 +1456,10 @@ function LightBattle:hasCutscene()
 end
 
 function LightBattle:startCutscene(group, id, ...)
-    self:toggleSoul(false)
+    if not self.encounter.story then
+        self:toggleSoul(false)
+    end
+
     if self.cutscene then
         local cutscene_name = ""
         if type(group) == "string" then
@@ -1690,6 +1582,21 @@ function LightBattle:update()
         end
 
     elseif self.state == "DEFENDING" then
+        local darken = false
+        local time
+        for _,wave in ipairs(self.waves) do
+            if wave.darken then
+                darken = true
+                time = wave.time
+            end
+        end
+
+        if darken and self.wave_timer <= time - 9/30 then
+            self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0.5, DTMULT * 0.05)
+        else
+            self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
+        end
+
         self:updateWaves()
     elseif self.state == "ENEMYDIALOGUE" then
         self.textbox_timer = self.textbox_timer - DTMULT

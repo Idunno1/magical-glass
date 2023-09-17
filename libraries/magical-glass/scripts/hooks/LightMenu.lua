@@ -1,5 +1,4 @@
---local LightMenu, super = Class("LightMenu", false)
-local LightMenu, super = Class(Object)
+local LightMenu, super = Class("LightMenu", true)
 
 function LightMenu:init()
     super.init(self, 0, 0)
@@ -46,25 +45,6 @@ function LightMenu:init()
     self.storage = "items"
 end
 
-function LightMenu:onAddToStage(stage)
-    self.ui_move:stop()
-    self.ui_move:play()
-end
-
-function LightMenu:close()
-    Game.world.current_selecting = self.current_selecting
-    Game.world.menu = nil
-    self:remove()
-end
-
-function LightMenu:closeBox()
-    self.state = "MAIN"
-    if self.box then
-        self.box:remove()
-        self.box = nil
-    end
-end
-
 function LightMenu:onKeyPressed(key)
     if (Input.isMenu(key) or Input.isCancel(key)) and self.state == "MAIN" then
         Game.world:closeMenu()
@@ -76,7 +56,7 @@ function LightMenu:onKeyPressed(key)
         if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
         if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
         local max_selecting
-        if not Game:getFlag("hide_cell") then
+        if not Game:getFlag("#hide_cell") then
             max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
         else
             max_selecting = 2
@@ -90,57 +70,6 @@ function LightMenu:onKeyPressed(key)
             self:onButtonSelect(self.current_selecting)
         end
     end
-end
-
-function LightMenu:onButtonSelect(button)
-    if button == 1 then
-        if Game.inventory:getItemCount(self.storage, false) > 0 then
-            self.state = "ITEMMENU"
-            Input.clear("confirm")
-            self.box = LightItemMenu()
-            self.box.layer = 1
-            self:addChild(self.box)
-
-            self.ui_select:stop()
-            self.ui_select:play()
-        end
-    elseif button == 2 then
-        self.state = "STATMENU"
-        Input.clear("confirm")
-        self.box = LightStatMenu()
-        self.box.layer = 1
-        self:addChild(self.box)
-
-        self.ui_select:stop()
-        self.ui_select:play()
-    elseif button == 3 then
-        if #Game.world.calls > 0 then
-            Input.clear("confirm")
-            self.state = "CELLMENU"
-            self.box = LightCellMenu()
-            self.box.layer = 1
-            self:addChild(self.box)
-
-            self.ui_select:stop()
-            self.ui_select:play()
-        end
-    end
-end
-
-function LightMenu:update()
-    super.update(self)
-    self:realign()
-end
-
-function LightMenu:realign()
-    local _, player_y = Game.world.player:localToScreenPos()
-    self.top = player_y > 260
-
-    local offset = 0
-    if self.top then
-        offset = 270
-    end
-    self.info_box.y = 76 + offset
 end
 
 function LightMenu:draw()
@@ -160,11 +89,7 @@ function LightMenu:draw()
     love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
     love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
     -- pastency when -sam, to sam
-    if not Game:getFlag("undertale_currency") then
-        love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4) .. Game.lw_money, 46, 136 + offset)
-    else
-        love.graphics.print(Utils.padString(Kristal.getLibConfig("magical-glass", "undertaleCurrencyShort"), 4) .. Game.ut_money or 0, 46, 136 + offset)
-    end
+    love.graphics.print(Utils.padString(Game:getConfig("lightCurrencyShort"), 4) .. Game.lw_money, 46, 136 + offset)
 
     love.graphics.setFont(self.font)
     if Game.inventory:getItemCount(self.storage, false) <= 0 then
@@ -176,7 +101,7 @@ function LightMenu:draw()
     Draw.setColor(PALETTE["world_text"])
     love.graphics.print("STAT", 84, 188 + (36 * 1))
 
-    if not Game:getFlag("hide_cell") then
+    if not Game:getFlag("#hide_cell") then
         if Game:getFlag("has_cell_phone") then
             if #Game.world.calls > 0 then
                 Draw.setColor(PALETTE["world_text"])

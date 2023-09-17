@@ -19,19 +19,21 @@ function LightArena:init(x, y, shape)
     self.color = {1, 1, 1}
     self.bg_color = {0, 0, 0}
 
-    self.sprite = ArenaSprite(self)
-    self:addChild(self.sprite)
+    self.sprite = LightArenaSprite(self)
+    self.sprite:setOrigin(0.5, 1)
+    self.sprite:setPosition(self:getRelativePos())
+    self.sprite.layer = BATTLE_LAYERS["above_bullets"]
+    Game.battle:addChild(self.sprite)
+
+    self.background = LightArenaBackground(self)
+    self.background:setOrigin(0.5, 1)
+    self.background:setPosition(self:getRelativePos())
+    self.background.layer = BATTLE_LAYERS["ui"] - 1
+    Game.battle:addChild(self.background)
 
     self.mask = ArenaMask(1, 0, 0, self)
     self.mask.layer = BATTLE_LAYERS["above_ui"]
     self:addChild(self.mask)
-
-    -- this STILL sucks
---[[     self.border = LightArenaBorder(self)
-    self.border:setOrigin(0.5, 1)
-    self.border.color = {1, 1, 1}
-    self.border.layer = BATTLE_LAYERS["above_bullets"]
-    Game.battle:addChild(self.border) ]]
 
     self:setOrigin(0.5, 1)
 
@@ -215,7 +217,6 @@ end
 function LightArena:drawMask()
     love.graphics.push()
     self.sprite:preDraw()
-    self.sprite:drawBackground()
     self.sprite:postDraw()
     love.graphics.pop()
 end

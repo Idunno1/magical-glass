@@ -15,17 +15,15 @@ function LightArenaSprite:init(arena, x, y)
 end
 
 function LightArenaSprite:update()
-    super.update(self)
+    self.x = self.arena.x
+    self.y = self.arena.y
 
     self.width = self.arena.width
     self.height = self.arena.height
-
+    super.update(self)
 end
 
 function LightArenaSprite:draw()
-    Draw.setColor(self.arena:getBackgroundColor())
-    self:drawBackground()
-
     super.draw(self)
 
     local r,g,b,a = self:getDrawColor()
@@ -35,13 +33,6 @@ function LightArenaSprite:draw()
     love.graphics.setLineWidth(self.arena.line_width)
     love.graphics.line(unpack(self.arena.border_line))
     
-    super.draw(self)
-end
-
-function LightArenaSprite:drawBackground()
-    for _,triangle in ipairs(self.arena.triangles) do
-        love.graphics.polygon("fill", unpack(triangle))
-    end
 end
 
 function LightArenaSprite:canDeepCopyKey(key)

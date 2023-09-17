@@ -56,10 +56,13 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
-    self.dialogue_bubble = "ut_tall_left"
+    self.dialogue_bubble = "ut_large"
 
     -- The offset for the speech bubble, also set in `battler.lua`
     self.dialogue_offset = {0, 0}
+
+    -- Whether the speech bubble should be flipped horizontally.
+    self.dialogue_right = true
 
     self.dialogue = {}
 
@@ -550,6 +553,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 end
 
 function LightEnemyBattler:getDamageSound() end
+function LightEnemyBattler:getDamageVoice() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
@@ -558,9 +562,16 @@ function LightEnemyBattler:onHurt(damage, battler)
     end
     self:getActiveSprite():shake(9, 0, 0.5, 2/30) -- not sure if this should be different
 
---[[     if self.health <= (self.max_health * self.tired_percentage) then
+    Game.battle.timer:after(1/3, function()
+        local sound = self:getDamageVoice()
+        if sound and type(sound) == "string" then
+            Assets.stopAndPlaySound(sound)
+        end
+    end)
+
+    if Game:getFlag("#enable_low_hp_tired") and self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
-    end ]]
+    end
 end
 
 function LightEnemyBattler:onHurtEnd()
@@ -675,17 +686,19 @@ end
 
 function LightEnemyBattler:spawnSpeechBubble(text, options)
     options = options or {}
+    options["right"] = self.dialogue_right or options["right"]
+
     local bubble
     if not options["style"] and self.dialogue_bubble then
         options["style"] = self.dialogue_bubble
     end
     if not options["right"] then
         local x, y = self.sprite:getRelativePos(0, self.actor:getHeight()/2, Game.battle)
-        x, y = x + self.dialogue_offset[1], y + self.dialogue_offset[2]
+        x, y = x - self.dialogue_offset[1], y + self.dialogue_offset[2]
         bubble = SpeechBubble(text, x, y, options, self)
     else
         local x, y = self.sprite:getRelativePos(self.actor:getWidth(), self.actor:getHeight()/2, Game.battle)
-        x, y = x - self.dialogue_offset[1], y + self.dialogue_offset[2]
+        x, y = x + self.dialogue_offset[1], y + self.dialogue_offset[2]
         bubble = SpeechBubble(text, x, y, options, self)
     end
     self.bubble = bubble

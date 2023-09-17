@@ -4,7 +4,7 @@ LightEnemyBattler        = libRequire("magical-glass", "scripts/lightbattle/ligh
 LightEnemySprite         = libRequire("magical-glass", "scripts/lightbattle/lightenemysprite")
 LightArena               = libRequire("magical-glass", "scripts/lightbattle/lightarena")
 LightArenaSprite         = libRequire("magical-glass", "scripts/lightbattle/lightarenasprite")
-LightArenaBorder         = libRequire("magical-glass", "scripts/lightbattle/lightarenaborder")
+LightArenaBackground     = libRequire("magical-glass", "scripts/lightbattle/lightarenabackground")
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
@@ -37,6 +37,7 @@ function lib:load()
         Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
         Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("#enable_lw_tp", false)
+        Game:getFlag("#enable_low_hp_tired", false)
         Game:setFlag("#deltarune_mercy_flash", false)
         Game:setFlag("#lw_stat_menu_portraits", true)
         Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune, deltatraveler
@@ -45,10 +46,9 @@ function lib:load()
 
         Game:setFlag("#lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
-        Game:setFlag("#undertale_currency", false) -- use GOLD instead of money (separate currency, with separate values!) (might make a more currencies library -sam)
-        Game:setFlag("hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
+        Game:setFlag("#hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
-        Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name when possible.
+        Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name if their "use_player_name" property is set to true.
     end
 end
 
@@ -306,10 +306,6 @@ function lib:init()
         self.is_new_file = data == nil
 
         data = data or {}
-
-        self.ut_money = data.ut_money or 0
-
-        self.murder_level = data.murder_level or 0
   
         if Game:getFlag("temporary_world_value#") then
             if Game:getFlag("temporary_world_value#") == "light" then
@@ -748,6 +744,7 @@ function lib:init()
     Utils.hook(Wave, "init", function(orig, self)
         orig(self)
         self.has_soul = true
+        self.darken = false
     end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
@@ -1529,32 +1526,20 @@ function lib:init()
         love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
-            --love.graphics.print("MG  ", 4, 228)
-            --love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
-            love.graphics.print("MG  ", 4, 132)
-            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 132)
-            --offset = 18
+            love.graphics.print("MG  ", 4, 228)
+            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
+            offset = 18
         end
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
         local weapon_name = chara:getWeapon() and chara:getWeapon():getName() or ""
         local armor_name = chara:getArmor(1) and chara:getArmor(1):getName() or ""
-    
-        --[[
+        
         love.graphics.print("WEAPON: "..weapon_name, 4, 256 + offset)
         love.graphics.print("ARMOR: "..armor_name, 4, 288 + offset)
-        ]]
-        love.graphics.print("WEAPON: "..weapon_name, 4, 256)
-        love.graphics.print("ARMOR: "..armor_name, 4, 288)
     
-        --love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
-        if Game:getFlag("undertale_currency") then
-            love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
-        else
-            love.graphics.print(Kristal.getLibConfig("magical-glass", "undertaleCurrency"):upper()..": "..Game.ut_money or 0, 4, 328)
-        end
-
+        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
     end)
 
     Utils.hook(Game, "save", function(orig, self, x, y)
@@ -1580,11 +1565,7 @@ function lib:init()
 
             lw_money = self.lw_money,
 
-            ut_money = self.ut_money or 0,
-
             level_up_count = self.level_up_count,
-
-            murder_level = self.murder_level,
 
             border = self.border,
 
@@ -1671,6 +1652,21 @@ function lib:init()
         end
     end)
 
+    Utils.hook(SpeechBubble, "draw", function(orig, self)
+        if not self.auto then
+            if self.right then
+                local width = self:getSpriteSize()
+                Draw.draw(self:getSprite(), width - 12, 0, 0, -1, 1)
+            else
+                Draw.draw(self:getSprite(), 0, 0)
+            end
+        else
+            orig(self)
+        end
+
+        SpeechBubble.__super.draw(self)
+    end)
+
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 end
 
@@ -1713,7 +1709,7 @@ function Game:encounterLight(encounter, transition, enemy, context)
     if type(transition) == "string" then
         self.battle:postInit(transition, encounter)
     else
-        self.battle:postInit(transition and "TRANSITION" or "ACTIONSELECT", encounter)
+        self.battle:postInit("TRANSITION", encounter)
     end
 
     self.stage:addChild(self.battle)

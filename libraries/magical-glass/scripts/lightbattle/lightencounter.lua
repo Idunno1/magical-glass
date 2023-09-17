@@ -7,6 +7,12 @@ function LightEncounter:init()
     -- Is a "But Nobody Came"/"Genocide" Encounter
     self.nobody_came = false
 
+    -- Is a "story" encounter (can't attack, only hp and lv are shown. a wave is started as soon as the battle starts)
+    self.story = false
+
+    -- Speeds up the soul transition
+    self.fast_transition = false
+
     -- Whether the default grid background is drawn
     self.background = true
     self.background_image = "ui/lightbattle/backgrounds/battle"
@@ -39,6 +45,73 @@ function LightEncounter:init()
     self.used_flee_message = nil
 end
 
+function LightEncounter:onSoulTransition()
+    Game.battle.fake_player = Game.battle:addChild(FakeClone(Game.world.player, Game.world.player:getScreenPos()))
+    Game.battle.fake_player.layer = Game.battle.fader.layer + 1
+
+    Game.battle.timer:script(function(wait)
+        -- Black bg
+        wait(1/30)
+        -- Show heart
+        Assets.playSound("noise")
+        local player = Game.battle.fake_player.ref
+        local x, y = player:localToScreenPos((player.sprite.width/2), player.sprite.height/2)
+        Game.battle:spawnSoul(x, y)
+        Game.battle.soul.sprite:set("player/heart_menu")
+        Game.battle.soul.layer = Game.battle.fader.layer + 2
+        Game.battle.soul:setScale(2)
+        Game.battle.soul.can_move = false
+        wait(2/30)
+        -- Hide heart
+        Game.battle.soul.visible = false
+        wait(2/30)
+        -- Show heart
+        Game.battle.soul.visible = true
+        Assets.playSound("noise")
+        wait(2/30)
+        -- Hide heart
+        Game.battle.soul.visible = false
+        wait(2/30)
+        -- Show heart
+        Game.battle.soul.visible = true
+        Assets.playSound("noise")
+        wait(2/30)
+        -- Do transition
+        Game.battle.fake_player:remove()
+        Assets.playSound("battlefall")
+
+        if self.story then
+            local center_x, center_y = Game.battle.arena:getCenter()
+            local soul_offset_x = self:storyWave().soul_offset_x
+            local soul_offset_y = self:storyWave().soul_offset_y
+            local soul_x = self:storyWave().soul_start_x or (soul_offset_x and center_x + soul_offset_x)
+            local soul_y = self:storyWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
+            Game.battle.soul:slideTo(soul_x or center_x, soul_y or center_y, 17/30)
+        else
+            Game.battle.soul:slideTo(49, 455, 17/30)
+        end
+
+        wait(17/30)
+        -- Wait
+        wait(5/30)
+        Game.battle.soul.sprite:set("player/heart_light")
+        Game.battle.soul:setScale(1)
+        Game.battle.soul.x = Game.battle.soul.x - 1
+        Game.battle.soul.y = Game.battle.soul.y - 1
+        Game.battle.fader:fadeIn(nil, {speed=5/30})
+        self:onBattleStart()
+
+        if self.nobody_came then
+            Game.battle:setState("BUTNOBODYCAME")
+        elseif self.story then
+            Game.battle:setState("ENEMYDIALOGUE")
+            Game.battle.soul.can_move = true
+        else
+            Game.battle:setState("ACTIONSELECT")
+        end
+    end)
+end
+
 function LightEncounter:isLight()
     return true
 end
@@ -50,6 +123,11 @@ function LightEncounter:onBattleInit()
     -- needs to work
 
 end
+
+function LightEncounter:storyWave()
+    return "_story"
+end
+
 function LightEncounter:onBattleStart() end
 function LightEncounter:onBattleEnd() end
 
@@ -103,6 +181,8 @@ function LightEncounter:onFlee()
     end)
 
 end
+
+function LightEncounter:onFleeFail() end
 
 function LightEncounter:beforeStateChange(old, new) end
 function LightEncounter:onStateChange(old, new) end
@@ -197,10 +277,15 @@ end
 
 function LightEncounter:getNextWaves()
     local waves = {}
-    for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
-        local wave = enemy:selectWave()
-        if wave then
-            table.insert(waves, wave)
+    if self.story then
+        local wave = self:storyWave()
+        table.insert(waves, wave)
+    else
+        for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
+            local wave = enemy:selectWave()
+            if wave then
+                table.insert(waves, wave)
+            end
         end
     end
     return waves

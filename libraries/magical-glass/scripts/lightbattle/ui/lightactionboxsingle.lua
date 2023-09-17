@@ -13,7 +13,9 @@ function LightActionBoxSingle:init(x, y, index, battler)
 
     self.data_offset = 0
 
-    self:createButtons()
+    if not Game.battle.encounter.story then
+        self:createButtons()
+    end
 end
 
 function LightActionBoxSingle:getButtons(battler) end
@@ -76,28 +78,31 @@ function LightActionBoxSingle:createButtons()
 end
 
 function LightActionBoxSingle:snapSoulToButton()
-    if self.selected_button < 1 then
-        self.selected_button = #self.buttons
-    end
+    if self.buttons then
+        if self.selected_button < 1 then
+            self.selected_button = #self.buttons
+        end
 
-    if self.selected_button > #self.buttons then
-        self.selected_button = 1
-    end
+        if self.selected_button > #self.buttons then
+            self.selected_button = 1
+        end
 
-    Game.battle.soul.x = self.buttons[self.selected_button].x - 19
-    Game.battle.soul.y = self.buttons[self.selected_button].y + 279
-    Game.battle:toggleSoul(true)
+        Game.battle.soul.x = self.buttons[self.selected_button].x - 19
+        Game.battle.soul.y = self.buttons[self.selected_button].y + 279
+        Game.battle:toggleSoul(true)
+    end
 end
 
 function LightActionBoxSingle:update()
-
-    for i,button in ipairs(self.buttons) do
-        if (Game.battle.current_selecting == self.index) then
-            button.selectable = true
-            button.hovered = (self.selected_button == i)
-        else
-            button.selectable = false
-            button.hovered = false
+    if self.buttons then
+        for i,button in ipairs(self.buttons) do
+            if (Game.battle.current_selecting == self.index) then
+                button.selectable = true
+                button.hovered = (self.selected_button == i)
+            else
+                button.selectable = false
+                button.hovered = false
+            end
         end
     end
 
@@ -114,6 +119,31 @@ function LightActionBoxSingle:unselect()
     self.buttons[self.selected_button]:unselect()
 end
 
+function LightActionBoxSingle:drawStatusStripStory()
+    local x, y = 180, 130
+    local level = self.battler.chara:getLightLV()
+
+    love.graphics.setFont(Assets.getFont("namelv", 24))
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print("LV " .. level, x, y)
+
+    love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 74, y + 5)
+
+    local max = self.battler.chara:getStat("health")
+    local current = self.battler.chara.lw_health
+    if current < 10 then
+        current = "0" .. tostring(current)
+    end
+    local size = max * 1.25
+    love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.rectangle("fill", x + 110, y, size, 21)
+    love.graphics.setColor(1, 1, 0, 1)
+    love.graphics.rectangle("fill", x + 110, y, current * 1.25, 21)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(current .. " / " .. max, x + 115 + size + 14, y)
+end
+
 function LightActionBoxSingle:drawStatusStrip()
     local x, y = 10, 130
     local name = self.battler.chara:getName()
@@ -127,7 +157,10 @@ function LightActionBoxSingle:drawStatusStrip()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara.lw_health
-    local size = max * 1.25
+    if current < 10 then
+        current = "0" .. tostring(current) -- do i need to even do this
+    end
+    local size = max * 1.2
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.rectangle("fill", x + 245, y, size, 21)
     love.graphics.setColor(1, 1, 0, 1)
@@ -139,7 +172,11 @@ end
 
 function LightActionBoxSingle:draw()
 
-    self:drawStatusStrip()
+    if Game.battle.encounter.story then
+        self:drawStatusStripStory()
+    else
+        self:drawStatusStrip()
+    end
 
     super.draw(self)
 

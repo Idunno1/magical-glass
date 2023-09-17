@@ -16,6 +16,11 @@ function Dummy:init()
 
     self.offset = 0
 
+    if self:getFlag("deltarune") then
+        local fuck = Game.battle.enemies[1]:getAct("deltarune")
+        fuck.name = "undertale"
+    end
+
     self.shader = love.graphics.newShader([[
         float edge_stretch_str = 1; // the higher the more stretched
         float edge_stretch_lim = 2; // the higher the less stretched
@@ -33,7 +38,7 @@ function Dummy:update()
     super.update(self)
 
     if self:getFlag("deltarune") then
-        self.offset = self.offset + DTMULT
+        self.offset = self.offset + 1 * DTMULT
 
         if self.offset > 100 then
             self.offset = self.offset - 100

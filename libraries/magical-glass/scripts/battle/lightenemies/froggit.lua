@@ -19,9 +19,8 @@ function Froggit:init()
     self.money = 2
     self.experience = 3
 
-    -- The Speech bubble style
-    self.dialogue_bubble = "ut_tall_right"
-    self.dialogue_offset = {210, 0}
+    -- The Speech bubble offset
+    self.dialogue_offset = {20, 0}
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 0
@@ -85,6 +84,10 @@ function Froggit:onAct(battler, name)
     -- If the act is none of the above, run the base onAct function
     -- (this handles the Check act)
     return super:onAct(self, battler, name)
+end
+
+function Froggit:getDamageVoice()
+    return "ehurt1"
 end
 
 return Froggit
