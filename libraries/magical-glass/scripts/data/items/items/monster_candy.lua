@@ -1,4 +1,4 @@
-local item, super = Class(HealItem, "light/monster_candy")
+local item, super = Class(HealItem, "items/monster_candy")
 
 function item:init(inventory)
     super.init(self)

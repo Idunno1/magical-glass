@@ -1,10 +1,11 @@
-local item, super = Class(LightEquipItem, "light/pencil")
+local item, super = Class(LightEquipItem, "weapons/real_knife")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Pencil"
+    self.name = "Real Knife"
+    self.short_name = "RealKnife"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -12,7 +13,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon 1 AT\n* Mightier than a sword?\n* Maybe equal at best."
+    self.check = "Weapon AT 99\n* Here we are!"
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
@@ -21,16 +22,20 @@ function item:init()
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 1,
-        defense = 0
+        attack = 99
     }
 
-    self.attack_speed = 13
+    self.attack_direction = "random"
+end
 
-    self.attack_direction = "left"
+function item:showEquipText()
+    Game.world:showText("* About time.")
+end
 
-    -- Default dark item conversion for this item
-    self.dark_item = "wood_blade"
+function item:onBattleStart(battler)
+    for _,enemy in ipairs(Game.battle.enemies) do
+        enemy.mercy = 999
+    end
 end
 
 return item

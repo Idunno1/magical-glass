@@ -1,41 +1,34 @@
-local item, super = Class(LightEquipItem, "light/real_knife")
+local item, super = Class(LightEquipItem, "armors/heart_locket")
 
 function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Real Knife"
-    self.short_name = "RealKnife"
+    self.name = "Heart Locket"
+    self.short_name = "<--Locket"
+    self.serious_name = "H. Locket"
 
     -- Item type (item, key, weapon, armor)
-    self.type = "weapon"
+    self.type = "armor"
     -- Whether this item is for the light world
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 99\n* Here we are!"
+    self.check = "Armor DF 15\n* It says \"Best Friends Forever.\""
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Equip bonuses (for weapons and armor)
     self.bonuses = {
-        attack = 99
+        defense = 15
     }
 
-    self.attack_direction = "random"
 end
 
 function item:showEquipText()
-    Game.world:showText("* About time.")
-end
-
-function item:onBattleStart(battler)
-    for _,enemy in ipairs(Game.battle.enemies) do
-        enemy.mercy = 999
-    end
+    Game.world:showText("* You equipped the locket.")
 end
 
 return item
