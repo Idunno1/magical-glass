@@ -37,7 +37,7 @@ function LightActionButton:select()
         elseif self.type == "spell" then
             Game.battle:clearMenuItems()
             Game.battle.current_menu_columns = 2
-            Game.battle.current_menu_rows = 3
+            Game.battle.current_menu_rows = 2
 
             if Game.battle.encounter.default_xactions and self.battler.chara:hasXAct() then
                 local spell = {

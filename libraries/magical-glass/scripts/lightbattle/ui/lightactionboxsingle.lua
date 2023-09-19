@@ -124,7 +124,7 @@ function LightActionBoxSingle:drawStatusStripStory()
     local level = self.battler.chara:getLightLV()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(COLORS["white"])
     love.graphics.print("LV " .. level, x, y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 74, y + 5)
@@ -140,7 +140,6 @@ function LightActionBoxSingle:drawStatusStripStory()
 
     local length = current
     if type(Game:getFlag("#limit_hp_gauge_length")) == "boolean" and Game:getFlag("#limit_hp_gauge_length") == true then
-        print("99 cap")
         if length >= 99 then
             length = 99
         end
@@ -158,12 +157,12 @@ function LightActionBoxSingle:drawStatusStripStory()
         end
     end
 
-    love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.setColor(COLORS["red"])
     love.graphics.rectangle("fill", x + 110, y, size, 21)
-    love.graphics.setColor(1, 1, 0, 1)
+    love.graphics.setColor(COLORS["yellow"])
     love.graphics.rectangle("fill", x + 110, y, length * 1.25, 21)
 
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(COLORS["white"])
     love.graphics.print(current .. " / " .. max, x + 115 + size + 14, y)
 end
 
@@ -173,7 +172,7 @@ function LightActionBoxSingle:drawStatusStrip()
     local level = self.battler.chara:getLightLV()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(COLORS["white"])
     love.graphics.print(name .. "   LV " .. level, x, y)
 
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
@@ -204,12 +203,12 @@ function LightActionBoxSingle:drawStatusStrip()
         end
     end
 
-    love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.setColor(COLORS["red"])
     love.graphics.rectangle("fill", x + 245, y, size, 21)
-    love.graphics.setColor(1, 1, 0, 1)
+    love.graphics.setColor(COLORS["yellow"])
     love.graphics.rectangle("fill", x + 245, y, length * 1.25, 21)
 
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(COLORS["white"])
     love.graphics.print(current .. " / " .. max, x + 245 + size + 14, y)
 end
 

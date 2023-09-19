@@ -42,6 +42,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.done_state = nil
 
     self.waves = {}
+    self.menu_waves = {}
 
     self.check = "Wake up and taste the [color:red]\npain"
 
@@ -417,11 +418,29 @@ function LightEnemyBattler:getNextWaves()
     return self.waves
 end
 
+function LightEnemyBattler:getNextMenuWaves()
+    if self.menu_wave_override then
+        local wave = self.menu_wave_override
+        self.menu_wave_override = nil
+        return {wave}
+    end
+    return self.menu_waves
+end
+
 function LightEnemyBattler:selectWave()
     local waves = self:getNextWaves()
     if waves and #waves > 0 then
         local wave = Utils.pick(waves)
         self.selected_wave = wave
+        return wave
+    end
+end
+
+function LightEnemyBattler:selectMenuWave()
+    local waves = self:getNextMenuWaves()
+    if waves and #waves > 0 then
+        local wave = Utils.pick(waves)
+        self.selected_menu_wave = wave
         return wave
     end
 end

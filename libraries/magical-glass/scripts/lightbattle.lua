@@ -6,6 +6,8 @@ local LightBattle, super = Class(Object)
 function LightBattle:init()
     super.init(self)
 
+    self.light = true
+
     self.party = {}
 
     -- states: BATTLETEXT, TRANSITION, ACTIONSELECT, MENUSELECT, ENEMYSELECT, PARTYSELECT, TURNDONE
@@ -99,15 +101,16 @@ function LightBattle:init()
     self.seen_encounter_text = false
 
     self.waves = {}
-    self.selecting_waves = {}
+    self.menu_waves = {}
     self.finished_waves = false
+    self.finished_menu_waves = false
     self.story_wave = nil
 
     self.state_reason = nil
     self.substate_reason = nil
 
     self.menu_items = {}
-    self.pager_menus = {"ITEM"}
+    self.pager_menus = {"ITEM", "SPELL"}
 
     self.actions_done_timer = 0
 
@@ -128,14 +131,12 @@ function LightBattle:init()
 
     self.wave_length = 0
     self.wave_timer = 0
+    self.menu_wave_length = 0
+    self.menu_wave_timer = 0
 
     self.darkify_fader = Fader()
     self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
     self:addChild(self.darkify_fader)
-end
-
-function LightBattle:isLight()
-    return true
 end
 
 function LightBattle:isPagerMenu()
@@ -144,6 +145,7 @@ function LightBattle:isPagerMenu()
             return true
         end
     end
+    return false
 end
 
 function LightBattle:playSelectSound()
@@ -163,8 +165,10 @@ end
 
 function LightBattle:toggleSoul(soul)
     if soul then
+        self.soul.collidable = true
         self.soul.visible = true
     else
+        self.soul.collidable = false
         self.soul.visible = false
     end
 end
@@ -203,6 +207,10 @@ function LightBattle:createPartyBattlers()
             if party_member.lw_health > party_member:getStat("health") + 15 then
                 party_member.lw_health = party_member:getStat("health") + 15
             end
+        end
+
+        if party_member.lw_health < 1 then
+            party_member.lw_health = 1
         end
     end
 end
@@ -1250,7 +1258,7 @@ function LightBattle:onStateChange(old,new)
 end
 
 function LightBattle:nextTurn()
-    
+  
     self.turn_count = self.turn_count + 1
     if self.turn_count > 1 then
         if self.encounter:onTurnEnd() then
@@ -1319,6 +1327,24 @@ function LightBattle:nextTurn()
             self.battle_ui.current_encounter_text = self:getEncounterText()
         end
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
+    end
+
+    if self.encounter:getNextMenuWaves() then
+        self:setMenuWaves(self.encounter:getNextMenuWaves())
+        self.menu_wave_length = 0
+        self.menu_wave_timer = 0
+
+        for _,wave in ipairs(self.menu_waves) do
+            wave.encounter = self.encounter
+
+            self.menu_wave_length = math.max(self.menu_wave_length, wave.time)
+
+            wave:onStart()
+
+            wave.active = true
+        end
+
+        self.soul:onMenuWaveStart()
     end
 
     self.encounter:onTurnStart()
@@ -1624,8 +1650,6 @@ function LightBattle:update()
         if actbox then
             actbox:snapSoulToButton()
         end
-        -- might be needed for enemies that attack you while it's your turn
-        -- self:updateWaves()
     elseif self.state == "TURNDONE" then
         for _,wave in ipairs(self.waves) do
             wave:onArenaExit()
@@ -1641,26 +1665,12 @@ function LightBattle:update()
         self.encounter:update()
     end
 
-    -- some enemies darken in ut
---[[     if (self.state == "ENEMYDIALOGUE") or (self.state == "DEFENDING") then
-        self.background_fade_alpha = math.min(self.background_fade_alpha + (0.05 * DTMULT), 0.75)
-        if not self.darkify then
-            self.darkify = true
-            for _,battler in ipairs(self.party) do
-                battler.should_darken = true
-            end
-        end
-    end 
-    if Utils.containsValue({"DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT"}, self.state) then
-        self.background_fade_alpha = math.max(self.background_fade_alpha - (0.05 * DTMULT), 0)
-        if self.darkify then
-            self.darkify = false
-            for _,battler in ipairs(self.party) do
-                battler.should_darken = false
-            end
-        end
+    -- list of every state that menu waves are updated during
+    local update_menu_waves = {"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT", "FLEEING", "FLEEFAIL"}
+
+    if Utils.containsValue(update_menu_waves, self.state) then
+        self:updateMenuWaves()
     end
-    ]]
     
     -- Always sort
     self.update_child_list = true
@@ -1795,7 +1805,6 @@ function LightBattle:draw()
 end
 
 function LightBattle:getItemIndex()
-    --local page = math.ceil(self.current_menu_x / 2) - 1
     local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1
     return (self.current_menu_columns * (self.current_menu_y - 1) + (self.current_menu_x + (page * 2)))
 end
@@ -1807,10 +1816,8 @@ function LightBattle:isValidMenuLocation()
     if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
         return false
     end
-    for _,menu in ipairs(self.pager_menus) do
-        if self.state_reason ~= menu and (self.current_menu_x > self.current_menu_columns) then
-            return false
-        end
+    if not self:isPagerMenu() and (self.current_menu_x > self.current_menu_columns) then
+        return false
     end
     return true
 end
@@ -2366,13 +2373,31 @@ function LightBattle:hurt(amount, exact, target)
     end
 end
 
-function LightBattle:setWaves(waves, allow_duplicates)
+function LightBattle:clearWaves()
     for _,wave in ipairs(self.waves) do
-        wave:onEnd(false)
-        wave:clear()
-        wave:remove()
+        if wave.auto_clear then
+            wave:onEnd(false)
+            wave:clear()
+            wave:remove()
+        end
     end
     self.waves = {}
+end
+
+function LightBattle:clearMenuWaves()
+    for _,wave in ipairs(self.menu_waves) do
+        if wave.auto_clear then
+            wave:onEnd(false)
+            wave:clear()
+            wave:remove()
+        end
+    end
+    self.menu_waves = {}
+end
+
+function LightBattle:setWaves(waves, allow_duplicates)
+    self:clearWaves()
+    self:clearMenuWaves()
     self.finished_waves = false
     local added_wave = {}
     for _,wave in ipairs(waves) do
@@ -2386,12 +2411,32 @@ function LightBattle:setWaves(waves, allow_duplicates)
             table.insert(self.waves, wave)
             added_wave[wave.id] = true
 
-            -- Keep wave inactive until it's time to start
-            -- might need to be disabled -sam
             wave.active = false
         end
     end
     return self.waves
+end
+
+function LightBattle:setMenuWaves(waves, allow_duplicates)
+    self:clearWaves()
+    self:clearMenuWaves()
+    self.finished_menu_waves = false
+    local added_wave = {}
+    for _,wave in ipairs(waves) do
+        local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
+        if allow_duplicates or not exists then
+            if type(wave) == "string" then
+                wave = Registry.createWave(wave)
+            end
+            wave.encounter = self.encounter
+            self:addChild(wave)
+            table.insert(self.menu_waves, wave)
+            added_wave[wave.id] = true
+
+            wave.active = false
+        end
+    end
+    return self.menu_waves
 end
 
 function LightBattle:startProcessing()
@@ -2952,6 +2997,29 @@ function LightBattle:updateWaves()
     if all_done and not self.finished_waves then
         self.finished_waves = true
         self.encounter:onWavesDone()
+    end
+end
+
+function LightBattle:updateMenuWaves()
+    self.menu_wave_timer = self.menu_wave_timer + DT
+
+    local all_done = true
+    for _,wave in ipairs(self.menu_waves) do
+        if not wave.finished then
+            if wave.time >= 0 and self.menu_wave_timer >= wave.time then
+                wave.finished = true
+            else
+                all_done = false
+            end
+        end
+        if not wave:canEnd() then
+            all_done = false
+        end
+    end
+
+    if all_done and not self.finished_menu_waves then
+        self.finished_menu_waves = true
+        self.encounter:onMenuWavesDone()
     end
 end
 

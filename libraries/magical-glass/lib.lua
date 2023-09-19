@@ -34,6 +34,7 @@ function lib:load()
     if Game.is_new_file then
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
         Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
         Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("#enable_lw_tp", false)
@@ -186,7 +187,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.isLight then
+        if Game.battle and Game.battle.light then
             return self.light_battle_width
         else
             return self.width
@@ -194,7 +195,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.isLight then
+        if Game.battle and Game.battle.light then
             return self.light_battle_height
         else
             return self.height
@@ -218,8 +219,8 @@ function lib:init()
     
         local in_game = function() return Kristal.getState() == Game end
         local in_battle = function() return in_game() and Game.state == "BATTLE" end
-        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle.isLight end
-        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle.isLight end
+        local in_dark_battle = function() return in_game() and Game.state == "BATTLE" and not Game.battle.light end
+        local in_light_battle = function() return in_game() and Game.state == "BATTLE" and Game.battle.light end
         local in_overworld = function() return in_game() and Game.state == "OVERWORLD" end 
 
         self:registerConfigOption("main", "Object Selection Pausing", "Pauses the game when the object selection menu is opened.", "objectSelectionSlowdown")
@@ -747,10 +748,11 @@ function lib:init()
         orig(self)
         self.has_soul = true
         self.darken = false
+        self.auto_clear = true
     end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
-        if Game.battle.isLight then
+        if Game.battle.light then
             self.arena_width = width
             self.arena_height = height or width
         else
@@ -759,12 +761,56 @@ function lib:init()
     end)
 
     Utils.hook(Wave, "setArenaPosition", function(orig, self, x, y)
-        if Game.battle.isLight then
+        if Game.battle.light then
             self.arena_x = x
             self.arena_y = y
         else
             orig(self, x, y)
         end
+    end)
+
+    Utils.hook(Wave, "getMenuAttackers", function(orig, self)
+        local result = {}
+        for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
+            local wave = enemy.selected_menu_wave
+            if type(wave) == "table" and wave.id == self.id or wave == self.id then
+                table.insert(result, enemy)
+            end
+        end
+        return result
+    end)
+
+    Utils.hook(Wave, "spawnBulletTo", function(orig, self, parent, bullet, ...)
+        local new_bullet
+        if isClass(bullet) and bullet:includes(Bullet) then
+            new_bullet = bullet
+        elseif Registry.getBullet(bullet) then
+            new_bullet = Registry.createBullet(bullet, ...)
+        else
+            local x, y = ...
+            table.remove(arg, 1)
+            table.remove(arg, 1)
+            new_bullet = Bullet(x, y, bullet, unpack(arg))
+        end
+        new_bullet.wave = self
+        local attackers
+        if #Game.battle.menu_waves > 0 then
+            attackers = self:getMenuAttackers()
+        elseif #Game.battle.waves > 0 then
+            attackers = self:getAttackers()
+        end
+        if #attackers > 0 then
+            new_bullet.attacker = Utils.pick(attackers)
+        end
+        table.insert(self.bullets, new_bullet)
+        table.insert(self.objects, new_bullet)
+        if parent then
+            new_bullet:setParent(parent)
+        elseif not new_bullet.parent then
+            Game.battle:addChild(new_bullet)
+        end
+        new_bullet:onWaveSpawn(self)
+        return new_bullet
     end)
 
     Utils.hook(Item, "init", function(orig, self)
@@ -843,7 +889,7 @@ function lib:init()
         end
     
         if battle_box then
-            if Game.battle.isLight then
+            if Game.battle.light then
                 self.face_x = 6
                 self.face_y = -2
         
@@ -1530,8 +1576,16 @@ function lib:init()
     
         local exp_needed = math.max(0, chara:getLightEXPNeeded(chara:getLightLV() + 1) - chara:getLightEXP())
     
-        love.graphics.print("AT  "  .. chara:getBaseStats()["attack"]  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
-        love.graphics.print("DF  "  .. chara:getBaseStats()["defense"] .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
+        local at = chara:getBaseStats()["attack"]
+        local df = chara:getBaseStats()["defense"]
+        
+        if Game:getFlag("#undertale_stat_display") then
+            at = at - 10
+            df = df - 10
+        end
+
+        love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
+        love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
             love.graphics.print("MG  ", 4, 228)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
@@ -1609,7 +1663,7 @@ function lib:init()
     end)
 
     Utils.hook(Spell, "onStart", function(orig, self, user, target)
-        if Game.battle.isLight then
+        if Game.battle.light then
             local result = self:onLightCast(user, target)
             Game.battle:battleText(self:getLightCastMessage(user, target))
             if result or result == nil then
@@ -1661,7 +1715,7 @@ function lib:init()
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)
         if not self.auto then
-            if self.right and Game.battle.isLight then
+            if self.right and Game.battle.light then
                 local width = self:getSpriteSize()
                 Draw.draw(self:getSprite(), width - 12, 0, 0, -1, 1)
             else
@@ -1675,6 +1729,9 @@ function lib:init()
     end)
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
+
+    PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
+    PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
 end
 
 function lib:changeSpareColor(color)

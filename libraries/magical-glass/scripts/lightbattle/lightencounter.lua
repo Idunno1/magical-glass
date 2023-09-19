@@ -295,6 +295,17 @@ function LightEncounter:getNextWaves()
     return waves
 end
 
+function LightEncounter:getNextMenuWaves()
+    local waves = {}
+    for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
+        local wave = enemy:selectMenuWave()
+        if wave then
+            table.insert(waves, wave)
+        end
+    end
+    return waves
+end
+
 function LightEncounter:getSoulColor()
     return Game:getSoulColor()
 end
@@ -319,6 +330,8 @@ function LightEncounter:onWavesDone()
 
     Game.battle:setState("DEFENDINGEND", "WAVEENDED")
 end
+
+function LightEncounter:onMenuWavesDone() end
 
 function LightEncounter:getDefeatedEnemies()
     return self.defeated_enemies or Game.battle.defeated_enemies

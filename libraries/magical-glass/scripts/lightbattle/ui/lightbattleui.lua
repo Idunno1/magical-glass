@@ -282,7 +282,13 @@ function LightBattleUI:drawState()
 
         if current_item.tp and current_item.tp ~= 0 then
             Draw.setColor(PALETTE["tension_desc"])
-            love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
+            -- in memoriam of when this wasn't a pager menu
+            -- love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
+            local space = " "
+            if current_item.tp >= 100 then
+                space = ""
+            end
+            love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "%"..space..Game:getConfig("tpName"), 260 + 112, 64)
             Game:setTensionPreview(current_item.tp)
         else
             Game:setTensionPreview(0)
@@ -290,10 +296,12 @@ function LightBattleUI:drawState()
 
         Draw.setColor(1, 1, 1, 1)
 
-        for _,menu in ipairs(Game.battle.pager_menus) do
-            if Game.battle.state_reason == menu then
-                love.graphics.print("PAGE " .. page + 1, 388, 64)
+        local offset = 0
+        if Game.battle:isPagerMenu() then
+            if Game.battle.state_reason == "SPELL" then
+                offset = 96
             end
+            love.graphics.print("PAGE " .. page + 1, 388 + offset, 64)
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then

@@ -39,6 +39,7 @@ function LightSoul:init(x, y, color)
     self:addChild(self.graze_sprite)
 
     self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
+    self.graze_collider.collidable = false
 
     self.original_x = x
     self.original_y = y
@@ -85,6 +86,7 @@ function LightSoul:onRemove(parent)
 end
 
 function LightSoul:onWaveStart() end
+function LightSoul:onMenuWaveStart() end
 
 function LightSoul:shatter(count)
     Assets.playSound("break2")
@@ -386,7 +388,7 @@ function LightSoul:update()
             -- to avoid issues with cacheing inside onCollide
             table.insert(collided_bullets, bullet)
         end
-        if Game:getFlag("#enable_lw_tp") and self.inv_timer == 0 then
+        if self.inv_timer == 0 then
             if bullet.tp ~= 0 and bullet:collidesWith(self.graze_collider) then
                 if bullet.grazed then
                     Game:giveTension(bullet.tp * DT * self.graze_tp_factor)

@@ -173,7 +173,7 @@ end
 
 function LightEquipItem:onMiss(battler, enemy, anim, finish)
     local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color})
-    if anim == nil or anim then
+    if message and (anim == nil or anim) then
         message:resetPhysics()
     end
 
