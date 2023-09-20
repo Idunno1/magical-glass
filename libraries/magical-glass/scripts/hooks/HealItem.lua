@@ -67,70 +67,34 @@ function HealItem:onLightBattleUse(user, target)
 end
 
 function HealItem:getLightBattleText(user, target)
-    if self.target == "ally" and target.chara.id == Game.party[1].id then
-        return self:useOnPlayerBattleText(user, target)
-    elseif self.target == "ally" then
-        return self:useOnAllyBattleText(user, target)
+    if self.target == "ally" then
+        return "* " .. target.chara:getNameOrYou() .. " ate the " .. self:getName() .. "."
     elseif self.target == "party" then
         if #Game.party > 1 then
-            return self:useOnPartyBattleText(user, target)
+            return "* Everyone ate the " .. self:getName() .. "."
         else
-            return self:useOnPlayerBattleText(user, target)
+            return "* You ate the " .. self:getName() .. "."
         end
     elseif self.target == "enemy" then
-        return self:useOnEnemyBattleText(user, target)
+        return "* " .. target:getName() .. " used the " .. self:getName() .. "."
     elseif self.target == "enemies" then
-        return self:useOnEnemiesBattleText(user, target)
+        return "* " .. target:getName() .. " used the " .. self:getName() .. "."
     end
 end
 
 function HealItem:getWorldUseText(target)
-    if self.target == "ally" and target.id == Game.party[1].id then
-        return self:useOnPlayerWorldText(target)
-    elseif self.target == "ally" then
-        return self:useOnAllyWorldText(target)
+    if self.target == "ally" then
+        return "* " .. target:getNameOrYou() .. " ate the " .. self:getName() .. "."
     elseif self.target == "party" then
         if #Game.party > 1 then
-            return self:useOnPartyWorldText(target)
+            return "* Everyone ate the " .. self:getName() .. "."
         else
-            return self:useOnPlayerWorldText(target)
+            return "* You ate the " .. self:getName() .. "."
         end
     end
 end
 
-function HealItem:useOnPlayerWorldText(target)
-    return "* You ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnAllyWorldText(target)
-    return "* " .. target.name .. " ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnPartyWorldText(target)
-    return "* Everyone ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnPlayerBattleText(user, target)
-    return "* You ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnAllyBattleText(user, target)
-    return "* " .. target.chara.name .. " ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnPartyBattleText(user, target)
-    return "* Everyone ate the " .. self:getName() .. "."
-end
-
-function HealItem:useOnEnemyBattleText(user, target)
-    return "* " .. target.chara.name .. " used the " .. self:getName() .. "."
-end
-
-function HealItem:useOnEnemiesBattleText(user, target)
-    return "* " .. target.chara.name .. " used the " .. self:getName() .. "."
-end
-
-function HealItem:getWorldHealingText(target, amount, maxed)
+function HealItem:getLightWorldHealingText(target, amount, maxed)
     local message = ""
     if self.target == "ally" then
         if target.id == Game.party[1].id and maxed then
@@ -152,7 +116,7 @@ function HealItem:getWorldHealingText(target, amount, maxed)
     return message
 end
 
-function HealItem:getBattleHealingText(user, target, amount, maxed)
+function HealItem:getLightBattleHealingText(user, target, amount, maxed)
     local message = ""
     if self.target == "ally" then
         if target.id == Game.battle.party[1].chara.id and maxed then

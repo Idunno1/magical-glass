@@ -853,9 +853,8 @@ function lib:init()
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
-        if (type == "mercy" and self:getMercyVisibility()) or type == "damage" then
-            local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
-
+        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
+        if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
             if kill then
                 percent.kill_others = true
             end
@@ -1330,7 +1329,7 @@ function lib:init()
         if Game:isLight() then
             local message
             if item then
-                message = item:getWorldHealingText(target, amount, maxed)
+                message = item:getLightWorldHealingText(target, amount, maxed)
             end
 
             if text then
@@ -1382,6 +1381,32 @@ function lib:init()
             return Game.save_name
         else
             return self.name
+        end
+    end)
+
+    Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
+        if Game.battle.turn_count == 1 and not undo then
+            print("hu")
+            if self:getWeapon() then
+                self:getWeapon():onBattleStart(self)
+            end
+            if self:getArmor(1) then
+                self:getArmor(1):onBattleStart(self)
+            end
+        end
+    end)
+    
+    Utils.hook(PartyMember, "onTurnEnd", function(orig, self, battler)
+        for _,equip in ipairs(self:getEquipment()) do
+            equip:onTurnEnd(self)
+        end
+    end)
+
+    Utils.hook(PartyMember, "getNameOrYou", function(orig, self)
+        if self.id == Game.party[1].id then
+            return "You"
+        else
+            return self:getName()
         end
     end)
 
@@ -1678,20 +1703,22 @@ function lib:init()
     Utils.hook(Spell, "onLightCast", function(orig, self, user, target) end)
 
     Utils.hook(Spell, "getLightCastMessage", function(orig, self, user, target)
-        return "* "..user.chara:getName().." cast "..self:getName().."."
+        return "* "..user.chara:getNameOrYou().." cast "..self:getName().."."
     end)
 
-    Utils.hook(Spell, "getHealMessage", function(orig, self, user, target, maxed)
+    Utils.hook(Spell, "getHealMessage", function(orig, self, user, target)
+        local amount = self.amount
+        local maxed = target.chara:getHealth() >= target.chara:getStat("health")
         local message = ""
         if self.target == "ally" then
-            if target.id == Game.party[1].id and maxed then
+            if target.chara.id == Game.party[1].id and maxed then
                 message = "* Your HP was maxed out."
-            elseif target.id == Game.party[1].id and not maxed then
+            elseif target.chara.id == Game.party[1].id and not maxed then
                 message = "* You recovered " .. amount .. " HP."
             elseif maxed then
-                message = target.name .. "'s HP was maxed out."
+                message = target.chara.name .. "'s HP was maxed out."
             else
-                message = target.name .. " recovered " .. amount .. " HP."
+                message = target.chara.name .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
             if #Game.party > 1 then
@@ -1712,6 +1739,7 @@ function lib:init()
                 message = "* You recovered " .. amount .. " HP."
             end
         end
+        return message
     end)
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)

@@ -64,7 +64,7 @@ function item:worldUseSound(target)
     Assets.stopAndPlaySound("power")
 end
 
-function item:getBattleHealingText(user, target, amount, maxed)
+function item:getLightBattleHealingText(user, target, amount, maxed)
     local message
     if self.target == "ally" then
         if target.id == Game.battle.party[1].chara.id and maxed then
@@ -86,7 +86,7 @@ function item:getBattleHealingText(user, target, amount, maxed)
     return message
 end
 
-function item:getWorldHealingText(target, amount, maxed)
+function item:getLightWorldHealingText(target, amount, maxed)
     local message
     if self.target == "ally" then
         if target.id == Game.party[1].id and maxed then

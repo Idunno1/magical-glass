@@ -23,8 +23,15 @@ function spell:init()
     self.tags = {"heal"}
 end
 
-function spell:onCast(user, target)
-    target:heal(user.chara:getStat("magic") + 1)
+function spell:onLightCast(user, target)
+    self.amount = math.ceil((user.chara:getStat("magic") + 1))
+    target:heal(self.amount, false, true)
+end
+
+function spell:getLightCastMessage(user, target)
+    local message = "* "..user.chara:getNameOrYou().." cast "..self:getName().."."
+    local heal_text = self:getHealMessage(user, target)
+    return message .. "\n" .. heal_text
 end
 
 return spell

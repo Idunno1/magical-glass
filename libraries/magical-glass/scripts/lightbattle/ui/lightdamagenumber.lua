@@ -22,6 +22,7 @@ function LightDamageNumber:init(type, arg, x, y, color)
     self.layer = BATTLE_LAYERS["damage_numbers"]
 
     self.type = type or "msg"
+
     if self.type == "msg" then
         self.message = arg or "miss"
     else
@@ -41,7 +42,7 @@ function LightDamageNumber:init(type, arg, x, y, color)
         end
     end
 
-    if self.message then
+    if self.message and self.message ~= "_special" then
         self.texture = Assets.getTexture("ui/lightbattle/msg/"..self.message)
         self.width = self.texture:getWidth()
         self.height = self.texture:getHeight()
@@ -118,7 +119,23 @@ function LightDamageNumber:update()
 end
 
 function LightDamageNumber:draw()
-    if self.type == "mercy" then
+   
+    if self.type == "msg" and self.message == "_special" then
+        self.width = 100
+        if self.timer >= self.delay then
+            local messages = {
+                "Don't worry about it.",
+                "Absorbed",
+                "I'm lovin' it.",
+                "But it didn't work.",
+                "nope",
+                "FAILURE"
+            }
+            Draw.setColor(1, 0, 0, 1)
+            love.graphics.setFont(Assets.getFont("main"))
+            love.graphics.print(Utils.pick(messages), 0, 0)
+        end
+    elseif self.type == "mercy" then
         if self.timer >= self.delay then
             local r, g, b, a = self:getDrawColor()
             Draw.setColor(r, g, b, a)

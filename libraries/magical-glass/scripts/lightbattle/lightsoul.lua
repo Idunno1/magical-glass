@@ -39,7 +39,7 @@ function LightSoul:init(x, y, color)
     self:addChild(self.graze_sprite)
 
     self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
-    self.graze_collider.collidable = false
+    self.graze_collider.collidable = true
 
     self.original_x = x
     self.original_y = y
@@ -347,6 +347,9 @@ function LightSoul:doMovement()
 end
 
 function LightSoul:update()
+
+    self.graze_collider.collidable = Game:getFlag("#enable_lw_tp")
+
     if self.transitioning then
         if self.timer >= 7 then
             Input.clear("cancel")
@@ -436,7 +439,7 @@ function LightSoul:draw()
 
     if DEBUG_RENDER then
         self.collider:draw(0, 1, 0)
-        if self.graze_collider and Game:getFlag("#enable_lw_tp") then
+        if self.graze_collider.collidable then
             self.graze_collider:draw(1, 1, 1, 0.33)
         end
     end

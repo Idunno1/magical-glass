@@ -74,35 +74,34 @@ function LightEquipItem:getAttackPitch() return self.attack_pitch end
 function LightEquipItem:onTurnEnd() end
 
 -- these need to be modified for more than one party member
-function LightEquipItem:showEquipText()
-    Game.world:showText("* You equipped the "..self:getName()..".")
+function LightEquipItem:showEquipText(target)
+    Game.world:showText("* " .. target:getNameOrYou() .. " equipped the "..self:getName()..".")
 end
 
 function LightEquipItem:onWorldUse(target)
     Assets.playSound("item")
-    local chara = Game.party[1]
     local replacing = nil
     if self.type == "weapon" then
-        if chara:getWeapon() then
-            replacing = chara:getWeapon()
-            replacing:onUnequip(chara, self)
+        if target:getWeapon() then
+            replacing = target:getWeapon()
+            replacing:onUnequip(target, self)
             Game.inventory:replaceItem(self, replacing)
         end
-        chara:setWeapon(self)
+        target:setWeapon(self)
     elseif self.type == "armor" then
-        if chara:getArmor(1) then
-            replacing = chara:getArmor(1)
-            replacing:onUnequip(chara, self)
+        if target:getArmor(1) then
+            replacing = target:getArmor(1)
+            replacing:onUnequip(target, self)
             Game.inventory:replaceItem(self, replacing)
         end
-        chara:setArmor(1, self)
+        target:setArmor(1, self)
     else
         error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
-    self:onEquip(chara, replacing)
+    self:onEquip(target, replacing)
 
-    self:showEquipText()
+    self:showEquipText(target)
     return false
 end
 
@@ -111,7 +110,7 @@ function LightEquipItem:onBattleSelect(user, target)
 end
 
 function LightEquipItem:getLightBattleText(user, target)
-    return "* You equipped the " .. self:getName() .. "."
+    return "* ".. target:getNameOrYou() .. " equipped the " .. self:getName() .. "."
 end
 
 function LightEquipItem:onLightBattleUse(user, target)
@@ -132,8 +131,6 @@ function LightEquipItem:onLightBattleUse(user, target)
             Game.inventory:replaceItem(self, replacing)
         end
         chara:setArmor(1, self)
-    else
-        --error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)

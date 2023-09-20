@@ -177,31 +177,10 @@ function LightBattle:createPartyBattlers()
     for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
 
-        if Game.world.player and Game.world.player.visible and Game.world.player.actor.id == party_member:getActor().id then
-            local player_x, player_y = Game.world.player:getScreenPos() -- just in case
-            local player_battler = LightPartyBattler(party_member, player_x, player_y)
-            player_battler.visible = false
-            self:addChild(player_battler)
-            table.insert(self.party, player_battler)
-        else
-            local found = false
-            for _,follower in ipairs(Game.world.followers) do
-                if follower.visible and follower.actor.id == party_member:getActor().id then
-                    local chara_x, chara_y = follower:getScreenPos()
-                    local chara_battler = PartyBattler(party_member, chara_x, chara_y)
-                    chara_battler.visible = false
-                    self:addChild(chara_battler)
-                    table.insert(self.party, chara_battler)
-                    found = true
-                    break
-                end
-            end
-            if not found then
-                local chara_battler = LightPartyBattler(party_member, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-                self:addChild(chara_battler)
-                table.insert(self.party, chara_battler)
-            end
-        end
+        local battler = LightPartyBattler(party_member)
+        battler.visible = false
+        self:addChild(battler)
+        table.insert(self.party, battler)
 
         if Game:getFlag("#remove_overheal") then
             if party_member.lw_health > party_member:getStat("health") + 15 then
@@ -682,7 +661,7 @@ function LightBattle:processAction(action)
                         maxed = chara:getHealth() >= chara:getStat("health")
                     end
 
-                    text = text .. "\n" .. item:getBattleHealingText(battler, chara, amount, maxed)
+                    text = text .. "\n" .. item:getLightBattleHealingText(battler, chara, amount, maxed)
 
                 end
                 self:battleText(text)
@@ -871,7 +850,7 @@ function LightBattle:onStateChange(old,new)
 
         if not had_started then
             for _,party in ipairs(self.party) do
-                party:onTurnStart()
+                party.chara:onTurnStart()
             end
             local party = self.party[self.current_selecting]
             party.chara:onActionSelect(party, false)
@@ -1265,7 +1244,7 @@ function LightBattle:nextTurn()
             return
         end
         for _,party in ipairs(self.party) do
-            if party:onTurnEnd() then
+            if party.chara:onTurnEnd() then
                 return
             end
         end
