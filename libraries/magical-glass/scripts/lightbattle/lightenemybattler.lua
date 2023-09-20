@@ -446,16 +446,7 @@ function LightEnemyBattler:selectMenuWave()
 end
 
 function LightEnemyBattler:onCheck(battler) end
-
-function LightEnemyBattler:onActStart(battler, name)
-    --battler:setAnimation("battle/act")
-    local action = Game.battle:getCurrentAction()
---[[     if action.party then
-        for _,party_id in ipairs(action.party) do
-            Game.battle:getPartyBattler(party_id):setAnimation("battle/act")
-        end
-    end ]]
-end
+function LightEnemyBattler:onActStart(battler, name) end
 
 function LightEnemyBattler:onAct(battler, name)
     if name == "Check" then

@@ -28,7 +28,7 @@ function Dummy:init()
     }
 
     self.menu_waves = {
-        "aiming"
+--[[         "aiming" ]]
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble
@@ -52,6 +52,7 @@ function Dummy:init()
     self:registerAct("Smile")
     self:registerAct("deltarune")
     self:registerAct("Susie")
+    self:registerAct("lmao")
 
     -- Register party act with Ralsei called "Tell Story"
     -- (second argument is description, usually empty)
@@ -108,6 +109,9 @@ function Dummy:onAct(battler, name)
     elseif name == "Susie" then
         Game.battle:startActCutscene("dummy", "susie_punch")
         return
+    elseif name == "lmao" then
+        --Game.battle.enemies[1].menu_wave_override = "aiming"
+        return "* get fucked"
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
         self:addMercy(50)

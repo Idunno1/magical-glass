@@ -1329,7 +1329,7 @@ function LightBattle:nextTurn()
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
     end
 
-    if self.encounter:getNextMenuWaves() then
+    if self.encounter:getNextMenuWaves() and #self.encounter:getNextMenuWaves() > 0 then
         self:setMenuWaves(self.encounter:getNextMenuWaves())
         self.menu_wave_length = 0
         self.menu_wave_timer = 0

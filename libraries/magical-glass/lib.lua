@@ -796,7 +796,8 @@ function lib:init()
         local attackers
         if #Game.battle.menu_waves > 0 then
             attackers = self:getMenuAttackers()
-        elseif #Game.battle.waves > 0 then
+        end
+        if #Game.battle.waves > 0 then
             attackers = self:getAttackers()
         end
         if #attackers > 0 then
