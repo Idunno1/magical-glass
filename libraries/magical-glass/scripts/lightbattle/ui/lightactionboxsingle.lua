@@ -39,28 +39,20 @@ function LightActionBoxSingle:createButtons()
 
     for i,btn in ipairs(btn_types) do
         if type(btn) == "string" then
---[[             local button = LightActionButton(btn, self.battler, math.floor(67 + ((i - 1) * 156)), 175)
-
-            if #btn_types == 4 then
-                if i == 2 then
-                    button.x = button.x - 3
-                elseif i == 3 then
-                    button.x = button.x + 1
-                end
-            end ]]
-
             local spacing = #btn_types
-            local x = math.floor(67 + ((i - 1) * 156))
-            local button = LightActionButton(btn, self.battler, x, 175)
-
+            local x
             if #btn_types == 4 then
+                x = math.floor(67 + ((i - 1) * 156))
                 if i == 2 then
-                    button.x = button.x - 3
+                    x = x - 3
                 elseif i == 3 then
-                    button.x = button.x + 1
+                    x = x + 1
                 end
+            else
+                x = math.floor(67 + ((i - 1) * 117))
             end
-
+            
+            local button = LightActionButton(btn, self.battler, x, 175)
             button.actbox = self
             table.insert(self.buttons, button)
             self:addChild(button)

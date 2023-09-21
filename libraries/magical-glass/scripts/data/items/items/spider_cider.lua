@@ -24,7 +24,7 @@ function item:init(inventory)
     self.check = "Heals 24 HP\n* Made with whole spiders[wait:2],\nnot just the juice."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
-    self.target = "party"
+    self.target = "ally"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed

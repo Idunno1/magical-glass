@@ -40,7 +40,7 @@ function lib:load()
         Game:setFlag("#enable_lw_tp", false)
         Game:getFlag("#enable_low_hp_tired", false)
         Game:setFlag("#deltarune_mercy_flash", false)
-        Game:setFlag("#lw_stat_menu_portraits", true)
+        Game:setFlag("#lw_stat_menu_portraits", "magical_glass") -- magical_glass, deltatraveler
         Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune
         Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
         Game:setFlag("#remove_overheal", true)
@@ -794,7 +794,7 @@ function lib:init()
         end
         new_bullet.wave = self
         local attackers
-        if #Game.battle.menu_waves > 0 then
+        if Game.battle.light and #Game.battle.menu_waves > 0 then
             attackers = self:getMenuAttackers()
         end
         if #Game.battle.waves > 0 then
@@ -1249,7 +1249,7 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            love.graphics.printf("Use " .. item:getName() .. " on...", 5, 233, 300, "center")
+            love.graphics.printf("Use " .. item:getName() .. " on...", -45, 233, 400, "center")
 
             if #Game.party == 2 then
                 local offset = 0
@@ -1361,8 +1361,8 @@ function lib:init()
         self.lw_portrait = nil
 
         self.light_color = {1,1,1}
-        self.light_miss_color = {192/255, 192/255, 192/255}
         self.light_dmg_color = {1,0,0}
+        self.light_miss_color = {192/255, 192/255, 192/255}
         self.light_attack_color = {1, 105/255, 105/255}
         self.light_attack_bar_color = {1,1,1}
         self.light_xact_color = {1,1,1}
@@ -1513,6 +1513,12 @@ function lib:init()
         end
     end)
 
+    Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
+        if self.light_miss_color and type(self.light_miss_color) == "table" then
+            return Utils.unpackColor({self.light_miss_color})
+        end
+    end)
+
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
         if self.light_attack_color and type(self.light_attack_color) == "table" then
             return Utils.unpackColor({self.light_attack_color})
@@ -1577,11 +1583,19 @@ function lib:init()
     
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
+        local name_offset = 0
+        for _,chara in ipairs(Game.party) do
+            if #Game.party > 1 then
+                love.graphics.printf(chara:getName(), name_offset - 18, 8, 100, "center")
+            else
+                love.graphics.print("\"" .. chara:getName() .. "\"", 4 + name_offset, 8)
+            end
+            name_offset = name_offset + 110
+        end
     
         local chara = Game.party[self.party_selecting]
-        local offset = 0
 
-        if Game:getFlag("#lw_stat_menu_portraits") then
+        if Game:getFlag("#lw_stat_menu_portraits") == "deltatraveler" then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
@@ -1594,9 +1608,19 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text"])
                 love.graphics.print("<                >", 162, 116)
             end
+        elseif Game:getFlag("#lw_stat_menu_portraits") == "magical_glass" then
+            local ox, oy = chara.actor:getPortraitOffset()
+            if chara:getLightPortrait() then
+                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
+            end
+
+            if #Game.party > 1 then
+                Draw.setColor(Game:getSoulColor())
+                Draw.draw(self.heart_sprite, (110 * (self.party_selecting - 1)) + 22, -8, 0, 2, 2)
+            end
         end
 
-        love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
+        Draw.setColor(PALETTE["world_text"])
         love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
     
@@ -1612,6 +1636,7 @@ function lib:init()
 
         love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
+        local offset = 0
         if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
             love.graphics.print("MG  ", 4, 228)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)

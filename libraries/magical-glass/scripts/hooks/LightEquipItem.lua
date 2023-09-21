@@ -168,12 +168,8 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 
 end
 
-function LightEquipItem:onMiss(battler, enemy, anim, finish)
-    local message = enemy:lightStatusMessage("msg", "miss", {battler.chara.light_miss_color})
-    if message and (anim == nil or anim) then
-        message:resetPhysics()
-    end
-
+function LightEquipItem:onMiss(battler, enemy, finish)
+    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()})
     if finish then
         Game.battle:endAttack()
     end

@@ -6,6 +6,7 @@ local LightDamageNumber, super = Class(Object)
 -- Arg:
 --    "mercy"/"damage": amount
 --    "msg": message sprite name ("mercy", "miss")
+--    (use "_special" for the amalgamate damage popup)
 
 function LightDamageNumber:init(type, arg, x, y, color)
     super.init(self, x, y)
@@ -133,7 +134,7 @@ function LightDamageNumber:draw()
             }
             Draw.setColor(1, 0, 0, 1)
             love.graphics.setFont(Assets.getFont("main"))
-            love.graphics.print(Utils.pick(messages), 0, 0)
+            love.graphics.print(Utils.pick(messages))
         end
     elseif self.type == "mercy" then
         if self.timer >= self.delay then

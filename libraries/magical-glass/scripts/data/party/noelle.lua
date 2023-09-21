@@ -71,7 +71,7 @@ end
 
 -- Default light world equipment item IDs (saves current equipment)
 self.lw_weapon_default = "weapons/ring"
-self.lw_armor_default = "armors/wristwatch"
+self.lw_armor_default = "light/wristwatch"
 
 -- Character color (for action box outline and hp bar)
 self.color = {1, 1, 0}

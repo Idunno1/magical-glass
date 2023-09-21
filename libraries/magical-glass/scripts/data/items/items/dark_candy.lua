@@ -56,7 +56,7 @@ function item:init()
         noelle = "Oh, it's... sticky?"
     }
 
-    self.light_item = "light/monster_candy"
+    self.light_item = "items/monster_candy"
 end
 
 return item

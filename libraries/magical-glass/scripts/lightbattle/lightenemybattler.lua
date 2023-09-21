@@ -486,26 +486,30 @@ function LightEnemyBattler:isXActionShort(battler)
     return false
 end
 
-function LightEnemyBattler:hurt(amount, battler, on_defeat, color)
-    -- if only the tough glove didn't exist
-    if amount <= 0 then
-        battler.chara:getWeapon():onMiss(battler, self, false)
+function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
+    if amount == 0 or (amount < 0 and Game:getConfig("damageUnderflowFix")) then
+        local message = self:lightStatusMessage("msg", "miss", color)
+        if message and (anim == nil or anim) then
+            message:resetPhysics()
+        end
 
-        self.hurt_timer = 1
-        self:onHurt(amount, battler)
-
-        self:checkHealth(on_defeat, amount, battler)
-    else
-        self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-        self.health = self.health - amount
-    
-        self.hurt_timer = 1
-        self:onHurt(amount, battler)
-    
-        self:checkHealth(on_defeat, amount, battler)
+        self:onDodge(battler)
+        return
     end
 
+    self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+    self.health = self.health - amount
+
+    if amount > 0 then
+        self.hurt_timer = 1
+        self:onHurt(amount, battler)
+    end
+
+    self:checkHealth(on_defeat, amount, battler)
+
 end
+
+function LightEnemyBattler:onDodge(battler) end
 
 function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional

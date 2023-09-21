@@ -41,13 +41,11 @@ function spell:onLightCast(user, target)
         local x, y = (SCREEN_WIDTH/2), -100
         local tx, ty = target:getRelativePos(target.width/2, target.height/2, Game.battle)
         local blast = LightRudeBusterBeam(false, x, y, tx, ty, function(pressed)
-            local damage = math.ceil((user.chara:getStat("magic") * 5) + (user.chara:getStat("attack") * 11) - (target.defense * 3))
+            local damage = self:getDamage(user, target, pressed)
             if pressed then
-                damage = damage + 30
                 Assets.playSound("scytheburst")
             end
             target:hurt(damage, user)
-            --target:flash()
             Game.battle:finishAction()
         end)
         blast.layer = BATTLE_LAYERS["above_ui"]
@@ -74,9 +72,8 @@ function spell:onCast(user, target)
         local x, y = user:getRelativePos(user.width, user.height/2 - 10, Game.battle)
         local tx, ty = target:getRelativePos(target.width/2, target.height/2, Game.battle)
         local blast = RudeBusterBeam(false, x, y, tx, ty, function(pressed)
-            local damage = math.ceil((user.chara:getStat("magic") * 5) + (user.chara:getStat("attack") * 11) - (target.defense * 3))
+            local damage = self:getDamage(user, target, pressed)
             if pressed then
-                damage = damage + 30
                 Assets.playSound("scytheburst")
             end
             target:flash()
@@ -90,6 +87,13 @@ function spell:onCast(user, target)
         Game.battle:addChild(blast)
     end)
     return false
+end
+
+function spell:getDamage(user, target, pressed)
+    local damage = math.ceil((user.chara:getStat("magic") * 5) + (user.chara:getStat("attack") * 11) - (target.defense * 3))    if pressed then
+        damage = damage + 30
+    end
+    return damage
 end
 
 return spell

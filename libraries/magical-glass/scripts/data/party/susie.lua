@@ -106,11 +106,6 @@ function character:init()
     -- X-Action color (for the color of X-Action menu items) (defaults to the main color)
     self.xact_color = {1, 0.5, 1}
 
-    self.light_color = nil
-    self.light_dmg_color = nil
-    self.light_attack_bar_color = nil
-    self.light_xact_color = nil
-
     -- Head icon in the equip / power menu
     self.menu_icon = "party/susie/head"
     -- Path to head icons used in battle
@@ -149,7 +144,7 @@ function character:onTurnStart(battler)
 end
 
 function character:onAttackHit(enemy, damage)
-    if damage > 0 then
+    if damage > 0 and not Game.battle.light then
         Assets.playSound("impact", 0.8)
         Game.battle:shakeCamera(4)
     end

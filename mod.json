@@ -12,7 +12,7 @@
 
     "map": "tundra3",
     //"party": ["kris", /* "susie", "noelle" */],
-    "party": ["kris", "susie"],
+    "party": ["susie"],
     "inventory": {
         "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie", "armors/bandage_ut", "weapons/empty_gun"],
         "key_items": ["cell_phone"]
