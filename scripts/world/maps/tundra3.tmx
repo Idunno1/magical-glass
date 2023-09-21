@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="82">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="83">
  <editorsettings>
   <export target="tundra3.lua" format="lua"/>
  </editorsettings>
@@ -100,6 +100,7 @@ about coming back.)</property>
     <property name="marker" value="spawn"/>
    </properties>
   </object>
+  <object id="82" name="storagebox" x="560" y="200" width="41.3333" height="42"/>
  </objectgroup>
  <layer id="7" name="tiles3" width="20" height="12">
   <data encoding="csv">

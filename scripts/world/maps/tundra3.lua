@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 12,
-  nextobjectid = 81,
+  nextobjectid = 83,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -316,6 +316,19 @@ return {
             ["map"] = "tundra3A",
             ["marker"] = "spawn"
           }
+        },
+        {
+          id = 82,
+          name = "storagebox",
+          type = "",
+          shape = "rectangle",
+          x = 558.667,
+          y = 198,
+          width = 41.3333,
+          height = 42,
+          rotation = 0,
+          visible = true,
+          properties = {}
         }
       }
     },

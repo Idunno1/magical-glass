@@ -23,7 +23,7 @@ function item:init(inventory)
     self.check = "Heals 10 HP\n* Has a distinct,\nnon licorice flavor."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
-    self.target = "party"
+    self.target = "ally"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
@@ -36,8 +36,8 @@ function item:init(inventory)
 end
 
 function item:onToss()
-    Game.world:showText("* The Monster Candy was\n  yeeted.")
-    return false
+    Game.world:showText("* The Monster Candy was\nyeeted.")
+    return true
 end
 
 return item

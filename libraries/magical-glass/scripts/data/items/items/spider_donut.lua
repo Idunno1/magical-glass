@@ -37,8 +37,8 @@ function item:init(inventory)
 end
 
 function item:onToss()
-    Game.world:showText("* The Spider Donut was\n  thrown away.")
-    return false
+    Game.world:showText("* The Spider Donut was\nthrown away.")
+    return true
 end
 
 return item

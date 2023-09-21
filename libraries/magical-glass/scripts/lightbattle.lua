@@ -2886,32 +2886,34 @@ function LightBattle:onKeyPressed(key)
 end
 
 function LightBattle:handleActionSelectInput(key)
-    local actbox = self.battle_ui.action_boxes[self.current_selecting]
+    if not self.encounter.story then
+        local actbox = self.battle_ui.action_boxes[self.current_selecting]
 
-    if Input.isConfirm(key) then
-        actbox:select()
-        self:playSelectSound()
-        return
-    elseif Input.isCancel(key) then
-        local old_selecting = self.current_selecting
+        if Input.isConfirm(key) then
+            actbox:select()
+            self:playSelectSound()
+            return
+        elseif Input.isCancel(key) then
+            local old_selecting = self.current_selecting
 
-        --self:previousParty()
+            --self:previousParty()
 
-        if self.current_selecting ~= old_selecting then
+            if self.current_selecting ~= old_selecting then
+                self:playMoveSound()
+            end
+            return
+        elseif Input.is("left", key) then
+            actbox.selected_button = actbox.selected_button - 1
             self:playMoveSound()
-        end
-        return
-    elseif Input.is("left", key) then
-        actbox.selected_button = actbox.selected_button - 1
-        self:playMoveSound()
-        if actbox then
-            actbox:snapSoulToButton()
-        end
-    elseif Input.is("right", key) then
-        actbox.selected_button = actbox.selected_button + 1
-        self:playMoveSound()
-        if actbox then
-            actbox:snapSoulToButton()
+            if actbox then
+                actbox:snapSoulToButton()
+            end
+        elseif Input.is("right", key) then
+            actbox.selected_button = actbox.selected_button + 1
+            self:playMoveSound()
+            if actbox then
+                actbox:snapSoulToButton()
+            end
         end
     end
 end
