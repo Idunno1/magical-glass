@@ -22,10 +22,6 @@
         "kris": {
             "weapon": "weapons/stick",
             "armor": ["armors/stained_apron"]
-        },
-        "frisk": {
-            "weapon": "weapons/burnt_pan",
-            "armor": ["armors/bandage_ut"]
         }
     },
 
