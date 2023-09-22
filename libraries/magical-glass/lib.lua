@@ -34,6 +34,7 @@ function lib:load()
     if Game.is_new_file then
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#undertale_save_menu", true)
         Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
         Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
         Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
@@ -1666,6 +1667,97 @@ function lib:init()
         Game.world.menu.state = "TEXT"
         Game.world:setCellFlag(call[2], Game.world:getCellFlag(call[2], -1) + 1)
         Game.world:startCutscene(call[2])
+    end)
+
+    Utils.hook(Savepoint, "init", function(orig, self, x, y, properties)
+        orig(self, x, y, properties)
+        self.undertale = properties["ut"] or false
+        if self.undertale then
+            self:setSprite("world/events/savepointut", 0.15)
+        end
+    end)
+
+    Utils.hook(Savepoint, "onTextEnd", function(orig, self)
+        if not self.world then return end
+
+        if self.heals then
+            for _,party in ipairs(Game.party) do
+                party:heal(math.huge, false)
+            end
+        end
+        
+        if Game:isLight() then
+            self.world:openMenu(LightSaveMenu(Game.save_id, self.marker, Game:getFlag("#undertale_save_menu")))
+        elseif self.simple_menu or (self.simple_menu == nil and Game:getConfig("smallSaveMenu")) then
+            self.world:openMenu(SimpleSaveMenu(Game.save_id, self.marker))
+        else
+            self.world:openMenu(SaveMenu(self.marker))
+        end
+    end)
+
+    Utils.hook(SaveMenu, "init", function(orig, self, marker)
+        orig(self, marker)
+        if Game:isLight() then
+            self.divider_sprite = Assets.getTexture("ui/box/light/top")
+        else
+            self.divider_sprite = Assets.getTexture("ui/box/dark/top")
+        end
+    end)
+
+    Utils.hook(LightSaveMenu, "init", function(orig, self, save_id, marker, undertale)
+        orig(self, save_id, marker, undertale)
+        self.undertale = undertale
+    end)
+
+    Utils.hook(LightSaveMenu, "update", function(orig, self)
+        if self.state == "MAIN" and ((Input.pressed("confirm") and self.selected_x == 1) or (Input.pressed("left") or Input.pressed("right"))) then
+            Assets.playSound("ui_move")
+        end
+        orig(self)
+    end)
+
+    Utils.hook(LightSaveMenu, "draw", function(orig, self)
+        if self.undertale then
+            love.graphics.setFont(self.font)
+
+            if self.state == "SAVED" then
+                Draw.setColor(PALETTE["world_text_selected"])
+            else
+                Draw.setColor(PALETTE["world_text"])
+            end
+        
+            local data      = self.saved_file or {}
+            local name      = data.name      or "EMPTY"
+            local level     = data.level     or 1
+            local playtime  = data.playtime  or 0
+            local room_name = data.room_name or "--"
+        
+            love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
+            love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
+        
+            local minutes = math.floor(playtime / 60)
+            local seconds = math.floor(playtime % 60)
+            local time_text = string.format("%d:%02d", minutes, seconds)
+            love.graphics.printf(time_text, self.box.x - 280 + 148, self.box.y - 10 + 8, 500, "right")
+        
+            love.graphics.print(room_name, self.box.x + 8, self.box.y + 38)
+        
+            if self.state == "MAIN" then
+                love.graphics.print("Save",   self.box.x + 30  + 8, self.box.y + 98)
+                love.graphics.print("Return", self.box.x + 210 + 8, self.box.y + 98)
+        
+                Draw.setColor(Game:getSoulColor())
+                Draw.draw(self.heart_sprite, self.box.x + 10 + (self.selected_x - 1) * 180, self.box.y + 96 + 8, 0, 2, 2)
+            elseif self.state == "SAVED" then
+                love.graphics.print("File saved.", self.box.x + 30 + 8, self.box.y + 98)
+            end
+        
+            Draw.setColor(1, 1, 1)
+        
+            LightSaveMenu.__super.draw(self)
+        else
+            orig(self)
+        end
     end)
 
     Utils.hook(Game, "save", function(orig, self, x, y)

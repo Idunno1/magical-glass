@@ -509,7 +509,7 @@ return {
           visible = true,
           properties = {
             ["actor"] = "dummy",
-            ["encounter"] = "dummy"
+            ["lightencounter"] = "dummy"
           }
         }
       }

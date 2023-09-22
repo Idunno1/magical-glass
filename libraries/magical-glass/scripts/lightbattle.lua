@@ -1086,7 +1086,9 @@ function LightBattle:onStateChange(old,new)
 
         end
 
-        self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+        if Game:getFlag("#enable_lw_tp") then
+            self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+        end
 
         for _,battler in ipairs(self.party) do
             for _,equipment in ipairs(battler.chara:getEquipment()) do -- does this need a light version?
