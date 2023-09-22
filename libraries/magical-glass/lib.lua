@@ -1654,6 +1654,20 @@ function lib:init()
         love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
     end)
 
+    Utils.hook(World, "registerCall", function(orig, self, name, scene, sound)
+        table.insert(self.calls, {name, scene, sound})
+    end)
+
+    Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
+        if call[3] == nil or call[3] then
+            Assets.playSound("phone", 0.7)
+        end
+        Game.world.menu:closeBox()
+        Game.world.menu.state = "TEXT"
+        Game.world:setCellFlag(call[2], Game.world:getCellFlag(call[2], -1) + 1)
+        Game.world:startCutscene(call[2])
+    end)
+
     Utils.hook(Game, "save", function(orig, self, x, y)
         orig(self, x, y)
 

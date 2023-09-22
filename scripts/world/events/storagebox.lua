@@ -17,9 +17,8 @@ function StorageBox:init(x, y, properties)
 
     self.solid = true
 
-    self.should_open_menu = false
-
     self.cutscene = function(cutscene)
+        self.should_open_menu = false
         local choice = cutscene:textChoicer("* Use the box?\n", {"       Yes", "    No"}, {wait = true})
 
         if choice == 1 then
