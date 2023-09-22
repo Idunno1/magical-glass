@@ -28,12 +28,12 @@ function item:init()
         attack = 2
     }
 
-    self.attack_bolts = 2
-    self.attack_speed = 10
-    self.attack_speed_variance = nil
-    self.attack_start = {-50, -25} 
-    self.attack_miss_zone = 2
-    self.attack_direction = "left"
+    self.bolt_count = 2
+    self.bolt_speed = 10
+    self.bolt_speed_variance = nil
+    self.bolt_start = {-50, -25} 
+    self.bolt_miss_threshold = 2
+    self.bolt_direction = "left"
     self.multibolt_variance = {{0, 25, 50}}
     self.inv_bonus = 15/30
 

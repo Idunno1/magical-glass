@@ -24,8 +24,8 @@ function item:init()
         attack = 3
     }
 
-    self.attack_speed = self.attack_speed * 1.25
-    self.attack_direction = "random"
+    self.bolt_speed = self.bolt_speed * 1.25
+    self.bolt_direction = "random"
 
 end
 

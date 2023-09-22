@@ -25,10 +25,10 @@ function item:init()
         attack = 1
     }
 
-    self.attack_speed = self.attack_speed * 1.2
+    self.bolr_speed = self.bolt_speed * 1.2
     self.attack_punches = 99
     self.attack_punch_time = 50
-    self.attack_direction = "random"
+    self.bolt_direction = "random"
 
     self.attack_sound = "punchstrong"
 

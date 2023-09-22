@@ -28,13 +28,13 @@ function LightAttackBox:createBolts()
         lane.battler = battler
         lane.bolts = {}
         lane.weapon = battler.chara:getWeapon()
-        lane.speed = lane.weapon:getAttackSpeed()
+        lane.speed = lane.weapon:getBoltSpeed()
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = lane.weapon:getAttackDirection()
+        lane.direction = lane.weapon:getBoltDirection()
 
-        if lane.weapon:getAttackBolts() > 1 then
+        if lane.weapon:getBoltCount() > 1 then
             lane.attack_type = "shoe"
         else
             lane.attack_type = "slice"
@@ -49,15 +49,15 @@ function LightAttackBox:createBolts()
             error("Invalid attack direction")
         end
 
-        for i = 1, lane.weapon:getAttackBolts() do
+        for i = 1, lane.weapon:getBoltCount() do
             local bolt
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + lane.weapon:getAttackStart(), 319, battler)
+                    bolt = LightAttackBar(start_x + lane.weapon:getBoltStart(), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - lane.weapon:getAttackStart(), 319, battler)
+                    bolt = LightAttackBar(start_x - lane.weapon:getBoltStart(), 319, battler)
                 end
-            else --todo: if multibolt variance can't return anything, have it repeat the last number in the table
+            else
                 if lane.direction == "left" then
                     bolt = LightAttackBar(start_x + lane.weapon:getMultiboltVariance(i - 1), 319, battler)
                 else
@@ -120,18 +120,19 @@ end
 
 function LightAttackBox:hit(battler)
     local bolt = battler.bolts[1]
-    battler.weapon:onHit(battler)
+    battler.weapon:onBoltHit(battler)
     if battler.attack_type == "shoe" then
         local close = math.abs(self:getClose(battler))
-
-        battler.score = battler.score + self:evaluateHit(battler, close)
+--[[         battler.score = battler.score + self:evaluateHit(battler, close)
 
         if battler.score > 430 then
             battler.score = battler.score * 1.8
         end
         if battler.score >= 400 then
             battler.score = battler.score * 1.25
-        end
+        end ]]
+        local eval = self:evaluateHit(battler, close)
+        battler.score = battler.weapon:scoreHit(battler, battler.score, eval, close)
 
         bolt:burst()
 

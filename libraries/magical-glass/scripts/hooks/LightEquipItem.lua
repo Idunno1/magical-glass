@@ -8,17 +8,17 @@ function LightEquipItem:init()
     self.heal_bonus = 0
     self.inv_bonus = 0
 
-    self.attack_bolts = 1
+    self.bolt_count = 1
 
-    self.attack_speed = 11
-    self.attack_speed_variance = 2
+    self.bolt_speed = 11
+    self.bolt_speed_variance = 2
 
-    self.attack_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
+    self.bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
     self.multibolt_variance = {{0, 25, 50}, {100, 125, 150}}
 
-    self.attack_direction = "right" -- "right", "left", or "random"
+    self.bolt_direction = "right" -- "right", "left", or "random"
 
-    self.attack_miss_zone = 296
+    self.bolt_miss_threshold = 296
 
     self.attack_sprite = "effects/attack/strike"
 
@@ -33,38 +33,44 @@ function LightEquipItem:getFleeBonus() return 0 end
 function LightEquipItem:getHealBonus() return self.heal_bonus end
 function LightEquipItem:getInvBonus() return self.inv_bonus end
 
-function LightEquipItem:getAttackBolts() return self.attack_bolts end
+function LightEquipItem:getBoltCount() return self.bolt_count end
 
-function LightEquipItem:getAttackSpeed()
-    if self:getAttackSpeedVariance() then
-        return self.attack_speed + self:getAttackSpeedVariance()
+function LightEquipItem:getBoltSpeed()
+    if self:getBoltSpeedVariance() then
+        return self.bolt_speed + self:getBoltSpeedVariance()
     else
-        return self.attack_speed
+        return self.bolt_speed
     end
 end
-function LightEquipItem:getAttackSpeedVariance() return self.attack_speed_variance end
+function LightEquipItem:getBoltSpeedVariance() return self.bolt_speed_variance end
 
-function LightEquipItem:getAttackStart()
-    if type(self.attack_start) == "table" then
-        return Utils.pick(self.attack_start)
-    elseif type(self.attack_start) == "number" then
-        return self.attack_start
+function LightEquipItem:getBoltStart()
+    if type(self.bolt_start) == "table" then
+        return Utils.pick(self.bolt_start)
+    elseif type(self.bolt_start) == "number" then
+        return self.bolt_start
     end
 end
 
 function LightEquipItem:getMultiboltVariance(index)
-    return Utils.pick(self.multibolt_variance[index])
-end
-
-function LightEquipItem:getAttackDirection() 
-    if self.attack_direction == "random" then
-        return Utils.pick({"right", "left"})
+    if self.multibolt_variance[index] then
+        return Utils.pick(self.multibolt_variance[index])
     else
-        return self.attack_direction
+        local value = Utils.pick(self.multibolt_variance[#self.multibolt_variance])
+        value = value + Utils.pick(self.multibolt_variance[(index + 1) - #self.multibolt_variance])
+        return value
     end
 end
 
-function LightEquipItem:getAttackMissZone() return self.attack_miss_zone end
+function LightEquipItem:getBoltDirection() 
+    if self.bolt_direction == "random" then
+        return Utils.pick({"right", "left"})
+    else
+        return self.bolt_direction
+    end
+end
+
+function LightEquipItem:getAttackMissZone() return self.bolt_miss_threshold end
 
 function LightEquipItem:getAttackSprite() return self.attack_sprite end
 
@@ -110,7 +116,7 @@ function LightEquipItem:onBattleSelect(user, target)
 end
 
 function LightEquipItem:getLightBattleText(user, target)
-    return "* ".. target:getNameOrYou() .. " equipped the " .. self:getName() .. "."
+    return "* ".. target.chara:getNameOrYou() .. " equipped the " .. self:getName() .. "."
 end
 
 function LightEquipItem:onLightBattleUse(user, target)
@@ -136,7 +142,20 @@ function LightEquipItem:onLightBattleUse(user, target)
     self:onEquip(chara, replacing)
 end
 
-function LightEquipItem:onHit(battler) end
+function LightEquipItem:onBoltHit(battler) end
+function LightEquipItem:scoreHit(battler, score, eval, close)
+    local new_score = score
+    new_score = new_score + eval
+
+    if new_score > 430 then
+        new_score = new_score * 1.8
+    end
+    if new_score >= 400 then
+        new_score = new_score * 1.25
+    end
+
+    return new_score
+end
 
 function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 

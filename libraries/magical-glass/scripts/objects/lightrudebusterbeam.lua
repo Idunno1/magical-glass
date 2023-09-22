@@ -2,8 +2,13 @@ local LightRudeBusterBeam, super = Class(RudeBusterBeam, "LightRudeBusterBeam")
 
 function LightRudeBusterBeam:init(red, x, y, tx, ty, after)
     super.init(self, red, x, y, tx, ty, after)
-    self:setScale(10)
-    self.physics.speed = 12
+    if red then
+        self:setScale(12)
+        self.physics.speed = 6
+    else
+        self:setScale(10)
+        self.physics.speed = 12
+    end
 end
 
 function LightRudeBusterBeam:update()

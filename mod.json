@@ -15,12 +15,17 @@
     "party": ["susie"],
     "inventory": {
         "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie", "armors/bandage_ut", "weapons/empty_gun"],
+        "box_a": ["weapons/tough_glove"],
         "key_items": ["cell_phone"]
     },
 
     "equipment": {
         "kris": {
             "weapon": "weapons/stick",
+            "armor": ["armors/stained_apron"]
+        },
+        "susie": {
+            "weapon": "weapons/burnt_pan",
             "armor": ["armors/stained_apron"]
         }
     },

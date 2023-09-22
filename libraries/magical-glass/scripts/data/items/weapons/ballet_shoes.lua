@@ -25,11 +25,11 @@ function item:init()
         attack = 7
     }
 
-    self.attack_bolts = 3
-    self.attack_speed = 10
-    self.attack_speed_variance = nil
-    self.attack_start = -90
-    self.attack_miss_zone = 2
+    self.bolt_count = 3
+    self.bolt_speed = 10
+    self.bolt_speed_variance = nil
+    self.bolt_start = -90
+    self.bolt_miss_threshold = 2
 
     self.attack_sound = "punchstrong"
     
