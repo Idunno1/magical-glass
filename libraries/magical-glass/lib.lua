@@ -434,9 +434,7 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            if not Game:getFlag("temporary_world_value#") then
-                                result.dark_item = item
-                            end
+                            result.fallback_dark_item = item
                             result.dark_location = {storage = storage.id, index = i}
                             new_inventory:addItem(result)
                         end
@@ -489,9 +487,8 @@ function lib:init()
             for i = 1, storage.max do
                 local item = storage[i]
                 if item then
-                    if not Game:getFlag("temporary_world_value#") then
-                        item.light_item = item
-                    end
+                    item.fallback_light_item = item
+
                     item.light_location = {storage = storage.id, index = i}
     
                     new_inventory:addItemTo("light", item)
@@ -842,7 +839,47 @@ function lib:init()
         end
     end)
 
-    Utils.hook(Item, "onBattleStart", function(orig, self, battler) end)
+    Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
+
+    Utils.hook(Item, "load", function(orig, self, data)
+        self.flags = data.flags or self.flags
+
+        if data.dark_item then
+            if type(data.dark_item) == "table" then
+                self.dark_item = Registry.createItem(data.dark_item.id)
+                self.dark_item:load(data.dark_item)
+            else
+                self.dark_item = data.dark_item
+            end
+
+            self.dark_location = data.dark_location
+        elseif data.fallback_dark_item then 
+            if type(data.fallback_dark_item) == "table" then
+                self.fallback_dark_item = Registry.createItem(data.fallback_dark_item.id)
+            else
+                self.fallback_dark_item = data.fallback_dark_item
+            end
+        end
+
+        if data.light_item then
+            if type(data.light_item) == "table" then
+                self.light_item = Registry.createItem(data.light_item.id)
+                self.light_item:load(data.light_item)
+            else
+                self.light_item = data.light_item
+            end
+
+            self.light_location = data.light_location
+        elseif data.fallback_light_item then 
+            if type(data.fallback_light_item) == "table" then
+                self.fallback_light_item = Registry.createItem(data.fallback_light_item.id)
+            else
+                self.fallback_light_item = data.fallback_light_item
+            end
+        end
+
+        self:onLoad(data)
+    end)
     
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
@@ -1387,12 +1424,11 @@ function lib:init()
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
         if Game.battle.turn_count == 1 and not undo then
-            print("hu")
             if self:getWeapon() then
-                self:getWeapon():onBattleStart(self)
+                self:getWeapon():onActionSelect(self)
             end
             if self:getArmor(1) then
-                self:getArmor(1):onBattleStart(self)
+                self:getArmor(1):onActionSelect(self)
             end
         end
     end)
@@ -1758,65 +1794,6 @@ function lib:init()
         else
             orig(self)
         end
-    end)
-
-    Utils.hook(Game, "save", function(orig, self, x, y)
-        orig(self, x, y)
-
-        local data = {
-            chapter = self.chapter,
-
-            name = self.save_name,
-            level = self.save_level,
-            playtime = self.playtime,
-
-            light = self.light,
-
-            room_name = self.world and self.world.map and self.world.map.name or "???",
-            room_id = self.world and self.world.map and self.world.map.id,
-
-            money = self.money,
-            xp = self.xp,
-
-            tension = self.tension,
-            max_tension = self.max_tension,
-
-            lw_money = self.lw_money,
-
-            level_up_count = self.level_up_count,
-
-            border = self.border,
-
-            temp_followers = self.temp_followers,
-
-            flags = self.flags
-        }
-
-        if x then
-            if type(x) == "string" then
-                data.spawn_marker = x
-            elseif type(x) == "table" then
-                data.spawn_position = x
-            elseif x and y then
-                data.spawn_position = { x, y }
-            end
-        end
-
-        data.party = {}
-        for _, party in ipairs(self.party) do
-            table.insert(data.party, party.id)
-        end
-
-        data.inventory = self.inventory:save()
-
-        data.party_data = {}
-        for k, v in pairs(self.party_data) do
-            data.party_data[k] = v:save()
-        end
-
-        Kristal.callEvent("save", data)
-
-        return data
     end)
 
     Utils.hook(Spell, "onStart", function(orig, self, user, target)
