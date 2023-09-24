@@ -10,7 +10,7 @@ return {
         cutscene:wait(1)
 
         -- Susie text
-        cutscene:text("* You look like uhh...[wait:5] soft.[wait:5]\n* I don't like beating up\npeople like that.", "nervous_side", "susie")
+        cutscene:text("* You look uhh...[wait:5] soft.[wait:5]\n* I don't like beating up\npeople like that.", "nervous_side", "susie")
 
         if cutscene:getCharacter("ralsei") then
             -- Ralsei text, if he's in the party

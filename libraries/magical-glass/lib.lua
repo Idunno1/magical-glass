@@ -112,6 +112,7 @@ function lib:registerDebugOptions(debug)
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
                 Game:setFlag("temporary_world_value#", "light")
+                Game:setFlag("temp_inventory#", Game.inventory:save())
                 Game:setLight(false)
             end
             Game:encounter(id)
@@ -125,6 +126,7 @@ function lib:registerDebugOptions(debug)
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 if not Game:isLight() then
                     Game:setFlag("temporary_world_value#", "dark")
+                    Game:setFlag("temp_inventory#", Game.inventory:save())
                     Game:setLight(true)
                 end
                 Game:encounter(id)
@@ -185,13 +187,14 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
+        self.use_light_battler_sprite = true
         self.light_battle_width = 0
         self.light_battle_height = 0
         self.light_battler_parts = {}
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
+        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
             return self.light_battle_width
         else
             return self.width
@@ -199,7 +202,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
+        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
             return self.light_battle_height
         else
             return self.height
@@ -508,24 +511,6 @@ function lib:init()
         return new_inventory
     end)
 
-    Utils.hook(Game, "setLight", function(orig, self, light)
-        light = light or false
-        if not self.started then
-            self.light = light
-            return
-        end
-    
-        if self.light == light then return end
-    
-        self.light = light
-    
-        if self.light then
-            self:convertToLight()
-        else
-            self:convertToDark()
-        end
-    end)
-
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
     
         ChaserEnemy.__super.init(self, actor, x, y)
@@ -738,13 +723,12 @@ function lib:init()
     end)
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)
-    
         orig(self)
         if Game:getFlag("temporary_world_value#") == "light" then
             Game:setLight(true)
+            Game.inventory:load(Game:getFlag("temp_inventory#"))
             Game:setFlag("temporary_world_value#", nil)
         end
-
     end)
 
     Utils.hook(Wave, "init", function(orig, self)
@@ -1873,11 +1857,6 @@ function lib:init()
         SpeechBubble.__super.draw(self)
     end)
 
-    Utils.hook(Map, "init", function(orig, self, world, data)
-        orig(self, world, data)
-        MagicalGlassLib.encounters_enabled = false
-    end)
-
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
     PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
@@ -1927,11 +1906,9 @@ function Game:encounterLight(encounter, transition, enemy, context)
 end
 
 function lib:onFootstep()
-
     if Game.world and self.encounters_enabled then
         self.steps_until_encounter = self.steps_until_encounter - 1
     end
-
 end
 
 return lib

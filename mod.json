@@ -8,11 +8,12 @@
 
     "chapter": 2,
 
-    //"encounter": "dummy",
+    "encounter": "dummy",
 
     "map": "tundra3",
-    //"party": ["kris", /* "susie", "noelle" */],
-    "party": ["susie"],
+
+    "party": ["kris"],
+
     "inventory": {
         "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie", "armors/bandage_ut", "weapons/empty_gun"],
         "box_a": ["weapons/tough_glove"],
@@ -22,10 +23,6 @@
     "equipment": {
         "kris": {
             "weapon": "weapons/stick",
-            "armor": ["armors/stained_apron"]
-        },
-        "susie": {
-            "weapon": "weapons/burnt_pan",
             "armor": ["armors/bandage_ut"]
         }
     },

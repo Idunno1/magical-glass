@@ -297,7 +297,7 @@ function LightEnemyBattler:canSpare()
 end
 
 function LightEnemyBattler:onSpared()
-    if #self.actor.light_battler_parts > 0 then
+    if self.actor.use_light_battler_sprite then
         if self.actor:getAnimation("lightbattle_spared") then
             self.overlay_sprite:setAnimation("lightbattle_spared")
         else
@@ -428,6 +428,7 @@ end
 
 function LightEnemyBattler:selectWave()
     local waves = self:getNextWaves()
+    print(waves[1])
     if waves and #waves > 0 then
         local wave = Utils.pick(waves)
         self.selected_wave = wave
@@ -571,7 +572,7 @@ function LightEnemyBattler:getDamageVoice() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
-    if #self.actor.light_battler_parts > 0 then
+    if self.actor.use_light_battler_sprite then
         if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
             self:toggleOverlay(false)
         end
@@ -761,7 +762,7 @@ function LightEnemyBattler:setActor(actor, use_overlay)
     if self.sprite         then self:removeChild(self.sprite)         end
     if self.overlay_sprite then self:removeChild(self.overlay_sprite) end
 
-    if #self.actor.light_battler_parts > 0 then
+    if self.actor.use_light_battler_sprite then
         self.sprite = self.actor:createLightBattleSprite()
     else
         self.sprite = self.actor:createSprite()

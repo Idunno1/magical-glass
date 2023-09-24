@@ -33,7 +33,7 @@ function StorageBox:init(x, y, properties)
                 self.should_open_menu = true
             end
         end
-    end
+    end 
 end
 
 function StorageBox:onTextEnd()

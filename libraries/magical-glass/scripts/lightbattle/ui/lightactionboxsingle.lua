@@ -122,7 +122,7 @@ function LightActionBoxSingle:drawStatusStripStory()
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 74, y + 5)
 
     local max = self.battler.chara:getStat("health")
-    local current = self.battler.chara.lw_health
+    local current = self.battler.chara:getHealth()
 
     if current < 10 then
         current = "0" .. tostring(current)
@@ -170,7 +170,7 @@ function LightActionBoxSingle:drawStatusStrip()
     love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
 
     local max = self.battler.chara:getStat("health")
-    local current = self.battler.chara.lw_health
+    local current = self.battler.chara:getHealth()
     if current < 10 then
         current = "0" .. tostring(current) -- do i need to even do this
     end

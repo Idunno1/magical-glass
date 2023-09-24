@@ -174,7 +174,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, math.min(3, #Game.party) do
+    for i = 1, 1--[[ math.min(3, #Game.party) ]] do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -183,13 +183,13 @@ function LightBattle:createPartyBattlers()
         table.insert(self.party, battler)
 
         if Game:getFlag("#remove_overheal") then
-            if party_member.lw_health > party_member:getStat("health") + 15 then
-                party_member.lw_health = party_member:getStat("health") + 15
+            if party_member:getHealth() > party_member:getStat("health") + 15 then
+                party_member:getHealth() = party_member:getStat("health") + 15
             end
         end
 
-        if party_member.lw_health < 1 then
-            party_member.lw_health = 1
+        if party_member:getHealth() < 1 then
+            party_member:getHealth() = 1
         end
     end
 end
@@ -1388,12 +1388,8 @@ function LightBattle:returnToWorld()
     Game.state = "OVERWORLD"
 
     if Game:getFlag("temporary_world_value#") == "dark" then
-        -- todo: save the inventory before battles, then reload it here
-        if not Game.inventory then
-            Game:setupInventory()
-        end
-
         Game:setLight(false)
+        Game.inventory:load(Game:getFlag("temp_inventory#"))
         Game:setFlag("temporary_world_value#", nil)
     end
 end

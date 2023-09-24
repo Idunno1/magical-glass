@@ -87,7 +87,7 @@
   </object>
   <object id="106" name="enemy" x="380" y="280" width="40" height="40">
    <properties>
-    <property name="actor" value="dummy"/>
+    <property name="actor" value="dummy_ut"/>
     <property name="lightencounter" value="dummy"/>
    </properties>
   </object>

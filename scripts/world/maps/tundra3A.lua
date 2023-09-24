@@ -508,7 +508,7 @@ return {
           rotation = 0,
           visible = true,
           properties = {
-            ["actor"] = "dummy",
+            ["actor"] = "dummy_ut",
             ["lightencounter"] = "dummy"
           }
         }

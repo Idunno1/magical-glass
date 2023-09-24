@@ -6,7 +6,7 @@ function Dummy:init()
     -- Enemy name
     self.name = "Dummy"
     -- Sets the actor, which handles the enemy's sprites (see scripts/data/actors/dummy.lua)
-    self:setActor("dummy")
+    self:setActor("dummy_ut")
 
     -- Enemy health
     self.max_health = 10
@@ -110,7 +110,7 @@ function Dummy:onAct(battler, name)
         Game.battle:startActCutscene("dummy", "susie_punch")
         return
     elseif name == "lmao" then
-        --Game.battle.enemies[1].menu_wave_override = "aiming"
+        self.menu_wave_override = "aiming"
         return "* get fucked"
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
