@@ -17,7 +17,7 @@ LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxdisplay")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
-RandomEncounter          = libRequire("magical-glass", "scripts/lightbattle/randomencounter")
+RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter")
 
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
@@ -179,6 +179,9 @@ function lib:preInit()
 end
 
 function lib:init()
+
+    self.encounters_enabled = false
+    self.steps_until_encounter = nil
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
@@ -419,12 +422,14 @@ function lib:init()
         new_inventory.storage_enabled = true
     
         Kristal.callEvent("onConvertToLight", new_inventory)
-    
+
+        local should_make_ball = false
         for _,storage_id in ipairs(self.convert_order) do
             local storage = Utils.copy(self:getStorage(storage_id))
             for i = 1, storage.max do
                 local item = storage[i]
                 if item then
+                    should_make_ball = true
                     local result = item:convertToLight(new_inventory) or (storage.id == "light" and item)
     
                     if result then
@@ -819,6 +824,9 @@ function lib:init()
         self.short_name = nil
         -- Serious name for the light battle item menu
         self.serious_name = nil
+
+        self.fallback_dark_item = nil
+        self.fallback_light_item = nil
     
     end)
 
@@ -1709,7 +1717,7 @@ function lib:init()
         orig(self, x, y, properties)
         self.undertale = properties["ut"] or false
         if self.undertale then
-            self:setSprite("world/events/savepointut", 0.15)
+            self:setSprite("world/events/savepointut", 1/6)
         end
     end)
 
@@ -1865,6 +1873,11 @@ function lib:init()
         SpeechBubble.__super.draw(self)
     end)
 
+    Utils.hook(Map, "init", function(orig, self, world, data)
+        orig(self, world, data)
+        MagicalGlassLib.encounters_enabled = false
+    end)
+
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
     PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
@@ -1917,13 +1930,10 @@ function Game:encounterLight(encounter, transition, enemy, context)
 
 end
 
-function lib:onFootstep(chara, num)
-    
-    if Game.world.map:getEvent("random_encounter") ~= nil then
+function lib:onFootstep()
 
-        Game.random_encounter_value = Game.random_encounter_value - 1
-
-
+    if Game.world and self.encounters_enabled then
+        self.steps_until_encounter = self.steps_until_encounter - 1
     end
 
 end

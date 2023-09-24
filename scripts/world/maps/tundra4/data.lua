@@ -1,7 +1,7 @@
 return {
   version = "1.10",
   luaversion = "5.1",
-  tiledversion = "1.10.1",
+  tiledversion = "1.10.2",
   class = "",
   orientation = "orthogonal",
   renderorder = "right-down",
@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 13,
-  nextobjectid = 138,
+  nextobjectid = 146,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -608,7 +608,23 @@ return {
       parallaxx = 1,
       parallaxy = 1,
       properties = {},
-      objects = {}
+      objects = {
+        {
+          id = 141,
+          name = "encounterzone",
+          type = "",
+          shape = "rectangle",
+          x = 215.627,
+          y = 120,
+          width = 864.373,
+          height = 320,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["encgroup"] = "test"
+          }
+        }
+      }
     },
     {
       type = "objectgroup",
@@ -777,21 +793,6 @@ return {
             ["text3"] = "[font:papyrus][voice:papyrus]WHO COULD HAVE\nBUILT THIS,[wait:5] YOU\nPONDER...",
             ["text4"] = "[font:papyrus][voice:papyrus]I BET IT WAS\nTHAT VERY FAMOUS\nROYAL GUARDSMAN!",
             ["text5"] = "[font:papyrus][voice:papyrus](NOTE: NOT YET A\nVERY FAMOUS\nROYAL GUARDSMAN.[wait:5])"
-          }
-        },
-        {
-          id = 131,
-          name = "randomencounter",
-          type = "",
-          shape = "point",
-          x = 40,
-          y = 40,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["encounter"] = "dummy"
           }
         },
         {

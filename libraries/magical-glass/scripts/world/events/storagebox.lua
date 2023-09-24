@@ -11,7 +11,7 @@ function StorageBox:init(x, y, properties)
     self:addChild(self.sprite)
 
     self:setSize(self.sprite:getSize())
-    self:setHitbox(2, 5, 16, 15)
+    self:setHitbox(0, 5, self.sprite.width, 12)
 
     self.inventory = properties["inventory"] or "box_a"
 

@@ -31,9 +31,6 @@ function item:init(inventory)
     self.result_item = nil
     -- Will this item be instantly consumed in battles?
     self.instant = false
-    
-    -- Default dark item conversion for this item
-    self.dark_item = "dark_candy"
 end
 
 function item:onToss()

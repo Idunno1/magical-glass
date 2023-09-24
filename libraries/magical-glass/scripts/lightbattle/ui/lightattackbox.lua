@@ -186,8 +186,8 @@ function LightAttackBox:miss(battler)
     if battler.attack_type == "shoe" then
         battler.bolts[1]:fade(battler.speed, battler.direction)
 
-        if #battler.bolts > 0 then
-            battler.bolts[1].sprite:setSprite(battler.bolts[1].active_sprite)
+        if #battler.bolts > 1 then
+            battler.bolts[2].sprite:setSprite(battler.bolts[2].active_sprite)
         end
     else
         battler.bolts[1]:remove()

@@ -68,8 +68,8 @@ with determination.)</property>
     <property name="ut" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="70" gid="676" x="510" y="230" width="40" height="40"/>
-  <object id="71" name="interactable" x="510" y="198" width="40" height="32">
+  <object id="70" gid="676" x="508.667" y="227" width="40" height="40"/>
+  <object id="71" name="interactable" x="508.667" y="196.667" width="39.3333" height="28.6667">
    <properties>
     <property name="solid" type="bool" value="true"/>
     <property name="text1" value="* (This is a box.)"/>
@@ -94,13 +94,13 @@ about coming back.)</property>
     <property name="marker" value="entry"/>
    </properties>
   </object>
-  <object id="78" name="transition" x="360" y="0" width="120" height="40">
+  <object id="78" name="transition" x="360" y="0" width="123.667" height="40">
    <properties>
     <property name="map" value="tundra3A"/>
     <property name="marker" value="spawn"/>
    </properties>
   </object>
-  <object id="82" name="storagebox" x="560" y="200" width="41.3333" height="42"/>
+  <object id="82" name="storagebox" x="560.667" y="191.333" width="41.3333" height="42"/>
  </objectgroup>
  <layer id="7" name="tiles3" width="20" height="12">
   <data encoding="csv">

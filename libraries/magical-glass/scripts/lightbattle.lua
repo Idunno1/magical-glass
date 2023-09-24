@@ -831,7 +831,9 @@ function LightBattle:onStateChange(old,new)
             end
         end
         
-        self.fader:fadeIn(nil, {speed=5/30})
+        self.fader:fadeIn(function()
+            self.soul.layer = BATTLE_LAYERS["soul"]        
+        end, {speed=5/30})
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()

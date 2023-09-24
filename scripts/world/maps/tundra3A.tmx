@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="107">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="15" nextobjectid="108">
  <editorsettings>
   <export target="tundra3A.lua" format="lua"/>
  </editorsettings>
@@ -90,6 +90,14 @@
     <property name="actor" value="dummy"/>
     <property name="lightencounter" value="dummy"/>
    </properties>
+  </object>
+ </objectgroup>
+ <objectgroup color="#01ef09" id="14" name="controllers">
+  <object id="107" name="encounterzone" x="21.1818" y="19.6319">
+   <properties>
+    <property name="encgroup" value="test"/>
+   </properties>
+   <point/>
   </object>
  </objectgroup>
 </map>

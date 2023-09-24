@@ -9,8 +9,8 @@ return {
   height = 12,
   tilewidth = 40,
   tileheight = 40,
-  nextlayerid = 14,
-  nextobjectid = 107,
+  nextlayerid = 15,
+  nextobjectid = 108,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -510,6 +510,37 @@ return {
           properties = {
             ["actor"] = "dummy",
             ["lightencounter"] = "dummy"
+          }
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 14,
+      name = "controllers",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 107,
+          name = "encounterzone",
+          type = "",
+          shape = "point",
+          x = 21.1818,
+          y = 19.6319,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["encgroup"] = "test"
           }
         }
       }
