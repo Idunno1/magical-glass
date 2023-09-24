@@ -1542,6 +1542,17 @@ function LightBattle:update()
                 break
             end
         end
+        if not any_hurt then
+            self.attackers = {}
+            self.normal_attackers = {}
+            self.auto_attackers = {}
+            if self.battle_ui.attacking then
+                self.battle_ui:endAttack()
+            end
+            if not self.encounter:onActionsEnd() then
+                self:setState("ENEMYDIALOGUE")
+            end
+        end
         if self.actions_done_timer == 0 and not any_hurt then
             self.attackers = {}
             self.normal_attackers = {}
