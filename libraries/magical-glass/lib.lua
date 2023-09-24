@@ -185,13 +185,14 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
+        self.use_light_battler_sprite = false
         self.light_battle_width = 0
         self.light_battle_height = 0
         self.light_battler_parts = {}
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
+        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
             return self.light_battle_width
         else
             return self.width
@@ -199,7 +200,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
+        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
             return self.light_battle_height
         else
             return self.height
