@@ -261,11 +261,6 @@ function LightEnemyBattler:spare(pacify)
         end
     end
 
-    if self.actor:getAnimation("lightbattle_spared") then
-        self.overlay_sprite:setAnimation("lightbattle_spared")
-    else
-        self.overlay_sprite:setAnimation("lightbattle_hurt")
-    end
     self:defeat(pacify and "PACIFIED" or "SPARED", false)
     self:onSpared()
 end
@@ -302,10 +297,14 @@ function LightEnemyBattler:canSpare()
 end
 
 function LightEnemyBattler:onSpared()
-    if self.actor:getAnimation("lightbattle_spared") then
-        self.overlay_sprite:setAnimation("lightbattle_spared")
+    if #self.actor.light_battler_parts > 0 then
+        if self.actor:getAnimation("lightbattle_spared") then
+            self.overlay_sprite:setAnimation("lightbattle_spared")
+        else
+            self.overlay_sprite:setAnimation("lightbattle_hurt")
+        end
     else
-        self.overlay_sprite:setAnimation("lightbattle_hurt")
+        self.overlay_sprite:setAnimation("spared")
     end
 end
 
@@ -572,9 +571,16 @@ function LightEnemyBattler:getDamageVoice() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
-    if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
-        self:toggleOverlay(false)
+    if #self.actor.light_battler_parts > 0 then
+        if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
+            self:toggleOverlay(false)
+        end
+    else
+        if not self:getActiveSprite():setAnimation("hurt") then
+            self:toggleOverlay(false)
+        end
     end
+
     self:getActiveSprite():shake(9, 0, 0.5, 2/30) -- not sure if this should be different
 
     Game.battle.timer:after(1/3, function()
@@ -755,7 +761,11 @@ function LightEnemyBattler:setActor(actor, use_overlay)
     if self.sprite         then self:removeChild(self.sprite)         end
     if self.overlay_sprite then self:removeChild(self.overlay_sprite) end
 
-    self.sprite = self.actor:createLightBattleSprite()
+    if #self.actor.light_battler_parts > 0 then
+        self.sprite = self.actor:createLightBattleSprite()
+    else
+        self.sprite = self.actor:createSprite()
+    end
     self:addChild(self.sprite)
 
     if use_overlay ~= false then

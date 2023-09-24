@@ -191,7 +191,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.light then
+        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
             return self.light_battle_width
         else
             return self.width
@@ -199,7 +199,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.light then
+        if Game.battle and Game.battle.light and #self.light_battler_parts > 0 then
             return self.light_battle_height
         else
             return self.height
@@ -1895,10 +1895,6 @@ function lib:changeSpareColor(color)
 end
 
 function Game:encounterLight(encounter, transition, enemy, context)
-
-    if not self.light then
-        self.light = true
-    end
 
     if transition == nil then transition = true end
 
