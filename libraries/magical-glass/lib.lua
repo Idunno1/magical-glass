@@ -187,7 +187,7 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
-        self.use_light_battler_sprite = true
+        self.use_light_battler_sprite = false
         self.light_battle_width = 0
         self.light_battle_height = 0
         self.light_battler_parts = {}
