@@ -8,6 +8,7 @@
 
     "chapter": 2,
 
+    "lightencounter": "dummy",
     "encounter": "dummy",
 
     "map": "tundra3",
@@ -22,7 +23,7 @@
 
     "equipment": {
         "kris": {
-            "weapon": "weapons/stick",
+            "weapon": "weapons/pencil",
             "armor": ["armors/bandage_ut"]
         }
     },

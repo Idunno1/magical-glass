@@ -40,7 +40,7 @@ function item:getLightBattleText()
     return "* You equipped Tough Glove."
 end
 
-function item:onAttack(battler, enemy, damage, stretch, crit)
+function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local state = "PRESS" -- PRESS, PUNCHING, DONE
     local punches = 0
     local punch_time = 0
@@ -115,8 +115,8 @@ function item:onAttack(battler, enemy, damage, stretch, crit)
                     small_punch:play(2/30, false, function(s) s:remove() end)
                 else
                     state = "DONE"
-                    local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
-                    src:setPitch(self:getAttackPitch() or 1)
+                    local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
+                    src:setPitch(self:getLightAttackPitch() or 1)
                     
                     local punch = Sprite("effects/attack/hyperfist")
                     punch:setOrigin(0.5, 0.5)

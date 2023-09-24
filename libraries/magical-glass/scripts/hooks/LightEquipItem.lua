@@ -157,10 +157,10 @@ function LightEquipItem:scoreHit(battler, score, eval, close)
     return new_score
 end
 
-function LightEquipItem:onAttack(battler, enemy, damage, stretch)
+function LightEquipItem:onLightAttack(battler, enemy, damage, stretch)
 
     local src = Assets.stopAndPlaySound(self:getAttackSound())
-    src:setPitch(self:getAttackPitch() or 1)
+    src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite(self:getAttackSprite())
     local scale = (stretch * 2) - 0.5
@@ -187,7 +187,7 @@ function LightEquipItem:onAttack(battler, enemy, damage, stretch)
 
 end
 
-function LightEquipItem:onMiss(battler, enemy, finish)
+function LightEquipItem:onLightMiss(battler, enemy, finish)
     enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()})
     if finish then
         Game.battle:endAttack()

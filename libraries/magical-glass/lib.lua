@@ -32,6 +32,7 @@ function lib:load()
     end
     
     if Game.is_new_file then
+        Game:setFlag("#default_battle_system", "deltarune") -- undertale, deltarune
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
         Game:setFlag("#undertale_save_menu", true)
@@ -112,7 +113,7 @@ function lib:registerDebugOptions(debug)
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
             if Game:isLight() then
                 Game:setFlag("temporary_world_value#", "light")
-                Game:setFlag("temp_inventory#", Game.inventory:save())
+                MagicalGlassLib:saveStorageAndEquips()
                 Game:setLight(false)
             end
             Game:encounter(id)
@@ -126,7 +127,7 @@ function lib:registerDebugOptions(debug)
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 if not Game:isLight() then
                     Game:setFlag("temporary_world_value#", "dark")
-                    Game:setFlag("temp_inventory#", Game.inventory:save())
+                    MagicalGlassLib:saveStorageAndEquips()
                     Game:setLight(true)
                 end
                 Game:encounter(id)
@@ -187,7 +188,7 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
-        self.use_light_battler_sprite = false
+        self.use_light_battler_sprite = true
         self.light_battle_width = 0
         self.light_battle_height = 0
         self.light_battler_parts = {}
@@ -384,11 +385,28 @@ function lib:init()
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
         -- the worst thing ever
 
-        if context then
-            if context.light_encounter then
+        local force
+        if Game:getFlag("current_battle_system#") == "undertale" then
+            force = "force_light"
+        elseif Game:getFlag("current_battle_system#") == "deltarune" then
+            force = "force_dark"
+        end
+
+        if force then
+            if force == "force_light" then
                 Game:encounterLight(encounter, transition, enemy, context)
-            elseif context.encounter then
+            elseif force == "force_dark" then
                 orig(self, encounter, transition, enemy, context)
+            end
+        elseif context then
+            if isClass(context) and context:includes(ChaserEnemy) then
+                if context.light_encounter then
+                    Game:setFlag("current_battle_system#", "undertale")
+                    Game:encounterLight(encounter, transition, enemy, context)
+                elseif context.encounter then
+                    Game:setFlag("current_battle_system#", "deltarune")
+                    orig(self, encounter, transition, enemy, context)
+                end
             end
         else
             if Game:getFlag("temporary_world_value#") then
@@ -409,8 +427,10 @@ function lib:init()
                 end
             else
                 if Game:isLight() then
+                    Game:setFlag("current_battle_system#", "undertale")
                     Game:encounterLight(encounter, transition, enemy, context)
                 else
+                    Game:setFlag("current_battle_system#", "deltarune")
                     orig(self, encounter, transition, enemy, context)
                 end
             end
@@ -451,10 +471,8 @@ function lib:init()
             end
         end
     
-        if not Game:getFlag("temporary_world_value#") then
-            local ball = Registry.createItem("light/ball_of_junk", self)
-            new_inventory:addItemTo("items", 1, ball)
-        end
+        local ball = Registry.createItem("light/ball_of_junk", self)
+        new_inventory:addItemTo("items", 1, ball)
     
         new_inventory.storage_enabled = was_storage_enabled
     
@@ -724,9 +742,10 @@ function lib:init()
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
+        Game:setFlag("current_battle_system#", nil)
         if Game:getFlag("temporary_world_value#") == "light" then
             Game:setLight(true)
-            Game.inventory:load(Game:getFlag("temp_inventory#"))
+            MagicalGlassLib:loadStorageAndEquips()
             Game:setFlag("temporary_world_value#", nil)
         end
     end)
@@ -814,8 +833,38 @@ function lib:init()
     
     end)
 
-    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
-    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
+    Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
+        local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
+        src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
+
+        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        local scale = (stretch * 2) - 0.5
+        sprite:setScale(scale, scale)
+        sprite:setOrigin(0.5, 0.5)
+        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
+        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+        sprite.color = battler.chara:getLightAttackColor() -- need to swap this to the get function
+        enemy.parent:addChild(sprite)
+        sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
+            local sound = enemy:getDamageSound() or "damage"
+            if sound and type(sound) == "string" then
+                Assets.stopAndPlaySound(sound)
+            end
+            enemy:hurt(damage, battler)
+
+            battler.chara:onAttackHit(enemy, damage)
+            this:remove()
+
+            Game.battle:endAttack()
+        end)
+    end)
+
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, finish)
+        enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()})
+        if finish then
+            Game.battle:endAttack()
+        end
+    end)
 
     Utils.hook(Item, "onCheck", function(orig, self)
         if type(self.check) == "string" then
@@ -1427,7 +1476,9 @@ function lib:init()
     
     Utils.hook(PartyMember, "onTurnEnd", function(orig, self, battler)
         for _,equip in ipairs(self:getEquipment()) do
-            equip:onTurnEnd(self)
+            if equip.onTurnEnd then
+                equip:onTurnEnd(self)
+            end
         end
     end)
 
@@ -1903,6 +1954,22 @@ function Game:encounterLight(encounter, transition, enemy, context)
 
     self.stage:addChild(self.battle)
 
+end
+
+function lib:saveStorageAndEquips()
+    Game:setFlag("temp_inventory#", Game.inventory:save())
+    for _,party in ipairs(Game.party) do
+        Game:setFlag("temp_equips_.."..party.id.."#", party:saveEquipment())
+    end
+end
+
+function lib:loadStorageAndEquips()
+    Game.inventory:load(Game:getFlag("temp_inventory#"))
+    for _,party in ipairs(Game.party) do
+        party:loadEquipment(Game:getFlag("temp_equips_.."..party.id.."#"))
+        Game:setFlag("temp_equips_.."..party.id.."#", nil)
+    end
+    Game:setFlag("temp_inventory#", nil)
 end
 
 function lib:onFootstep()

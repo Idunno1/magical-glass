@@ -37,9 +37,9 @@ function item:init()
     
 end
 
-function item:onAttack(battler, enemy, damage, stretch, crit)
-    local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
-    src:setPitch(self:getAttackPitch() or 1)
+function item:onLightAttack(battler, enemy, damage, stretch, crit)
+    local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
+    src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/frypan_impact")
     local stars = {}

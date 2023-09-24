@@ -29,7 +29,7 @@ function item:onWorldUse(target)
     local bonus = 0
     for _,party in ipairs(Game.party) do
         for _,equip in ipairs(party:getEquipment()) do
-            bonus = bonus + equip:getHealBonus()
+            bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
         end
     end
 

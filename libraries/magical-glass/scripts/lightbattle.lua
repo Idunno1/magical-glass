@@ -184,12 +184,12 @@ function LightBattle:createPartyBattlers()
 
         if Game:getFlag("#remove_overheal") then
             if party_member:getHealth() > party_member:getStat("health") + 15 then
-                party_member:getHealth() = party_member:getStat("health") + 15
+                party_member:setHealth(party_member:getStat("health") + 15)
             end
         end
 
         if party_member:getHealth() < 1 then
-            party_member:getHealth() = 1
+            party_member:setHealth(1)
         end
     end
 end
@@ -578,9 +578,9 @@ function LightBattle:processAction(action)
                 if Game:getFlag("#enable_lw_tp") then
                     Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
                 end
-                weapon:onAttack(battler, enemy, damage, action.stretch, crit)
+                weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
             else
-                weapon:onMiss(battler, enemy, true)
+                weapon:onLightMiss(battler, enemy, true)
             end
 
         end
@@ -651,7 +651,7 @@ function LightBattle:processAction(action)
                     local message
                     local bonus = 0
                     for _,equip in ipairs(battler.chara:getEquipment()) do
-                        bonus = bonus + equip:getHealBonus()
+                        bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
                     end
                     local amount = item.heal_amount + bonus
                     local chara = action.target.chara
@@ -1387,9 +1387,11 @@ function LightBattle:returnToWorld()
     Game.battle = nil
     Game.state = "OVERWORLD"
 
+    Game:setFlag("current_battle_system#", nil)
+
     if Game:getFlag("temporary_world_value#") == "dark" then
         Game:setLight(false)
-        Game.inventory:load(Game:getFlag("temp_inventory#"))
+        MagicalGlassLib:loadStorageAndEquips()
         Game:setFlag("temporary_world_value#", nil)
     end
 end

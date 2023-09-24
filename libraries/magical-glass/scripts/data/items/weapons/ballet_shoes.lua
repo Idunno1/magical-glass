@@ -40,8 +40,8 @@ function item:getLightBattleText()
 end
 
 function item:onAttack(battler, enemy, damage, stretch, crit)
-    local src = Assets.stopAndPlaySound(self:getAttackSound() or "laz_c")
-    src:setPitch(self:getAttackPitch() or 1)
+    local src = Assets.stopAndPlaySound(self:getLightAttackSound() or "laz_c")
+    src:setPitch(self:getLightAttackPitch() or 1)
 
     local sprite = Sprite("effects/attack/hyperfoot")
     sprite:setOrigin(0.5, 0.5)

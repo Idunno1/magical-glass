@@ -5,7 +5,7 @@ function HealItem:onWorldUse(target)
     local bonus = 0
     for _,party in ipairs(Game.party) do
         for _,equip in ipairs(party:getEquipment()) do
-            bonus = bonus + equip:getHealBonus()
+            bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
         end
     end
 
@@ -33,7 +33,7 @@ function HealItem:onLightBattleUse(user, target)
 
     local bonus = 0
     for _,equip in ipairs(user.chara:getEquipment()) do
-        bonus = bonus + equip:getHealBonus()
+        bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
     end
 
     if self.target == "ally" then

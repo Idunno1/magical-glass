@@ -22,11 +22,6 @@ function item:init()
         magic = 3
     }
 
-    -- Animation style
-    -- simple: frame by frame animation
-    -- complex: ignores self.attack_animation, animated by onAttack())
-    self.animation_style = "simple"
-
     -- Attack animation (only used for simple animations)
     self.attack_animation = "effects/attack/slap_n"
 
