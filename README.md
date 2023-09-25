@@ -53,6 +53,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 
 ### Sound Effects and Music:
 * UNDERTALE Team
+* deltarune Team
 
 ## Releases:
 https://github.com/Idunno1/magical-glass/releases<br>
