@@ -15,6 +15,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
   * Mini party members
 * EN and other stuff from GAMETEST_7 (maybe)
 * UNDERTALE enemy recreations
+* UNDERTALE movement
 
 ## Credits:
 
