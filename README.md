@@ -25,7 +25,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * Sam Deluxe (like, everything)
 * Nyako (made the basics and dust code)
 * bor (assistant)
-* JustAnotherRandomUser (assistant)
+* Just Another Random User (assistant)
 
 ### Testers:
 * Racckoon
