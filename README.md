@@ -30,6 +30,23 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Testers:
 * Racckoon
 
+### Emotional Support <3:
+* Lots of people from the Kristal Discord and its subcommunities
+* Eli
+* Danny
+* Juell
+* Nathan
+* Trihan
+* Garon
+* Rachel
+* Cris
+* skysakura
+* NVI
+* Welt
+* Lynel
+* Star Artsy
+* Techno
+
 ### Programming Assistance:
 * Kristal Team
 
