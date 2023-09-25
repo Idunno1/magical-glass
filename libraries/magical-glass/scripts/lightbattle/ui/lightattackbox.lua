@@ -125,15 +125,9 @@ function LightAttackBox:hit(battler)
     end
     if battler.attack_type == "shoe" then
         local close = math.abs(self:getClose(battler))
---[[         battler.score = battler.score + self:evaluateHit(battler, close)
 
-        if battler.score > 430 then
-            battler.score = battler.score * 1.8
-        end
-        if battler.score >= 400 then
-            battler.score = battler.score * 1.25
-        end ]]
         local eval = self:evaluateHit(battler, close)
+        
         if battler.weapon.scoreHit then
             battler.score = battler.weapon:scoreHit(battler, battler.score, eval, close)
         else
