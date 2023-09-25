@@ -25,7 +25,7 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Programmers:
 * Sam Deluxe (like, everything)
 * Nyako (made the basics and dust code)
-* bor (assistant)
+* bor (assistant, map recreations)
 * Just Another Random User (assistant)
 
 ### Testers:
