@@ -32,7 +32,8 @@ function lib:load()
     end
     
     if Game.is_new_file then
-        Game:setFlag("#default_battle_system", "deltarune") -- undertale, deltarune
+        Game:setFlag("#default_battle_system", "undertale") -- undertale, deltarune
+        Game:setFlag("#force_light_mode_in_light_battles", false)
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
         Game:setFlag("#undertale_save_menu", true)
@@ -125,12 +126,15 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
-                if not Game:isLight() then
+                if Game:getFlag("force_light_mode_in_light_battles") and not Game:isLight() then
                     Game:setFlag("temporary_world_value#", "dark")
                     MagicalGlassLib:saveStorageAndEquips()
                     Game:setLight(true)
+                    Game:encounter(id)
+                else
+                    Game:setFlag("current_battle_system#", "undertale")
+                    Game:encounterLight(id)
                 end
-                Game:encounter(id)
                 debug:closeMenu()
             end)
         end
@@ -832,6 +836,9 @@ function lib:init()
         self.fallback_light_item = nil
     
     end)
+
+    Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
+    Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
 
     Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 

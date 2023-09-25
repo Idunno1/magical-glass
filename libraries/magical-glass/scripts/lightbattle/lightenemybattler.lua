@@ -420,7 +420,6 @@ end
 function LightEnemyBattler:getNextMenuWaves()
     if self.menu_wave_override then
         local wave = self.menu_wave_override
-        self.menu_wave_override = nil
         return {wave}
     end
     return self.menu_waves
@@ -428,7 +427,6 @@ end
 
 function LightEnemyBattler:selectWave()
     local waves = self:getNextWaves()
-    print(waves[1])
     if waves and #waves > 0 then
         local wave = Utils.pick(waves)
         self.selected_wave = wave

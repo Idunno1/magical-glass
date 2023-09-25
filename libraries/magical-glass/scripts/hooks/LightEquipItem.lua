@@ -72,10 +72,10 @@ end
 
 function LightEquipItem:getAttackMissZone() return self.bolt_miss_threshold end
 
-function LightEquipItem:getAttackSprite() return self.attack_sprite end
+function LightEquipItem:getLightAttackSprite() return self.attack_sprite end
 
-function LightEquipItem:getAttackSound() return self.attack_sound end
-function LightEquipItem:getAttackPitch() return self.attack_pitch end
+function LightEquipItem:getLightAttackSound() return self.attack_sound end
+function LightEquipItem:getLightAttackPitch() return self.attack_pitch end
 
 function LightEquipItem:onTurnEnd() end
 
@@ -159,10 +159,10 @@ end
 
 function LightEquipItem:onLightAttack(battler, enemy, damage, stretch)
 
-    local src = Assets.stopAndPlaySound(self:getAttackSound())
+    local src = Assets.stopAndPlaySound(self:getLightAttackSound())
     src:setPitch(self:getLightAttackPitch() or 1)
 
-    local sprite = Sprite(self:getAttackSprite())
+    local sprite = Sprite(self:getLightAttackSprite())
     local scale = (stretch * 2) - 0.5
     sprite:setScale(scale, scale)
     sprite:setOrigin(0.5, 0.5)

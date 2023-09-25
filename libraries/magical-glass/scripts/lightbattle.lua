@@ -1312,8 +1312,27 @@ function LightBattle:nextTurn()
         self.battle_ui.encounter_text:setText(self.battle_ui.current_encounter_text)
     end
 
-    if self.encounter:getNextMenuWaves() and #self.encounter:getNextMenuWaves() > 0 then
+    self.encounter:onTurnStart()
+    for _,enemy in ipairs(self:getActiveEnemies()) do
+        enemy:onTurnStart()
+    end
+
+    if self.battle_ui then
+        for _,party in ipairs(self.party) do
+            party.chara:onTurnStart(party)
+        end
+    end
+
+    if self.current_selecting ~= 0 then
+        self:setState("ACTIONSELECT")
+    end
+
+    if self.encounter.getNextMenuWaves and #self.encounter:getNextMenuWaves() > 0 then
         self:setMenuWaves(self.encounter:getNextMenuWaves())
+
+        for _,enemy in ipairs(self:getActiveEnemies()) do
+            enemy.menu_wave_override = nil
+        end
         self.menu_wave_length = 0
         self.menu_wave_timer = 0
 
@@ -1328,21 +1347,6 @@ function LightBattle:nextTurn()
         end
 
         self.soul:onMenuWaveStart()
-    end
-
-    self.encounter:onTurnStart()
-    for _,enemy in ipairs(self:getActiveEnemies()) do
-        enemy:onTurnStart()
-    end
-
-    if self.battle_ui then
-        for _,party in ipairs(self.party) do
-            party.chara:onTurnStart(party)
-        end
-    end
-
-    if self.current_selecting ~= 0 then
-        self:setState("ACTIONSELECT")
     end
 
 end
