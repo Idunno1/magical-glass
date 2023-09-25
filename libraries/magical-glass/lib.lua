@@ -22,10 +22,6 @@ RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter"
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
-function lib:postInit(new_file)
-    Game.random_encounter_value = love.math.random(5, 10)
-end
-
 function lib:load()
     if Kristal.getModOption("encounter") then
         Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
@@ -41,7 +37,7 @@ function lib:load()
         Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
         Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("#enable_lw_tp", false)
-        Game:getFlag("#enable_low_hp_tired", false)
+        Game:setFlag("#enable_low_hp_tired", false)
         Game:setFlag("#deltarune_mercy_flash", false)
         Game:setFlag("#lw_stat_menu_portraits", "magical_glass") -- magical_glass, deltatraveler
         Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune
@@ -55,107 +51,6 @@ function lib:load()
         Game:setFlag("#hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
         Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name if their "use_player_name" property is set to true.
-    end
-end
-
-function lib:registerRandomEncounter(id)
-    self.random_encounters[id] = class
-end
-
-function lib:getRandomEncounter(id)
-    return self.random_encounters[id]
-end
-
-function lib:createRandomEncounter(id, ...)
-    if self.random_encounters[id] then
-        return self.random_encounters[id](...)
-    else
-        error("Attempt to create non existent random encounter \"" .. tostring(id) .. "\"")
-    end
-end
-
-function lib:registerLightEncounter(id)
-    self.light_encounters[id] = class
-end
-
-function lib:getLightEncounter(id)
-    return self.light_encounters[id]
-end
-
-function lib:createLightEncounter(id, ...)
-    if self.light_encounters[id] then
-        return self.light_encounters[id](...)
-    else
-        error("Attempt to create non existent light encounter \"" .. tostring(id) .. "\"")
-    end
-end
-
-function lib:registerLightEnemy(id)
-    self.light_enemies[id] = class
-end
-
-function lib:getLightEnemy(id)
-    return self.light_enemies[id]
-end
-
-function lib:createLightEnemy(id, ...)
-    if self.light_enemies[id] then
-        return self.light_enemies[id](...)
-    else
-        error("Attempt to create non existent light enemy \"" .. tostring(id) .. "\"")
-    end
-end
-
-function lib:registerDebugOptions(debug)
-
-    debug:registerMenu("encounter_select", "Encounter Select", "search")
-    -- loop through registry and add menu options for all encounters
-    for id,_ in pairs(Registry.encounters) do
-        debug:registerOption("encounter_select", id, "Start this encounter.", function()
-            if Game:isLight() then
-                Game:setFlag("temporary_world_value#", "light")
-                MagicalGlassLib:saveStorageAndEquips()
-                Game:setLight(false)
-            end
-            Game:encounter(id)
-            debug:closeMenu()
-        end)
-    end
-
-    debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
-    for id,_ in pairs(self.light_encounters) do
-        if id ~= "_nobody" then
-            debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
-                if Game:getFlag("force_light_mode_in_light_battles") and not Game:isLight() then
-                    Game:setFlag("temporary_world_value#", "dark")
-                    MagicalGlassLib:saveStorageAndEquips()
-                    Game:setLight(true)
-                    Game:encounter(id)
-                else
-                    Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounterLight(id)
-                end
-                debug:closeMenu()
-            end)
-        end
-    end
-
-    debug:registerMenu("wave_select_light", "Wave Select", "search")
-
-    local waves_list = {}
-    for id,_ in pairs(Registry.waves) do
-        table.insert(waves_list, id)
-    end
-
-    table.sort(waves_list, function(a, b)
-        return a < b
-    end)
-
-    for _,id in ipairs(waves_list) do
-        debug:registerOption("wave_select_light", id, "Start this wave.", function()
-            Game.battle:setState("ENEMYDIALOGUE", {id})
-            debug:closeMenu()
-        end)
     end
 end
 
@@ -186,6 +81,8 @@ function lib:preInit()
 end
 
 function lib:init()
+
+    print(self.info.id .. " version " .. self.info.version .. ": Getting ready...")
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
@@ -1462,6 +1359,20 @@ function lib:init()
 
     end)
 
+    Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
+        if playsound == nil or playsound then
+            Assets.stopAndPlaySound("power")
+        end
+        if Game:isLight() then
+            if self:getHealth() < self:getStat("health") then
+                self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
+            end
+        else
+            self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
+        end
+        return self:getStat("health") == self:getHealth()
+    end)
+
     Utils.hook(PartyMember, "getName", function(orig, self)
         if Game:getFlag("#savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
             return Game.save_name
@@ -1621,6 +1532,60 @@ function lib:init()
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
         if self.light_xact_color and type(self.light_xact_color) == "table" then
             return Utils.unpackColor(self.light_xact_color)
+        end
+    end)
+
+    Utils.hook(LightMenu, "draw", function(orig, self)
+        Object.draw(self)
+
+        local offset = 0
+        if self.top then
+            offset = 270
+        end
+    
+        local chara = Game.party[1]
+    
+        love.graphics.setFont(self.font)
+        Draw.setColor(PALETTE["world_text"])
+        love.graphics.print(chara:getName(), 46, 60 + offset)
+        love.graphics.setFont(self.font_small)
+        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
+        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
+        -- pastency when -sam, to sam
+        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
+        love.graphics.print(Game.lw_money, 82, 136 + offset)
+    
+        love.graphics.setFont(self.font)
+        if Game.inventory:getItemCount(self.storage, false) <= 0 then
+            Draw.setColor(PALETTE["world_gray"])
+        else
+            Draw.setColor(PALETTE["world_text"])
+        end
+        love.graphics.print("ITEM", 84, 188 + (36 * 0))
+        Draw.setColor(PALETTE["world_text"])
+        love.graphics.print("STAT", 84, 188 + (36 * 1))
+    
+        if not Game:getFlag("#hide_cell") then
+            if Game:getFlag("has_cell_phone") then
+                if #Game.world.calls > 0 then
+                    Draw.setColor(PALETTE["world_text"])
+                else
+                    Draw.setColor(PALETTE["world_gray"])
+                end
+                love.graphics.print("CELL", 84, 188 + (36 * 2))
+            end
+        else
+            if Game:getFlag("has_cell_phone") then
+                if #Game.world.calls > 0 then
+                    Draw.setColor(PALETTE["world_text"])
+                    love.graphics.print("CELL", 84, 188 + (36 * 2))
+                end
+            end
+        end
+    
+        if self.state == "MAIN" then
+            Draw.setColor(Game:getSoulColor())
+            Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
     end)
 
@@ -1919,6 +1884,107 @@ function lib:init()
 
     PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
     PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
+end
+
+function lib:registerRandomEncounter(id)
+    self.random_encounters[id] = class
+end
+
+function lib:getRandomEncounter(id)
+    return self.random_encounters[id]
+end
+
+function lib:createRandomEncounter(id, ...)
+    if self.random_encounters[id] then
+        return self.random_encounters[id](...)
+    else
+        error("Attempt to create non existent random encounter \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerLightEncounter(id)
+    self.light_encounters[id] = class
+end
+
+function lib:getLightEncounter(id)
+    return self.light_encounters[id]
+end
+
+function lib:createLightEncounter(id, ...)
+    if self.light_encounters[id] then
+        return self.light_encounters[id](...)
+    else
+        error("Attempt to create non existent light encounter \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerLightEnemy(id)
+    self.light_enemies[id] = class
+end
+
+function lib:getLightEnemy(id)
+    return self.light_enemies[id]
+end
+
+function lib:createLightEnemy(id, ...)
+    if self.light_enemies[id] then
+        return self.light_enemies[id](...)
+    else
+        error("Attempt to create non existent light enemy \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerDebugOptions(debug)
+
+    debug:registerMenu("encounter_select", "Encounter Select", "search")
+    -- loop through registry and add menu options for all encounters
+    for id,_ in pairs(Registry.encounters) do
+        debug:registerOption("encounter_select", id, "Start this encounter.", function()
+            if Game:isLight() then
+                Game:setFlag("temporary_world_value#", "light")
+                MagicalGlassLib:saveStorageAndEquips()
+                Game:setLight(false)
+            end
+            Game:encounter(id)
+            debug:closeMenu()
+        end)
+    end
+
+    debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
+    for id,_ in pairs(self.light_encounters) do
+        if id ~= "_nobody" then
+            debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
+                if Game:getFlag("force_light_mode_in_light_battles") and not Game:isLight() then
+                    Game:setFlag("temporary_world_value#", "dark")
+                    MagicalGlassLib:saveStorageAndEquips()
+                    Game:setLight(true)
+                    Game:encounter(id)
+                else
+                    Game:setFlag("current_battle_system#", "undertale")
+                    Game:encounterLight(id)
+                end
+                debug:closeMenu()
+            end)
+        end
+    end
+
+    debug:registerMenu("wave_select_light", "Wave Select", "search")
+
+    local waves_list = {}
+    for id,_ in pairs(Registry.waves) do
+        table.insert(waves_list, id)
+    end
+
+    table.sort(waves_list, function(a, b)
+        return a < b
+    end)
+
+    for _,id in ipairs(waves_list) do
+        debug:registerOption("wave_select_light", id, "Start this wave.", function()
+            Game.battle:setState("ENEMYDIALOGUE", {id})
+            debug:closeMenu()
+        end)
+    end
 end
 
 function lib:changeSpareColor(color)

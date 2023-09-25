@@ -9,10 +9,10 @@ function Dummy:init()
     self:setActor("dummy_ut")
 
     -- Enemy health
-    self.max_health = 10
-    self.health = 10
+    self.max_health = 800
+    self.health = 800
     -- Enemy attack (determines bullet damage)
-    self.attack = 7
+    self.attack = 5
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
@@ -24,7 +24,9 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "aiming"
+        "basic",
+        "aiming",
+        "movingarena"
     }
 
     self.menu_waves = {
@@ -37,13 +39,12 @@ function Dummy:init()
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)
-    self.check = "ATK Some DEF Probably\n* Cotton heart and button eye\n* You are the apple of my eye"
+    self.check = "ATK 5 DEF 0\n* Cotton heart and button eye\n* You are the apple of my eye"
 
     -- Text randomly displayed at the bottom of the screen each turn
     self.text = {
-        "* The dummy gives you a soft\nsmile.",
-        "* The power of fluffy boys is\nin the air.",
-        "* Smells like cardboard.",
+        "* Dummy stands around\nabsentmindedly.",
+        "* Dummy stands around\nabsentmindedly?"
     }
     -- Text displayed at the bottom of the screen when the enemy has low health
     self.low_health_text = "* The dummy looks like it's\nabout to fall over."
@@ -90,18 +91,14 @@ function Dummy:onAct(battler, name)
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
         Game:setFlag("#enable_lw_tp", true)
-        Game.battle.tension_bar = LightTensionBar(-25, 53, false)
-        Game.battle.tension_bar:show()
-        Game.battle:addChild(Game.battle.tension_bar)
+        Game.battle.tension_bar.visible = true
         return "* deltrarune"
-
     elseif name == "undertale" then
         local fuck = self:getAct("undertale")
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
         Game:setFlag("#enable_lw_tp", false)
-
-        Game.battle.tension_bar:hide()
+        Game.battle.tension_bar.visible = false
 --[[         Game.battle.timer:after(1, function()
             Game.battle.tension_bar = nil
         end) ]]

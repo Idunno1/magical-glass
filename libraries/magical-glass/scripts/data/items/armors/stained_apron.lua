@@ -29,9 +29,7 @@ end
 
 function item:onTurnEnd(battler)
     if Game.battle.turn_count % 2 == 0 then
-        if battler:getHealth() < battler:getStat("health") then
-            battler:heal(1)
-        end
+        battler:heal(1)
         Assets.stopAndPlaySound("power")
     end
 end

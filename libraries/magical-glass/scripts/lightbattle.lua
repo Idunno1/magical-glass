@@ -236,11 +236,12 @@ function LightBattle:postInit(state, encounter)
 
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
-    
-    if Game:getFlag("#enable_lw_tp") then
-        self.tension_bar = LightTensionBar(29, 53, true)
-        self:addChild(self.tension_bar)
+
+    self.tension_bar = LightTensionBar(29, 53, true)
+    if not Game:getFlag("#enable_lw_tp") then
+        self.tension_bar.visible = false
     end
+    self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
         for _,enemy in ipairs(Game.encounter_enemies) do
@@ -1138,7 +1139,7 @@ function LightBattle:onStateChange(old,new)
     elseif new == "TRANSITIONOUT" then
         self.current_selecting = 0
 
-        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 5/30})
+        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
 
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
@@ -1567,7 +1568,7 @@ function LightBattle:update()
             end
         end
     elseif self.state == "DEFENDINGBEGIN" then
-
+        local done = false
         if #self.arena.target_shape == 0 and #self.arena.target_position == 0 then
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
@@ -1597,14 +1598,13 @@ function LightBattle:update()
             if has_arena and not (self.arena.width == arena_w and self.arena.height == arena_h) then
                 self.arena:changeShape({self.arena.width, arena_h})
                 self.arena:changePosition({arena_x, arena_y})
+                done = true
             end
         end
 
         self.defending_begin_timer = self.defending_begin_timer + DTMULT
-        if self.defending_begin_timer >= 15 then -- look into this in ut
-            if self.soul then
-                self.soul.can_move = true
-            end
+        if self.defending_begin_timer >= 15 and done then -- look into this in ut
+            self.soul.can_move = true
             self:setState("DEFENDING")
         end
 

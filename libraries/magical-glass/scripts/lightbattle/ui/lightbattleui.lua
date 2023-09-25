@@ -378,17 +378,17 @@ function LightBattleUI:drawState()
 
                 if enemy.tired and enemy:canSpare() then
                     if enemy:getMercyVisibility() then
-                        Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 20, 10 + y_offset)
+                        Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 10, 10 + y_offset)
                         spare_icon = true
                     end
                     
-                    Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 40, 10 + y_offset)
+                    Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 30, 10 + y_offset)
                     tired_icon = true
                 elseif enemy.tired then
-                    Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 40, 10 + y_offset)
+                    Draw.draw(self.tiredmark, 140 + font_mono:getWidth(enemy.name) + 30, 10 + y_offset)
                     tired_icon = true
                 elseif enemy.mercy >= 100 and enemy:getMercyVisibility() then
-                    Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 20, 10 + y_offset)
+                    Draw.draw(self.sparestar, 140 + font_mono:getWidth(enemy.name) + 10, 10 + y_offset)
                     spare_icon = true
                 end
 
@@ -420,10 +420,12 @@ function LightBattleUI:drawState()
 
                     Draw.setColor(128/255, 128/255, 128/255, 1)
 
-                    if ((80 + namewidth + 60 + (font_mono:getWidth(enemy.comment) / 2)) < 415) then
-                        love.graphics.print(enemy.comment, 80 + namewidth + 60, 50 + y_offset)
-                    else
-                        love.graphics.print(enemy.comment, 80 + namewidth + 60, 50 + y_offset, 0, 0.5, 1)
+                    if Game:getFlag("#gauge_styles") == "deltarune" then
+                        if ((80 + namewidth + 110 + (font_mono:getWidth(enemy.comment) / 2)) < 338) then
+                            love.graphics.print(enemy.comment, 80 + namewidth + 110, 0 + y_offset)
+                        else
+                            love.graphics.print(enemy.comment, 80 + namewidth + 110, 0 + y_offset, 0, 0.5, 1)
+                        end
                     end
 
                     local hp_percent = enemy.health / enemy.max_health

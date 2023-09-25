@@ -1,16 +1,11 @@
 {
     "id": "magical-glass",
     "authors": [
-        "Nyakorita - Initial UI and dust code",
-        "Sam Deluxe - Finished the UI and made it playable",
-        "Bor - Helped with stuff"
+        "Nyakorita",
+        "Sam Deluxe",
+        "Bor",
+        "Just Another Random User"
     ],
     "version": "v1.0.0",
-    "engineVer": "v0.9.0-dev",
-
-    "config": {
-        "undertaleCurrency": "gold",
-        "undertaleCurrencyShort": "G"
-        // End of config
-    }
+    "engineVer": "v0.9.0-dev"
 }

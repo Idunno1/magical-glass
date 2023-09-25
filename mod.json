@@ -1,23 +1,21 @@
 {
-    "id": "magical-glass-s",
+    "id": "magical-glass",
     "name": "Magical Glass",
-    "subtitle": "...What fucking game am I playing again?",
+    "subtitle": "...What game am I playing again?",
 
-    "version": "v4.2.0",
+    "version": "v1.0.0",
     "engineVer": "v0.9.0-dev",
 
     "chapter": 2,
-
-    "lightencounter": "dummy",
-    "encounter": "dummy",
 
     "map": "tundra3",
 
     "party": ["kris"],
 
     "inventory": {
-        "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie", "armors/bandage_ut", "weapons/empty_gun"],
-        "box_a": ["weapons/tough_glove"],
+        "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie"],
+        "box_a": ["weapons/stick", "weapons/toy_knife", "weapons/tough_glove", "weapons/ballet_shoes", "weapons/torn_notebook", "weapons/burnt_pan", "weapons/empty_gun", "weapons/worn_dagger", "weapons/real_knife"],
+        "box_b": ["armors/bandage_ut", "armors/faded_ribbon", "armors/manly_bandanna", "armors/old_tutu", "armors/cloudy_glasses", "armors/stained_apron", "armors/cowboy_hat", "armors/heart_locket", "armors/the_locket"],
         "key_items": ["cell_phone"]
     },
 
@@ -30,10 +28,11 @@
 
     "config": {
         "kristal": {
-            "mercyBar": false,
+            "lightCurrency": "gold",
+            "lightCurrencyShort": "G",
+            "mercyBar": true,
             "mercyMessages": false,
             "enemyBarPercentages": false,
-            "smallSaveMenu": false
             // End of config
         }
     }

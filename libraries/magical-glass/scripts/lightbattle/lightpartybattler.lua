@@ -5,13 +5,6 @@ function LightPartyBattler:init(chara)
     self.actor = chara:getActor()
 
     super.init(self, x, y, self.actor:getSize())
-    
-    -- not exactly sure how this is gonna work yet
---[[     if self.actor then
-        self:setActor(self.actor, true)
-    end
-
-    self:setAnimation("battle/idle") ]]
 
     self.action = nil
 
@@ -91,7 +84,6 @@ function LightPartyBattler:getElementReduction(element)
 
     if (element == 0) then return 1 end
 
-    -- dummy values since we don't have elements
     local armor_elements = {
         {element = 0, element_reduce_amount = 0},
         {element = 0, element_reduce_amount = 0}
@@ -119,34 +111,24 @@ function LightPartyBattler:hurt(amount, exact, color, options)
             if self.defending then
                 amount = math.ceil((2 * amount) / 3)
             end
-            -- we don't have elements right now
             local element = 0
             amount = math.ceil((amount * self:getElementReduction(element)))
         end
 
         self:removeHealth(amount)
     else
-        -- We're targeting everyone.
         if not exact then
             amount = self:calculateDamage(amount)
-            -- we don't have elements right now
             local element = 0
             amount = math.ceil((amount * self:getElementReduction(element)))
 
             if self.defending then
-                amount = math.ceil((3 * amount) / 4) -- Slightly different than the above
+                amount = math.ceil((3 * amount) / 4)
             end
 
-            self:removeHealthBroken(amount) -- Use a separate function for cleanliness
+            self:removeHealthBroken(amount)
         end
     end
-
-    -- delt of traveler
---[[     if (self.chara:getHealth() <= 0) then
-        self:statusMessage("msg", "down", color, true)
-    else
-        self:statusMessage("damage", amount, color, true)
-    end ]]
 
     Game.battle:shakeCamera(2)
 
@@ -185,8 +167,6 @@ end
 function LightPartyBattler:down()
     self.is_down = true
     self.sleeping = false
-    --self:toggleOverlay(true)
-    --self.overlay_sprite:setAnimation("battle/defeat")
     if self.action then
         Game.battle:removeAction(Game.battle:getPartyIndex(self.chara.id))
     end
@@ -217,10 +197,6 @@ function LightPartyBattler:revive()
     self:toggleOverlay(false)
 end
 
---[[ function LightPartyBattler:flash(sprite, offset_x, offset_y, layer)
-    super.flash(self, sprite or self.overlay_sprite.visible and self.overlay_sprite or self.sprite, offset_x, offset_y, layer)
-end ]]
-
 function LightPartyBattler:heal(amount, show_up, sound)
     if sound then
         Assets.stopAndPlaySound("power")
@@ -228,25 +204,12 @@ function LightPartyBattler:heal(amount, show_up, sound)
 
     amount = math.floor(amount)
 
-    self.chara:setHealth(self.chara:getHealth() + amount)
+    if self.chara:getHealth() < self.chara:getStat("health") then
+        self.chara:setHealth(self.chara:getHealth() + amount)
+    end
 
     local was_down = self.is_down
     self:checkHealth()
-
-    if self.chara:getHealth() >= self.chara:getStat("health") then
-        self.chara:setHealth(self.chara:getStat("health"))
-        --self:statusMessage("msg", "max")
---[[     else
-        if show_up then
-            if was_down ~= self.is_down then
-                self:statusMessage("msg", "up")
-            end
-        else
-            self:statusMessage("heal", amount, {0, 1, 0})
-        end ]]
-    end
-
-    --self:sparkle(unpack(sparkle_color or {}))
 end
 
 function LightPartyBattler:checkHealth()
@@ -293,35 +256,6 @@ function LightPartyBattler:resetSprite()
     self:setAnimation("battle/idle")
 end
 
---[[ function LightPartyBattler:setActSprite(sprite, ox, oy, speed, loop, after)
-
-    self:setCustomSprite(sprite, ox, oy, speed, loop, after)
-
-    local x = self.x - (self.actor:getWidth()/2 - ox) * 2
-    local y = self.y - (self.actor:getHeight() - oy) * 2
-    local flash = FlashFade(sprite, x, y)
-    flash:setOrigin(0, 0)
-    flash:setScale(self:getScale())
-    self.parent:addChild(flash)
-
-    local afterimage1 = AfterImage(self, 0.5)
-    local afterimage2 = AfterImage(self, 0.6)
-    afterimage1.physics.speed_x = 2.5
-    afterimage2.physics.speed_x = 5
-
-    afterimage2.layer = afterimage1.layer - 1
-
-    self:addChild(afterimage1)
-    self:addChild(afterimage2)
-end ]]
-
---[[ function LightPartyBattler:setSprite(sprite, speed, loop, after)
-    self.sprite:setSprite(sprite)
-    if not self.sprite.directional and speed then
-        self.sprite:play(speed, loop, after)
-    end
-end ]]
-
 function LightPartyBattler:update()
     if self.actor then
         self.actor:onBattleUpdate(self)
@@ -336,31 +270,7 @@ function LightPartyBattler:update()
         end
     end
 
---[[     self.target_sprite.visible = false
-    if self:isTargeted() then
-        if (Game:getConfig("targetSystem")) and (Game.battle.state == "ENEMYDIALOGUE") then
-            self.target_sprite.visible = true
-        end
-    elseif self.should_darken then
-        if (self.darken_timer < 15) then
-            self.darken_timer = self.darken_timer + DTMULT
-        end
-    else
-        if not self.should_darken then
-            if self.darken_timer > 0 then
-                self.darken_timer = self.darken_timer - (3 * DTMULT)
-            end
-        end
-    end ]]
-
     super.update(self)
-end
-
-function LightPartyBattler:draw()
-    super.draw(self)
---[[     if self.actor then
-        self.actor:onBattleDraw(self)
-    end ]]
 end
 
 return LightPartyBattler

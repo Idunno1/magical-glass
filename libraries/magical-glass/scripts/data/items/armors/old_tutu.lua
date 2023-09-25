@@ -13,7 +13,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Armor DF 10\n* Finally, a protective piece\nof armor."
+    self.check = "Armor DF 10\n* Finally,[wait:2] a protective piece\nof armor."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"

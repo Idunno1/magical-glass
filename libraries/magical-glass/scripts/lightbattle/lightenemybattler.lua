@@ -121,11 +121,11 @@ end
 
 function LightEnemyBattler:setTired(bool)
     self.tired = bool
---[[     if self.tired then
+    if self.tired then
         self.comment = "(Tired)"
     else
         self.comment = ""
-    end ]]
+    end
 end
 
 function LightEnemyBattler:removeAct(name)
