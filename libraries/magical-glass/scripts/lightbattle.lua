@@ -2646,19 +2646,16 @@ function LightBattle:onKeyPressed(key)
             self:setState("ACTIONSELECT", "CANCEL")
             return
         elseif Input.is("left", key) then
-            local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
-            local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
+            local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1
+            local max_page = math.ceil(#self.menu_items / (self.current_menu_columns * self.current_menu_rows))
             local old = self.current_menu_x
 
             self.current_menu_x = self.current_menu_x - 1
 
             if self.current_menu_x < 1 then -- vomit
-                self.current_menu_x = self.current_menu_columns + (max_page + 1)
-                if not self:isValidMenuLocation() then
-                    self.current_menu_x = self.current_menu_columns + (max_page + 1) - 1
-                    if not self:isValidMenuLocation() then
-                        self.current_menu_x = self.current_menu_columns + (max_page + 1) - 2
-                    end
+                self.current_menu_x = self.current_menu_columns * (max_page - self.current_menu_x)
+                while not self:isValidMenuLocation() do
+                    self.current_menu_x = self.current_menu_x - 1 -- i swear i did this before and it just overflowed
                 end
 
                 if not self:isPagerMenu() and self.current_menu_columns > 1 and self.current_menu_x % 2 ~= 0 then
