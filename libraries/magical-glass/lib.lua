@@ -1714,6 +1714,7 @@ function lib:init()
         if call[3] == nil or call[3] then
             Assets.playSound("phone", 0.7)
         end
+
         Game.world.menu:closeBox()
         Game.world.menu.state = "TEXT"
         Game.world:setCellFlag(call[2], Game.world:getCellFlag(call[2], -1) + 1)

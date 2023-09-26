@@ -10,6 +10,6 @@ function Mod:postInit()
 end
 
 function Mod:load()
-    Game.world:registerCall("Dimensional Box A", "cell.box_a", false)
-    Game.world:registerCall("Dimensional Box B", "cell.box_b", false)
+    Game.world:registerCall("Dimensional Box A", "cell.box_a", false, 5/30)
+    Game.world:registerCall("Dimensional Box B", "cell.box_b", false, 5/30)
 end

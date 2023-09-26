@@ -13,7 +13,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Armor DF 3\n* If you're cuter, monsters\nwon't hit you as hard."
+    self.check = "Armor DF 3\n* If you're cuter[wait:2], monsters\nwon't hit you as hard."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"

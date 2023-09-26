@@ -225,10 +225,10 @@ function LightBattleUI:drawState()
             end
 
             local name = item.name
-            if item.shortname then
-                name = item.shortname
-            elseif item.seriousname and Game:getFlag("#serious_mode") then
+            if item.seriousname and Game:getFlag("#serious_mode") then
                 name = item.seriousname
+            elseif item.shortname then
+                name = item.shortname
             end
 
             if #item.party > 0 then
@@ -336,16 +336,40 @@ function LightBattleUI:drawState()
         for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
 
             local enemy = enemies[index]
-            local y_offset = (index - page_offset - 1) * 30
+            local y_offset = (index - page_offset - 1) * 32
 
             local name_colors = enemy:getNameColors()
             if type(name_colors) ~= "table" then
                 name_colors = {name_colors}
             end
 
+            local name = "* " .. enemy.name
+            if #Game.battle.enemies <= 3 then
+                if index == 1 and #Game.battle.enemies > 1 then
+                    if #Game.battle.enemies == 3 then
+                        if enemy.id == enemies[2].id or enemy.id == enemies[3].id then
+                            name = name .. " A"
+                        end
+                    else
+                        if enemy.id == enemies[2].id then
+                            name = name .. " A"
+                        end
+                    end
+                elseif index == 2 and #Game.battle.enemies > 1 then
+                    if enemy.id == enemies[1].id then
+                        name = name .. " B"
+                    end
+                elseif index == 3 and #Game.battle.enemies > 2 then
+                    if enemy.id == enemies[2].id then
+                        name = name .. " C"
+                    end
+                end
+            end
+            -- yes this DOESN'T account for a different enemy type in the middle
+
             if #name_colors <= 1 then
                 Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                love.graphics.print("* " .. enemy.name, 100, 0 + y_offset)
+                love.graphics.print(name, 100, 0 + y_offset)
             else
                 local canvas = Draw.pushCanvas(font_mono:getWidth("* " .. enemy.name), font_mono:getHeight())
                 Draw.setColor(1, 1, 1)

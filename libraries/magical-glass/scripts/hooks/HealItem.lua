@@ -89,7 +89,7 @@ function HealItem:getWorldUseText(target)
         if #Game.party > 1 then
             return "* Everyone ate the " .. self:getName() .. "."
         else
-            return "* You ate the " .. self:getName() .. "."
+            return "* " .. target:getNameOrYou() .. " ate the " .. self:getName() .. "."
         end
     end
 end

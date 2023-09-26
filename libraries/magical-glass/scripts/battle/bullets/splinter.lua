@@ -2,7 +2,7 @@ local bullet, super = Class(Bullet)
 
 function bullet:init(x, y)
     super:init(self, x, y)
-    self:setSprite("bullets/froggit/flybullet", 2/30, true)
+    self:setSprite("bullets/bulletsm", 1, true)
 
     self:setScale(1, 1)
     self:setOrigin(0.5, 0.5)
@@ -20,15 +20,6 @@ function bullet:init(x, y)
     self.physics.direction = angle
     self.physics.speed = 2.5
 
-    Game.battle.timer:every(1.1, function()
-        self.physics.speed = 0
-        local new_angle = Utils.angle(self.x, self.y, Game.battle.soul.x + 2, Game.battle.soul.y + 2)
-        self.physics.direction = new_angle
-    end)
-
-    Game.battle.timer:every(1.5, function()
-        self.physics.speed = 3
-    end)
 end
 
 function bullet:update()

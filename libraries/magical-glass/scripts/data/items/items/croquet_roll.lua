@@ -1,26 +1,26 @@
-local item, super = Class(HealItem, "items/monster_candy")
+local item, super = Class(HealItem, "items/croquet_roll")
 
 function item:init(inventory)
     super.init(self)
 
     -- Display name
-    self.name = "Monster Candy"
-    self.short_name = "MnstrCndy"
+    self.name = "Croquet Roll"
+    self.short_name = "CroqtRoll"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
     self.light = true
 
-    self.heal_amount = 10
+    self.heal_amount = 15
 
     -- Default shop price (sell price is halved)
-    self.price = 25
+    self.price = 10
     -- Whether the item can be sold
     self.can_sell = true
 
     -- Light world check text
-    self.check = "Heals 10 HP\n* Has a distinct,[wait:2]\nnon licorice flavor."
+    self.check = "Heals 15 HP\n* Fried dough traditionally\nserved with a mallet."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"
@@ -31,24 +31,18 @@ function item:init(inventory)
     -- Will this item be instantly consumed in battles?
     self.instant = false
     
-    -- Default dark item conversion for this item
-    self.dark_item = "dark_candy"
 end
 
-function item:getLightBattleText(target)
-    local message = ""
-    if not Game:getFlag("#serious_mode") then
-        local picker = Utils.random(0, 15, 1)
-        if picker == 15 then
-            message = "\n* ... tastes like licorice."
-        end
-
-        if picker <= 2 then
-            message = "\n* Very un-licorice-like."
+function item:getLightBattleText(user, target)
+    if Game:getFlag("#serious_mode") then
+        return super.getLightBattleText(self, user, target)
+    else
+        if user.chara.id == Game.party[1].id and target.chara.id == Game.party[1].id then
+            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into \nyour mouth."
+        else
+            return "* " .. user.chara:getNameOrYou() .. " hit the Croquet Roll into \n"..target.chara:getName().."'s mouth."
         end
     end
-
-    return "* " .. target.chara:getNameOrYou() .. " ate the Monster Candy."..message
 end
 
 return item

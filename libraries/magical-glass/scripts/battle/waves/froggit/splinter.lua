@@ -8,7 +8,7 @@ end
 function wave:onStart()
     local x = Utils.random(Game.battle.arena.left, Game.battle.arena.right)
 
-    local bullet = self:spawnBullet("fly", x, Game.battle.arena.top)
+    local bullet = self:spawnBullet("splinter", x, Game.battle.arena.top)
 
     local time = 20/30
     if #Game.battle.enemies == 2 then
@@ -20,7 +20,7 @@ function wave:onStart()
     self.timer:every(time, function()
         local x = Utils.random(Game.battle.arena.left, Game.battle.arena.right)
 
-        local bullet = self:spawnBullet("fly", x, Game.battle.arena.top)
+        local bullet = self:spawnBullet("splinter", x, Game.battle.arena.top)
     end)
 end
 

@@ -956,8 +956,7 @@ function LightBattle:onStateChange(old,new)
                     self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
                 end
             else
-                self:setWaves(self.encounter:getNextWaves())
-                self.wave_timer = 1
+                self:setWaves(self.encounter:getNextWaves(), true)
             end
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
@@ -1029,8 +1028,9 @@ function LightBattle:onStateChange(old,new)
                     local dialogue = enemy:getEnemyDialogue()
                     if dialogue then
                         any_dialogue = true
-                        local bubble = enemy:spawnSpeechBubble(dialogue) -- add a side thing
+                        local bubble = enemy:spawnSpeechBubble(dialogue)
                         bubble:setSkippable(false)
+                        bubble:setAdvance(false)
                         table.insert(self.enemy_dialogue, bubble)
                     end
                 end
@@ -1040,11 +1040,6 @@ function LightBattle:onStateChange(old,new)
             end
         end
     elseif new == "DIALOGUEEND" then
-        for _,bubble in ipairs(self.enemy_dialogue) do
-            bubble:remove()
-        end
-        self.enemy_dialogue = {}
-
         self.battle_ui:clearEncounterText()
 
         for i,battler in ipairs(self.party) do
@@ -1555,8 +1550,7 @@ function LightBattle:update()
             if not self.encounter:onActionsEnd() then
                 self:setState("ENEMYDIALOGUE")
             end
-        end
-        if self.actions_done_timer == 0 and not any_hurt then
+        elseif self.actions_done_timer == 0 and not any_hurt then
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
@@ -1567,8 +1561,38 @@ function LightBattle:update()
                 self:setState("ENEMYDIALOGUE")
             end
         end
+    elseif self.state == "ENEMYDIALOGUE" then
+        self.textbox_timer = self.textbox_timer - DTMULT
+        if (self.textbox_timer <= 0) and self.use_textbox_timer then
+            self:advanceBoxes()
+        else
+            local all_done = true
+            local boxes_done = true
+
+            for _,textbox in ipairs(self.enemy_dialogue) do
+                if textbox:isTyping() then
+                    boxes_done = false
+                end
+            end
+
+            for _,textbox in ipairs(self.enemy_dialogue) do
+                if boxes_done then
+                    textbox:setAdvance(true)
+                end
+            end
+
+            for _,textbox in ipairs(self.enemy_dialogue) do
+                if not textbox:isDone() then
+                    all_done = false
+                    break
+                end
+            end
+
+            if all_done then
+                self:setState("DIALOGUEEND")
+            end
+        end
     elseif self.state == "DEFENDINGBEGIN" then
-        local done = false
         if #self.arena.target_shape == 0 and #self.arena.target_position == 0 then
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
@@ -1598,12 +1622,11 @@ function LightBattle:update()
             if has_arena and not (self.arena.width == arena_w and self.arena.height == arena_h) then
                 self.arena:changeShape({self.arena.width, arena_h})
                 self.arena:changePosition({arena_x, arena_y})
-                done = true
             end
         end
 
         self.defending_begin_timer = self.defending_begin_timer + DTMULT
-        if self.defending_begin_timer >= 15 and done then -- look into this in ut
+        if self.defending_begin_timer >= 15 then -- look into this in ut
             self.soul.can_move = true
             self:setState("DEFENDING")
         end
@@ -1625,22 +1648,6 @@ function LightBattle:update()
         end
 
         self:updateWaves()
-    elseif self.state == "ENEMYDIALOGUE" then
-        self.textbox_timer = self.textbox_timer - DTMULT
-        if (self.textbox_timer <= 0) and self.use_textbox_timer then
-            self:advanceBoxes()
-        else
-            local all_done = true
-            for _,textbox in ipairs(self.enemy_dialogue) do
-                if not textbox:isDone() then
-                    all_done = false
-                    break
-                end
-            end
-            if all_done then
-                self:setState("DIALOGUEEND")
-            end
-        end
     elseif self.state == "ACTIONSELECT" then
         local actbox = self.battle_ui.action_boxes[self.current_selecting]
         if actbox then
@@ -2643,7 +2650,11 @@ function LightBattle:onKeyPressed(key)
             end
         elseif Input.isCancel(key) then
             Game:setTensionPreview(0)
-            self:setState("ACTIONSELECT", "CANCEL")
+            if self.state_reason == "ACT" then
+                self:setState("ENEMYSELECT", "ACT")
+            else
+                self:setState("ACTIONSELECT", "CANCEL")
+            end
             return
         elseif Input.is("left", key) then
             local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1

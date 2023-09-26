@@ -34,7 +34,7 @@ function actor:init()
             sprite.layer = 500
             sprite:play(2, true)
             -- local path = {{264, 300}, {272, 296}, {280, 300}, {272, 304}, {272, 292}}
-            local path =    {{0, 0},     {2, -2},    {4, -1},    {2, 0},    {2, -3},   {0, 0}} -- still not accurate
+            local path =    {{0, 0},     {2, -2},    {4, -1},    {2, 0},    {1, -3},   {0, 0}} -- still not accurate
             sprite:slidePath(path, {speed = 0.25, loop = true, relative = true})
             return sprite
         end

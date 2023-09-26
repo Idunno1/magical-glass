@@ -14,7 +14,7 @@ function item:init()
     self.light = true
 
     -- Light world check text
-    self.check = "Weapon AT 5\n* A worn pink leather glove.\nFor five-fingered folk."
+    self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:2]\nFor five-fingered folk."
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"

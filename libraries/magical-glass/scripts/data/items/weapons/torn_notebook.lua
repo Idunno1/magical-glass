@@ -16,7 +16,7 @@ function item:init()
     -- Light world check text
     self.check = {
         "Weapon AT 2\n* Contains illegible scrawls.\n* Increases INV by 6.",
-        "* (After you get hurt by an attack[wait:2],\nyou stay invulnerable for longer.)" -- doesn't show up in UT???
+        "* (After you get hurt by an\nattack[wait:2], you stay invulnerable\nfor longer.)" -- doesn't show up in UT???
     }
 
     -- Where this item can be used (world, battle, all, or none)

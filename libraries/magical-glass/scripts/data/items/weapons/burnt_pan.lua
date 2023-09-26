@@ -23,14 +23,14 @@ function item:init()
         attack = 10
     }
 
+    self.heal_bonus = 4
+
     self.bolt_count = 4
     self.bolt_speed = 8
     self.bolt_speed_variance = 2
     self.bolt_start = -80
     self.bolt_miss_threshold = 2
     self.multibolt_variance = {{0, 25, 50}, {100, 125, 150}, {200}}
-    self.heal_bonus = 4
-
     self.bolt_direction = "left"
 
     self.attack_sound = "frypan"

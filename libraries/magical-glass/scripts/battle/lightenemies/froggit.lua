@@ -59,6 +59,26 @@ function Froggit:init()
     self.damage_offset = {0, -65}
 end
 
+function Froggit:selectWave()
+    local waves = self:getNextWaves()
+
+    if waves and #waves > 0 then
+        local wave = Utils.pick(waves)
+        if #Game.battle.enemies > 1 and wave == "froggit/leapfrog" then
+            wave = "froggit/flies"
+        end
+
+        if #Game.battle.enemies > 1 and wave == "froggit/flies" then
+            local picker = Utils.random(0, 1, 1)
+            if picker == 1 then
+                wave = "froggit/splinter"
+            end
+        end
+        self.selected_wave = wave
+        return wave
+    end
+end
+
 function Froggit:onAct(battler, name)
     if name == "Compliment" then
         -- Give the enemy 100% mercy

@@ -16,7 +16,7 @@ function item:init()
     -- Light world check text
     self.check = {
         "Armor DF 20\n* The things you can do with\na college education!",
-        "* Raises ATTACK when worn.\nRecovers HP every other turn.\nINV up slightly."
+        "* Raises ATTACK when worn.\n* Recovers HP every other turn.\n* INV up slightly."
     }
 
     -- Where this item can be used (world, battle, all, or none)

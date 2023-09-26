@@ -8,7 +8,7 @@ function MovingArena:init()
     self.darken = true
 
     self:setArenaSize(142, Game.battle.arena.height)
-    self:setArenaPosition(300, 300)
+    self:setArenaPosition(SCREEN_WIDTH/2, 300)
 end
 
 function MovingArena:onStart()

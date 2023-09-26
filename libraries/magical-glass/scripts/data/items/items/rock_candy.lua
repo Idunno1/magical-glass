@@ -1,25 +1,26 @@
-local item, super = Class(HealItem, "items/butterscotch_pie")
+local item, super = Class(HealItem, "items/rock_candy")
 
 function item:init(inventory)
     super.init(self)
 
     -- Display name
-    self.name = "Butterscotch Pie"
-    self.short_name = "ButtsPie"
-    self.serious_name = "Pie"
+    self.name = "Rock Candy"
+    self.short_name = "RockCandy"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
     self.light = true
 
+    self.heal_amount = 1
+
     -- Default shop price (sell price is halved)
-    self.price = 0
+    self.price = 3
     -- Whether the item can be sold
     self.can_sell = true
 
     -- Light world check text
-    self.check = "All HP\n* Butterscotch-cinnamon\npie[wait:2], one slice."
+    self.check = "Heals 1 HP\n* Here is a recipe to make\nthis at home:\n1. Find a rock"
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "ally"
@@ -29,18 +30,7 @@ function item:init(inventory)
     self.result_item = nil
     -- Will this item be instantly consumed in battles?
     self.instant = false
-end
-
-function item:onLightBattleUse(user, target)
-    local text = self:getLightBattleText(user, target)
-    self:battleUseSound(target)
-    target.chara:heal(target.chara:getStat("health"))
-    return true
-end
-
-function item:onToss()
-    Game.world:showText("* The Butterscotch Pie was\nthrown away.")
-    return true
+    
 end
 
 return item

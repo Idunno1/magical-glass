@@ -16,6 +16,7 @@ Adds *accurate* **UNDERTALE** battles (and more!) to Kristal!
 * EN and other stuff from GAMETEST_7 (maybe)
 * UNDERTALE enemy recreations
 * UNDERTALE movement
+* UNDERTALE shops
 
 ## Credits:
 

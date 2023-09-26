@@ -13,9 +13,9 @@
     "party": ["kris"],
 
     "inventory": {
-        "items": ["items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie"],
+        "items": ["items/rock_candy", "items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie"],
         "box_a": ["weapons/stick", "weapons/toy_knife", "weapons/tough_glove", "weapons/ballet_shoes", "weapons/torn_notebook", "weapons/burnt_pan", "weapons/empty_gun", "weapons/worn_dagger", "weapons/real_knife"],
-        "box_b": ["armors/bandage_ut", "armors/faded_ribbon", "armors/manly_bandanna", "armors/old_tutu", "armors/cloudy_glasses", "armors/stained_apron", "armors/cowboy_hat", "armors/heart_locket", "armors/the_locket"],
+        "box_b": ["armors/bandage_ut", "armors/faded_ribbon", "armors/manly_bandanna", "armors/old_tutu", "armors/cloudy_glasses", "armors/stained_apron", "armors/cowboy_hat", "armors/heart_locket", "armors/the_locket", "armors/temy_armor"],
         "key_items": ["cell_phone"]
     },
 

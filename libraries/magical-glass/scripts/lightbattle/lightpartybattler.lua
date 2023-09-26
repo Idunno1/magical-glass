@@ -205,7 +205,7 @@ function LightPartyBattler:heal(amount, show_up, sound)
     amount = math.floor(amount)
 
     if self.chara:getHealth() < self.chara:getStat("health") then
-        self.chara:setHealth(self.chara:getHealth() + amount)
+        self.chara:setHealth(math.min(self.chara:getStat("health"), self.chara:getHealth() + amount))
     end
 
     local was_down = self.is_down

@@ -13,7 +13,7 @@ function item:init()
 
     -- Light world check text
     self.check = {
-        "Weapon AT 12\n* An antique revolver.\n* It has no ammo.",
+        "Weapon AT 12\n* An antique revolver[wait:2].\n* It has no ammo.",
         "* Must be used precisely, or\ndamage will be low."
     }
 
