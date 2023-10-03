@@ -1,6 +1,6 @@
 # magical-glass v1.0 for [Kristal](https://github.com/KristalTeam/Kristal)
 
-Adds *accurate* **UNDERTALE** battles (and more!) to Kristal!
+Adds **UNDERTALE** battles (and more!) to Kristal!
 
 ## This library adds...
 * UNDERTALE battles (obviously) in the light (and optionally dark) world!

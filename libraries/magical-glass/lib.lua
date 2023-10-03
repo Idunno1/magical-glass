@@ -28,14 +28,13 @@ function lib:load()
     end
     
     if Game.is_new_file then
+        Game:setFlag("#game_overs", 0)
         Game:setFlag("#default_battle_system", "undertale") -- undertale, deltarune
         Game:setFlag("#force_light_mode_in_light_battles", false)
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
         Game:setFlag("#undertale_save_menu", true)
         Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
-        Game:setFlag("#undertale_textbox_skipping", true) -- disables skipping
-        Game:setFlag("#undertale_textbox_pause", true) -- makes text not switch instantly in dialogue boxes
         Game:setFlag("#enable_lw_tp", false)
         Game:setFlag("#enable_low_hp_tired", false)
         Game:setFlag("#deltarune_mercy_flash", false)
@@ -731,11 +730,48 @@ function lib:init()
 
         self.fallback_dark_item = nil
         self.fallback_light_item = nil
+
+        self.tags = {}
+
+        -- How this item is used on you (ate, drank, eat, etc.)
+        self.use_method = "ate"
+        -- How this item is used on other party members (eats, etc.)
+        self.use_method_other = nil
     
     end)
 
     Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
+
+    Utils.hook(Item, "getUseName", function(orig, self)
+        if Game:isLight() then
+            return self.use_name or self:getName()
+        else
+            return self.use_name or self:getName():upper()
+        end
+    end)
+
+    Utils.hook(Item, "getUseMethod", function(orig, self, target)
+        if type(target) == "string" then
+            if target == "other" and self.use_method_other then
+                return self.use_method_other
+            elseif target == "self" and self.use_method_self then
+                return self.use_method
+            else
+                return self.use_method
+            end
+        elseif isClass(target) then
+            if (target.id ~= Game.party[1].id and self.use_method_other and self.target ~= "party") or force_other then
+                return self.use_method_other
+            else
+                return self.use_method
+            end
+        end
+    end)
+
+    Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
+        Game.battle:battleText(self:getLightBattleText(user, target))
+    end)
 
     Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
         local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
@@ -747,7 +783,7 @@ function lib:init()
         sprite:setOrigin(0.5, 0.5)
         sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-        sprite.color = battler.chara:getLightAttackColor() -- need to swap this to the get function
+        sprite.color = battler.chara:getLightAttackColor()
         enemy.parent:addChild(sprite)
         sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
             local sound = enemy:getDamageSound() or "damage"
@@ -782,6 +818,24 @@ function lib:init()
             end
             Game.world:showText({{"* \""..self:getName().."\" - "..self:getCheck()[1]}, text})
         end
+    end)
+        
+    Utils.hook(Item, "onToss", function(orig, self)
+        if Game:isLight() then
+            local choice = love.math.random(30)
+            if choice == 1 then
+                Game.world:showText("* You bid a quiet farewell\n to the " .. self:getName() .. ".")
+            elseif choice == 2 then
+                Game.world:showText("* You put the " .. self:getName() .. "\non the ground and gave it a\nlittle pat.")
+            elseif choice == 3 then
+                Game.world:showText("* You threw the " .. self:getName() .. "\non the ground like the piece\nof trash it is.")
+            elseif choice == 4 then
+                Game.world:showText("* You abandoned the\n" .. self:getName() .. ".")
+            else
+                Game.world:showText("* The " .. self:getName() .. " was\nthrown away.")
+            end
+        end
+        return true
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
@@ -870,7 +924,7 @@ function lib:init()
         if battle_box then
             self.box.visible = false
         end
-    
+
         if battle_box then
             if Game.battle.light then
                 self.face_x = 6
@@ -968,6 +1022,12 @@ function lib:init()
         self.advance_callback = nil
     end)
 
+    Utils.hook(Textbox, "advance", function(orig, self)
+        print(self.wait, "hi")
+        self.timer:after(self.wait, function()
+            self.text:advance()
+        end)
+    end)
 
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
     
@@ -1075,8 +1135,6 @@ function lib:init()
     
         self.last_talking = self.state.talk_anim and self.state.typing
     end)
-
-    -- bullets need a min and max damage argument
 
     Utils.hook(Bullet, "init", function(orig, self, x, y, texture)
     
@@ -1279,11 +1337,11 @@ function lib:init()
     end)
 
     Utils.hook(LightItemMenu, "useItem", function(orig, self, item)
-        
+        local result
         if item.target == "ally" then
-            local result = item:onWorldUse(Game.party[self.party_selecting])
+            result = item:onWorldUse(Game.party[self.party_selecting])
         elseif item.target == "party" or item.target == "none" then
-            local result = item:onWorldUse(Game.party)
+            result = item:onWorldUse(Game.party)
         end
         
         if (item.type == "item" and (result == nil or result)) or (item.type ~= "item" and result) then
@@ -1297,7 +1355,6 @@ function lib:init()
     end)
 
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
-  
         if type(target) == "string" then
             target = Game:getPartyMember(target)
         end
@@ -1332,23 +1389,22 @@ function lib:init()
                 end
             end
         end
-    
     end)
 
     Utils.hook(PartyMember, "init", function(orig, self)
-    
         orig(self)
 
         self.use_player_name = false
 
         self.lw_portrait = nil
 
-        self.light_color = {1,1,1}
-        self.light_dmg_color = {1,0,0}
+        self.light_color = {1, 1, 1}
+        self.light_dmg_color = {1, 0, 0}
         self.light_miss_color = {192/255, 192/255, 192/255}
         self.light_attack_color = {1, 105/255, 105/255}
-        self.light_attack_bar_color = {1,1,1}
-        self.light_xact_color = {1,1,1}
+        self.light_multibolt_attack_color = {1, 1, 1}
+        self.light_attack_bar_color = {1, 1, 1}
+        self.light_xact_color = {1, 1, 1}
 
         self.lw_stats = {
             health = 20,
@@ -1356,7 +1412,6 @@ function lib:init()
             defense = 10,
             magic = 0
         }
-
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
@@ -1413,7 +1468,6 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
-
         if self:getLightLV() < #self.lw_exp_needed then
             local old_lv = self:getLightLV()
 
@@ -1445,7 +1499,6 @@ function lib:init()
                 end
             end
         end
-
     end)
 
     Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
@@ -1501,37 +1554,43 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
         if self.light_color and type(self.light_color) == "table" then
-            return Utils.unpackColor(self.light_color)
+            return self.light_color
         end
     end)
 
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
         if self.light_dmg_color and type(self.light_dmg_color) == "table" then
-            return Utils.unpackColor({self.light_dmg_color})
+            return self.light_dmg_color
         end
     end)
 
     Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
         if self.light_miss_color and type(self.light_miss_color) == "table" then
-            return Utils.unpackColor({self.light_miss_color})
+            return self.light_miss_color
         end
     end)
 
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
         if self.light_attack_color and type(self.light_attack_color) == "table" then
-            return Utils.unpackColor({self.light_attack_color})
+            return self.light_attack_color
+        end
+    end)
+
+    Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
+        if self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
+            return self.light_multibolt_attack_color
         end
     end)
 
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
         if self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
-            return Utils.unpackColor(self.light_attack_bar_color)
+            return self.light_attack_bar_color
         end
     end)
 
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
         if self.light_xact_color and type(self.light_xact_color) == "table" then
-            return Utils.unpackColor(self.light_xact_color)
+            return self.light_xact_color
         end
     end)
 
@@ -1632,19 +1691,18 @@ function lib:init()
     end)
 
     Utils.hook(LightStatMenu, "draw", function(orig, self)
-    
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        local name_offset = 0
-        for _,chara in ipairs(Game.party) do
-            if #Game.party > 1 then
+        if Game:getFlag("#lw_stat_menu_portraits") == "magical_glass" and #Game.party > 1 then
+            local name_offset = 0
+            for _,chara in ipairs(Game.party) do
                 love.graphics.printf(chara:getName(), name_offset - 18, 8, 100, "center")
-            else
-                love.graphics.print("\"" .. chara:getName() .. "\"", 4 + name_offset, 8)
+                name_offset = name_offset + 110
             end
-            name_offset = name_offset + 110
+        else
+            love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
         end
-    
+
         local chara = Game.party[self.party_selecting]
 
         if Game:getFlag("#lw_stat_menu_portraits") == "deltatraveler" then
@@ -1832,17 +1890,21 @@ function lib:init()
 
     Utils.hook(Spell, "getHealMessage", function(orig, self, user, target)
         local amount = self.amount
-        local maxed = target.chara:getHealth() >= target.chara:getStat("health")
+        local char_maxed
+        local enemy_maxed
+        if self.target == "ally" then
+            char_maxed = target.chara:getHealth() >= target.chara:getStat("health")
+        elseif self.target == "enemy" then
+            enemy_maxed = target.health >= target.max_health
+        end
         local message = ""
         if self.target == "ally" then
-            if target.chara.id == Game.party[1].id and maxed then
+            if target.chara.id == Game.battle.party[1].chara.id and char_maxed then
                 message = "* Your HP was maxed out."
-            elseif target.chara.id == Game.party[1].id and not maxed then
-                message = "* You recovered " .. amount .. " HP."
-            elseif maxed then
-                message = target.chara.name .. "'s HP was maxed out."
+            elseif char_maxed then
+                message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
             else
-                message = target.chara.name .. " recovered " .. amount .. " HP."
+                message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
             if #Game.party > 1 then
@@ -1851,17 +1913,13 @@ function lib:init()
                 message = "* You recovered " .. amount .. " HP."
             end
         elseif self.target == "enemy" then
-            if maxed then
-                message = target.name .. "'s HP was maxed out."
+            if enemy_maxed then
+                message = "* " .. target.name .. "'s HP was maxed out."
             else
-                message = target.name .. " recovered " .. amount .. " HP."
+                message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "enemies" then
-            if #Game.battle.enemies > 1 then
-                message = "* Everyone recovered " .. amount .. " HP."
-            else
-                message = "* You recovered " .. amount .. " HP."
-            end
+            message = "* The enemies all recovered " .. amount .. " HP."
         end
         return message
     end)
@@ -1879,6 +1937,11 @@ function lib:init()
         end
 
         SpeechBubble.__super.draw(self)
+    end)
+
+    Utils.hook(Game, "gameOver", function(orig, self, x, y)
+        Game:setFlag("#game_overs", Game:getFlag("#game_overs") + 1)
+        orig(self, x, y)
     end)
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}

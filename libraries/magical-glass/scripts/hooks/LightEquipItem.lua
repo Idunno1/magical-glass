@@ -30,8 +30,8 @@ end
 
 function LightEquipItem:getFleeBonus() return 0 end
 
-function LightEquipItem:getHealBonus() return self.heal_bonus end
-function LightEquipItem:getInvBonus() return self.inv_bonus end
+function LightEquipItem:applyHealBonus(value) return value + self.heal_bonus end
+function LightEquipItem:applyInvBonus(value) return value + self.inv_bonus end
 
 function LightEquipItem:getBoltCount() return self.bolt_count end
 
@@ -56,8 +56,12 @@ function LightEquipItem:getMultiboltVariance(index)
     if self.multibolt_variance[index] then
         return Utils.pick(self.multibolt_variance[index])
     else
-        local value = Utils.pick(self.multibolt_variance[#self.multibolt_variance])
-        value = value + Utils.pick(self.multibolt_variance[(index + 1) - #self.multibolt_variance])
+        local value
+        if self.bolt_direction == "left" then
+            value = Utils.pick(self.multibolt_variance[#self.multibolt_variance]) - (self:getBoltStart() * (index - #self.multibolt_variance))
+        else
+            value = Utils.pick(self.multibolt_variance[#self.multibolt_variance]) + (-self:getBoltStart() * (index - #self.multibolt_variance))
+        end
         return value
     end
 end
@@ -79,7 +83,6 @@ function LightEquipItem:getLightAttackPitch() return self.attack_pitch end
 
 function LightEquipItem:onTurnEnd() end
 
--- these need to be modified for more than one party member
 function LightEquipItem:showEquipText(target)
     Game.world:showText("* " .. target:getNameOrYou() .. " equipped the "..self:getName()..".")
 end
@@ -140,6 +143,7 @@ function LightEquipItem:onLightBattleUse(user, target)
     end
 
     self:onEquip(chara, replacing)
+    Game.battle:battleText(self:getLightBattleText(user, target))
 end
 
 function LightEquipItem:onBoltHit(battler) end

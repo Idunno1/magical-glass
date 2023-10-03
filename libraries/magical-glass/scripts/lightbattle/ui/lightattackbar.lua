@@ -10,7 +10,7 @@ function LightAttackBar:init(x, y, battler)
     self.inactive_sprite = "ui/lightbattle/targetchoice_2"
     self.fade_sprite = "ui/lightbattle/targetchoice_fade"
     self.sprite:setOrigin(0.5, 0.5)
-    self.sprite.color = self.battler.chara.light_color or {1, 1, 1, 1}
+    self.sprite.color = self.battler.chara:getLightAttackBarColor() or {1, 1, 1, 1}
     self:addChild(self.sprite)
 
     self.perfect = false

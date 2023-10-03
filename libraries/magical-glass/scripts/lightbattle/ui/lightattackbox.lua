@@ -32,7 +32,7 @@ function LightAttackBox:createBolts()
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = lane.weapon.getBoltDirection and lane.weapon:getBoltDirection() or "left"
+        lane.direction = lane.weapon.getBoltDirection and lane.weapon:getBoltDirection() or "right"
 
         if (lane.weapon.getBoltCount and lane.weapon:getBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"
@@ -59,9 +59,9 @@ function LightAttackBox:createBolts()
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or {{50}}), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or {{50}}), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
@@ -185,7 +185,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon.getAttackMissZone and battler.weapon:getAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon.getAttackMissZone and battler.weapon:getAttackMissZone() or 296) + 14 or (battler.direction == "right" and self:getClose(battler) >= battler.weapon:getAttackMissZone()))
+        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon.getAttackMissZone and battler.weapon:getAttackMissZone() or 296) + 14 or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon.getAttackMissZone and battler.weapon:getAttackMissZone() or 296)))
     end
 end
 

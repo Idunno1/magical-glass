@@ -35,7 +35,7 @@ function Dummy:init()
 
     -- Dialogue randomly displayed in the enemy's speech bubble
     self.dialogue = {
-        "[wave:2].[wait:5].[wait:5].[wait:5]"
+        "[wave:3][speed:0.5]....."
     }
 
     -- Check text (automatically has "ENEMY NAME - " at the start)

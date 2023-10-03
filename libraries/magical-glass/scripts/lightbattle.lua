@@ -291,12 +291,14 @@ function LightBattle:spawnSoul(x, y)
 end
 
 function LightBattle:swapSoul(object)
+    local prev_soul_speed = self.soul.speed
     if self.soul then
         self.soul:remove()
     end
     object:setPosition(self.soul:getPosition())
     object.layer = self.soul.layer
     self.soul = object
+    self.soul.speed = prev_soul_speed
     self:addChild(object)
 end
 
@@ -646,28 +648,6 @@ function LightBattle:processAction(action)
         if item.instant then
             self:finishAction(action)
         else
-            local text = item:getLightBattleText(battler, action.target)
-            if text then
-                if item.heal_amount then
-                    local message
-                    local bonus = 0
-                    for _,equip in ipairs(battler.chara:getEquipment()) do
-                        bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
-                    end
-                    local amount = item.heal_amount + bonus
-                    local chara = action.target.chara
-                    local maxed = false
-
-                    if chara then
-                        maxed = chara:getHealth() >= chara:getStat("health")
-                    end
-
-                    text = text .. "\n" .. item:getLightBattleHealingText(battler, chara, amount, maxed)
-
-                end
-                self:battleText(text)
-            end
-
             local result = item:onLightBattleUse(battler, action.target)
             if result or result == nil then
                 self:finishAction(action)
@@ -676,10 +656,8 @@ function LightBattle:processAction(action)
         return false
 
     elseif action.action == "DEFEND" then
-        --battler:setAnimation("battle/defend")
         battler.defending = true
         return false
-
     else
         -- we don't know how to handle this...
         Kristal.Console:warn("Unhandled battle action: " .. tostring(action.action))
@@ -1189,7 +1167,7 @@ function LightBattle:onStateChange(old,new)
             self.encounter:onFleeFail()
 
             if not self.encounter:onActionsEnd() then
-                self:setState("ENEMYDIALOGUE")
+                self:setState("ACTIONSDONE")
             end
         end
     elseif new == "DEFENDINGEND" then
@@ -1410,6 +1388,16 @@ function LightBattle:setActText(text, dont_finish)
         self:setState("ACTIONS", "BATTLETEXT")
         return true
     end)
+end
+
+function LightBattle:shortActText(text)
+    self:setState("SHORTACTTEXT")
+    self:toggleSoul(false)
+    self.battle_ui:clearEncounterText()
+
+    self.battle_ui.short_act_text_1:setText(text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] or "")
 end
 
 function LightBattle:hurt(amount, exact)

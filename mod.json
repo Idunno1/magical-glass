@@ -13,16 +13,16 @@
     "party": ["kris"],
 
     "inventory": {
-        "items": ["items/rock_candy", "items/monster_candy", "items/spider_donut", "items/spider_cider", "items/butterscotch_pie"],
-        "box_a": ["weapons/stick", "weapons/toy_knife", "weapons/tough_glove", "weapons/ballet_shoes", "weapons/torn_notebook", "weapons/burnt_pan", "weapons/empty_gun", "weapons/worn_dagger", "weapons/real_knife"],
-        "box_b": ["armors/bandage_ut", "armors/faded_ribbon", "armors/manly_bandanna", "armors/old_tutu", "armors/cloudy_glasses", "armors/stained_apron", "armors/cowboy_hat", "armors/heart_locket", "armors/the_locket", "armors/temy_armor"],
+        "items": ["ut_items/rock_candy", "ut_items/monster_candy", "ut_items/spider_donut", "ut_items/spider_cider", "ut_items/butterscotch_pie", "ut_items/ghost_fruit"],
+        "box_a": ["ut_weapons/stick", "ut_weapons/toy_knife", "ut_weapons/tough_glove", "ut_weapons/ballet_shoes", "ut_weapons/torn_notebook", "ut_weapons/burnt_pan", "ut_weapons/empty_gun", "ut_weapons/worn_dagger", "ut_weapons/real_knife"],
+        "box_b": ["ut_armors/bandage", "ut_armors/faded_ribbon", "ut_armors/manly_bandanna", "ut_armors/old_tutu", "ut_armors/cloudy_glasses", "ut_armors/stained_apron", "ut_armors/cowboy_hat", "ut_armors/heart_locket", "ut_armors/the_locket", "ut_armors/temy_armor"],
         "key_items": ["cell_phone"]
     },
 
     "equipment": {
         "kris": {
-            "weapon": "weapons/pencil",
-            "armor": ["armors/bandage_ut"]
+            "weapon": "ut_weapons/test",
+            "armor": ["ut_armors/bandage"]
         }
     },
 
