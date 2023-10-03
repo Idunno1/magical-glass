@@ -39,12 +39,15 @@ function LightStorageMenu:onKeyPressed(key)
         Game.world:closeMenu()
     elseif Input.is("confirm", key) then
         if self.list == 1 then
-            Game.inventory:addItemTo(self:getStorage(2), self:getSelectedItem(1))
-            Game.inventory:removeItemFrom(self:getStorage(1), self.current_selecting)
-
+            if not Game.inventory:isFull(self:getStorage(2)) then
+                Game.inventory:addItemTo(self:getStorage(2), self:getSelectedItem(1))
+                Game.inventory:removeItemFrom(self:getStorage(1), self.current_selecting)
+            end
         elseif self.list == 2 then
-            Game.inventory:addItemTo(self:getStorage(1), self:getSelectedItem(2))
-            Game.inventory:removeItemFrom(self:getStorage(2), self.current_selecting)
+            if not Game.inventory:isFull(self:getStorage(1)) then
+                Game.inventory:addItemTo(self:getStorage(1), self:getSelectedItem(2))
+                Game.inventory:removeItemFrom(self:getStorage(2), self.current_selecting)
+            end
         end
     elseif Input.is("right", key) then
         self.list = 2

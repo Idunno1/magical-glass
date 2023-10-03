@@ -189,6 +189,7 @@ function LightActionButton:select()
                         if chance > 50 then
                             Game.battle:setState("FLEEING")
                         else
+                            Game.battle:playSelectSound()
                             Game.battle:setState("FLEEFAIL")
                         end
                     end

@@ -33,6 +33,7 @@ function lib:load()
         Game:setFlag("#force_light_mode_in_light_battles", false)
         Game:setFlag("#serious_mode", false) -- useful for serious battles
         Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#undertale_text_skipping", true) -- can't skip with c or hold z to skip
         Game:setFlag("#undertale_save_menu", true)
         Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
         Game:setFlag("#enable_lw_tp", false)
@@ -744,7 +745,7 @@ function lib:init()
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
 
     Utils.hook(Item, "getUseName", function(orig, self)
-        if Game:isLight() then
+        if Game.battle.light then
             return self.use_name or self:getName()
         else
             return self.use_name or self:getName():upper()
@@ -1030,13 +1031,9 @@ function lib:init()
     end)
 
     Utils.hook(DialogueText, "init", function(orig, self, text, x, y, w, h, options)
-    
         orig(self, text, x, y, w, h, options)
         options = options or {}
-
-        self.hold_skip = true
         self.default_sound = options["default_sound"] or "default"
-
     end)
 
     Utils.hook(DialogueText, "resetState", function(orig, self)
@@ -1049,7 +1046,7 @@ function lib:init()
 
         if not OVERLAY_OPEN then
 
-            if not self.hold_skip then
+            if Game:getFlag("#undertale_text_skipping") then
 
                 local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
 
