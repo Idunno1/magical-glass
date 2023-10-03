@@ -33,7 +33,7 @@ end
 
 function item:onWorldUse(target)
     self:worldUseSound(target)
-    target:setHealth(target:getStat("health") - 1)
+    target:setHealth(target:getStat("health"))
     Game.world:showText(self:getLightWorldHealingText(target).."\n"..self:getLightWorldHealingText(target))
     return true
 end
