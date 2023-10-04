@@ -302,14 +302,6 @@ function LightBattle:swapSoul(object)
     self:addChild(object)
 end
 
-function LightBattle:returnSoul(dont_destroy)
-    if dont_destroy == nil then dont_destroy = false end
-    local bx, by = self:getSoulLocation(true)
-    if self.soul then
-        self.soul:transitionTo(bx, by, not dont_destroy)
-    end
-end
-
 function LightBattle:getSoulLocation(always_player)
     if self.soul and (not always_player) then
         return self.soul:getPosition()
