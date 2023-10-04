@@ -58,8 +58,8 @@ function LightEncounter:onSoulTransition()
         local x, y = player:localToScreenPos((player.sprite.width/2), player.sprite.height/2)
         Game.battle:spawnSoul(x, y)
         Game.battle.soul.sprite:set("player/heart_menu")
+        Game.battle.soul.sprite:setScale(2)
         Game.battle.soul.layer = Game.battle.fader.layer + 2
-        Game.battle.soul:setScale(2)
         Game.battle.soul.can_move = false
         wait(2/30)
         -- Hide heart
@@ -95,7 +95,7 @@ function LightEncounter:onSoulTransition()
         -- Wait
         wait(5/30)
         Game.battle.soul.sprite:set("player/heart_light")
-        Game.battle.soul:setScale(1)
+        Game.battle.soul.sprite:setScale(1)
         Game.battle.soul.x = Game.battle.soul.x - 1
         Game.battle.soul.y = Game.battle.soul.y - 1
         Game.battle.fader:fadeIn(nil, {speed=5/30})
