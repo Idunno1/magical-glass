@@ -31,7 +31,7 @@ function item:init()
     self.heal_bonus = 4
 
     self.bolt_count = 4
-    self.bolt_speed = 8
+    self.bolt_speed = 10
     self.bolt_speed_variance = nil
     self.bolt_start = -80
     self.bolt_miss_threshold = 2

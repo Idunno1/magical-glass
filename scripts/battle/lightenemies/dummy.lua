@@ -24,9 +24,9 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
-        "basic",
+--[[         "basic",
         "aiming",
-        "movingarena"
+        "movingarena" ]]
     }
 
     self.menu_waves = {

@@ -745,7 +745,7 @@ function lib:init()
     Utils.hook(Item, "getSeriousName", function(orig, self) return self.serious_name or self.short_name or self.name end)
 
     Utils.hook(Item, "getUseName", function(orig, self)
-        if Game.battle.light then
+        if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
             return self.use_name or self:getName()
         else
             return self.use_name or self:getName():upper()
@@ -771,7 +771,11 @@ function lib:init()
     end)
 
     Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
-        Game.battle:battleText(self:getLightBattleText(user, target))
+        if self.getLightBattleText then
+            Game.battle:battleText(self:getLightBattleText(user, target))
+        else
+            Game.battle:battleText("* "..user.chara:getName().." used the "..self:getName().."!")
+        end
     end)
 
     Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
@@ -1403,19 +1407,15 @@ function lib:init()
         self.light_attack_bar_color = {1, 1, 1}
         self.light_xact_color = {1, 1, 1}
 
-        self.lw_stats = {
-            health = 20,
-            attack = 10,
-            defense = 10,
-            magic = 0
-        }
+        self.lw_stats["magic"] = 0
+
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
-        if playsound == nil or playsound then
-            Assets.stopAndPlaySound("power")
-        end
         if Game:isLight() then
+            if playsound == nil or playsound then
+                Assets.stopAndPlaySound("power")
+            end
             if self:getHealth() < self:getStat("health") then
                 self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
             end

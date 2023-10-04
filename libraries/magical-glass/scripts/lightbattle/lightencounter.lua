@@ -112,10 +112,6 @@ function LightEncounter:onSoulTransition()
     end)
 end
 
-function LightEncounter:isLight()
-    return true
-end
-
 function LightEncounter:onBattleInit() end
 
 function LightEncounter:storyWave()

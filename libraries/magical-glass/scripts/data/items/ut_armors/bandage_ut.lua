@@ -31,22 +31,24 @@ function item:getFleeBonus() return 100 end
 
 function item:onWorldUse(target)
     -- gross
-    local bonus = 0
-    for _,party in ipairs(Game.party) do
-        for _,equip in ipairs(party:getEquipment()) do
-            bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
+    local amount = self:getWorldHealAmount(target.id)
+    for _,member in ipairs(Game.party) do
+        for _,equip in ipairs(member:getEquipment()) do
+            if equip.applyHealBonus then
+                amount = equip:applyHealBonus(bonus)
+            end
         end
     end
 
     Assets.playSound("power")
     if target.id == Game.party[1].id then
         if not Game:getFlag("#serious_mode") then
-            Game.world:heal(target, self.heal_amount + bonus, "* You re-applied the bandage.\n* Still kind of gooey.", self)
+            Game.world:heal(target, amount, "* You re-applied the bandage.\n* Still kind of gooey.", self)
         else
-            Game.world:heal(target, self.heal_amount + bonus, "* You re-applied the bandage.", self)
+            Game.world:heal(target, amount, "* You re-applied the bandage.", self)
         end
     else
-        Game.world:heal(target, self.heal_amount + bonus, "* " .. target:getName() .. " applied the bandage.", self)
+        Game.world:heal(target, amount, "* " .. target:getName() .. " applied the bandage.", self)
     end
 
     Game.inventory:removeItem(self)
@@ -70,11 +72,15 @@ end
 
 function item:onLightBattleUse(user, target)
     Assets.stopAndPlaySound("power")
-    target:heal(self.heal_amount)
-    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(self.heal_amount, user, target))
+    local amount = self:getBattleHealAmount(target.chara.id)
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        amount = equip:applyHealBonus(amount)
+    end
+    target:heal(amount)
+    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
 end
 
-function item:getLightBattleHealingText(user, target, amount, maxed)
+function item:getLightBattleHealingText(user, target, amount)
     if target then
         if self.target == "ally" then
             maxed = target.chara:getHealth() >= target.chara:getStat("health")

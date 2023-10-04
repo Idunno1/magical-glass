@@ -40,7 +40,7 @@ function item:init(inventory)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Sea Tea.\n* Your SPEED boosts!\n"..self:getLightBattleHealingText(user, target)
+    return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Sea Tea.\n* Your SPEED boosts!"
 end
 
 function item:onLightBattleUse(user, target)
@@ -48,7 +48,13 @@ function item:onLightBattleUse(user, target)
         Game.battle.soul.speed = Game.battle.soul.speed + 1
     end
     self:battleUseSound(user, target)
-    Game.battle:battleText(self:getLightBattleText(user, target))
+
+    local amount = self:getBattleHealAmount(target.chara.id)
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        amount = equip:applyHealBonus(amount)
+    end
+    target:heal(amount)
+    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
     return true
 end
 

@@ -24,7 +24,7 @@ function spell:init()
 end
 
 function spell:onLightCast(user, target)
-    for _,battler in ipairs(target) do
+    for _,battler in ipairs(Game.battle.party) do
         self.amount = math.ceil((user.chara:getStat("magic") * 2.5))
         battler:heal(self.amount)
     end
@@ -32,7 +32,7 @@ end
 
 function spell:getLightCastMessage(user, target)
     local message = "* "..user.chara:getName().." cast "..self:getName().."."
-    local heal_text = self:getLightBattleHealingText(user, target)
+    local heal_text = self:getHealMessage(user, target)
     return message .. "\n" .. heal_text
 end
 

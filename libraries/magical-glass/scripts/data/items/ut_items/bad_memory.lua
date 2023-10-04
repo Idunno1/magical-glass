@@ -60,7 +60,7 @@ function item:getLightBattleText(user, target, hurt)
     if hurt then
         return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n* "..target.chara:getNameOrYou().." lost 1HP."
     else
-        return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n"..self:getLightBattleHealingText(user, target)
+        return "* "..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Bad Memory.\n"..self:getLightBattleHealingText(user, target, self:getBattleHealAmount(target.chara.id))
     end
 end
 

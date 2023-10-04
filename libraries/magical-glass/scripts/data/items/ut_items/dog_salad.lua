@@ -80,13 +80,6 @@ function item:onWorldUse(target)
         self.heal_amount = 999
     end
 
-    local bonus = 0
-    for _,party in ipairs(Game.party) do
-        for _,equip in ipairs(party:getEquipment()) do
-            bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
-        end
-    end
-
     if self.target == "ally" then
         self:worldUseSound(target)
         amount = amount + bonus
@@ -140,11 +133,6 @@ function item:getLightBattleText(user, target, dogsad)
 end
 
 function item:onLightBattleUse(user, target)
-    local bonus = 0
-    for _,equip in ipairs(user.chara:getEquipment()) do
-        bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
-    end
-
     local dogsad = math.floor(Utils.random(4))
 
     self.heal_amount = 1
@@ -162,7 +150,7 @@ function item:onLightBattleUse(user, target)
         self.heal_amount = 999
     end
 
-    local text = self:getLightBattleText(user, target, dogsad).."\n"..self:getLightBattleHealingText(user, target)
+    local text = self:getLightBattleText(user, target, dogsad).."\n"..self:getLightBattleHealingText(user, target, self.heal_amount)
 
     self:battleUseSound(user, target)
     target:heal(self.heal_amount + bonus)

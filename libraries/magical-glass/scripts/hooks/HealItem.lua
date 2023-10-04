@@ -1,23 +1,30 @@
 local HealItem, super = Class("HealItem", true)
 
 function HealItem:onWorldUse(target)
-    local bonus = 0
-    for _,party in ipairs(Game.party) do
-        for _,equip in ipairs(party:getEquipment()) do
-            bonus = bonus + (equip.getHealBonus and equip:getHealBonus() or 0)
-        end
-    end
-
     local text = self:getWorldUseText(target)
     if self.target == "ally" then
         self:worldUseSound(target)
-        local amount = self:getWorldHealAmount(target.id) + bonus
+        local amount = self:getWorldHealAmount(target.id)
+        for _,member in ipairs(Game.party) do
+            for _,equip in ipairs(member:getEquipment()) do
+                if equip.applyHealBonus then
+                    amount = equip:applyHealBonus(amount)
+                end
+            end
+        end
         Game.world:heal(target, amount, text, self)
         return true
     elseif self.target == "party" then
         self:worldUseSound(target)
         for _,party_member in ipairs(target) do
-            local amount = self:getWorldHealAmount(party_member.id) + bonus
+            local amount = self:getWorldHealAmount(party_member.id)
+            for _,member in ipairs(Game.party) do
+                for _,equip in ipairs(member:getEquipment()) do
+                    if equip.applyHealBonus then
+                        amount = equip:applyHealBonus(amount)
+                    end
+                end
+            end
             Game.world:heal(party_member, amount, text, self)
         end
         return true
@@ -27,18 +34,18 @@ function HealItem:onWorldUse(target)
 end
 
 function HealItem:onLightBattleUse(user, target)
-    local bonus = 0
-    for _,equip in ipairs(user.chara:getEquipment()) do
-        if equip.applyHealBonus then
-            bonus = math.ceil(equip:applyHealBonus(bonus))
-        end
-    end
-
     local text = self:getLightBattleText(user, target)
 
     if self.target == "ally" then
         self:battleUseSound(user, target)
-        local amount = self:getBattleHealAmount(target.chara.id) + bonus
+        local amount = self:getBattleHealAmount(target.chara.id)
+        print(amount)
+
+        for _,equip in ipairs(user.chara:getEquipment()) do
+            if equip.applyHealBonus then
+                amount = equip:applyHealBonus(amount)
+            end
+        end
         
         if self.heal_amount then
             text = text .. "\n" .. self:getLightBattleHealingText(user, target, amount)
@@ -50,35 +57,30 @@ function HealItem:onLightBattleUse(user, target)
     elseif self.target == "party" then
         self:battleUseSound(user, target)
 
-        for i,battler in ipairs(target) do
+        for _,battler in ipairs(target) do
             local amount = self:getBattleHealAmount(battler.chara.id)
+
+            for _,equip in ipairs(user.chara:getEquipment()) do
+                if equip.applyHealBonus then
+                    amount = equip:applyHealBonus(amount)
+                end
+            end
+
             battler:heal(amount)
         end
 
-        Game.battle:battleText(text)
+        --Game.battle:battleText(text)
         return true
     elseif self.target == "enemy" then
-        local amount = self:getBattleHealAmount(target.chara.id) + bonus
-
-        if self.heal_amount then
-            local maxed = false
-            if target then
-                if item.target == "ally" then
-                    maxed = target.chara:getHealth() >= target.chara:getStat("health")
-                elseif item.target == "enemy" then
-                    maxed = target.health >= target.max_health
-                end
-            end
-            text = text .. "\n" .. self:getLightBattleHealingText(battler, chara, amount, maxed)
-        end
+        local amount = self.heal_amount
 
         target:heal(amount)
         Game.battle:battleText(text)
         return true
     elseif self.target == "enemies" then
         for _,enemy in ipairs(target) do
-            local amount = self:getBattleHealAmount(enemy.id)
-            enemy:heal(amount + bonus)
+            local amount = self.heal_amount
+            enemy:heal(amount)
         end
         Game.battle:battleText(text)
         return true
