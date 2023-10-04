@@ -54,7 +54,16 @@ function item:onLightBattleUse(user, target)
         target.chara:addStatBuff("attack", 4)
         buff = true
     end
-    Game.battle:battleText(self:getLightBattleText(user, target, buff).."\n"..self:getLightBattleHealingText(user, target, self.heal_amount))
+    local amount = self:getBattleHealAmount(target.chara.id)
+
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        if equip.applyHealBonus then
+            amount = equip:applyHealBonus(amount)
+        end
+    end
+
+    target:heal(amount)
+    Game.battle:battleText(self:getLightBattleText(user, target, buff).."\n"..self:getLightBattleHealingText(user, target, amount))
     return true
 end
 

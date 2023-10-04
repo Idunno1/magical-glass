@@ -33,8 +33,8 @@ function item:init()
     self.dark_item = "white_ribbon"
 end
 
-function item:showEquipText()
-    Game.world:showText("* You equipped the ribbon.")
+function item:showEquipText(target)
+    Game.world:showText("* "..target:getNameOrYou().." equipped the ribbon.")
 end
 
 function item:getLightBattleText(user, target)

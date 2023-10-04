@@ -39,8 +39,8 @@ function item:onTurnEnd(battler)
     end
 end
 
-function item:showEquipText()
-    Game.world:showText("* You equipped the apron.")
+function item:showEquipText(target)
+    Game.world:showText("* "..target:getNameOrYou().." equipped the apron.")
 end
 
 function item:getLightBattleText(user, target)

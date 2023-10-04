@@ -38,8 +38,8 @@ function item:init()
 
 end
 
-function item:showEquipText()
-    Game.world:showText("* "..target.chara:getNameOrYou().." donned the Temmie Armor.")
+function item:showEquipText(target)
+    Game.world:showText("* "..target:getNameOrYou().." donned the Temmie Armor.")
 end
 
 function item:getLightBattleText(user, target)

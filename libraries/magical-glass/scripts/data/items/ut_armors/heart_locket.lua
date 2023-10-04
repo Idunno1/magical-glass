@@ -32,12 +32,12 @@ function item:init()
 
 end
 
-function item:showEquipText()
-    Game.world:showText("* You equipped the locket.")
+function item:showEquipText(target)
+    Game.world:showText("* "..target:getNameOrYou().." equipped the locket.")
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the glasses."
+    return "* "..target.chara:getNameOrYou().." equipped the locket."
 end
 
 return item
