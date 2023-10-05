@@ -21,7 +21,7 @@
 
     "equipment": {
         "kris": {
-            "weapon": "ut_weapons/test",
+            "weapon": "ut_weapons/pencil",
             "armor": ["ut_armors/bandage"]
         }
     },
