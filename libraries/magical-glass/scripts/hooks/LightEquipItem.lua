@@ -84,7 +84,7 @@ function LightEquipItem:getLightAttackPitch() return self.attack_pitch end
 function LightEquipItem:onTurnEnd() end
 
 function LightEquipItem:showEquipText(target)
-    Game.world:showText("* " .. target:getNameOrYou() .. " equipped the "..self:getName()..".")
+    Game.world:showText("* " .. target:getNameOrYou() .. " equipped the " .. self:getName() .. ".")
 end
 
 function LightEquipItem:onWorldUse(target)

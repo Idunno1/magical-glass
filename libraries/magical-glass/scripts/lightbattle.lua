@@ -1248,7 +1248,9 @@ function LightBattle:nextTurn()
     self.normal_attackers = {}
     self.auto_attackers = {}
 
-    self.current_selecting = 1
+    if self.state ~= "BUTNOBODYCAME" then
+        self.current_selecting = 1
+    end
 
     while not (self.party[self.current_selecting]:isActive()) do
         self.current_selecting = self.current_selecting + 1

@@ -31,14 +31,14 @@ function lib:load()
         Game:setFlag("#game_overs", 0)
         Game:setFlag("#default_battle_system", "undertale") -- undertale, deltarune
         Game:setFlag("#force_light_mode_in_light_battles", false)
-        Game:setFlag("#serious_mode", false) -- useful for serious battles
-        Game:setFlag("#always_show_magic", false)
+        Game:setFlag("#serious_mode", false) -- makes items use their serious name in battle, if they have one
+        Game:setFlag("#always_show_magic", false) -- always show the magic stat in the light world
         Game:setFlag("#undertale_text_skipping", true) -- can't skip with c or hold z to skip
         Game:setFlag("#undertale_save_menu", true)
         Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
-        Game:setFlag("#enable_lw_tp", false)
-        Game:setFlag("#enable_low_hp_tired", false)
-        Game:setFlag("#deltarune_mercy_flash", false)
+        Game:setFlag("#enable_lw_tp", false) -- enables tp in light world battles
+        Game:setFlag("#enable_low_hp_tired", true) -- whether enemies become tired once their hp is low enough
+        Game:setFlag("#button_flashing", true) -- flashes the spell/mercy buttons when an enemy is tired/sparable
         Game:setFlag("#lw_stat_menu_portraits", "magical_glass") -- magical_glass, deltatraveler
         Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune
         Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
