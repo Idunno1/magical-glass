@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="15" nextobjectid="108">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="17" nextobjectid="137">
  <editorsettings>
   <export target="tundra3A.lua" format="lua"/>
  </editorsettings>
@@ -35,12 +35,28 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-389,390,389,390,391,365,0,0,0,0,0,0,299,300,389,390,
-398,399,398,399,400,374,0,0,0,0,0,299,308,309,310,311,
-407,408,407,408,409,410,0,0,0,0,0,308,309,318,327,328,
-416,417,416,417,418,374,0,0,0,307,308,309,318,327,318,319,
-407,408,407,408,409,410,0,0,0,316,317,318,327,328,327,328,
-416,417,416,417,418,374,0,0,0,325,326,327,328,327,328,329
+362,363,364,363,364,365,0,0,0,0,0,0,299,300,389,390,
+371,372,373,372,373,374,0,0,0,0,0,299,308,309,310,399,
+380,381,382,381,382,383,0,0,0,0,0,308,309,318,327,328,
+0,0,0,0,0,0,0,0,0,307,308,309,318,327,318,319,
+0,0,0,0,0,0,0,0,0,316,317,318,327,328,327,328,
+0,0,0,0,0,0,0,0,0,325,326,327,328,327,328,329
+</data>
+ </layer>
+ <layer id="16" name="trees" width="16" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+361,319,318,319,365,0,0,0,0,0,0,0,0,0,0,0,
+317,328,327,328,329,365,0,0,0,0,0,0,0,0,0,0,
+398,399,318,399,400,374,0,0,0,0,0,0,0,0,0,0,
+407,408,337,408,409,410,0,0,0,0,0,0,0,0,0,0,
+326,327,328,329,330,419,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
  <objectgroup color="#7f00ff" id="5" name="markers">
@@ -64,21 +80,6 @@
   <object id="104" x="0" y="280" width="240" height="200"/>
  </objectgroup>
  <objectgroup color="#ff00ff" id="4" name="objects">
-  <object id="82" gid="677" x="360" y="240" width="40" height="40"/>
-  <object id="83" gid="677" x="280" y="200" width="40" height="40"/>
-  <object id="86" gid="677" x="200" y="160" width="40" height="40"/>
-  <object id="88" gid="677" x="160" y="240" width="40" height="40"/>
-  <object id="84" gid="677" x="280" y="200" width="40" height="40"/>
-  <object id="85" gid="677" x="200" y="160" width="40" height="40"/>
-  <object id="87" gid="677" x="200" y="160" width="40" height="40"/>
-  <object id="89" gid="677" x="40" y="240" width="40" height="40"/>
-  <object id="90" gid="677" x="80" y="200" width="40" height="40"/>
-  <object id="91" gid="677" x="0" y="160" width="40" height="40"/>
-  <object id="92" gid="677" x="480" y="240" width="40" height="40"/>
-  <object id="93" gid="677" x="520" y="200" width="40" height="40"/>
-  <object id="94" gid="677" x="440" y="160" width="40" height="40"/>
-  <object id="95" gid="677" x="600" y="160" width="40" height="40"/>
-  <object id="96" gid="677" x="600" y="240" width="40" height="40"/>
   <object id="105" name="transition" x="240" y="440" width="120" height="40">
    <properties>
     <property name="map" value="tundra3"/>
@@ -91,6 +92,18 @@
     <property name="lightencounter" value="dummy"/>
    </properties>
   </object>
+  <object id="123" name="waterdivot" x="0" y="120" width="40" height="40"/>
+  <object id="125" name="waterdivot" x="40" y="200" width="40" height="40"/>
+  <object id="126" name="waterdivot" x="80" y="160" width="40" height="40"/>
+  <object id="127" name="waterdivot" x="160" y="200" width="40" height="40"/>
+  <object id="128" name="waterdivot" x="200" y="120" width="40" height="40"/>
+  <object id="129" name="waterdivot" x="280" y="160" width="40" height="40"/>
+  <object id="130" name="waterdivot" x="360" y="200" width="40" height="40"/>
+  <object id="131" name="waterdivot" x="440" y="120" width="40" height="40"/>
+  <object id="132" name="waterdivot" x="480" y="200" width="40" height="40"/>
+  <object id="133" name="waterdivot" x="520" y="160" width="40" height="40"/>
+  <object id="134" name="waterdivot" x="600" y="120" width="40" height="40"/>
+  <object id="135" name="waterdivot" x="600" y="200" width="40" height="40"/>
  </objectgroup>
  <objectgroup color="#01ef09" id="14" name="controllers">
   <object id="107" name="encounterzone" x="21.1818" y="19.6319">

@@ -72,14 +72,7 @@
   <object id="106" x="720" y="160">
    <polygon points="0,0 0,-40 40,-40"/>
   </object>
-  <object id="95" x="160" y="200" width="40" height="40"/>
-  <object id="96" x="200" y="200" width="40" height="40"/>
-  <object id="97" x="240" y="200" width="40" height="40"/>
-  <object id="99" x="280" y="200" width="40" height="40"/>
-  <object id="100" x="320" y="200" width="80" height="40"/>
-  <object id="103" x="480" y="200" width="80" height="40"/>
-  <object id="101" x="400" y="200" width="80" height="40"/>
-  <object id="102" x="560" y="200" width="80" height="40"/>
+  <object id="96" x="200" y="200" width="440" height="40"/>
   <object id="107" x="920" y="160">
    <polygon points="0,0 0,-40 -40,-40"/>
   </object>
@@ -96,13 +89,11 @@
    <polygon points="0,0 0,-40 -40,-40"/>
   </object>
   <object id="113" x="1080" y="280" width="40" height="40"/>
-  <object id="115" x="0" y="240" width="80" height="40"/>
-  <object id="116" x="80" y="240" width="80" height="40"/>
-  <object id="117" x="160" y="240" width="40" height="40"/>
-  <object id="119" x="731" y="88" width="189" height="32"/>
+  <object id="115" x="0" y="240" width="200" height="40"/>
+  <object id="119" x="720" y="88" width="200" height="32"/>
  </objectgroup>
  <objectgroup color="#00ff00" id="12" name="controllers">
-  <object id="141" name="encounterzone" x="215.627" y="120" width="864.373" height="320">
+  <object id="141" name="encounterzone" x="215.627" y="120" width="884.373" height="320">
    <properties>
     <property name="encgroup" value="test"/>
    </properties>
@@ -121,14 +112,7 @@
  </objectgroup>
  <objectgroup color="#ff00ff" id="4" name="objects">
   <object id="121" gid="690" x="800" y="220" width="90" height="144"/>
-  <object id="125" name="interactable" x="805" y="99" width="40" height="40">
-   <properties>
-    <property name="text1">* ...!?[wait:5]
-* There is a camera behind the...[wait:5]
-&quot;sentry station.&quot;</property>
-   </properties>
-  </object>
-  <object id="124" name="interactable" x="847" y="99" width="40" height="40">
+  <object id="125" name="interactable" x="800" y="100" width="85" height="40">
    <properties>
     <property name="text1">* ...!?[wait:5]
 * There is a camera behind the...[wait:5]
@@ -141,7 +125,7 @@
     <property name="marker" value="entry2"/>
    </properties>
   </object>
-  <object id="122" name="interactable" x="804" y="182" width="40" height="40">
+  <object id="122" name="interactable" x="804" y="182" width="86" height="38">
    <properties>
     <property name="solid" type="bool" value="true"/>
     <property name="text1">* There's some narration on this
@@ -160,26 +144,7 @@ VERY FAMOUS
 ROYAL GUARDSMAN.[wait:5])</property>
    </properties>
   </object>
-  <object id="123" name="interactable" x="846" y="182" width="40" height="40">
-   <properties>
-    <property name="solid" type="bool" value="true"/>
-    <property name="text1">* There's some narration on this
-cardboard box.</property>
-    <property name="text2">[font:papyrus][voice:papyrus]YOU OBSERVE THE
-WELL-CRAFTED
-SENTRY STATION.</property>
-    <property name="text3">[font:papyrus][voice:papyrus]WHO COULD HAVE
-BUILT THIS,[wait:5] YOU
-PONDER...</property>
-    <property name="text4">[font:papyrus][voice:papyrus]I BET IT WAS
-THAT VERY FAMOUS
-ROYAL GUARDSMAN!</property>
-    <property name="text5">[font:papyrus][voice:papyrus](NOTE: NOT YET A
-VERY FAMOUS
-ROYAL GUARDSMAN.[wait:5])</property>
-   </properties>
-  </object>
-  <object id="137" name="transition" x="1080" y="320" width="40" height="120">
+  <object id="137" name="transition" x="1100" y="320" width="20" height="120">
    <properties>
     <property name="map" value="darktundra1"/>
     <property name="marker" value="entry"/>
