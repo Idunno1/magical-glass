@@ -12,9 +12,7 @@ LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightGauge               = libRequire("magical-glass", "scripts/lightbattle/ui/lightgauge")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
 LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
-LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
 LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
-LightActionBoxDisplay    = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxdisplay")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
 RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter")
@@ -45,8 +43,6 @@ function lib:load()
         Game:setFlag("#remove_overheal", true)
         Game:setFlag("#prevent_turn_1_flee", false) -- used for the first froggit encounter
         Game:setFlag("#limit_hp_gauge_length", false) -- false: no limit, true: 99, integer
-
-        Game:setFlag("#lw_stat_menu_style", "undertale") -- undertale, deltatraveler
 
         Game:setFlag("#hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
 
