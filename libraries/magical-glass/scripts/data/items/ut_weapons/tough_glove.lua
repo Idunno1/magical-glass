@@ -86,6 +86,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             Game.battle:endAttack()
         else
             self:onLightMiss(battler, enemy)
+            Game.battle:endAttack()
         end
 
     end
