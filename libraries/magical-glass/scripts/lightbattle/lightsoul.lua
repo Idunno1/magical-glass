@@ -300,7 +300,9 @@ end
 function LightSoul:onDamage(bullet, amount)
     for _,party in ipairs(Game.battle.party) do
         for _,equip in ipairs(party.chara:getEquipment()) do
-            self.inv_timer = equip:applyInvBonus(self.inv_timer)
+            if equip.applyInvBonus then
+                self.inv_timer = equip:applyInvBonus(self.inv_timer)
+            end
         end
     end
 end
