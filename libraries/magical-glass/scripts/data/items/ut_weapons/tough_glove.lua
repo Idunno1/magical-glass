@@ -119,9 +119,8 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     end
 
                     Assets.playSound("punchweak")
-                    local small_punch = Sprite("effects/attack/hyperfist")
+                    local small_punch = Sprite("effects/attack/regfist")
                     small_punch:setOrigin(0.5, 0.5)
-                    small_punch:setScale(0.5, 0.5)
                     small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
                     small_punch.color = battler.chara:getLightMultiboltAttackColor()
                     small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))

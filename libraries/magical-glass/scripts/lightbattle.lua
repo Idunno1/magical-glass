@@ -57,6 +57,8 @@ function LightBattle:init()
 
     self.resume_world_music = false
 
+    self.transitioned = false
+
     self.mask = ArenaMask()
     self:addChild(self.mask)
 
@@ -93,9 +95,12 @@ function LightBattle:init()
     self.current_menu_columns = nil
     self.current_menu_rows = nil
 
+    self.menuselect_cursor_memory = {}
+    self.enemyselect_cursor_memory = {}
+    self.partyselect_cursor_memory = {}
+
     self.enemies = {}
     self.enemy_dialogue = {}
-    self.enemies_to_remove = {}
     self.defeated_enemies = {}
 
     self.seen_encounter_text = false
@@ -174,7 +179,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, 1--[[ math.min(3, #Game.party) ]] do
+    for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -182,10 +187,8 @@ function LightBattle:createPartyBattlers()
         self:addChild(battler)
         table.insert(self.party, battler)
 
-        if Game:getFlag("#remove_overheal") then
-            if party_member:getHealth() > party_member:getStat("health") + 15 then
-                party_member:setHealth(party_member:getStat("health") + 15)
-            end
+        if party_member:getHealth() > party_member:getStat("health") + 15 then
+            party_member:setHealth(party_member:getStat("health") + 15)
         end
 
         if party_member:getHealth() < 1 then
@@ -220,14 +223,13 @@ function LightBattle:postInit(state, encounter)
     end
 
     if state == "TRANSITION" then
-        self.transitioned = true
-        self.transition_timer = 0
-
-        if self.encounter.story then
-            self.story_wave = self.encounter:storyWave()
-        end
-
         self.encounter:onSoulTransition()
+    else
+        self.encounter:onBattleStart()
+    end
+
+    if self.encounter.story then
+        self.story_wave = self.encounter:storyWave()
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
@@ -238,7 +240,7 @@ function LightBattle:postInit(state, encounter)
     self:addChild(self.battle_ui)
 
     self.tension_bar = LightTensionBar(29, 53, true)
-    if not Game:getFlag("#enable_lw_tp") then
+    if not Kristal.getLibConfig("magical-glass", "light_battle_tp") then
         self.tension_bar.visible = false
     end
     self:addChild(self.tension_bar)
@@ -328,15 +330,7 @@ function LightBattle:getState()
     return self.state
 end
 
-function LightBattle:onSubStateChange(old,new)
---[[     if (old == "ACT") and (new ~= "ACT") then
-        for _,battler in ipairs(self.party) do
-            if battler.sprite.anim == "battle/act" then
-                battler:setAnimation("battle/act_end")
-            end
-        end
-    end ]]
-end
+function LightBattle:onSubStateChange(old, new) end
 
 function LightBattle:registerXAction(party, name, description, tp)
     local act = {
@@ -369,7 +363,6 @@ function LightBattle:processCharacterActions()
     end
     order = Kristal.modCall("getActionOrder", order, self.encounter) or order
 
-    -- Always process SKIP actions at the end
     table.insert(order, "SKIP")
 
     for _,action_group in ipairs(order) do
@@ -399,8 +392,6 @@ function LightBattle:processActionGroup(group)
         return found
     else
         for i,battler in ipairs(self.party) do
-            -- If the table contains the action
-            -- Ex. if {"SPELL", "ITEM", "SPARE"} contains "SPARE"
             local action = self.character_actions[i]
             if action and Utils.containsValue(group, action.action) then
                 self.character_actions[i] = nil
@@ -570,7 +561,7 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                if Game:getFlag("#enable_lw_tp") then
+                if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
                     Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
                 end
                 weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
@@ -808,7 +799,7 @@ function LightBattle:onStateChange(old,new)
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[noskip][wait:1][noskip:false]" ..self.battle_ui.current_encounter_text)
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -840,7 +831,7 @@ function LightBattle:onStateChange(old,new)
 
         self.battle_ui.encounter_text.text.line_offset = 5
         self.battle_ui:clearEncounterText()
-        self.battle_ui.encounter_text:setText("[noskip]" .. "[wait:1]" .. "[noskip:false]" ..self.battle_ui.current_encounter_text)
+        self.battle_ui.encounter_text:setText("[noskip][wait:1][noskip:false]"..self.battle_ui.current_encounter_text)
 
         self.battle_ui.encounter_text.debug_rect = { -30, -12, SCREEN_WIDTH + 1, 124 }
 
@@ -860,22 +851,56 @@ function LightBattle:onStateChange(old,new)
         end
     elseif new == "MENUSELECT" then
         self.battle_ui:clearEncounterText()
-        self.current_menu_x = 1
-        self.current_menu_y = 1
 
         if self.state_reason == "ACT" then
             self.current_menu_columns = 2
             self.current_menu_rows = 3
         end
+
+        if self.menuselect_cursor_memory[self.state_reason] then
+            self.current_menu_x = self.menuselect_cursor_memory[self.state_reason].x
+            self.current_menu_y = self.menuselect_cursor_memory[self.state_reason].y
+        else
+            self.current_menu_x = 1
+            self.current_menu_y = 1
+        end
+
+        if not self:isValidMenuLocation() then
+            self.current_menu_x = 1
+            self.current_menu_y = 1
+        end
     elseif new == "ENEMYSELECT" then
         self.battle_ui:clearEncounterText()
-        self.current_menu_x = 1
-        self.current_menu_y = 1
-        self.selected_enemy = 1
+
+        if self.enemyselect_cursor_memory[self.state_reason] then
+            self.current_menu_x = 1
+            self.current_menu_y = self.enemyselect_cursor_memory[self.state_reason] or 1
+        else
+            self.current_menu_x = 1
+            self.current_menu_y = 1
+        end
+
+        if not self:isValidMenuLocation() then
+            repeat
+                if not self.enemies[self.current_menu_y] then
+                    self.current_menu_y = 1
+                    break
+                end
+                self.current_menu_y = self.current_menu_y + 1
+            until(self:isValidMenuLocation())
+        end
+
     elseif new == "PARTYSELECT" then
         self.battle_ui:clearEncounterText()
-        self.current_menu_x = 1
-        self.current_menu_y = 1
+
+        if self.partyselect_cursor_memory[self.state_reason] then
+            self.current_menu_x = 1
+            self.current_menu_y = self.partyselect_cursor_memory[self.state_reason]
+        else
+            self.current_menu_x = 1
+            self.current_menu_y = 1
+        end
+
     elseif new == "ATTACKING" then
         self.battle_ui:clearEncounterText()
 
@@ -1054,7 +1079,7 @@ function LightBattle:onStateChange(old,new)
 
         end
 
-        if Game:getFlag("#enable_lw_tp") then
+        if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
             self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
         end
 
@@ -1071,7 +1096,7 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
+        win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency") .. "."
 
         Game.lw_money = Game.lw_money + self.money
 
@@ -1084,7 +1109,7 @@ function LightBattle:onStateChange(old,new)
             member.chara:gainLightEXP(self.xp, true)
 
             if lv ~= member.chara:getLightLV() then
-                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
+                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency") .. ".\n* Your LOVE increased."
             end
         end
 
@@ -1495,11 +1520,6 @@ function LightBattle:sortChildren()
 end
 
 function LightBattle:update()
-    for _,enemy in ipairs(self.enemies_to_remove) do
-        Utils.removeFromTable(self.enemies, enemy)
-    end
-    self.enemies_to_remove = {}
-
     if self.cutscene then
         if not self.cutscene.ended then
             self.cutscene:update()
@@ -1509,9 +1529,7 @@ function LightBattle:update()
     end
     if Game.battle == nil then return end -- cutscene ended the battle
 
-    if self.state == "TRANSITION" then
-        self:updateTransition()
-    elseif self.state == "ATTACKING" then
+    if self.state == "ATTACKING" then
         self:updateAttacking()
     elseif self.state == "ACTIONSDONE" then
         self.actions_done_timer = Utils.approach(self.actions_done_timer, 0, DT)
@@ -1650,42 +1668,15 @@ function LightBattle:update()
         self.encounter:update()
     end
 
-    -- list of every state that menu waves are updated during
     local update_menu_waves = {"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT", "FLEEING", "FLEEFAIL"}
 
     if Utils.containsValue(update_menu_waves, self.state) then
         self:updateMenuWaves()
     end
     
-    -- Always sort
     self.update_child_list = true
     super.update(self)
 
-end
-
-function LightBattle:updateTransition()
-    self.transition_timer = self.transition_timer + DTMULT
-
-    --[[ frame 1 - black bg
-         frame 2 - heart
-         frame 3 - heart
-         frame 4 - no heart
-         frame 5 - no heart
-         frame 6 - heart
-         frame 7 - heart
-         frame 8 - no heart
-         frame 9 - no heart
-         frame 10 - heart
-         frame 11 - heart
-         frame 12 - no frisk, start moving
-         frame 30 - stop moving
-         frame 35 - fade in, transition heart fades out
-    ]]
-
-    --if self.transition_timer >= 35 then
-    --    self.transition_timer = 35
-    --    self:setState("ACTIONSELECT")
-    --end
 end
 
 function LightBattle:updateChildren()
@@ -1697,7 +1688,6 @@ function LightBattle:updateChildren()
         v:update()
     end
     for _,v in ipairs(self.children) do
-        -- only update if Game.battle is still a reference to this
         if v.active and v.parent == self and Game.battle == self then
             v:fullUpdate()
         end
@@ -1795,14 +1785,22 @@ function LightBattle:getItemIndex()
 end
 
 function LightBattle:isValidMenuLocation()
-    if self:getItemIndex() > #self.menu_items then
-        return false
-    end
-    if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
-        return false
-    end
-    if not self:isPagerMenu() and (self.current_menu_x > self.current_menu_columns) then
-        return false
+    if self.state == "MENUSELECT" then
+        if self:getItemIndex() > #self.menu_items then
+            return false
+        end
+        if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
+            return false
+        end
+        if not self:isPagerMenu() and (self.current_menu_x > self.current_menu_columns) then
+            return false
+        end
+    elseif self.state == "ENEMYSELECT" then
+        if self.current_menu_y > #self.enemies then
+            return false
+        elseif self.enemies[self.current_menu_y].defeated then
+            return false
+        end
     end
     return true
 end
@@ -1810,7 +1808,7 @@ end
 function LightBattle:advanceBoxes()
     local all_done = true
     local to_remove = {}
-    -- Check if any dialogue is typing
+
     for _,dialogue in ipairs(self.enemy_dialogue) do
         if dialogue:isTyping() then
             all_done = false
@@ -1818,7 +1816,6 @@ function LightBattle:advanceBoxes()
         end
     end
 
-    -- Nothing is typing, try to advance
     if all_done then
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -1831,13 +1828,13 @@ function LightBattle:advanceBoxes()
             end
         end
     end
-    -- Remove leftover dialogue
+
     for _,dialogue in ipairs(to_remove) do
         if #self.arena.target_shape == 0 then
             Utils.removeFromTable(self.enemy_dialogue, dialogue)
         end
     end
-    -- If all dialogue is done, go to DIALOGUEEND state
+
     if all_done then
         self:setState("DIALOGUEEND")
     end
@@ -1846,11 +1843,9 @@ end
 function LightBattle:endActionAnimation(battler, action, callback)
 local _callback = callback
     callback = function()
-        -- Remove the battler's action icon
         if battler.action then
             battler.action.icon = nil
         end
-        -- Reset the head sprite
         local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
         if _callback then
             _callback()
@@ -1859,23 +1854,7 @@ local _callback = callback
     if Kristal.callEvent("onBattleActionEndAnimation", action, action.action, battler, action.target, callback, _callback) then
         return
     end
---[[     if action.action ~= "ATTACK" and action.action ~= "AUTOATTACK" then
-        if battler.sprite.anim == "battle/"..action.action:lower() then
-            -- Attempt to play the end animation if the sprite hasn't changed
-            if not battler:setAnimation("battle/"..action.action:lower().."_end", callback) then
-                --battler:resetSprite()
-            end
-            callback()
-        else
-            -- Otherwise, play idle animation
-            battler:resetSprite()
-            if callback then
-                callback()
-            end
-        end
-    else ]]
-        callback()
-    --end
+    callback()
 end
 
 function LightBattle:pushForcedAction(battler, action, target, data, extra)
@@ -1924,10 +1903,8 @@ function LightBattle:commitAction(battler, action_type, target, data, extra)
 
     local party_id = self:getPartyIndex(battler.chara.id)
 
-    -- Dont commit action for an inactive party member
     if not battler:isActive() then return end
 
-    -- Make sure this action doesn't cancel any uncancellable actions
     if data.party then
         for _,v in ipairs(data.party) do
             local index = self:getPartyIndex(v)
@@ -2030,7 +2007,6 @@ function LightBattle:commitSingleAction(action)
                     Game:removeTension(-action.tp)
                 end
             end
-            --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
         end
     else
@@ -2047,7 +2023,6 @@ function LightBattle:commitSingleAction(action)
         end
 
         if (action.action == "ITEM" and action.data and (not action.data.instant)) or (action.action ~= "ITEM") then
-            --battler:setAnimation("battle/"..anim.."_ready")
             action.icon = anim
         end
     end
@@ -2109,21 +2084,6 @@ function LightBattle:removeSingleAction(action)
 end
 
 function LightBattle:isHighlighted(battler)
---[[     if self.state == "PARTYSELECT" then
-        return self.party[self.current_menu_y] == battler
-    elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
-        return self.enemies[self.current_menu_y] == battler
-    elseif self.state == "MENUSELECT" then
-        local current_menu = self.menu_items[self:getItemIndex()]
-        if current_menu and current_menu.highlight then
-            local highlighted = current_menu.highlight
-            if isClass(highlighted) then
-                return highlighted == battler
-            elseif type(highlighted) == "table" then
-                return Utils.containsValue(highlighted, battler)
-            end
-        end
-    end ]]
     return false
 end
 
@@ -2183,7 +2143,6 @@ function LightBattle:shakeCamera(x, y, friction)
 end
 
 function LightBattle:randomTargetOld()
-    -- only used in dt mode
     local none_targetable = true
     for _,battler in ipairs(self.party) do
         if battler:canTarget() then
@@ -2196,7 +2155,6 @@ function LightBattle:randomTargetOld()
         return "ALL"
     end
 
-    -- Pick random party member
     local target = nil
     while not target do
         local party = Utils.pick(self.party)
@@ -2212,7 +2170,6 @@ function LightBattle:randomTargetOld()
 end
 
 function LightBattle:randomTarget()
-    -- only used in dt mode
     local target = self:randomTargetOld()
 
     if (not Game:getConfig("targetSystem")) and (target ~= "ALL") then
@@ -2228,7 +2185,6 @@ function LightBattle:randomTarget()
 end
 
 function LightBattle:targetAll()
-    -- only used in dt mode
     for _,battler in ipairs(self.party) do
         if battler:canTarget() then
             battler.targeted = true
@@ -2238,7 +2194,6 @@ function LightBattle:targetAll()
 end
 
 function LightBattle:targetAny()
-    -- only used in dt mode
     for _,battler in ipairs(self.party) do
         if battler:canTarget() then
             battler.targeted = true
@@ -2304,15 +2259,6 @@ function LightBattle:hurt(amount, exact, target)
     if target == "ANY" then
         target = self:randomTargetOld()
 
-        -- Calculate the average HP of the party.
-        -- This is "scr_party_hpaverage", which gets called multiple times in the original script.
-        -- We'll only do it once here, just for the slight optimization. This won't affect accuracy.
-
-        -- Speaking of accuracy, this function doesn't work at all!
-        -- It contains a bug which causes it to always return 0, unless all party members are at full health.
-        -- This is because of a random floor() call.
-        -- I won't bother making the code accurate; all that matters is the output.
-
         local party_average_hp = 1
 
         for _,battler in ipairs(self.party) do
@@ -2322,7 +2268,6 @@ function LightBattle:hurt(amount, exact, target)
             end
         end
 
-        -- Retarget... twice.
         if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
             target = self:randomTargetOld()
         end
@@ -2330,17 +2275,14 @@ function LightBattle:hurt(amount, exact, target)
             target = self:randomTargetOld()
         end
 
-        -- If we landed on Kris (or, well, the first party member), and their health is low, retarget (plot armor lol)
         if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
             target = self:randomTargetOld()
         end
 
-        -- They got hit, so un-darken them
         target.should_darken = false
         target.targeted = true
     end
 
-    -- Now it's time to actually damage them!
     if isClass(target) and (target:includes(PartyBattler) or target:includes(LightPartyBattler)) then
         target:hurt(amount, exact)
         return {target}
@@ -2353,7 +2295,7 @@ function LightBattle:hurt(amount, exact, target)
                 battler:hurt(amount, exact, nil, {all = true})
             end
         end
-        -- Return the battlers who aren't down, aka the ones we hit.
+
         return Utils.filter(self.party, function(item) return not item.is_down end)
     end
 end
@@ -2523,7 +2465,7 @@ function LightBattle:checkSolidCollision(collider)
 end
 
 function LightBattle:removeEnemy(enemy, defeated)
-    table.insert(self.enemies_to_remove, enemy)
+    enemy.selectable = false
     if defeated then
         table.insert(self.defeated_enemies, enemy)
     end
@@ -2567,7 +2509,8 @@ function LightBattle:addMenuItem(tbl)
         ["data"] = tbl.data or nil,
         ["callback"] = tbl.callback or function() end,
         ["highlight"] = tbl.highlight or nil,
-        ["icons"] = tbl.icons or nil
+        ["icons"] = tbl.icons or nil,
+        ["special"] = tbl.special or nil
     }
     table.insert(self.menu_items, tbl)
 end
@@ -2612,7 +2555,6 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "k" then
-            -- Set it directly so it's not capped by the max
             Game.tension = (Game:getMaxTension() * 2)
         end
     end
@@ -2624,7 +2566,7 @@ function LightBattle:onKeyPressed(key)
             if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
             if Kristal.callEvent("onBattleMenuSelect", self.state_reason, menu_item, can_select) then return end
             if can_select then
-                if menu_item.name ~= "Flee" then -- probably should have a better way of doing this
+                if menu_item.special ~= "flee" then
                     self:playSelectSound()
                 end
                 menu_item["callback"](menu_item)
@@ -2632,8 +2574,15 @@ function LightBattle:onKeyPressed(key)
             end
         elseif Input.isCancel(key) then
             Game:setTensionPreview(0)
+
+            if not self:isPagerMenu() then
+                self.menuselect_cursor_memory[self.state_reason] = {x = self.current_menu_x, y = self.current_menu_y}
+            end
+
             if self.state_reason == "ACT" then
                 self:setState("ENEMYSELECT", "ACT")
+            elseif self.state_reason == "MERCY" then
+                self:setState("ACTIONSELECT", "CANCEL")
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
@@ -2648,7 +2597,7 @@ function LightBattle:onKeyPressed(key)
             if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns * (max_page - self.current_menu_x)
                 while not self:isValidMenuLocation() do
-                    self.current_menu_x = self.current_menu_x - 1 -- i swear i did this before and it just overflowed
+                    self.current_menu_x = self.current_menu_x - 1
                 end
 
                 if not self:isPagerMenu() and self.current_menu_columns > 1 and self.current_menu_x % 2 ~= 0 then
@@ -2731,6 +2680,8 @@ function LightBattle:onKeyPressed(key)
     elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
 
         if Input.isConfirm(key) then
+            self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
+
             self:playSelectSound()
             if #self.enemies == 0 then return end
             self.selected_enemy = self.current_menu_y
@@ -2785,6 +2736,8 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
+            self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
+
             if self.state_reason == "SPELL" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then
@@ -2801,7 +2754,6 @@ function LightBattle:onKeyPressed(key)
             repeat
                 give_up = give_up + 1
                 if give_up > 100 then return end
-                -- Keep decrementing until there's a selectable enemy.
                 self.current_menu_y = self.current_menu_y - 1
                 if self.current_menu_y < 1 then
                     self.current_menu_y = #self.enemies
@@ -2818,7 +2770,6 @@ function LightBattle:onKeyPressed(key)
             repeat
                 give_up = give_up + 1
                 if give_up > 100 then return end
-                -- Keep decrementing until there's a selectable enemy.
                 self.current_menu_y = self.current_menu_y + 1
                 if self.current_menu_y > #self.enemies then
                     self.current_menu_y = 1
@@ -2831,6 +2782,8 @@ function LightBattle:onKeyPressed(key)
         end
     elseif self.state == "PARTYSELECT" then
         if Input.isConfirm(key) then
+            self.partyselect_cursor_memory[self.state_reason] = self.current_menu_y
+
             self:playSelectSound()
             if self.state_reason == "SPELL" then
                 self:pushAction("SPELL", self.party[self.current_menu_y], self.selected_spell)
@@ -2843,7 +2796,8 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
-            self:playMoveSound()
+            self.partyselect_cursor_memory[self.state_reason] = self.current_menu_y
+            
             if self.state_reason == "SPELL" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then

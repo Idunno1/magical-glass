@@ -9,8 +9,13 @@ function encounter:init()
     -- Is a "But Nobody Came"/"Genocide" Encounter
     self.nobody_came = true
 
-    -- Battle music ("battleut" is undertale)
-    self.music = "toomuch"
+    self.music = nil
+end
+
+function encounter:onBattleStart()
+    Game.world.music:stop()
+    Game.world.music:resume()
+    Game.world.music:play("toomuch")
 end
 
 return encounter

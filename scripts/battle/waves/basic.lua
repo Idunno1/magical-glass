@@ -3,7 +3,6 @@ local Basic, super = Class(Wave)
 function Basic:init()
     super.init(self)
 
-    self:setArenaPosition(300, 200)
     self:setArenaSize(100)
 end
 

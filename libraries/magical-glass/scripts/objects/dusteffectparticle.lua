@@ -14,6 +14,10 @@ function DustEffectParticle:update()
         local new_color = Utils.unpackColor({self.color})
         new_color[4] = new_color[4] - 0.07 * DTMULT
         self.color = new_color
+
+        if new_color[4] < 0.01 then
+            self:remove()
+        end
     end
 end
 

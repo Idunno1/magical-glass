@@ -27,26 +27,8 @@ function lib:load()
     
     if Game.is_new_file then
         Game:setFlag("#game_overs", 0)
-        Game:setFlag("#default_battle_system", "undertale") -- undertale, deltarune
-        Game:setFlag("#force_light_mode_in_light_battles", false)
         Game:setFlag("#serious_mode", false) -- makes items use their serious name in battle, if they have one
-        Game:setFlag("#always_show_magic", false) -- always show the magic stat in the light world
-        Game:setFlag("#undertale_text_skipping", true) -- can't skip with c or hold z to skip
-        Game:setFlag("#undertale_save_menu", true)
-        Game:setFlag("#undertale_stat_display", true) -- subtracts 10 from at and df in the stat menu
-        Game:setFlag("#enable_lw_tp", false) -- enables tp in light world battles
-        Game:setFlag("#enable_low_hp_tired", true) -- whether enemies become tired once their hp is low enough
-        Game:setFlag("#button_flashing", true) -- flashes the spell/mercy buttons when an enemy is tired/sparable
-        Game:setFlag("#lw_stat_menu_portraits", "magical_glass") -- magical_glass, deltatraveler
-        Game:setFlag("#gauge_styles", "undertale") -- undertale, deltarune
-        Game:setFlag("#name_color", COLORS.yellow) -- yellow, white, pink
-        Game:setFlag("#remove_overheal", true)
-        Game:setFlag("#prevent_turn_1_flee", false) -- used for the first froggit encounter
-        Game:setFlag("#limit_hp_gauge_length", false) -- false: no limit, true: 99, integer
-
-        Game:setFlag("#hide_cell", false) -- if the cell phone isn't unlocked, it doesn't show it in the menu (like in undertale) instead of showing it grayed-out like in deltarune
-
-        Game:setFlag("#savename_lw_menus", false) -- if true, will display the "savename" (the name you choose) instead of the party member's name if their "use_player_name" property is set to true.
+        Game:setFlag("#name_color", COLORS.yellow) -- use MagicalGlassLib:changeSpareColor() to change this
     end
 end
 
@@ -117,6 +99,179 @@ function lib:init()
 
     Utils.hook(Actor, "createLightBattleSprite", function(orig, self)
         return LightEnemySprite(self)
+    end)
+
+    Utils.hook(ActorSprite, "init", function(orig, self, actor)
+        orig(self, actor)
+        self.run_away_light = false
+    end)
+
+    Utils.hook(ActorSprite, "update", function(orig, self)
+        if self.actor:preSpriteUpdate(self) then
+            return
+        end
+    
+        local flip_dir
+        for _,sprite in ipairs(self.sprite_options) do
+            flip_dir = self.actor:getFlipDirection(sprite)
+            if flip_dir then break end
+        end
+    
+        if flip_dir then
+            if not self.directional then
+                local opposite = flip_dir == "right" and "left" or "right"
+                if self.facing == flip_dir then
+                    self.flip_x = true
+                elseif self.facing == opposite then
+                    self.flip_x = false
+                end
+            else
+                self.flip_x = false
+            end
+            self.last_flippable = true
+        elseif self.last_flippable then
+            self.last_flippable = false
+            self.flip_x = false
+        end
+    
+        if not self.playing then
+            local floored_frame = math.floor(self.walk_frame)
+            if floored_frame ~= self.walk_frame or ((self.directional or self.walk_override) and self.walking) then
+                self.walk_frame = Utils.approach(self.walk_frame, floored_frame + 1, DT * (self.walk_speed > 0 and self.walk_speed or 1))
+                local last_frame = self.frame
+                self:setFrame(floored_frame)
+                if self.frame ~= last_frame and self.on_footstep and self.frame % 2 == 0 then
+                    self.on_footstep(self, math.floor(self.frame/2))
+                end
+            elseif (self.directional or self.walk_override) and self.frames and not self.walking then
+                self:setFrame(1)
+            end
+    
+            self:updateDirection()
+        end
+    
+        if self.aura then
+            self.aura_siner = self.aura_siner + 0.25 * DTMULT
+        end
+    
+        if self.run_away or self.run_away_light then
+            self.run_away_timer = self.run_away_timer + DTMULT
+        end
+    
+        ActorSprite.__super.update(self)
+    
+        self.actor:onSpriteUpdate(self)
+    end)
+    
+    Utils.hook(ActorSprite, "draw", function(orig, self)
+        if self.actor:preSpriteDraw(self) then
+            return
+        end
+    
+        if self.texture and self.run_away then
+            local r,g,b,a = self:getDrawColor()
+            for i = 0, 80 do
+                local alph = a * 0.4
+                Draw.setColor(r,g,b, ((alph - (self.run_away_timer / 8)) + (i / 200)))
+                Draw.draw(self.texture, i * 2, 0)
+            end
+            return
+        end
+
+        if self.texture and self.run_away_light then
+            local r,g,b,a = self:getDrawColor()
+            for i = 0, 120 do
+                local alph = a * 0.4
+                Draw.setColor(r,g,b, ((alph - (self.run_away_timer / 8)) + (i / 200)))
+                Draw.draw(self.texture, i * self.run_direction or 2, 0)
+            end
+            return
+        end
+    
+        if self.texture and self.aura then
+            -- Use additive blending if the enemy is not being drawn to a canvas
+            if love.graphics.getCanvas() == SCREEN_CANVAS then
+                love.graphics.setBlendMode("add")
+            end
+    
+            local sprite_width = self.texture:getWidth()
+            local sprite_height = self.texture:getHeight()
+    
+            for i = 1, 5 do
+                local aura = (i * 9) + ((self.aura_siner * 3) % 9)
+                local aurax = (aura * 0.75) + (math.sin(aura / 4) * 4)
+                --var auray = (45 * scr_ease_in((aura / 45), 1))
+                local auray = 45 * Ease.inSine(aura / 45, 0, 1, 1)
+                local aurayscale = math.min(1, 80 / sprite_height)
+    
+                Draw.setColor(1, 0, 0, (1 - (auray / 45)) * 0.5)
+                Draw.draw(self.texture, -((aurax / 180) * sprite_width), -((auray / 82) * sprite_height * aurayscale), 0, 1 + ((aurax/36) * 0.5), 1 + (((auray / 36) * aurayscale) * 0.5))
+            end
+    
+            love.graphics.setBlendMode("alpha")
+    
+            local xmult = math.min((70 / sprite_width) * 4, 4)
+            local ymult = math.min((80 / sprite_height) * 5, 5)
+            local ysmult = math.min((80 / sprite_height) * 0.2, 0.2)
+    
+            Draw.setColor(1, 0, 0, 0.2)
+            Draw.draw(self.texture, (sprite_width / 2) + (math.sin(self.aura_siner / 5) * xmult) / 2, (sprite_height / 2) + (math.cos(self.aura_siner / 5) * ymult) / 2, 0, 1, 1 + (math.sin(self.aura_siner / 5) * ysmult) / 2, sprite_width / 2, sprite_height / 2)
+            Draw.draw(self.texture, (sprite_width / 2) - (math.sin(self.aura_siner / 5) * xmult) / 2, (sprite_height / 2) - (math.cos(self.aura_siner / 5) * ymult) / 2, 0, 1, 1 - (math.sin(self.aura_siner / 5) * ysmult) / 2, sprite_width / 2, sprite_height / 2)
+    
+            local last_shader = love.graphics.getShader()
+            love.graphics.setShader(Kristal.Shaders["AddColor"])
+    
+            Kristal.Shaders["AddColor"]:send("inputcolor", {1, 0, 0})
+            Kristal.Shaders["AddColor"]:send("amount", 1)
+    
+            Draw.setColor(1, 1, 1, 0.3)
+            Draw.draw(self.texture,  1,  0)
+            Draw.draw(self.texture, -1,  0)
+            Draw.draw(self.texture,  0,  1)
+            Draw.draw(self.texture,  0, -1)
+    
+            love.graphics.setShader(last_shader)
+    
+            Draw.setColor(self:getDrawColor())
+        end
+    
+        ActorSprite.__super.draw(self)
+    
+        if self.texture and self.frozen then
+            if self.freeze_progress < 1 then
+                Draw.pushScissor()
+                Draw.scissorPoints(nil, self.texture:getHeight() * (1 - self.freeze_progress), nil, nil)
+            end
+    
+            local last_shader = love.graphics.getShader()
+            local shader = Kristal.Shaders["AddColor"]
+            love.graphics.setShader(shader)
+            shader:send("inputcolor", {0.8, 0.8, 0.9})
+            shader:send("amount", 1)
+    
+            local r,g,b,a = self:getDrawColor()
+    
+            Draw.setColor(0, 0, 1, a * 0.8)
+            Draw.draw(self.texture, -1, -1)
+            Draw.setColor(0, 0, 1, a * 0.4)
+            Draw.draw(self.texture, 1, -1)
+            Draw.draw(self.texture, -1, 1)
+            Draw.setColor(0, 0, 1, a * 0.8)
+            Draw.draw(self.texture, 1, 1)
+    
+            love.graphics.setShader(last_shader)
+    
+            love.graphics.setBlendMode("add")
+            Draw.setColor(0.8, 0.8, 0.9, a * 0.4)
+            Draw.draw(self.texture)
+            love.graphics.setBlendMode("alpha")
+    
+            if self.freeze_progress < 1 then
+                Draw.popScissor()
+            end
+        end
+    
+        self.actor:onSpriteDraw(self)
     end)
 
     Utils.hook(DebugSystem, "registerDefaults", function(orig, self)
@@ -282,17 +437,26 @@ function lib:init()
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
         -- the worst thing ever
 
-        local force
-        if Game:getFlag("current_battle_system#") == "undertale" then
-            force = "force_light"
-        elseif Game:getFlag("current_battle_system#") == "deltarune" then
-            force = "force_dark"
+        if Game:getFlag("temporary_world_value#") then
+            if Game:getFlag("temporary_world_value#") == "dark" then
+                if Game:isLight() then
+                    Game:setLight(true)
+                else
+                    Game.light = true
+                end
+            elseif Game:getFlag("temporary_world_value#") == "light" then
+                if not Game:isLight() then
+                    Game:setLight(false)
+                else
+                    Game.light = false
+                end
+            end
         end
 
-        if force then
-            if force == "force_light" then
+        if Game:getFlag("current_battle_system#") then
+            if Game:getFlag("current_battle_system#") == "undertale" then
                 Game:encounterLight(encounter, transition, enemy, context)
-            elseif force == "force_dark" then
+            elseif Game:getFlag("current_battle_system#") == "deltarune" then
                 orig(self, encounter, transition, enemy, context)
             end
         elseif context then
@@ -306,33 +470,45 @@ function lib:init()
                 end
             end
         else
-            if Game:getFlag("temporary_world_value#") then
-                if Game:getFlag("temporary_world_value#") == "dark" then
-                    if Game:isLight() then
-                        Game:setLight(true)
-                    else
-                        Game.light = true
-                    end
-                    Game:encounterLight(encounter, transition, enemy, context)
-                elseif Game:getFlag("temporary_world_value#") == "light" then
-                    if not Game:isLight() then
-                        Game:setLight(false)
-                    else
-                        Game.light = false
-                    end
-                    orig(self, encounter, transition, enemy, context)
-                end
-            else
-                if Game:isLight() then
-                    Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounterLight(encounter, transition, enemy, context)
-                else
-                    Game:setFlag("current_battle_system#", "deltarune")
-                    orig(self, encounter, transition, enemy, context)
-                end
+            if Kristal.getLibConfig("magical-glass", "default_battle_system") == "undertale" then
+                Game:setFlag("current_battle_system#", "undertale")
+                Game:encounterLight(encounter, transition, enemy, context)
+            elseif Kristal.getLibConfig("magical-glass", "default_battle_system") == "deltarune" then
+                Game:setFlag("current_battle_system#", "deltarune")
+                orig(self, encounter, transition, enemy, context)
             end
         end
 
+    end)
+
+    Utils.hook(Game, "encounterLight", function(orig, self, encounter, transition, enemy, context)
+        if transition == nil then transition = true end
+
+        if self.battle then
+            error("Attempt to enter light battle while already in battle")
+        end
+        
+        if enemy and not isClass(enemy) then
+            self.encounter_enemies = enemy
+        else
+            self.encounter_enemies = {enemy}
+        end
+
+        self.state = "BATTLE"
+
+        self.battle = LightBattle()
+
+        if context then
+            self.battle.encounter_context = context
+        end
+
+        if type(transition) == "string" then
+            self.battle:postInit(transition, encounter)
+        else
+            self.battle:postInit("TRANSITION", encounter)
+        end
+
+        self.stage:addChild(self.battle)
     end)
 
     Utils.hook(DarkInventory, "convertToLight", function(orig, self)
@@ -368,8 +544,12 @@ function lib:init()
             end
         end
     
-        local ball = Registry.createItem("light/ball_of_junk", self)
-        new_inventory:addItemTo("items", 1, ball)
+        if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
+            local ball = Registry.createItem("light/ball_of_junk", self)
+            new_inventory:addItemTo("items", 1, ball)
+        else
+            Game:setFlag("dark_inventory#", self)
+        end
     
         new_inventory.storage_enabled = was_storage_enabled
     
@@ -411,7 +591,6 @@ function lib:init()
                 local item = storage[i]
                 if item then
                     item.fallback_light_item = item
-
                     item.light_location = {storage = storage.id, index = i}
     
                     new_inventory:addItemTo("light", item)
@@ -424,6 +603,18 @@ function lib:init()
         new_inventory.storage_enabled = was_storage_enabled
     
         return new_inventory
+    end)
+
+    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
+        if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
+            return orig(self)
+        else
+            if Game:getFlag("dark_inventory#") then
+                return Game:getFlag("dark_inventory#")
+            else
+                return DarkInventory()
+            end
+        end
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -498,6 +689,11 @@ function lib:init()
                 encounter = self.encounter
                 enemy = self.enemy
             elseif self.light_encounter then
+                if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") then
+                    Game:setFlag("temporary_world_value#", "dark")
+                    Game:setLight(true)
+                end
+
                 encounter = self.light_encounter
                 enemy = self.light_enemy
             end
@@ -841,6 +1037,44 @@ function lib:init()
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
 
+    Utils.hook(Item, "convertToLight", function(orig, self, inventory)
+        if self.light_item then
+            if self.light_location then
+                inventory:addItemTo(self.light_location.storage, self.light_location.index, self.light_item)
+                return true
+            else
+                return self.light_item
+            end
+        elseif self.fallback_light_item then
+            if self.light_location then
+                inventory:addItemTo(self.light_location.storage, self.light_location.index, self.fallback_light_item)
+                return true
+            else
+                return self.fallback_light_item
+            end
+        end
+        return false
+    end)
+
+    Utils.hook(Item, "convertToDark", function(orig, self, inventory)
+        if self.dark_item then
+            if self.dark_location then
+                inventory:addItemTo(self.dark_location.storage, self.dark_location.index, self.dark_item)
+                return true
+            else
+                return self.dark_item
+            end
+        elseif self.fallback_dark_item then
+            if self.dark_location then
+                inventory:addItemTo(self.dark_location.storage, self.dark_location.index, self.fallback_dark_item)
+                return true
+            else
+                return self.fallback_dark_item
+            end
+        end
+        return false
+    end)
+
     Utils.hook(Item, "load", function(orig, self, data)
         self.flags = data.flags or self.flags
 
@@ -851,7 +1085,6 @@ function lib:init()
             else
                 self.dark_item = data.dark_item
             end
-
             self.dark_location = data.dark_location
         elseif data.fallback_dark_item then 
             if type(data.fallback_dark_item) == "table" then
@@ -859,6 +1092,7 @@ function lib:init()
             else
                 self.fallback_dark_item = data.fallback_dark_item
             end
+            self.dark_location = data.dark_location
         end
 
         if data.light_item then
@@ -868,7 +1102,6 @@ function lib:init()
             else
                 self.light_item = data.light_item
             end
-
             self.light_location = data.light_location
         elseif data.fallback_light_item then 
             if type(data.fallback_light_item) == "table" then
@@ -876,6 +1109,7 @@ function lib:init()
             else
                 self.fallback_light_item = data.fallback_light_item
             end
+            self.light_location = data.light_location
         end
 
         self:onLoad(data)
@@ -1046,7 +1280,7 @@ function lib:init()
 
         if not OVERLAY_OPEN then
 
-            if Game:getFlag("#undertale_text_skipping") then
+            if Kristal.getLibConfig("magical-glass", "undertale_text_skipping") then
 
                 local input = self.can_advance and (Input.pressed("confirm") or (Input.down("menu") and self.fast_skipping_timer >= 1))
 
@@ -1617,7 +1851,7 @@ function lib:init()
         Draw.setColor(PALETTE["world_text"])
         love.graphics.print("STAT", 84, 188 + (36 * 1))
     
-        if not Game:getFlag("#hide_cell") then
+        if not Kristal.getLibConfig("magical-glass", "hide_cell") then
             if Game:getFlag("has_cell_phone") then
                 if #Game.world.calls > 0 then
                     Draw.setColor(PALETTE["world_text"])
@@ -1643,7 +1877,11 @@ function lib:init()
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
         orig(self)
-        self.party_selecting = 1 
+        self.party_selecting = 1
+
+        self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
+        self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
+        self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -1686,7 +1924,7 @@ function lib:init()
     Utils.hook(LightStatMenu, "draw", function(orig, self)
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        if Game:getFlag("#lw_stat_menu_portraits") == "magical_glass" and #Game.party > 1 then
+        if self.style == "magical_glass" and #Game.party > 1 then
             local name_offset = 0
             for _,chara in ipairs(Game.party) do
                 love.graphics.printf(chara:getName(), name_offset - 18, 8, 100, "center")
@@ -1698,7 +1936,7 @@ function lib:init()
 
         local chara = Game.party[self.party_selecting]
 
-        if Game:getFlag("#lw_stat_menu_portraits") == "deltatraveler" then
+        if self.style == "deltatraveler" then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
@@ -1711,7 +1949,7 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text"])
                 love.graphics.print("<                >", 162, 116)
             end
-        elseif Game:getFlag("#lw_stat_menu_portraits") == "magical_glass" then
+        elseif self.style == "magical_glass" then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
@@ -1732,7 +1970,7 @@ function lib:init()
         local at = chara:getBaseStats()["attack"]
         local df = chara:getBaseStats()["defense"]
         
-        if Game:getFlag("#undertale_stat_display") then
+        if self.undertale_stat_display then
             at = at - 10
             df = df - 10
         end
@@ -1740,7 +1978,7 @@ function lib:init()
         love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         local offset = 0
-        if Game:getFlag("#always_show_magic") or chara.lw_stats.magic > 0 then
+        if self.always_show_magic or chara.lw_stats.magic > 0 then
             love.graphics.print("MG  ", 4, 228)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
             offset = 18
@@ -1790,7 +2028,7 @@ function lib:init()
         end
         
         if Game:isLight() then
-            self.world:openMenu(LightSaveMenu(Game.save_id, self.marker, Game:getFlag("#undertale_save_menu")))
+            self.world:openMenu(LightSaveMenu(Game.save_id, self.marker, self.undertale))
         elseif self.simple_menu or (self.simple_menu == nil and Game:getConfig("smallSaveMenu")) then
             self.world:openMenu(SimpleSaveMenu(Game.save_id, self.marker))
         else
@@ -1994,9 +2232,9 @@ end
 function lib:registerDebugOptions(debug)
 
     debug:registerMenu("encounter_select", "Encounter Select", "search")
-    -- loop through registry and add menu options for all encounters
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("encounter_select", id, "Start this encounter.", function()
+            Game:setFlag("current_battle_system#", "deltarune")
             if Game:isLight() then
                 Game:setFlag("temporary_world_value#", "light")
                 MagicalGlassLib:saveStorageAndEquips()
@@ -2011,14 +2249,15 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
-                if Game:getFlag("force_light_mode_in_light_battles") and not Game:isLight() then
+                if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") and not Game:isLight() then
+                    Game:setFlag("current_battle_system#", "undertale")
                     Game:setFlag("temporary_world_value#", "dark")
                     MagicalGlassLib:saveStorageAndEquips()
                     Game:setLight(true)
                     Game:encounter(id)
                 else
                     Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounterLight(id)
+                    Game:encounter(id)
                 end
                 debug:closeMenu()
             end)
@@ -2054,38 +2293,6 @@ function lib:changeSpareColor(color)
     end
 end
 
-function Game:encounterLight(encounter, transition, enemy, context)
-
-    if transition == nil then transition = true end
-
-    if self.battle then
-        error("Attempt to enter light battle while already in battle")
-    end
-    
-    if enemy and not isClass(enemy) then
-        self.encounter_enemies = enemy
-    else
-        self.encounter_enemies = {enemy}
-    end
-
-    self.state = "BATTLE"
-
-    self.battle = LightBattle()
-
-    if context then
-        self.battle.encounter_context = context
-    end
-
-    if type(transition) == "string" then
-        self.battle:postInit(transition, encounter)
-    else
-        self.battle:postInit("TRANSITION", encounter)
-    end
-
-    self.stage:addChild(self.battle)
-
-end
-
 function lib:saveStorageAndEquips()
     Game:setFlag("temp_inventory#", Game.inventory:save())
     for _,party in ipairs(Game.party) do
@@ -2094,12 +2301,14 @@ function lib:saveStorageAndEquips()
 end
 
 function lib:loadStorageAndEquips()
-    Game.inventory:load(Game:getFlag("temp_inventory#"))
-    for _,party in ipairs(Game.party) do
-        party:loadEquipment(Game:getFlag("temp_equips_.."..party.id.."#"))
-        Game:setFlag("temp_equips_.."..party.id.."#", nil)
+    if Game:getFlag("temp_inventory#") then
+        Game.inventory:load(Game:getFlag("temp_inventory#"))
+        for _,party in ipairs(Game.party) do
+            party:loadEquipment(Game:getFlag("temp_equips_.."..party.id.."#"))
+            Game:setFlag("temp_equips_.."..party.id.."#", nil)
+        end
+        Game:setFlag("temp_inventory#", nil)
     end
-    Game:setFlag("temp_inventory#", nil)
 end
 
 function lib:onFootstep()

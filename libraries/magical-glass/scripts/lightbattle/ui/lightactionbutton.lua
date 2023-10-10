@@ -18,7 +18,7 @@ function LightActionButton:init(type, battler, x, y)
     self.hovered = false
     self.selectable = true
 
-    self.highlight = Game:getFlag("#button_flashing")
+    self.highlight = Kristal.getLibConfig("magical-glass", "action_button_flash")
 end
 
 function LightActionButton:select()
@@ -169,6 +169,7 @@ function LightActionButton:select()
         Game.battle:clearMenuItems()
         Game.battle:addMenuItem({
             ["name"] = "Spare",
+            ["special"] = "spare",
             ["callback"] = function(menu_item)
                 Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
@@ -176,6 +177,7 @@ function LightActionButton:select()
         if Game.battle.encounter.can_flee then
             Game.battle:addMenuItem({
                 ["name"] = "Flee",
+                ["special"] = "flee",
                 ["callback"] = function(menu, item)
                     local chance = Game.battle.encounter.flee_chance
 

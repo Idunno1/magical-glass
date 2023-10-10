@@ -10,29 +10,22 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 12,
-  nextobjectid = 81,
+  nextobjectid = 86,
   properties = {
-    ["light"] = false,
-    ["name"] = "Snowdin? - Box Road"
+    ["name"] = "Snowdin - Dark Zone"
   },
   tilesets = {
     {
-      name = "tundratiles",
+      name = "tundratiles_dark",
       firstgid = 1,
-      filename = "../tilesets/tundratiles.tsx",
-      exportfilename = "../tilesets/tundratiles.lua"
+      filename = "../tilesets/tundratiles_dark.tsx",
+      exportfilename = "../tilesets/tundratiles_dark.lua"
     },
     {
       name = "objects",
       firstgid = 676,
       filename = "../tilesets/objects.tsx",
       exportfilename = "../tilesets/objects.lua"
-    },
-    {
-      name = "tundratiles_dark",
-      firstgid = 691,
-      filename = "../tilesets/tundratiles_dark.tsx",
-      exportfilename = "../tilesets/tundratiles_dark.lua"
     }
   },
   layers = {
@@ -54,18 +47,18 @@ return {
       properties = {},
       encoding = "lua",
       data = {
-        691, 691, 691, 691, 691, 691, 691, 691, 691, 709, 710, 711, 691, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 691, 691, 691, 709, 710, 711, 691, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 691, 691, 691, 709, 710, 711, 691, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 691, 691, 691, 709, 710, 711, 691, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 700, 701, 701, 703, 710, 704, 702, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 709, 710, 710, 710, 710, 710, 704, 701, 702, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 700, 703, 710, 713, 719, 712, 710, 710, 710, 711, 691, 691, 691, 691, 691,
-        691, 691, 691, 700, 701, 703, 710, 710, 711, 691, 718, 719, 712, 710, 704, 701, 701, 701, 701, 701,
-        701, 701, 701, 703, 710, 710, 710, 713, 720, 691, 691, 691, 709, 710, 710, 710, 710, 710, 710, 710,
-        710, 710, 710, 710, 710, 713, 719, 720, 691, 691, 691, 691, 718, 719, 719, 719, 719, 719, 719, 719,
-        719, 719, 719, 719, 719, 720, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691,
-        691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691, 691
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 19, 20, 21, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 19, 20, 21, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 19, 20, 21, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 19, 20, 21, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 10, 11, 11, 13, 20, 14, 12, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 19, 20, 20, 20, 20, 20, 14, 11, 12, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 10, 13, 20, 23, 29, 22, 20, 20, 20, 21, 1, 1, 1, 1, 1,
+        1, 1, 1, 10, 11, 13, 20, 20, 21, 1, 28, 29, 22, 20, 14, 11, 11, 11, 11, 11,
+        11, 11, 11, 13, 20, 20, 20, 23, 30, 1, 1, 1, 19, 20, 20, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 20, 23, 29, 30, 1, 1, 1, 1, 28, 29, 29, 29, 29, 29, 29, 29,
+        29, 29, 29, 29, 29, 30, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
       }
     },
     {
@@ -86,14 +79,14 @@ return {
       properties = {},
       encoding = "lua",
       data = {
-        1088, 1089, 1088, 1089, 1090, 1097, 1098, 1099, 1100, 0, 0, 0, 1096, 1088, 1089, 1090, 1089, 1090, 1089, 1090,
-        1097, 1098, 1097, 1098, 1097, 1090, 1107, 1108, 1109, 0, 0, 0, 1015, 1089, 1098, 1089, 1108, 1089, 1108, 1089,
-        1088, 1089, 1088, 1089, 1090, 1019, 1028, 1037, 1038, 0, 0, 0, 1015, 1088, 1089, 1108, 1089, 1108, 1089, 1108,
-        1097, 1098, 1097, 1098, 1097, 1028, 1037, 1038, 0, 0, 0, 0, 1034, 1035, 1026, 1089, 1018, 1089, 1018, 1089,
-        1088, 1089, 1090, 1019, 1090, 1037, 1038, 349, 0, 0, 0, 0, 343, 1034, 1035, 1036, 1089, 1018, 1089, 1018,
-        1097, 1098, 1099, 1028, 1037, 1038, 357, 358, 0, 0, 0, 0, 0, 0, 1024, 1025, 1106, 1107, 1106, 1107,
-        1106, 1107, 1108, 1037, 1038, 349, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1114, 1115, 1116, 1115, 1116,
-        1115, 1116, 1117, 1118, 357, 358, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        398, 399, 398, 399, 400, 407, 408, 409, 410, 0, 0, 0, 406, 398, 399, 408, 319, 320, 319, 330,
+        407, 408, 407, 408, 407, 328, 329, 330, 331, 0, 0, 0, 325, 407, 408, 409, 328, 329, 328, 329,
+        398, 399, 328, 399, 328, 337, 338, 339, 340, 0, 0, 0, 325, 336, 337, 320, 337, 320, 337, 320,
+        407, 408, 407, 408, 329, 338, 339, 348, 349, 0, 0, 0, 334, 335, 326, 327, 318, 319, 318, 319,
+        398, 399, 328, 329, 338, 347, 348, 357, 358, 0, 0, 0, 343, 344, 335, 336, 327, 328, 327, 328,
+        407, 408, 409, 338, 347, 348, 349, 358, 0, 0, 0, 0, 0, 343, 344, 345, 416, 417, 416, 417,
+        416, 417, 418, 347, 348, 349, 0, 0, 0, 0, 0, 0, 0, 352, 353, 379, 425, 426, 425, 426,
+        425, 426, 427, 356, 357, 358, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -124,7 +117,7 @@ return {
           width = 40,
           height = 40,
           rotation = 0,
-          gid = 693,
+          gid = 3,
           visible = true,
           properties = {}
         },
@@ -138,10 +131,251 @@ return {
           width = 40,
           height = 40,
           rotation = 0,
-          gid = 693,
+          gid = 3,
           visible = true,
           properties = {}
         }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 5,
+      name = "markers",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 20,
+          name = "spawn",
+          type = "",
+          shape = "point",
+          x = 260,
+          y = 360,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 75,
+          name = "entry2",
+          type = "",
+          shape = "point",
+          x = 720,
+          y = 360,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 77,
+          name = "entry3",
+          type = "",
+          shape = "point",
+          x = 420,
+          y = 110,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 76,
+          name = "entry",
+          type = "",
+          shape = "point",
+          x = 80,
+          y = 400,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 4,
+      name = "objects",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 68,
+          name = "savepoint",
+          type = "",
+          shape = "rectangle",
+          x = 180,
+          y = 300,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 72,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 0,
+          y = 320,
+          width = 40,
+          height = 120,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra2",
+            ["marker"] = "entry2"
+          }
+        },
+        {
+          id = 74,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 760,
+          y = 280,
+          width = 40,
+          height = 160,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra4",
+            ["marker"] = "entry"
+          }
+        },
+        {
+          id = 78,
+          name = "transition",
+          type = "",
+          shape = "rectangle",
+          x = 360,
+          y = 0,
+          width = 123.667,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["map"] = "tundra3A",
+            ["marker"] = "spawn"
+          }
+        },
+        {
+          id = 83,
+          name = "enemy",
+          type = "",
+          shape = "rectangle",
+          x = 540,
+          y = 210,
+          width = 40,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["actor"] = "dummy",
+            ["encounter"] = "dummy"
+          }
+        },
+        {
+          id = 85,
+          name = "enemy",
+          type = "",
+          shape = "rectangle",
+          x = 470,
+          y = 170,
+          width = 40,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["actor"] = "dummy_ut",
+            ["lightencounter"] = "dummy"
+          }
+        }
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 12,
+      id = 7,
+      name = "tiles3",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      }
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 20,
+      height = 12,
+      id = 6,
+      name = "tiles4",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 301, 302, 303, 304, 304, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 307, 308, 309, 310, 311, 312, 0, 313, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 316, 317, 318, 319, 320, 311, 312, 0, 0, 0, 0, 0, 0,
+        361, 362, 363, 362, 363, 364, 363, 309, 310, 327, 328, 329, 320, 321, 365, 300, 389, 390, 391, 390,
+        309, 318, 319, 318, 319, 318, 319, 318, 319, 318, 319, 318, 319, 318, 311, 309, 318, 319, 318, 319
       }
     },
     {
@@ -510,233 +744,6 @@ return {
           visible = true,
           properties = {}
         }
-      }
-    },
-    {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 5,
-      name = "markers",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      objects = {
-        {
-          id = 20,
-          name = "spawn",
-          type = "",
-          shape = "point",
-          x = 260,
-          y = 360,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 75,
-          name = "entry2",
-          type = "",
-          shape = "point",
-          x = 740,
-          y = 360,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 77,
-          name = "entry3",
-          type = "",
-          shape = "point",
-          x = 420,
-          y = 80,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 76,
-          name = "entry",
-          type = "",
-          shape = "point",
-          x = 60,
-          y = 400,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        }
-      }
-    },
-    {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 4,
-      name = "objects",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      objects = {
-        {
-          id = 68,
-          name = "savepoint",
-          type = "",
-          shape = "rectangle",
-          x = 180,
-          y = 300,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["text1"] = "* (The power of familiar roads shines within you.)"
-          }
-        },
-        {
-          id = 72,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = -20,
-          y = 320,
-          width = 40,
-          height = 120,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra4",
-            ["marker"] = "entry2"
-          }
-        },
-        {
-          id = 74,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 780,
-          y = 280,
-          width = 40,
-          height = 160,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra4",
-            ["marker"] = "entry"
-          }
-        },
-        {
-          id = 78,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 360,
-          y = -20,
-          width = 120,
-          height = 40,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra3A",
-            ["marker"] = "spawn"
-          }
-        },
-        {
-          id = 80,
-          name = "enemy",
-          type = "",
-          shape = "rectangle",
-          x = 530,
-          y = 230,
-          width = 40,
-          height = 40,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["actor"] = "dummy",
-            ["lightencounter"] = "dummy"
-          }
-        }
-      }
-    },
-    {
-      type = "tilelayer",
-      x = 0,
-      y = 0,
-      width = 20,
-      height = 12,
-      id = 7,
-      name = "tiles3",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      encoding = "lua",
-      data = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1051, 1052, 1053, 1052, 1053, 1052, 1053, 1052, 1053, 1052, 1055, 0, 0, 0, 0, 1051, 1052, 1053, 1052, 1053,
-        1060, 1061, 1062, 1061, 1062, 1061, 1062, 1061, 1062, 1063, 1064, 0, 0, 0, 0, 1060, 1061, 1062, 1061, 1062
-      }
-    },
-    {
-      type = "tilelayer",
-      x = 0,
-      y = 0,
-      width = 20,
-      height = 12,
-      id = 6,
-      name = "tiles4",
-      class = "",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      parallaxx = 1,
-      parallaxy = 1,
-      properties = {},
-      encoding = "lua",
-      data = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 298, 989, 990, 991, 992, 993, 304, 304, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 307, 998, 999, 1000, 1001, 1002, 313, 313, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 1006, 1007, 1008, 1009, 1008, 1009, 1008, 1011, 1012, 0, 0, 0, 0, 0,
-        1007, 1006, 1007, 1006, 1007, 1006, 1007, 1006, 1007, 1018, 1009, 1018, 1009, 1018, 1011, 1007, 1006, 1007, 1006, 1007
       }
     }
   }

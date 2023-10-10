@@ -7,7 +7,7 @@ function RandomEncounter:init()
     -- If this is nil, the battle starts instantly
     self.bubble = "effects/alert"
     
-    -- "But Nobody Came" encounter used if you meet the Murder Level requirement
+    -- "But Nobody Came" encounter used if you meet the nobodyCame() returns true
     self.nobody_encounter = "_nobody"
     
     -- Table with the encounters that can be triggered by this random encounter
@@ -39,7 +39,7 @@ function RandomEncounter:start()
             sprite:setOrigin(0.5, 1)
             Game.world.player:addChild(sprite)
             sprite.layer = WORLD_LAYERS["above_events"]
-            cutscene:wait(1 + Utils.random(10/30))
+            cutscene:wait(15/30 + Utils.random(5/30))
             sprite:remove()
             Game:encounter(self:getNextEncounter(), true)
         else

@@ -52,10 +52,10 @@ function Dummy:init()
     -- Register act called "Smile"
     self:registerAct("Smile")
     self:registerAct("deltarune")
-    self:registerAct("Susie")
+    self:registerAct("Attack")
     self:registerAct("lmao")
 
-    -- Register party act with Ralsei called "Tell Story"
+    -- Register party act with Noelle called "Tell Story"
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})
 
@@ -71,7 +71,7 @@ function Dummy:onAct(battler, name)
         -- Give the enemy 100% mercy
         self:addMercy(100)
         -- Change this enemy's dialogue for 1 turn
-        self.dialogue_override = "... ^^"
+        self.dialogue_override = "[wave:3][speed:0.5]... ^^"
         -- Act text (since it's a list, multiple textboxes)
         return {
             "* You smile.[wait:5]\n* The dummy smiles back.",
@@ -84,31 +84,32 @@ function Dummy:onAct(battler, name)
             -- Make the enemy tired
             enemy:setTired(true)
         end
-        return "* You and Ralsei told the dummy\na bedtime story.\n* The enemies became [color:blue]TIRED[color:reset]..."
+        return "* You and Noelle told the dummy\na bedtime story.\n* The enemies became [color:blue]TIRED[color:reset]..."
 
     elseif name == "deltarune" then
         local fuck = self:getAct("deltarune")
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
-        Game:setFlag("#enable_lw_tp", true)
+        Game.battle.soul.graze_collider.collidable = true
         Game.battle.tension_bar.visible = true
         return "* deltrarune"
+
     elseif name == "undertale" then
         local fuck = self:getAct("undertale")
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
-        Game:setFlag("#enable_lw_tp", false)
+        Game.battle.soul.graze_collider.collidable = false
         Game.battle.tension_bar.visible = false
---[[         Game.battle.timer:after(1, function()
-            Game.battle.tension_bar = nil
-        end) ]]
         return "* udnertal"
-    elseif name == "Susie" then
-        Game.battle:startActCutscene("dummy", "susie_punch")
-        return
+
+    elseif name == "Attack" then
+        self.wave_override = Utils.pick({"basic", "aiming", "movingarena"})
+        return "* ok"
+
     elseif name == "lmao" then
         self.menu_wave_override = "aiming"
         return "* get fucked"
+
     elseif name == "Standard" then --X-Action
         -- Give the enemy 50% mercy
         self:addMercy(50)

@@ -55,10 +55,11 @@ function LightEncounter:onSoulTransition()
         -- Show heart
         Assets.playSound("noise")
         local player = Game.battle.fake_player.ref
-        local x, y = player:localToScreenPos((player.sprite.width/2), player.sprite.height/2)
+        local x, y = Game.world.soul:localToScreenPos()
         Game.battle:spawnSoul(x, y)
         Game.battle.soul.sprite:set("player/heart_menu")
         Game.battle.soul.sprite:setScale(2)
+        Game.battle.soul.sprite:setOrigin(0.5)
         Game.battle.soul.layer = Game.battle.fader.layer + 2
         Game.battle.soul.can_move = false
         wait(2/30)
@@ -98,7 +99,9 @@ function LightEncounter:onSoulTransition()
         Game.battle.soul.sprite:setScale(1)
         Game.battle.soul.x = Game.battle.soul.x - 1
         Game.battle.soul.y = Game.battle.soul.y - 1
+
         Game.battle.fader:fadeIn(nil, {speed=5/30})
+        Game.battle.transitioned = true
         self:onBattleStart()
 
         if self.nobody_came then
@@ -123,15 +126,7 @@ function LightEncounter:onBattleEnd() end
 
 function LightEncounter:onTurnStart() end
 function LightEncounter:onTurnEnd()
-    if Game:getFlag("#prevent_turn_1_flee") then
-        if Game.battle.turn_count <= 1 then
-            self.flee_chance = 0
-        else
-            self.flee_chance = Utils.random(0, 100, 1) + (10 * Game.battle.turn_count - 1)
-        end
-    else
-        self.flee_chance = Utils.random(0, 100, 1) + (10 * Game.battle.turn_count - 2)
-    end
+    self.flee_chance = Utils.random(100) + (10 * (Game.battle.turn_count - 1))
 end
 
 function LightEncounter:onActionsStart() end
@@ -146,23 +141,30 @@ function LightEncounter:onFlee()
     if Game.battle.used_violence then -- level up shit
 
         local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
-        local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 
-        Game.lw_money = Game.lw_money + money
+        if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
+            money = money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+        end
+
+        for _,battler in ipairs(Game.battle.party) do
+            for _,equipment in ipairs(battler.chara:getEquipment()) do
+                money = math.floor(equipment:applyMoneyBonus(money) or money)
+            end
+        end
+
+        Game.lw_money = Game.lw_money + math.floor(money)
 
         if (Game.lw_money < 0) then
             Game.lw_money = 0
         end
 
+        local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
+
         self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency") .. "."
 
-        for _,member in ipairs(self.party) do
+        for _,member in ipairs(Game.battle.party) do
             local lv = member.chara:getLightLV()
-            member.chara:gainLightEXP(self.xp, true)
-
-            if lv ~= member.chara:getLightLV() then
-                win_text = "* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):upper() .. ".\n* Your LOVE increased."
-            end
+            member.chara:gainLightEXP(xp, true)
         end
 
     else
@@ -174,8 +176,7 @@ function LightEncounter:onFlee()
     Game.battle.soul.sprite:setAnimation({"player/heartgtfo", 1/15, true})
     Game.battle.soul.physics.speed_x = -3
 
-    Game.battle.timer:script(function(wait)
-        wait(1)
+    Game.battle.timer:after(1, function()
         Game.battle:setState("TRANSITIONOUT")
         self:onBattleEnd()
     end)

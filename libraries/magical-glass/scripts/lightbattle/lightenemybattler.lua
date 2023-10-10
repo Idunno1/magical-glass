@@ -52,6 +52,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_text = nil
     self.spareable_text = nil
 
+    self.become_tired = false
     self.tired_percentage = 0.5
     self.low_health_percentage = 0.5
 
@@ -589,7 +590,7 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end)
 
-    if Game:getFlag("#enable_low_hp_tired") and self.health <= (self.max_health * self.tired_percentage) then
+    if self.become_tired and self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
     end
 end
@@ -602,9 +603,10 @@ function LightEnemyBattler:onHurtEnd()
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
+    self:toggleOverlay(true)
     if self.exit_on_defeat and not self.can_freeze then
-        --self:onDefeatRun(damage, battler)
         Game.battle.timer:after(self.hurt_timer, function()
+            --self:onDefeatRun(damage, battler)
             self:onDefeatVaporized(damage, battler)        
         end)
     else
@@ -626,7 +628,8 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
 
     Game.battle.timer:after(15/30, function()
         sweat:remove()
-        self:getActiveSprite().run_away = true
+        self:getActiveSprite().run_away_light = true
+        self:getActiveSprite().run_direction = Utils.pick({2, -2})
 
         Game.battle.timer:after(15/30, function()
             self:remove()
@@ -638,6 +641,7 @@ end
 
 function LightEnemyBattler:onDefeatVaporized(damage, battler)
     self.hurt_timer = -1
+    self.defeated = true
 
     Assets.playSound("vaporized", 1.2)
 
@@ -743,7 +747,7 @@ function LightEnemyBattler:defeat(reason, violent)
         Game.battle.used_violence = true
         Game.battle.xp = Game.battle.xp + self.experience
     end
-
+    
     Game.battle:removeEnemy(self, true)
 end
 

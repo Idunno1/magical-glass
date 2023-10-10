@@ -39,7 +39,7 @@ function LightSoul:init(x, y, color)
     self:addChild(self.graze_sprite)
 
     self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
-    self.graze_collider.collidable = true
+    self.graze_collider.collidable = Kristal.getLibConfig("magical-glass", "light_battle_tp")
 
     self.original_x = x
     self.original_y = y
@@ -346,8 +346,6 @@ function LightSoul:doMovement()
 end
 
 function LightSoul:update()
-
-    self.graze_collider.collidable = Game:getFlag("#enable_lw_tp")
 
     if self.transitioning then
         if self.timer >= 7 then

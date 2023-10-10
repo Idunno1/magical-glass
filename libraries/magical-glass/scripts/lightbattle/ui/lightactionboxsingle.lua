@@ -18,6 +18,10 @@ function LightActionBoxSingle:init(x, y, index, battler)
     end
 end
 
+function LightActionBoxSingle:getHPGaugeLengthCap()
+    return false
+end
+
 function LightActionBoxSingle:getButtons(battler) end
 
 function LightActionBoxSingle:createButtons()
@@ -130,8 +134,9 @@ function LightActionBoxSingle:drawStatusStripStory()
 
     local size = max * 1.25
 
+    local limit = self:getHPGaugeLengthCap()
     local length = current
-    if type(Game:getFlag("#limit_hp_gauge_length")) == "boolean" and Game:getFlag("#limit_hp_gauge_length") == true then
+    if type(limit) == "boolean" and limit == true then
         if length >= 99 then
             length = 99
         end
@@ -139,13 +144,13 @@ function LightActionBoxSingle:drawStatusStripStory()
         if size >= 99 then
             size = 99
         end
-    elseif type(Game:getFlag("#limit_hp_gauge_length")) == "number" then
-        if length >= Game:getFlag("#limit_hp_gauge_length") then
-            length = Game:getFlag("#limit_hp_gauge_length")
+    elseif type(limit) == "number" then
+        if length >= limit then
+            length = limit
         end
 
-        if size >= Game:getFlag("#limit_hp_gauge_length") then
-            size = Game:getFlag("#limit_hp_gauge_length")
+        if size >= limit then
+            size = limit
         end
     end
 
@@ -176,8 +181,9 @@ function LightActionBoxSingle:drawStatusStrip()
     end
     local size = max * 1.25
 
+    local limit = self:getHPGaugeLengthCap()
     local length = current
-    if type(Game:getFlag("#limit_hp_gauge_length")) == "boolean" and Game:getFlag("#limit_hp_gauge_length") then
+    if type(limit) == "boolean" and limit == true then
         if length >= 99 then
             length = 99
         end
@@ -185,13 +191,13 @@ function LightActionBoxSingle:drawStatusStrip()
         if size >= 99 then
             size = 99
         end
-    elseif type(Game:getFlag("#limit_hp_gauge_length")) == "number" then
-        if length >= Game:getFlag("#limit_hp_gauge_length") then
-            length = Game:getFlag("#limit_hp_gauge_length")
+    elseif type(limit) == "number" then
+        if length >= limit then
+            length = limit
         end
 
-        if size >= Game:getFlag("#limit_hp_gauge_length") then
-            size = Game:getFlag("#limit_hp_gauge_length")
+        if size >= limit then
+            size = limit
         end
     end
 
