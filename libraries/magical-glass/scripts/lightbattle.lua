@@ -1798,7 +1798,7 @@ function LightBattle:isValidMenuLocation()
     elseif self.state == "ENEMYSELECT" then
         if self.current_menu_y > #self.enemies then
             return false
-        elseif self.enemies[self.current_menu_y].defeated then
+        elseif self.enemies[self.current_menu_y].done_state then
             return false
         end
     end

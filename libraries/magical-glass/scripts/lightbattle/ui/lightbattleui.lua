@@ -311,7 +311,7 @@ function LightBattleUI:drawState()
 
             local name = "* " .. enemy.name
             if #Game.battle.enemies <= 3 then
-                if not enemy.defeated then
+                if not enemy.done_state then
                     if index == 1 and #Game.battle.enemies > 1 then
                         if #Game.battle.enemies == 3 then
                             if enemy.id == enemies[2].id or enemy.id == enemies[3].id then
@@ -336,7 +336,7 @@ function LightBattleUI:drawState()
             -- yes this DOESN'T account for a different enemy type in the middle
 
             if #name_colors <= 1 then
-                if not enemy.defeated then
+                if not enemy.done_state then
                     Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
                     love.graphics.print(name, 100, 0 + y_offset)
                 end

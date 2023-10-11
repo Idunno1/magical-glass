@@ -606,8 +606,9 @@ function LightEnemyBattler:onDefeat(damage, battler)
     self:toggleOverlay(true)
     if self.exit_on_defeat and not self.can_freeze then
         Game.battle.timer:after(self.hurt_timer, function()
+            self:onDefeatVaporized(damage, battler)  
             --self:onDefeatRun(damage, battler)
-            self:onDefeatVaporized(damage, battler)        
+            --self:onDefeatFatal(damage, battler)      
         end)
     else
         self.sprite:setAnimation("defeat")
@@ -652,6 +653,25 @@ function LightEnemyBattler:onDefeatVaporized(damage, battler)
 
     local death_x, death_y = sprite:getRelativePos(0, 0, self)
     local death = DustEffect(sprite:getTexture(), death_x, death_y, function() self:remove() end)
+    death:setColor(sprite:getDrawColor())
+    death:setScale(sprite:getScale())
+    self:addChild(death)
+
+    self:defeat("KILLED", true)
+end
+
+function LightEnemyBattler:onDefeatFatal(damage, battler)
+    self.hurt_timer = -1
+
+    Assets.playSound("deathnoise")
+
+    local sprite = self:getActiveSprite()
+
+    sprite.visible = false
+    sprite:stopShake()
+
+    local death_x, death_y = sprite:getRelativePos(0, 0, self)
+    local death = FatalEffect(sprite:getTexture(), death_x, death_y, function() self:remove() end)
     death:setColor(sprite:getDrawColor())
     death:setScale(sprite:getScale())
     self:addChild(death)
