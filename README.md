@@ -1,4 +1,4 @@
-# Magical Glass v1.0 for [Kristal](https://github.com/KristalTeam/Kristal)
+# Magical Glass v1.1.0 for [Kristal](https://github.com/KristalTeam/Kristal)
 
 <p align="center" width="100%">
 <img src="magicalglass.png" alt="Magical Glass" width="50%" />
