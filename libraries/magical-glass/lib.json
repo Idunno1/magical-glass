@@ -92,7 +92,6 @@
         //
         // "deltarune"
         // deltarune-styled HP and Mercy gauges.
-        // Supports mercyBar and enemyBarPercentages.
         //
         /////
         "gauge_style": "undertale",
@@ -112,6 +111,6 @@
         ///// Action Button flash
         // Whether the Spell and Mercy buttons should flash in Light Battles if an enemy is pacifyable or sparable.
         /////
-        "action_button_flash": false,
+        "action_button_flash": false
     }
 }

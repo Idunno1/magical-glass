@@ -333,7 +333,6 @@ function LightBattleUI:drawState()
                     end
                 end
             end
-            -- yes this DOESN'T account for a different enemy type in the middle
 
             if #name_colors <= 1 then
                 if not enemy.done_state then

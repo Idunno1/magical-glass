@@ -1268,11 +1268,40 @@ function lib:init()
         orig(self, text, x, y, w, h, options)
         options = options or {}
         self.default_sound = options["default_sound"] or "default"
+        self.no_sound_overlap = options["no_sound_overlap"] or false
     end)
 
     Utils.hook(DialogueText, "resetState", function(orig, self)
         DialogueText.__super.resetState(self)
         self.state["typing_sound"] = self.default_sound
+    end)
+
+    Utils.hook(DialogueText, "playTextSound", function(orig, self, current_node)
+        if self.state.skipping and (Input.down("cancel") or self.played_first_sound) then
+            return
+        end
+    
+        if current_node.type ~= "character" then
+            return
+        end
+    
+        local no_sound = {"\n", " ", "^", "!", ".", "?", ",", ":", "/", "\\", "|", "*"}
+    
+        if (Utils.containsValue(no_sound, current_node.character)) then
+            return
+        end
+    
+        if (self.state.typing_sound ~= nil) and (self.state.typing_sound ~= "") then
+            self.played_first_sound = true
+            if Kristal.callEvent("onTextSound", self.state.typing_sound, current_node) then
+                return
+            end
+            if self.no_sound_overlap then
+                Assets.stopAndPlaySound("voice/"..self.state.typing_sound)
+            else
+                Assets.playSound("voice/"..self.state.typing_sound)
+            end
+        end
     end)
 
     Utils.hook(DialogueText, "update", function(orig, self)
@@ -2153,6 +2182,11 @@ function lib:init()
             message = "* The enemies all recovered " .. amount .. " HP."
         end
         return message
+    end)
+
+    Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)
+        orig(self, text, x, y, options, speaker)
+        self.text.no_sound_overlap = options["no_sound_overlap"] or true
     end)
 
     Utils.hook(SpeechBubble, "draw", function(orig, self)
