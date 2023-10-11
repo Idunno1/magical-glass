@@ -1258,7 +1258,6 @@ function lib:init()
     end)
 
     Utils.hook(Textbox, "advance", function(orig, self)
-        print(self.wait, "hi")
         self.timer:after(self.wait, function()
             self.text:advance()
         end)

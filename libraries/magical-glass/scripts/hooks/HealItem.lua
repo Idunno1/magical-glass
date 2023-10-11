@@ -39,7 +39,6 @@ function HealItem:onLightBattleUse(user, target)
     if self.target == "ally" then
         self:battleUseSound(user, target)
         local amount = self:getBattleHealAmount(target.chara.id)
-        print(amount)
 
         for _,equip in ipairs(user.chara:getEquipment()) do
             if equip.applyHealBonus then
