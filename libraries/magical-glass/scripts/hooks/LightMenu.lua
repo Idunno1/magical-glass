@@ -56,7 +56,7 @@ function LightMenu:onKeyPressed(key)
         if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
         if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
         local max_selecting
-        if not Kristal.getLibConfig("magical-glass", "hide_cell") then
+        if Kristal.getLibConfig("magical-glass", "hide_cell") then
             max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
         else
             max_selecting = 2
