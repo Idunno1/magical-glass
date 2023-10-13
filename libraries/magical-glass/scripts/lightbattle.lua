@@ -1072,6 +1072,8 @@ function LightBattle:onStateChange(old,new)
             battler.defending = false
             battler.action = nil
 
+            battler.chara:resetBuffs()
+
             if battler.chara:getHealth() <= 0 then
                 battler:revive()
                 battler.chara:setHealth(battler.chara:autoHealAmount())
