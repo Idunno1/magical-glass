@@ -732,106 +732,108 @@ function lib:init()
         end
     end)
 
-    Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
-        self.state = state
-    
-        if type(encounter) == "string" then
-            self.encounter = Registry.createEncounter(encounter)
-        else
-            self.encounter = encounter
-        end
-
-        if self.encounter:includes(LightEncounter) then
-            error("Attempted to create a LightEncounter in a Dark battle")
-        end
-
-        if Game.world.music:isPlaying() and self.encounter.music then
-            self.resume_world_music = true
-            Game.world.music:pause()
-        end
-    
-        if self.encounter.queued_enemy_spawns then
-            for _,enemy in ipairs(self.encounter.queued_enemy_spawns) do
-                if state == "TRANSITION" then
-                    enemy.target_x = enemy.x
-                    enemy.target_y = enemy.y
-                    enemy.x = SCREEN_WIDTH + 200
-                end
-                table.insert(self.enemies, enemy)
-                self:addChild(enemy)
+    if not Mod.libs["widescreen"] then
+        Utils.hook(Battle, "postInit", function(orig, self, state, encounter)
+            self.state = state
+        
+            if type(encounter) == "string" then
+                self.encounter = Registry.createEncounter(encounter)
+            else
+                self.encounter = encounter
             end
-        end
-    
-        self.battle_ui = BattleUI()
-        self:addChild(self.battle_ui)
-    
-        self.tension_bar = TensionBar(-25, 40, true)
-        self:addChild(self.tension_bar)
-    
-        self.battler_targets = {}
-        for index, battler in ipairs(self.party) do
-            local target_x, target_y = self.encounter:getPartyPosition(index)
-            table.insert(self.battler_targets, {target_x, target_y})
-    
-            if state ~= "TRANSITION" then
-                battler:setPosition(target_x, target_y)
+
+            if self.encounter:includes(LightEncounter) then
+                error("Attempted to create a LightEncounter in a Dark battle")
             end
-        end
-    
-        for _,enemy in ipairs(self.enemies) do
-            self.enemy_beginning_positions[enemy] = {enemy.x, enemy.y}
-        end
-        if Game.encounter_enemies then
-            for _,from in ipairs(Game.encounter_enemies) do
-                if not isClass(from) then
-                    local enemy = self:parseEnemyIdentifier(from[1])
-                    from[2].visible = false
-                    from[2].battler = enemy
-                    self.enemy_beginning_positions[enemy] = {from[2]:getScreenPos()}
-                    self.enemy_world_characters[enemy] = from[2]
+
+            if Game.world.music:isPlaying() and self.encounter.music then
+                self.resume_world_music = true
+                Game.world.music:pause()
+            end
+        
+            if self.encounter.queued_enemy_spawns then
+                for _,enemy in ipairs(self.encounter.queued_enemy_spawns) do
                     if state == "TRANSITION" then
-                        enemy:setPosition(from[2]:getScreenPos())
+                        enemy.target_x = enemy.x
+                        enemy.target_y = enemy.y
+                        enemy.x = SCREEN_WIDTH + 200
                     end
-                else
-                    for _,enemy in ipairs(self.enemies) do
-                        if enemy.actor and from.actor and enemy.actor.id == from.actor.id then
-                            from.visible = false
-                            from.battler = enemy
-                            self.enemy_beginning_positions[enemy] = {from:getScreenPos()}
-                            self.enemy_world_characters[enemy] = from
-                            if state == "TRANSITION" then
-                                enemy:setPosition(from:getScreenPos())
+                    table.insert(self.enemies, enemy)
+                    self:addChild(enemy)
+                end
+            end
+        
+            self.battle_ui = BattleUI()
+            self:addChild(self.battle_ui)
+        
+            self.tension_bar = TensionBar(-25, 40, true)
+            self:addChild(self.tension_bar)
+        
+            self.battler_targets = {}
+            for index, battler in ipairs(self.party) do
+                local target_x, target_y = self.encounter:getPartyPosition(index)
+                table.insert(self.battler_targets, {target_x, target_y})
+        
+                if state ~= "TRANSITION" then
+                    battler:setPosition(target_x, target_y)
+                end
+            end
+        
+            for _,enemy in ipairs(self.enemies) do
+                self.enemy_beginning_positions[enemy] = {enemy.x, enemy.y}
+            end
+            if Game.encounter_enemies then
+                for _,from in ipairs(Game.encounter_enemies) do
+                    if not isClass(from) then
+                        local enemy = self:parseEnemyIdentifier(from[1])
+                        from[2].visible = false
+                        from[2].battler = enemy
+                        self.enemy_beginning_positions[enemy] = {from[2]:getScreenPos()}
+                        self.enemy_world_characters[enemy] = from[2]
+                        if state == "TRANSITION" then
+                            enemy:setPosition(from[2]:getScreenPos())
+                        end
+                    else
+                        for _,enemy in ipairs(self.enemies) do
+                            if enemy.actor and from.actor and enemy.actor.id == from.actor.id then
+                                from.visible = false
+                                from.battler = enemy
+                                self.enemy_beginning_positions[enemy] = {from:getScreenPos()}
+                                self.enemy_world_characters[enemy] = from
+                                if state == "TRANSITION" then
+                                    enemy:setPosition(from:getScreenPos())
+                                end
+                                break
                             end
-                            break
                         end
                     end
                 end
             end
-        end
-    
-        if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
-            for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do
-                enemy:onEncounterStart(enemy == self.encounter_context, self.encounter)
+        
+            if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
+                for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do
+                    enemy:onEncounterStart(enemy == self.encounter_context, self.encounter)
+                end
             end
-        end
-    
-        if state == "TRANSITION" then
-            self.transitioned = true
-            self.transition_timer = 0
-            self.afterimage_count = 0
-        else
-            self.transition_timer = 10
-    
-            if state ~= "INTRO" then
-                self:nextTurn()
+        
+            if state == "TRANSITION" then
+                self.transitioned = true
+                self.transition_timer = 0
+                self.afterimage_count = 0
+            else
+                self.transition_timer = 10
+        
+                if state ~= "INTRO" then
+                    self:nextTurn()
+                end
             end
-        end
-    
-        if not self.encounter:onBattleInit() then
-            self:setState(state)
-        end
+        
+            if not self.encounter:onBattleInit() then
+                self:setState(state)
+            end
 
-    end)
+        end)
+    end
 
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
