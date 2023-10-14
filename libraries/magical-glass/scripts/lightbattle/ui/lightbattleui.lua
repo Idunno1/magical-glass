@@ -45,6 +45,22 @@ function LightBattleUI:init()
     
     self.attacking = false
 
+    self.menuselect_options = {}
+    for i = 1, 6 do
+        local item = Text("")
+        item.font = "main_mono"
+        table.insert(self.menuselect_options, item)
+        Game.battle.arena:addChild(item)
+    end
+
+    self.enemyselect_options = {}
+    for i = 1, 3 do
+        local item = Text("")
+        item.font = "main_mono"
+        table.insert(self.enemyselect_options, item)
+        Game.battle.arena:addChild(item)
+    end
+
     self.action_box_ut = LightActionBoxSingle(20, 0, 1, Game.battle.party[1])
     self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
     self.action_box_ut:move(self:getRelativePos())
@@ -70,6 +86,19 @@ function LightBattleUI:clearEncounterText()
     self.encounter_text:setAdvance(true)
     self.encounter_text:setAuto(false)
     self.encounter_text:setText("")
+    self:clearMenuText()
+end
+
+function LightBattleUI:clearMenuText()
+    for _,option in ipairs(self.menuselect_options) do
+        option:setText("")
+        option:setPosition(0, 0)
+    end
+
+    for _,option in ipairs(self.enemyselect_options) do
+        option:setText("")
+        option:setPosition(0, 0)
+    end
 end
 
 function LightBattleUI:beginAttack()
@@ -107,10 +136,8 @@ function LightBattleUI:drawActionArea()
 end
 
 function LightBattleUI:drawState()
-
     local state = Game.battle.state
     if state == "MENUSELECT" then
-
         local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
         local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
 
@@ -202,9 +229,13 @@ function LightBattleUI:drawState()
             end
 
             if #item.party > 0 then
-                love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
+                self.menuselect_options[i]:setText(name)
+                self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32))
+                --love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
             else
-                love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
+                self.menuselect_options[i]:setText("* " .. name)
+                self.menuselect_options[i]:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32))
+                --love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
             end
 
             text_offset = text_offset + font:getWidth(item.name)
@@ -274,6 +305,8 @@ function LightBattleUI:drawState()
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then
+        self:clearMenuText()
+
         local enemies = Game.battle.enemies
         local reason = Game.battle.state_reason
 
@@ -334,33 +367,36 @@ function LightBattleUI:drawState()
                 end
             end
 
-            if #name_colors <= 1 then
-                if not enemy.done_state then
-                    Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                    love.graphics.print(name, 100, 0 + y_offset)
+            if not enemy.done_state then
+                if #name_colors <= 1 then
+--[[                     Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
+                    love.graphics.print(name, 100, 0 + y_offset) ]]
+
+                    self.enemyselect_options[index]:setText(name)
+                    self.enemyselect_options[index]:setPosition(62, 15 + y_offset)
+                else
+                    local canvas = Draw.pushCanvas(font_mono:getWidth("* " .. enemy.name), font_mono:getHeight())
+                    Draw.setColor(1, 1, 1)
+                    love.graphics.print("* " .. enemy.name) -- todo: exclude the * from the gradient
+                    Draw.popCanvas()
+
+                    local color_canvas = Draw.pushCanvas(#name_colors, 1)
+                    for i = 1, #name_colors do
+                        -- Draw a pixel for the color
+                        Draw.setColor(name_colors[i])
+                        love.graphics.rectangle("fill", i-1, 0, 1, 1)
+                    end
+                    Draw.popCanvas()
+
+                    Draw.setColor(1, 1, 1)
+
+                    local shader = Kristal.Shaders["DynGradient"]
+                    love.graphics.setShader(shader)
+                    shader:send("colors", color_canvas)
+                    shader:send("colorSize", {#name_colors, 1})
+                    Draw.draw(canvas, 100, 0 + y_offset)
+                    love.graphics.setShader()
                 end
-            else
-                local canvas = Draw.pushCanvas(font_mono:getWidth("* " .. enemy.name), font_mono:getHeight())
-                Draw.setColor(1, 1, 1)
-                love.graphics.print("* " .. enemy.name) -- todo: exclude the * from the gradient
-                Draw.popCanvas()
-
-                local color_canvas = Draw.pushCanvas(#name_colors, 1)
-                for i = 1, #name_colors do
-                    -- Draw a pixel for the color
-                    Draw.setColor(name_colors[i])
-                    love.graphics.rectangle("fill", i-1, 0, 1, 1)
-                end
-                Draw.popCanvas()
-
-                Draw.setColor(1, 1, 1)
-
-                local shader = Kristal.Shaders["DynGradient"]
-                love.graphics.setShader(shader)
-                shader:send("colors", color_canvas)
-                shader:send("colorSize", {#name_colors, 1})
-                Draw.draw(canvas, 100, 0 + y_offset)
-                love.graphics.setShader()
             end
 
             Draw.setColor(1, 1, 1)

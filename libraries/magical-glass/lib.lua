@@ -1797,7 +1797,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)
-        if Game:getFlag("#savename_lw_menus") and Game.save_name and self:shouldUsePlayerName() then
+        if Game.save_name and self:shouldUsePlayerName() then
             return Game.save_name
         else
             return self.name
