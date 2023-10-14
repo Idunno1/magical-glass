@@ -45,7 +45,7 @@ function LightBattleUI:init()
     
     self.attacking = false
 
-    self.menuselect_options = {}
+--[[     self.menuselect_options = {}
     for i = 1, 6 do
         local item = Text("")
         item.font = "main_mono"
@@ -59,7 +59,7 @@ function LightBattleUI:init()
         item.font = "main_mono"
         table.insert(self.enemyselect_options, item)
         Game.battle.arena:addChild(item)
-    end
+    end ]]
 
     self.action_box_ut = LightActionBoxSingle(20, 0, 1, Game.battle.party[1])
     self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
@@ -86,10 +86,10 @@ function LightBattleUI:clearEncounterText()
     self.encounter_text:setAdvance(true)
     self.encounter_text:setAuto(false)
     self.encounter_text:setText("")
-    self:clearMenuText()
+    --self:clearMenuText()
 end
 
-function LightBattleUI:clearMenuText()
+--[[ function LightBattleUI:clearMenuText()
     for _,option in ipairs(self.menuselect_options) do
         option:setText("")
         option:setPosition(0, 0)
@@ -99,7 +99,7 @@ function LightBattleUI:clearMenuText()
         option:setText("")
         option:setPosition(0, 0)
     end
-end
+end ]]
 
 function LightBattleUI:beginAttack()
     Game.battle.current_selecting = 0
@@ -229,13 +229,13 @@ function LightBattleUI:drawState()
             end
 
             if #item.party > 0 then
-                self.menuselect_options[i]:setText(name)
-                self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32))
-                --love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
+--[[                 self.menuselect_options[i]:setText(name)
+                self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
+                love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
             else
-                self.menuselect_options[i]:setText("* " .. name)
-                self.menuselect_options[i]:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32))
-                --love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
+--[[                 self.menuselect_options[i]:setText("* " .. name)
+                self.menuselect_options[i]:setPosition(text_offset + 62 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
+                love.graphics.print("* " .. name, text_offset + 100 + (x * (240 + extra_offset[2])), (y * 32))
             end
 
             text_offset = text_offset + font:getWidth(item.name)
@@ -305,7 +305,7 @@ function LightBattleUI:drawState()
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then
-        self:clearMenuText()
+        --self:clearMenuText()
 
         local enemies = Game.battle.enemies
         local reason = Game.battle.state_reason
@@ -369,11 +369,11 @@ function LightBattleUI:drawState()
 
             if not enemy.done_state then
                 if #name_colors <= 1 then
---[[                     Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
-                    love.graphics.print(name, 100, 0 + y_offset) ]]
+                    Draw.setColor(name_colors[1] or enemy.selectable and {1, 1, 1} or {0.5, 0.5, 0.5})
+                    love.graphics.print(name, 100, 0 + y_offset)
 
-                    self.enemyselect_options[index]:setText(name)
-                    self.enemyselect_options[index]:setPosition(62, 15 + y_offset)
+--[[                     self.enemyselect_options[index]:setText(name)
+                    self.enemyselect_options[index]:setPosition(62, 15 + y_offset) ]]
                 else
                     local canvas = Draw.pushCanvas(font_mono:getWidth("* " .. enemy.name), font_mono:getHeight())
                     Draw.setColor(1, 1, 1)
