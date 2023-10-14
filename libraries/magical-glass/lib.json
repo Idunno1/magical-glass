@@ -6,7 +6,7 @@
         "Bor",
         "Just Another Random User"
     ],
-    "version": "v1.1.0",
+    "version": "v1.1.1",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -101,6 +101,11 @@
         // Works identically to the mercyBar mod config option.
         /////
         "mercy_bar": false,
+
+        ///// Mercy Messages
+        // Shows the amount of mercy added to an enemy when their mercy gauge increases in Light Battles.
+        /////
+        "mercy_messages": true,
 
         ///// Enemy Bar Percentages
         // Draws the HP and Mercy text and Percentages on the gauges in ENEMYSELECT if gauge_style is set to deltarune.
