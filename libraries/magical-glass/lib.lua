@@ -535,7 +535,7 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            result.fallback_dark_item = item
+                            result.dark_item = item
                             result.dark_location = {storage = storage.id, index = i}
                             new_inventory:addItem(result)
                         end
@@ -556,53 +556,17 @@ function lib:init()
         return new_inventory
     end)
 
-    Utils.hook(LightInventory, "convertToDark", function(orig, self)
-        local new_inventory = DarkInventory()
+    Utils.hook(LightInventory, "clear", function(orig, self)
+        LightInventory.__super.clear(self)
 
-        local was_storage_enabled = new_inventory.storage_enabled
-        new_inventory.storage_enabled = true
+        self.storages = {
+            ["items"] = {id = "items", max = 8,   sorted = true,  name = "INVENTORY",  fallback = "box_a"},
+            ["box_a"] = {id = "box_a", max = 10,  sorted = true,  name = "BOX",        fallback = "box_b"},
+            ["box_b"] = {id = "box_b", max = 10,  sorted = true,  name = "BOX",        fallback = nil    },
+            ["dark"] =  {id = "dark",  max = 144, sorted = false, name = "DARK ITEMs", fallback = nil    }
+        }
     
-        Kristal.callEvent("onConvertToDark", new_inventory)
-    
-        for _,storage_id in ipairs(self.convert_order) do
-            local storage = Utils.copy(self:getStorage(storage_id))
-            for i = 1, storage.max do
-                local item = storage[i]
-                if item then
-                    local result = item:convertToDark(new_inventory)
-    
-                    if result then
-                        self:removeItem(item)
-    
-                        if type(result) == "string" then
-                            result = Registry.createItem(result)
-                        end
-                        if isClass(result) then
-                            new_inventory:addItem(result)
-                        end
-                    end
-                end
-            end
-        end
-    
-        for _,base_storage in pairs(self.storages) do
-            local storage = Utils.copy(base_storage)
-            for i = 1, storage.max do
-                local item = storage[i]
-                if item then
-                    item.fallback_light_item = item
-                    item.light_location = {storage = storage.id, index = i}
-    
-                    new_inventory:addItemTo("light", item)
-    
-                    self:removeItem(item)
-                end
-            end
-        end
-    
-        new_inventory.storage_enabled = was_storage_enabled
-    
-        return new_inventory
+        Kristal.callEvent("createLightInventory", self)
     end)
 
     Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
@@ -923,9 +887,6 @@ function lib:init()
         -- Serious name for the light battle item menu
         self.serious_name = nil
 
-        self.fallback_dark_item = nil
-        self.fallback_light_item = nil
-
         self.tags = {}
 
         -- How this item is used on you (ate, drank, eat, etc.)
@@ -1039,84 +1000,6 @@ function lib:init()
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
 
-    Utils.hook(Item, "convertToLight", function(orig, self, inventory)
-        if self.light_item then
-            if self.light_location then
-                inventory:addItemTo(self.light_location.storage, self.light_location.index, self.light_item)
-                return true
-            else
-                return self.light_item
-            end
-        elseif self.fallback_light_item then
-            if self.light_location then
-                inventory:addItemTo(self.light_location.storage, self.light_location.index, self.fallback_light_item)
-                return true
-            else
-                return self.fallback_light_item
-            end
-        end
-        return false
-    end)
-
-    Utils.hook(Item, "convertToDark", function(orig, self, inventory)
-        if self.dark_item then
-            if self.dark_location then
-                inventory:addItemTo(self.dark_location.storage, self.dark_location.index, self.dark_item)
-                return true
-            else
-                return self.dark_item
-            end
-        elseif self.fallback_dark_item then
-            if self.dark_location then
-                inventory:addItemTo(self.dark_location.storage, self.dark_location.index, self.fallback_dark_item)
-                return true
-            else
-                return self.fallback_dark_item
-            end
-        end
-        return false
-    end)
-
-    Utils.hook(Item, "load", function(orig, self, data)
-        self.flags = data.flags or self.flags
-
-        if data.dark_item then
-            if type(data.dark_item) == "table" then
-                self.dark_item = Registry.createItem(data.dark_item.id)
-                self.dark_item:load(data.dark_item)
-            else
-                self.dark_item = data.dark_item
-            end
-            self.dark_location = data.dark_location
-        elseif data.fallback_dark_item then 
-            if type(data.fallback_dark_item) == "table" then
-                self.fallback_dark_item = Registry.createItem(data.fallback_dark_item.id)
-            else
-                self.fallback_dark_item = data.fallback_dark_item
-            end
-            self.dark_location = data.dark_location
-        end
-
-        if data.light_item then
-            if type(data.light_item) == "table" then
-                self.light_item = Registry.createItem(data.light_item.id)
-                self.light_item:load(data.light_item)
-            else
-                self.light_item = data.light_item
-            end
-            self.light_location = data.light_location
-        elseif data.fallback_light_item then 
-            if type(data.fallback_light_item) == "table" then
-                self.fallback_light_item = Registry.createItem(data.fallback_light_item.id)
-            else
-                self.fallback_light_item = data.fallback_light_item
-            end
-            self.light_location = data.light_location
-        end
-
-        self:onLoad(data)
-    end)
-    
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
 
