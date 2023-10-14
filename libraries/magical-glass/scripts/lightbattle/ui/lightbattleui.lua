@@ -322,7 +322,7 @@ function LightBattleUI:drawState()
 
         if self.draw_percents and self.style ~= "undertale" then
             love.graphics.setFont(font_main)
-            if Game.battle.state == "ENEMYSELECT" and self.style ~= "undertale" and Game.battle.state_reason ~= "ACT" then
+            if Game.battle.state == "ENEMYSELECT" and Game.battle.state_reason ~= "ACT" then
                 love.graphics.print("HP", 400, -10, 0, 1, 0.5)
             end
             if self.draw_mercy then
@@ -468,7 +468,15 @@ function LightBattleUI:drawState()
 
                         if self.style == "undertale" then
                             if enemy:getHPVisibility() then
-                                hp_x = hp_x + (#enemy.name * 16)
+                                local name_length = 0
+
+                                for _,enemy in ipairs(enemies) do
+                                    if string.len(enemy.name) > name_length then
+                                        name_length = string.len(enemy.name)
+                                    end
+                                end
+
+                                hp_x = hp_x + (name_length * 16)
 
                                 Draw.setColor(1,0,0,1)
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
@@ -476,7 +484,7 @@ function LightBattleUI:drawState()
                                 Draw.setColor(PALETTE["action_health"])
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 101), 17)
                             end
-                        else
+                        elseif self.style == "deltarune" then
                             if enemy:getHPVisibility() then
                                 Draw.setColor(PALETTE["action_health_bg"])
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)

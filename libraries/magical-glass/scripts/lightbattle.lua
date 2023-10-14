@@ -130,8 +130,6 @@ function LightBattle:init()
     self.on_finish_keep_animation = nil
     self.on_finish_action = nil
 
-    self.defending_begin_timer = 0
-
     self.background_fade_alpha = 0
 
     self.wave_length = 0
@@ -154,12 +152,13 @@ function LightBattle:isPagerMenu()
 end
 
 function LightBattle:playSelectSound()
-    self.ui_select:stop()
-    self.ui_select:play()
+    if not self.ui_select:isPlaying() then
+        self.ui_select:stop()
+        self.ui_select:play()
+    end
 end
 
 function LightBattle:playMoveSound()
-    self.ui_move:stop()
     self.ui_move:play()
 end
 
@@ -1136,9 +1135,6 @@ function LightBattle:onStateChange(old,new)
     elseif new == "DEFENDINGBEGIN" then
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
-
-        self.defending_begin_timer = 0
-
     elseif new == "FLEEING" then
         self.current_selecting = 0
 
@@ -1625,14 +1621,10 @@ function LightBattle:update()
                 self.arena:changeShape({self.arena.width, arena_h})
                 self.arena:changePosition({arena_x, arena_y})
             end
-        end
 
-        self.defending_begin_timer = self.defending_begin_timer + DTMULT
-        if self.defending_begin_timer >= 15 then -- look into this in ut
             self.soul.can_move = true
             self:setState("DEFENDING")
         end
-
     elseif self.state == "DEFENDING" then
         local darken = false
         local time
