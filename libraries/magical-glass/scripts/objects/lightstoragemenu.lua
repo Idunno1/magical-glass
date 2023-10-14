@@ -103,10 +103,17 @@ function LightStorageMenu:draw()
     super.draw(self)
 
     Draw.setColor(COLORS["white"])
-    love.graphics.setFont(self.font)
-    love.graphics.print("INVENTORY", 104, 30)
-    love.graphics.print("BOX", 448, 30)
-    love.graphics.print("Press "..Input.getText("cancel").." to Finish", 200, 406)
+    love.graphics.setFont(self.font) 
+    love.graphics.printf(self:getStorage(1).name, 17, 30, 300, "center")
+    love.graphics.printf(self:getStorage(2).name, 319, 30, 300, "center")
+
+    if not Input.usingGamepad() then
+        love.graphics.print("Press "..Input.getText("cancel").." to Finish", 200, 406)
+    else
+        love.graphics.print("Press", 200, 406)
+        love.graphics.print(" to Finish", 310, 406)
+        Draw.draw(Input.getTexture("cancel"), 281, 410, 0, 2, 2)
+    end
 
     love.graphics.setLineWidth(1)
     love.graphics.setLineStyle("rough")

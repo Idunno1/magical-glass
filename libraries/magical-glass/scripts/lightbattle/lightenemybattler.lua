@@ -309,8 +309,7 @@ function LightEnemyBattler:onSpared()
     end
 end
 
-function LightEnemyBattler:onSpareable()
-end
+function LightEnemyBattler:onSpareable() end
 
 function LightEnemyBattler:addMercy(amount)
     
