@@ -180,9 +180,6 @@ function LightPartyBattler:setSleeping(sleeping)
         if self.is_down then return end
         self.sleeping = true
         self:toggleOverlay(true)
-        if not self.overlay_sprite:setAnimation("battle/sleep") then
-            self.overlay_sprite:setAnimation("battle/defeat")
-        end
         if self.action then
             Game.battle:removeAction(Game.battle:getPartyIndex(self.chara.id))
         end
@@ -252,9 +249,7 @@ function LightPartyBattler:getHeadIcon()
     end
 end
 
-function LightPartyBattler:resetSprite()
-    self:setAnimation("battle/idle")
-end
+function LightPartyBattler:resetSprite() end
 
 function LightPartyBattler:update()
     if self.actor then
