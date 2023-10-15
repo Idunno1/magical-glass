@@ -519,13 +519,11 @@ function lib:init()
     
         Kristal.callEvent("onConvertToLight", new_inventory)
 
-        local should_make_ball = false
         for _,storage_id in ipairs(self.convert_order) do
             local storage = Utils.copy(self:getStorage(storage_id))
             for i = 1, storage.max do
                 local item = storage[i]
                 if item then
-                    should_make_ball = true
                     local result = item:convertToLight(new_inventory) or (storage.id == "light" and item)
     
                     if result then
@@ -548,7 +546,20 @@ function lib:init()
             local ball = Registry.createItem("light/ball_of_junk", self)
             new_inventory:addItemTo("items", 1, ball)
         else
-            Game:setFlag("dark_inventory#", self)
+            for _,base_storage in pairs(self.storages) do
+                local storage = Utils.copy(base_storage)
+                for i = 1, storage.max do
+                    local item = storage[i]
+                    if item then
+                        item.dark_item = item
+                        item.dark_location = {storage = storage.id, index = i}
+        
+                        new_inventory:addItemTo("dark", item)
+        
+                        self:removeItem(item)
+                    end
+                end
+            end
         end
     
         new_inventory.storage_enabled = was_storage_enabled
@@ -563,7 +574,7 @@ function lib:init()
             ["items"] = {id = "items", max = 8,   sorted = true,  name = "INVENTORY",  fallback = "box_a"},
             ["box_a"] = {id = "box_a", max = 10,  sorted = true,  name = "BOX",        fallback = "box_b"},
             ["box_b"] = {id = "box_b", max = 10,  sorted = true,  name = "BOX",        fallback = nil    },
-            ["dark"] =  {id = "dark",  max = 144, sorted = false, name = "DARK ITEMs", fallback = nil    }
+            ["dark"]  = {id = "dark",  max = 144, sorted = false, name = "DARK ITEMs", fallback = nil    }
         }
     
         Kristal.callEvent("createLightInventory", self)
@@ -573,11 +584,7 @@ function lib:init()
         if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
             return orig(self)
         else
-            if Game:getFlag("dark_inventory#") then
-                return Game:getFlag("dark_inventory#")
-            else
-                return DarkInventory()
-            end
+            return Game.inventory:getStorage("dark")
         end
     end)
 
