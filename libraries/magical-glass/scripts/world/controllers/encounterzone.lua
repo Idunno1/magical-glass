@@ -31,28 +31,29 @@ function EncounterZone:update()
     super.update(self)
 
     if Game.world.player and not Game.battle then
-        if self.type == "map" or (self.type == "zone" and self.collider:collidesWith(Game.world.player)) then
+        if self.collider:collidesWith(Game.world.player) or self.type == "map" then
             self.accepting = true
         else
             self.accepting = false
         end
     end
 
-    if MagicalGlassLib.steps_until_encounter <= 0 then
+    if MagicalGlassLib.steps_until_encounter <= 0 and self.accepting then
         self.group:resetSteps()
         self.group:start()
     end
 
 end
 
-function EncounterZone:onAdd(parent)
-    super.onAdd(self, parent)
+function EncounterZone:onAddToStage(parent)
     MagicalGlassLib.encounters_enabled = true
+    super.onAdd(self, parent)
+
 end
 
-function EncounterZone:onRemove(parent)
-    super.onRemove(self, parent)
+function EncounterZone:onRemoveFromStage(stage)
     MagicalGlassLib.encounters_enabled = false
+    super.onRemove(self, stage)
 end
 
 function EncounterZone:draw()

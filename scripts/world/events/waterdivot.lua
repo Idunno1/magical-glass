@@ -9,10 +9,10 @@ function event:init(x, y, properties)
 
     self.physics.speed_x = properties["speed_x"] or 3
     if self.physics.speed_x > 0 then -- right
-        self.delete_x = properties["delete_x"] or Game.world.width
+        self.delete_x = properties["delete_x"] or 640
         self.respawn_x = properties["respawn_x"] or -30
     elseif self.physics.speed_x <= 0 then -- left
-        self.delete_x = properties["delete_x"] or Game.world.map.x
+        self.delete_x = properties["delete_x"] or -30
         self.respawn_x = properties["respawn_x"] or Game.world.width + 10
     end
 end
