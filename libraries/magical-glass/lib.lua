@@ -511,6 +511,55 @@ function lib:init()
         self.stage:addChild(self.battle)
     end)
 
+    Utils.hook(LightInventory, "convertToDark", function(orig, self)
+        local new_inventory = DarkInventory()
+
+        local was_storage_enabled = new_inventory.storage_enabled
+        new_inventory.storage_enabled = true
+    
+        Kristal.callEvent("onConvertToDark", new_inventory)
+    
+        for _,storage_id in ipairs(self.convert_order) do
+            local storage = Utils.copy(self:getStorage(storage_id))
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    local result = item:convertToDark(new_inventory) or (storage.id == "dark" and item)
+    
+                    if result then
+                        self:removeItem(item)
+    
+                        if type(result) == "string" then
+                            result = Registry.createItem(result)
+                        end
+                        if isClass(result) then
+                            new_inventory:addItem(result)
+                        end
+                    end
+                end
+            end
+        end
+    
+        for _,base_storage in pairs(self.storages) do
+            local storage = Utils.copy(base_storage)
+            for i = 1, storage.max do
+                local item = storage[i]
+                if item then
+                    --item.light_item = item
+                    item.light_location = {storage = storage.id, index = i}
+    
+                    new_inventory:addItemTo("light", item)
+    
+                    self:removeItem(item)
+                end
+            end
+        end
+    
+        new_inventory.storage_enabled = was_storage_enabled
+    
+        return new_inventory
+    end)
+
     Utils.hook(DarkInventory, "convertToLight", function(orig, self)
         local new_inventory = LightInventory()
 
@@ -533,8 +582,10 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            result.dark_item = item
-                            result.dark_location = {storage = storage.id, index = i}
+                            if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
+                                --result.dark_item = item
+                                result.dark_location = {storage = storage.id, index = i}
+                            end
                             new_inventory:addItem(result)
                         end
                     end
@@ -551,7 +602,7 @@ function lib:init()
                 for i = 1, storage.max do
                     local item = storage[i]
                     if item then
-                        item.dark_item = item
+                        --item.dark_item = item
                         item.dark_location = {storage = storage.id, index = i}
         
                         new_inventory:addItemTo("dark", item)
