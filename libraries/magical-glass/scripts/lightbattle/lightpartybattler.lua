@@ -131,14 +131,6 @@ function LightPartyBattler:hurt(amount, exact, color, options)
     end
 
     Game.battle:shakeCamera(2)
-
-    if (not self.defending) and (not self.is_down) then
-        self.sleeping = false
-        self.hurting = true
-        Game.battle.timer:after(1, function()
-            self.hurting = false
-        end)
-    end
 end
 
 function LightPartyBattler:removeHealth(amount)

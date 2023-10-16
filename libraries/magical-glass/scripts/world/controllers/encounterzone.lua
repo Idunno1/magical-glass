@@ -48,7 +48,6 @@ end
 function EncounterZone:onAddToStage(parent)
     MagicalGlassLib.encounters_enabled = true
     super.onAdd(self, parent)
-
 end
 
 function EncounterZone:onRemoveFromStage(stage)

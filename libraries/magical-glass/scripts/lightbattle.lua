@@ -1085,7 +1085,7 @@ function LightBattle:onStateChange(old,new)
         end
 
         for _,battler in ipairs(self.party) do
-            for _,equipment in ipairs(battler.chara:getEquipment()) do -- does this need a light version?
+            for _,equipment in ipairs(battler.chara:getEquipment()) do
                 self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
             end
         end
@@ -1181,13 +1181,23 @@ function LightBattle:onStateChange(old,new)
         end
         
     elseif new == "DEFENDINGEND" then
-        self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
-        function()
-            self.arena:changeShape({self.arena.width, self.arena.init_height},
+        if self.arena.height >= self.arena.init_height then
+            self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
             function()
-                self.arena:changeShape({self.arena.init_width, self.arena.height})
+                self.arena:changeShape({self.arena.width, self.arena.init_height},
+                function()
+                    self.arena:changeShape({self.arena.init_width, self.arena.height})
+                end)
             end)
-        end)
+        else
+            self.arena:changePosition({self.arena.home_x, self.arena.home_y}, true,
+            function()
+                self.arena:changeShape({self.arena.init_width, self.arena.height},
+                function()
+                    self.arena:changeShape({self.arena.width, self.arena.init_height})
+                end)
+            end)
+        end
     end
 
     local should_end = true
@@ -1586,7 +1596,7 @@ function LightBattle:update()
             end
         end
     elseif self.state == "DEFENDINGBEGIN" then
-        if #self.arena.target_shape == 0 and #self.arena.target_position == 0 then
+        if self.arena:isNotTransitioning() then
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
             local arena_x, arena_y, arena_h, arena_shape
@@ -1612,13 +1622,19 @@ function LightBattle:update()
             end
             local center_x, center_y = self.arena:getCenter()
 
-            if has_arena and not (self.arena.width == arena_w and self.arena.height == arena_h) then
+            if has_arena and self.arena.height ~= arena_h then
                 self.arena:changeShape({self.arena.width, arena_h})
+            end
+
+            if has_arena and not (self.arena.x == arena_x and self.arena.y == arena_y) then
                 self.arena:changePosition({arena_x, arena_y})
             end
 
+        end
+
+        if self.arena:isNotTransitioning() then
             self.soul.can_move = true
-            self:setState("DEFENDING")
+            self:setState("DEFENDING") 
         end
     elseif self.state == "DEFENDING" then
         local darken = false

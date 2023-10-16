@@ -125,6 +125,10 @@ end
 function LightArena:onRemove(parent)
 end
 
+function LightArena:isNotTransitioning()
+    return #self.target_shape == 0 and #self.target_position == 0
+end
+
 function LightArena:update()
     if #self.target_shape > 0 then
         if not Utils.equal(self.width, self.target_shape[1], true) then
