@@ -312,6 +312,11 @@ end
 function LightEnemyBattler:onSpareable() end
 
 function LightEnemyBattler:addMercy(amount)
+
+    if self.mercy >= 100 then
+        -- We're already at full mercy; who cares
+        return
+    end
     
     if Kristal.getLibConfig("magical-glass", "mercy_messages") then
         if amount > 0 and self.mercy < 100 then
@@ -328,11 +333,6 @@ function LightEnemyBattler:addMercy(amount)
             local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
             message:resetPhysics()
         end
-    end
-
-    if self.mercy >= 100 then
-        -- We're already at full mercy; who cares
-        return
     end
 
     self.mercy = self.mercy + amount
