@@ -89,7 +89,7 @@ function LightEncounter:onSoulTransition()
             local soul_y = self:storyWave().soul_start_y or (soul_offset_y and center_y + soul_offset_y)
             Game.battle.soul:slideTo(soul_x or center_x, soul_y or center_y, 17/30)
         else
-            Game.battle.soul:slideTo(49, 455, 17/30)
+            Game.battle.soul:slideTo(49, 455, 17/30) -- X value is static, it needs to be accurate to the first button location when using less than 4 buttons. Couldn't find how to check for the amount of buttons the battler has.
         end
 
         wait(17/30)
