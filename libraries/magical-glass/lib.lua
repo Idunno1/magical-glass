@@ -2091,7 +2091,7 @@ function lib:init()
         
             local data      = self.saved_file or {}
             local name      = data.name      or "EMPTY"
-            local level     = data.level     or 0 -- Can't figure out how to read the data.lw_lv of the player chara
+            local level     = data.level     or 0 -- BUG: Can't figure out how to read the data.lw_lv of the player chara.
             local playtime  = data.playtime  or 0
             local room_name = data.room_name or "--"
         
