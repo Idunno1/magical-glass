@@ -489,6 +489,8 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
         local message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
         if message and anim == false then
             message:resetPhysics()
+        else
+            self.hurt_timer = 1
         end
 
         self:onDodge(battler)

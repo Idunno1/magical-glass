@@ -200,8 +200,8 @@ function LightEquipItem:onLightAttack(battler, enemy, damage, stretch)
 
 end
 
-function LightEquipItem:onLightMiss(battler, enemy, finish)
-    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, false)
+function LightEquipItem:onLightMiss(battler, enemy, finish, anim)
+    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
     if finish then
         Game.battle:endAttack()
     end

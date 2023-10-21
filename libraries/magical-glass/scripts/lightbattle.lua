@@ -565,7 +565,7 @@ function LightBattle:processAction(action)
                 end
                 weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
             else
-                weapon:onLightMiss(battler, enemy, true)
+                weapon:onLightMiss(battler, enemy, true, false)
             end
 
         end
