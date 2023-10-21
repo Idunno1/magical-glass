@@ -4,9 +4,6 @@ function HelpWindow:init(x, y)
     super.init(self, x, y)
 
     self.showing = false
-    self.show_progress = 0
-    self.show_done = true
-    self.up = false
 
     self.box_fill = Rectangle(0, 0, 560, 45)
     self.box_fill:setOrigin(0.5)
@@ -25,67 +22,34 @@ function HelpWindow:init(x, y)
     self.box_fill:addChild(self.cost_text)
 end
 
-function HelpWindow:getBounds()
-    return 237, 280
-end
-
-function HelpWindow:show()
-    if not self.showing then
-        self.up = true
-        self.show_progress = 0
-        self.show_done = false
-        self.showing = true
-    end
-end
-
-function HelpWindow:hide()
-    if self.showing then
-        self.up = false
-        self.show_progress = 0
-        self.show_done = false
-        self.showing = false
-    end
-end
-
 function HelpWindow:update()
     if Game.battle.state == "MENUSELECT" and #Game.battle.menu_items > 0 then
         local item = Game.battle.menu_items[Game.battle:getItemIndex()]
         if (#item.description > 0 or (item.tp and item.tp > 0)) then
-            if Game.battle.tension_bar then
-                Game.battle.tension_bar:shiftUp()
+            if not self.showing then
+                self.showing = true
+                TweenManager.tween(self, {y = 237}, 6, "outExpo")
+                if Game.battle.tension_bar then
+                    TweenManager.tween(Game.battle.tension_bar, {y = 26}, 8, "outExpo")
+                end
             end
-            self:show()
         else
-            if Game.battle.tension_bar then
-                Game.battle.tension_bar:shiftDown()
+            if self.showing then
+                self.showing = false
+                TweenManager.tween(self, {y = 280}, 6, "outExpo")
+                if Game.battle.tension_bar then
+                    TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
+                end
             end
-            self:hide()
         end
     else
-        if Game.battle.tension_bar then
-            Game.battle.tension_bar:shiftDown()
+        if self.showing then
+            self.showing = false
+            TweenManager.tween(self, {y = 280}, 6, "outExpo")
+            if Game.battle.tension_bar then
+                TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
+            end
         end
-        self:hide()
-    end
-
-    if not self.show_done then
-
-        self.show_progress = self.show_progress + DTMULT
-
-        local limit = 12
-
-        if self.show_progress > limit + 1 then
-            self.show_done = true
-            self.show_progress = limit + 1
-        end
-
-        local lower, upper = self:getBounds()
-        if self.up then
-            self.y = Ease.outExpo(math.min(limit, self.show_progress), upper, lower - upper, limit)
-        else
-            self.y = Ease.outExpo(math.min(limit, self.show_progress), lower, upper - lower, limit)
-        end
-
     end
     
     super.update(self)

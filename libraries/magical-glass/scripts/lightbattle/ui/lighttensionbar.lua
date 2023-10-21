@@ -79,24 +79,6 @@ function LightTensionBar:hide()
     end
 end
 
-function LightTensionBar:shiftUp()
-    if not self.shifted then
-        self.shift_up = true
-        self.shift_progress = 0
-        self.shift_done = false
-        self.shifted = true
-    end
-end
-
-function LightTensionBar:shiftDown()
-    if self.shifted then
-        self.shift_up = false
-        self.shift_progress = 0
-        self.shift_done = false
-        self.shifted = false
-    end
-end
-
 function LightTensionBar:getDebugInfo()
     local info = super.getDebugInfo(self)
     table.insert(info, "Tension: "  .. Utils.round(self:getPercentageFor(Game:getTension()) * 100) .. "%")

@@ -1,3 +1,4 @@
+TweenManager             = libRequire("magical-glass", "scripts/tweenmanager")
 LightBattle              = libRequire("magical-glass", "scripts/lightbattle")
 LightPartyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightpartybattler")
 LightEnemyBattler        = libRequire("magical-glass", "scripts/lightbattle/lightenemybattler")
