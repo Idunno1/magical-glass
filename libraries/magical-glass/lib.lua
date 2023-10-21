@@ -1835,16 +1835,8 @@ function lib:init()
                     magic = self.lw_stats.magic or 0
                 }
         
-                if self:getLightLV() >= #self.lw_exp_needed then
-                    self.lw_stats = {
-                        health = 99,
-                        -- attack = 99,
-                        -- defense = 99,
-                        -- these SHOULD be 99, but an error makes them the defaults for lv20
-                        attack = (8 + (self:getLightLV() * 2)),
-                        defense = (9 + math.ceil(self:getLightLV() / 4)),
-                        magic = 0
-                    }
+                if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
+                    self.lw_stats.health = 99
                 end
             end
         end
@@ -1871,7 +1863,7 @@ function lib:init()
         self:onLightLevelUp(level)
     end)
 
-    Utils.hook(PartyMember, "forceLV", function(orig, self, level, ignore_cap)
+    Utils.hook(PartyMember, "forceLV", function(orig, self, level)
         self.lw_lv = level
 
         if self.lw_lv >= #self.lw_exp_needed then
@@ -1884,21 +1876,11 @@ function lib:init()
             health = (16 + (self:getLightLV() * 4)),
             attack = (8 + (self:getLightLV() * 2)),
             defense = (9 + math.ceil(self:getLightLV() / 4)),
-            magic = 0
+            magic = self.lw_stats.magic or 0
         }
 
-        if not ignore_cap then
-            if self:getLightLV() >= #self.lw_exp_needed then
-                self.lw_stats = {
-                    health = 99,
-                    -- attack = 99,
-                    -- defense = 99,
-                    -- these SHOULD be 99, but an error makes them the defaults for lv20
-                    attack = (8 + (self:getLightLV() * 2)),
-                    defense = (9 + math.ceil(self:getLightLV() / 4)),
-                    magic = 0
-                }
-            end
+        if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
+            self.lw_stats.health = 99
         end
     end)
 
