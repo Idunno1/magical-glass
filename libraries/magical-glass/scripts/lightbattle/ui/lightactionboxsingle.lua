@@ -193,9 +193,16 @@ function LightActionBoxSingle:drawStatusStrip()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
-    if current < 10 then
+
+
+    if max < 10 and max >= 0 then
+        max = "0" .. tostring(max) -- do i need to even do this
+    end
+
+    if current < 10 and current >= 0 then
         current = "0" .. tostring(current) -- do i need to even do this
     end
+    
     local size = max * 1.25
 
     local limit = self:getHPGaugeLengthCap()
