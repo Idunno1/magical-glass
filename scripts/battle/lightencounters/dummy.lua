@@ -16,11 +16,16 @@ function Dummy:init()
 
     self.offset = 0
 
+end
+
+function Dummy:onBattleInit()
     if self:getFlag("deltarune") then
         local fuck = Game.battle.enemies[1]:getAct("deltarune")
+        Game.battle.tension_bar.visible = true
+        self.can_defend = true
+        self.can_flee = false
         fuck.name = "undertale"
     end
-
 end
 
 function Dummy:update()
@@ -48,17 +53,17 @@ function Dummy:drawBackground()
         love.graphics.setLineStyle("rough")
         love.graphics.setLineWidth(1)
     
-    for i = 2, 16 do
-        Draw.setColor(66 / 255, 0, 66 / 255, 1/2)
-        love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
-        love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
-    end
+        for i = 2, 16 do
+            Draw.setColor(66 / 255, 0, 66 / 255, 1/2)
+            love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
+            love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
+        end
 
-    for i = 3, 16 do
-        Draw.setColor(66 / 255, 0, 66 / 255, 1)
-        love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
-        love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
-    end
+        for i = 3, 16 do
+            Draw.setColor(66 / 255, 0, 66 / 255, 1)
+            love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
+            love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
+        end
     else
         local offset = 0
         for i = 1, 6 do

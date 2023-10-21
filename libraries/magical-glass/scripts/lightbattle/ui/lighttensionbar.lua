@@ -53,6 +53,11 @@ function LightTensionBar:init(x, y, dont_animate)
 
     self.tension_preview = 0
     self.shown = false
+
+    self.shifted = false
+    self.shift_progress = 0
+    self.shift_done = true
+    self.shift_up = false
 end
 
 function LightTensionBar:show()
@@ -71,6 +76,24 @@ function LightTensionBar:hide()
         self.shown = false
         self.physics.speed_x = -10
         self.physics.friction = -0.4
+    end
+end
+
+function LightTensionBar:shiftUp()
+    if not self.shifted then
+        self.shift_up = true
+        self.shift_progress = 0
+        self.shift_done = false
+        self.shifted = true
+    end
+end
+
+function LightTensionBar:shiftDown()
+    if self.shifted then
+        self.shift_up = false
+        self.shift_progress = 0
+        self.shift_done = false
+        self.shifted = false
     end
 end
 
@@ -107,6 +130,27 @@ function LightTensionBar:processSlideIn()
         end
 
         self.x = Ease.outCubic(self.animation_timer, self.init_x, 54, 12)
+    end
+end
+
+function LightTensionBar:shift()
+    if not self.shift_done then
+        self.shift_progress = self.shift_progress + DTMULT
+
+        local limit = 12
+
+        if self.shift_progress > limit + 1 then
+            self.shift_done = true
+            self.shift_progress = limit + 1
+        end
+
+        local lower, upper = 53, 26
+
+        if self.shift_up then
+            self.y = Ease.outExpo(math.min(limit, self.shift_progress), lower, upper - lower, limit)
+        else
+            self.y = Ease.outExpo(math.min(limit, self.shift_progress), upper, lower - upper, limit)
+        end
     end
 end
 
@@ -164,6 +208,7 @@ end
 
 function LightTensionBar:update()
     self:processSlideIn()
+    self:shift()
     self:processTension()
 
     super.update(self)

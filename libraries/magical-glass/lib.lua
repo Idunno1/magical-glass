@@ -8,6 +8,7 @@ LightArenaBackground     = libRequire("magical-glass", "scripts/lightbattle/ligh
 LightEncounter           = libRequire("magical-glass", "scripts/lightbattle/lightencounter")
 LightSoul                = libRequire("magical-glass", "scripts/lightbattle/lightsoul")
 LightBattleUI            = libRequire("magical-glass", "scripts/lightbattle/ui/lightbattleui")
+HelpWindow               = libRequire("magical-glass", "scripts/lightbattle/ui/helpwindow")
 LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/lightdamagenumber")
 LightGauge               = libRequire("magical-glass", "scripts/lightbattle/ui/lightgauge")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")

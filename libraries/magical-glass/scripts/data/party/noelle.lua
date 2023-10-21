@@ -22,7 +22,7 @@ self.soul_priority = 1
 self.soul_color = {1, 0, 0}
 
 -- Whether the party member can act / use spells
-self.has_act = false
+self.has_act = true
 self.has_spells = true
 
 -- Whether the party member can use their X-Action

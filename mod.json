@@ -3,18 +3,19 @@
     "name": "Magical Glass",
     "subtitle": "...What game am I playing again?",
 
-    "version": "v1.1.2",
+    "version": "v1.1.1",
     "engineVer": "v0.9.0-dev",
 
     "chapter": 2,
 
     "map": "tundra3",
 
-    "party": ["kris"],
+    //"party": ["kris"],
+    "party": ["noelle"],
 
     "inventory": {
         // "items": ["ut_items/rock_candy", "ut_items/monster_candy", "ut_items/spider_donut", "ut_items/spider_cider", "ut_items/butterscotch_pie", "ut_items/ghost_fruit"],
-        "items": [],
+        "items": ["clubssandwich", "ut_items/rock_candy"],
         "box_a": ["ut_weapons/stick", "ut_weapons/toy_knife", "ut_weapons/tough_glove", "ut_weapons/ballet_shoes", "ut_weapons/torn_notebook", "ut_weapons/burnt_pan", "ut_weapons/empty_gun", "ut_weapons/worn_dagger", "ut_weapons/real_knife"],
         "box_b": ["ut_armors/bandage", "ut_armors/faded_ribbon", "ut_armors/manly_bandanna", "ut_armors/old_tutu", "ut_armors/cloudy_glasses", "ut_armors/stained_apron", "ut_armors/cowboy_hat", "ut_armors/heart_locket", "ut_armors/the_locket", "ut_armors/temy_armor"],
         "key_items": ["cell_phone"]
