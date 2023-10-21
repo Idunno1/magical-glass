@@ -26,6 +26,7 @@ function lib:save(data)
     data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
+    data.lw_lv = Game.party[1]:getLightLV()
 end
 
 function lib:load(data, new_file)
@@ -2187,7 +2188,7 @@ function lib:init()
         
             local data      = self.saved_file               or {}
             local name      = data.name                     or "EMPTY"
-            local level     = Game.party[1]:getLightLV()    or 1
+            local level     = data.lw_lv                    or 0
             local playtime  = data.playtime                 or 0
             local room_name = data.room_name                or "--"
         
