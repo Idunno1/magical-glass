@@ -115,27 +115,6 @@ function LightTensionBar:processSlideIn()
     end
 end
 
-function LightTensionBar:shift()
-    if not self.shift_done then
-        self.shift_progress = self.shift_progress + DTMULT
-
-        local limit = 12
-
-        if self.shift_progress > limit + 1 then
-            self.shift_done = true
-            self.shift_progress = limit + 1
-        end
-
-        local lower, upper = 53, 26
-
-        if self.shift_up then
-            self.y = Ease.outExpo(math.min(limit, self.shift_progress), lower, upper - lower, limit)
-        else
-            self.y = Ease.outExpo(math.min(limit, self.shift_progress), upper, lower - upper, limit)
-        end
-    end
-end
-
 function LightTensionBar:processTension()
     if (math.abs((self.apparent - self:getTension250())) < 20) then
         self.apparent = self:getTension250()
@@ -190,7 +169,6 @@ end
 
 function LightTensionBar:update()
     self:processSlideIn()
-    self:shift()
     self:processTension()
 
     super.update(self)
