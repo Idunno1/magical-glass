@@ -3,7 +3,7 @@ local LightEquipItem, super = Class("LightEquipItem", true)
 function LightEquipItem:init()
     super.init(self)
 
-    self.menu_display_name = nil
+    self.equip_display_name = nil
 
     self.target = "ally"
 
@@ -30,9 +30,9 @@ function LightEquipItem:init()
     self.attack_pitch = 1
 end
 
-function LightEquipItem:getMenuDisplayName()
-    if self.menu_display_name then
-        return self.menu_display_name
+function LightEquipItem:getEquipDisplayName()
+    if self.equip_display_name then
+        return self.equip_display_name
     else
         return self:getName()
     end

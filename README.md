@@ -33,6 +33,9 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 * bor (assistant, map recreations)
 * Just Another Random User (assistant)
 
+## Contributors:
+* FireRainV
+
 ### Testers:
 * Racckoon
 

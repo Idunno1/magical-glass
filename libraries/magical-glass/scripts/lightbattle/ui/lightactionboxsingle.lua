@@ -194,13 +194,12 @@ function LightActionBoxSingle:drawStatusStrip()
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
 
-
     if max < 10 and max >= 0 then
-        max = "0" .. tostring(max) -- do i need to even do this
+        max = "0" .. tostring(max)
     end
 
     if current < 10 and current >= 0 then
-        current = "0" .. tostring(current) -- do i need to even do this
+        current = "0" .. tostring(current)
     end
     
     local size = max * 1.25
@@ -230,7 +229,11 @@ function LightActionBoxSingle:drawStatusStrip()
     love.graphics.setColor(COLORS["yellow"])
     love.graphics.rectangle("fill", x + 245, y, length * 1.25, 21)
 
-    love.graphics.setColor(COLORS["white"])
+    local color = COLORS.white
+    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+        color = COLORS.aqua
+    end
+    love.graphics.setColor(color)
     love.graphics.print(current .. " / " .. max, x + 245 + size + 14, y)
 end
 

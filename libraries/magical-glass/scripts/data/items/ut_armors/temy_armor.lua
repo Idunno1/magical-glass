@@ -7,7 +7,7 @@ function item:init()
     self.name = "temy armor"
     self.short_name = "Temmie AR"
     self.serious_name = "Tem.Armor"
-    self.menu_display_name = "Temmie Armor"
+    self.equip_display_name = "Temmie Armor"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"

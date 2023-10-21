@@ -180,13 +180,12 @@ function LightActionButton:select()
                 Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
         })
-        if Game.battle.encounter:getFlag("deltarune") then
+        if Game.battle.encounter.can_defend then
             Game.battle:addMenuItem({
                 ["name"] = "Defend",
                 ["special"] = "defend",
                 ["callback"] = function(menu_item)
-                    Game.battle:toggleSoul(false) -- BUG? Is this how these suppose to be used? It didn't run anywhere upon choosing the option when I tried to use it in 'lightbattle.lua'.
-                    -- Game.battle.current_selecting = 0 -- Crashes, no idea how to use this, I was trying to unhighlight the MERCY button. Kind of the same problem as above.
+                    Game.battle:toggleSoul(false)
                     Game.battle:pushAction("DEFEND", nil, {tp = -16})
                 end
             })
