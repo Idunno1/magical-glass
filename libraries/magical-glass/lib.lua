@@ -27,6 +27,7 @@ function lib:save(data)
     data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
+    data.lw_lv = Game.party[1]:getLightLV()
 end
 
 function lib:load(data, new_file)
@@ -1836,16 +1837,8 @@ function lib:init()
                     magic = self.lw_stats.magic or 0
                 }
         
-                if self:getLightLV() >= #self.lw_exp_needed then
-                    self.lw_stats = {
-                        health = 99,
-                        -- attack = 99,
-                        -- defense = 99,
-                        -- these SHOULD be 99, but an error makes them the defaults for lv20
-                        attack = (8 + (self:getLightLV() * 2)),
-                        defense = (9 + math.ceil(self:getLightLV() / 4)),
-                        magic = 0
-                    }
+                if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
+                    self.lw_stats.health = 99
                 end
             end
         end
@@ -1872,7 +1865,7 @@ function lib:init()
         self:onLightLevelUp(level)
     end)
 
-    Utils.hook(PartyMember, "forceLV", function(orig, self, level, ignore_cap)
+    Utils.hook(PartyMember, "forceLV", function(orig, self, level)
         self.lw_lv = level
 
         if self.lw_lv >= #self.lw_exp_needed then
@@ -1885,21 +1878,11 @@ function lib:init()
             health = (16 + (self:getLightLV() * 4)),
             attack = (8 + (self:getLightLV() * 2)),
             defense = (9 + math.ceil(self:getLightLV() / 4)),
-            magic = 0
+            magic = self.lw_stats.magic or 0
         }
 
-        if not ignore_cap then
-            if self:getLightLV() >= #self.lw_exp_needed then
-                self.lw_stats = {
-                    health = 99,
-                    -- attack = 99,
-                    -- defense = 99,
-                    -- these SHOULD be 99, but an error makes them the defaults for lv20
-                    attack = (8 + (self:getLightLV() * 2)),
-                    defense = (9 + math.ceil(self:getLightLV() / 4)),
-                    magic = 0
-                }
-            end
+        if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
+            self.lw_stats.health = 99
         end
     end)
 
@@ -2206,7 +2189,7 @@ function lib:init()
         
             local data      = self.saved_file               or {}
             local name      = data.name                     or "EMPTY"
-            local level     = Game.party[1]:getLightLV()    or 1
+            local level     = data.lw_lv                    or 0
             local playtime  = data.playtime                 or 0
             local room_name = data.room_name                or "--"
         
@@ -2385,10 +2368,6 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
             Game:setFlag("current_battle_system#", "deltarune")
-            if Game:isLight() then
-                Game:setFlag("temporary_world_value#", "dark")
-                MagicalGlassLib:saveStorageAndEquips()
-            end
             Game:encounter(id)
             debug:closeMenu()
         end)
@@ -2398,15 +2377,12 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
+                Game:setFlag("current_battle_system#", "undertale")
                 if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") and not Game:isLight() then
-                    Game:setFlag("current_battle_system#", "undertale")
                     Game:setFlag("temporary_world_value#", "dark")
                     MagicalGlassLib:saveStorageAndEquips()
-                    Game:encounter(id)
-                else
-                    Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounter(id)
                 end
+                Game:encounter(id)
                 debug:closeMenu()
             end)
         end
