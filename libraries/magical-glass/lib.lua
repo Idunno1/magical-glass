@@ -2367,10 +2367,6 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
             Game:setFlag("current_battle_system#", "deltarune")
-            if Game:isLight() then
-                Game:setFlag("temporary_world_value#", "dark")
-                MagicalGlassLib:saveStorageAndEquips()
-            end
             Game:encounter(id)
             debug:closeMenu()
         end)
@@ -2380,15 +2376,12 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
+                Game:setFlag("current_battle_system#", "undertale")
                 if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") and not Game:isLight() then
-                    Game:setFlag("current_battle_system#", "undertale")
                     Game:setFlag("temporary_world_value#", "dark")
                     MagicalGlassLib:saveStorageAndEquips()
-                    Game:encounter(id)
-                else
-                    Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounter(id)
                 end
+                Game:encounter(id)
                 debug:closeMenu()
             end)
         end
