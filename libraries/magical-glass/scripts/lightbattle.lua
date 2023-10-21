@@ -931,6 +931,7 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ENEMYDIALOGUE" then
+        self.current_selecting = 0
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
@@ -1135,7 +1136,6 @@ function LightBattle:onStateChange(old,new)
         Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
 
     elseif new == "DEFENDINGBEGIN" then
-        self.current_selecting = 0
         self.battle_ui:clearEncounterText()
     elseif new == "FLEEING" then
         self.current_selecting = 0
