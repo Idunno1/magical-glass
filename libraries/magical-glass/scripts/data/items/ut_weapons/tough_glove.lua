@@ -69,11 +69,6 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             press_z:remove()
         end
 
---[[         if damage <= 0 then
-            print("hi")
-            return self:onLightMiss(battler, enemy, true, true)
-        end ]]
-
         if punches > 0 then
             local sound = enemy:getDamageSound() or "damage"
             if sound and type(sound) == "string" then
