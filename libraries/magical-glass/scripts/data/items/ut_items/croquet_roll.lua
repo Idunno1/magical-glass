@@ -34,7 +34,7 @@ function item:init(inventory)
 end
 
 function item:getWorldUseText(target)
-    if Game:getFlag("#serious_mode") then
+    if MagicalGlassLib.serious_mode then
         return super.getWorldUseText(self, target)
     else
         if target.id == Game.party[1].id then
@@ -46,7 +46,7 @@ function item:getWorldUseText(target)
 end
 
 function item:getLightBattleText(user, target)
-    if Game:getFlag("#serious_mode") then
+    if MagicalGlassLib.serious_mode then
         return super.getLightBattleText(self, user, target)
     else
         if user.chara.id == Game.battle.party[1].chara.id and target.chara.id == Game.battle.party[1].chara.id then

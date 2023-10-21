@@ -366,7 +366,7 @@ end
 function LightEnemyBattler:getNameColors()
     local result = {}
     if self:canSpare() and self:getMercyVisibility() then
-        table.insert(result, Game:getFlag("#name_color"))
+        table.insert(result, MagicalGlassLib.name_color)
     end
     if self.tired then
         table.insert(result, {0, 0.7, 1})
@@ -485,9 +485,9 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
-    if amount == 0 or (amount < 0 and Game:getConfig("damageUnderflowFix")) then
-        local message = self:lightStatusMessage("msg", "miss", color)
-        if message and (anim == nil or anim) then
+    if amount == 0 then
+        local message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        if message and anim == false then
             message:resetPhysics()
         end
 

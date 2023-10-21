@@ -14,7 +14,7 @@ function Dummy:init()
     -- Enemy attack (determines bullet damage)
     self.attack = 5
     -- Enemy defense (usually 0)
-    self.defense = 0
+    self.defense = 999
     -- Enemy reward
     self.money = 69
     self.experience = 1
@@ -24,13 +24,13 @@ function Dummy:init()
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
---[[         "basic",
-        "aiming",
-        "movingarena" ]]
+        -- "basic",
+        -- "aiming",
+        -- "movingarena"
     }
 
     self.menu_waves = {
---[[         "aiming" ]]
+        -- "aiming"
     }
 
     -- Dialogue randomly displayed in the enemy's speech bubble

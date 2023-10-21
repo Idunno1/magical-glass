@@ -217,12 +217,12 @@ function LightBattleUI:drawState()
 
             for _,enemy in ipairs(Game.battle:getActiveEnemies()) do
                 if enemy.mercy >= 100 and item.special == "spare" then
-                    love.graphics.setColor(Game:getFlag("#name_color"))
+                    love.graphics.setColor(MagicalGlassLib.name_color)
                 end
             end
 
             local name = item.name
-            if item.seriousname and Game:getFlag("#serious_mode") then
+            if item.seriousname and MagicalGlassLib.serious_mode then
                 name = item.seriousname
             elseif item.shortname then
                 name = item.shortname

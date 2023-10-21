@@ -7,6 +7,7 @@ function item:init()
     self.name = "temy armor"
     self.short_name = "Temmie AR"
     self.serious_name = "Tem.Armor"
+    self.menu_display_name = "Temmie Armor"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -47,7 +48,7 @@ function item:getLightBattleText(user, target)
 end
 
 function item:getPrice()
-    local gm = Game:getFlag("#game_overs")
+    local gm = MagicalGlassLib.game_overs
     local price = 9999
     for i = 0, math.min(gm, 30) do
         if i ~= 0 then

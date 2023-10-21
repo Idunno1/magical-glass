@@ -20,15 +20,48 @@ RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter"
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
-function lib:load()
+function lib:save(data)
+    data.magical_glass = {}
+    data.magical_glass["kills"] = lib.kills
+    data.magical_glass["game_overs"] = lib.game_overs
+    data.magical_glass["serious_mode"] = lib.serious_mode
+    data.magical_glass["name_color"] = lib.name_color
+end
+
+function lib:load(data, new_file)
     if Kristal.getModOption("encounter") then
         Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
     end
     
-    if Game.is_new_file then
-        Game:setFlag("#game_overs", 0)
-        Game:setFlag("#serious_mode", false) -- makes items use their serious name in battle, if they have one
-        Game:setFlag("#name_color", COLORS.yellow) -- use MagicalGlassLib:changeSpareColor() to change this
+    if new_file then       
+        lib.kills = 0        
+        lib.game_overs = 0
+        lib.serious_mode = false -- makes items use their serious name in battle, if they have one
+        lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
+    else
+        if data.magical_glass["kills"] then
+            lib.kills = data.magical_glass["kills"]
+        else
+            lib.kills = 0        
+        end
+
+        if data.magical_glass["game_overs"] then
+            lib.game_overs = data.magical_glass["game_overs"]
+        else
+            lib.game_overs = 0
+        end
+
+        if data.magical_glass["serious_mode"] then
+            lib.serious_mode = data.magical_glass["serious_mode"]
+        else
+            lib.serious_mode = false
+        end
+
+        if data.magical_glass["name_color"] then
+            lib.name_color = data.magical_glass["name_color"]
+        else
+            lib.name_color = COLORS.yellow
+        end
     end
 end
 
@@ -1745,6 +1778,14 @@ function lib:init()
         end
     end)
 
+    Utils.hook(PartyMember, "getLightEXP", function(orig, self)
+        if self.lw_exp >= self.lw_exp_needed[#self.lw_exp_needed] then
+            return self.lw_exp_needed[#self.lw_exp_needed]
+        else
+            return self.lw_exp
+        end
+    end)
+
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
         if Game.battle.turn_count == 1 and not undo then
             if self:getWeapon() then
@@ -1801,8 +1842,11 @@ function lib:init()
                 if self:getLightLV() >= #self.lw_exp_needed then
                     self.lw_stats = {
                         health = 99,
-                        attack = 99,
-                        defense = 99,
+                        -- attack = 99,
+                        -- defense = 99,
+                        -- these SHOULD be 99, but an error makes them the defaults for lv20
+                        attack = (8 + (self:getLightLV() * 2)),
+                        defense = (9 + math.ceil(self:getLightLV() / 4)),
                         magic = 0
                     }
                 end
@@ -1851,8 +1895,11 @@ function lib:init()
             if self:getLightLV() >= #self.lw_exp_needed then
                 self.lw_stats = {
                     health = 99,
-                    attack = 99,
-                    defense = 99,
+                    -- attack = 99,
+                    -- defense = 99,
+                    -- these SHOULD be 99, but an error makes them the defaults for lv20
+                    attack = (8 + (self:getLightLV() * 2)),
+                    defense = (9 + math.ceil(self:getLightLV() / 4)),
                     magic = 0
                 }
             end
@@ -2068,13 +2115,24 @@ function lib:init()
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
-        local weapon_name = chara:getWeapon() and chara:getWeapon():getName() or ""
-        local armor_name = chara:getArmor(1) and chara:getArmor(1):getName() or ""
+        local weapon_name = ""
+        local armor_name = ""
+
+        if chara:getWeapon() then
+            weapon_name = chara:getWeapon():getMenuDisplayName() or chara:getWeapon():getName()
+        end
+
+        if chara:getArmor(1) then
+            armor_name = chara:getArmor(1):getMenuDisplayName() or chara:getArmor(1):getName()
+        end
         
         love.graphics.print("WEAPON: "..weapon_name, 4, 256 + offset)
         love.graphics.print("ARMOR: "..armor_name, 4, 288 + offset)
     
         love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
+        if MagicalGlassLib.kills > 20 then
+            love.graphics.print("KILLS: "..MagicalGlassLib.kills, 172, 328 + offset)
+        end
     end)
 
     Utils.hook(World, "registerCall", function(orig, self, name, scene, sound)
@@ -2149,11 +2207,11 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text"])
             end
         
-            local data      = self.saved_file or {}
-            local name      = data.name      or "EMPTY"
-            local level     = data.level     or 1
-            local playtime  = data.playtime  or 0
-            local room_name = data.room_name or "--"
+            local data      = self.saved_file               or {}
+            local name      = data.name                     or "EMPTY"
+            local level     = Game.party[1]:getLightLV()    or 1
+            local playtime  = data.playtime                 or 0
+            local room_name = data.room_name                or "--"
         
             love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
             love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
@@ -2258,7 +2316,7 @@ function lib:init()
     end)
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
-        Game:setFlag("#game_overs", Game:getFlag("#game_overs") + 1)
+        lib.game_overs = lib.game_overs + 1
         orig(self, x, y)
     end)
 
@@ -2372,11 +2430,11 @@ end
 
 function lib:changeSpareColor(color)
     if color == "yellow" then
-        Game:setFlag("#name_color", COLORS.yellow)
+        lib.name_color = COLORS.yellow
     elseif color == "pink" then
-        Game:setFlag("#name_color", PALETTE["pink_spare"])
+        lib.name_color = PALETTE["pink_spare"]
     elseif color == "white" then
-        Game:setFlag("#name_color", COLORS.white)
+        lib.name_color = COLORS.white
     end
 end
 

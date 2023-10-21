@@ -37,7 +37,7 @@ end
 
 function item:getWorldUseText(target)
     local message = ""
-    if not Game:getFlag("#serious_mode") then
+    if not MagicalGlassLib.serious_mode then
         local picker = Utils.random(15)
         if picker == 15 then
             message = "\n* ... tastes like licorice."
@@ -53,7 +53,7 @@ end
 
 function item:getLightBattleText(user, target)
     local message = ""
-    if not Game:getFlag("#serious_mode") then
+    if not MagicalGlassLib.serious_mode then
         local picker = Utils.random(15)
         if picker == 15 then
             message = "\n* ... tastes like licorice."

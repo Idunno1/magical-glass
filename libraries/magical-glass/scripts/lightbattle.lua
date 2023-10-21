@@ -560,7 +560,7 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
+                if self.tension_bar.visible then
                     Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
                 end
                 weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
@@ -2288,7 +2288,7 @@ function LightBattle:hurt(amount, exact, target)
         target.targeted = true
     end
 
-    if isClass(target) and (target:includes(PartyBattler) or target:includes(LightPartyBattler)) then
+    if isClass(target) and target:includes(LightPartyBattler) then
         target:hurt(amount, exact)
         return {target}
     end

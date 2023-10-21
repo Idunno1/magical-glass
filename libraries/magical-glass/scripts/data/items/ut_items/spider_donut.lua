@@ -37,7 +37,7 @@ end
 
 function item:getLightBattleText(user, target)
     local message = ""
-    if not Game:getFlag("#serious_mode") then
+    if not MagicalGlassLib.serious_mode then
         local picker = Utils.random(10)
         if picker > 9 then
             message = "\n* Don't worry,[wait:10] Spider didn't."

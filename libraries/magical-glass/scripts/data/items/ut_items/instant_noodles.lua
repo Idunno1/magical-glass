@@ -57,7 +57,7 @@ function item:onLightBattleUse(user, target)
         return text
     end
 
-    if not Game:getFlag("#serious_mode") then
+    if not MagicalGlassLib.serious_mode then
         Game.battle:startCutscene(function(cutscene)
             cutscene:text("[noskip]* You remove the Instant\nNoodles from their\npackaging.")
             cutscene:text("[noskip]* You put some water in\nthe pot and place it on\nthe heat.")

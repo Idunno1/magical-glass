@@ -44,7 +44,7 @@ function item:battleUseSound(user, target)
     Game.battle.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")
         wait(0.4)
-        if not Game:getFlag("#serious_mode") then
+        if not MagicalGlassLib.serious_mode then
             Assets.stopAndPlaySound("catsalad")
         else
             Assets.stopAndPlaySound("power")
@@ -56,7 +56,7 @@ function item:worldUseSound(target)
     Game.world.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")
         wait(0.4)
-        if not Game:getFlag("#serious_mode") then
+        if not MagicalGlassLib.serious_mode then
             Assets.stopAndPlaySound("catsalad")
         else
             Assets.stopAndPlaySound("power")

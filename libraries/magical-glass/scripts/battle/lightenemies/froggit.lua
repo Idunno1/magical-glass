@@ -107,6 +107,7 @@ function Froggit:onAct(battler, name)
 end
 
 function Froggit:onDefeat(damage, battler)
+    MagicalGlassLib.kills = MagicalGlassLib.kills + 1
     Game:setFlag("##test_kills", Game:getFlag("##test_kills", 0) + 1)
     super.onDefeat(self, damage, battler)
 end

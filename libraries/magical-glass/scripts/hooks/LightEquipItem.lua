@@ -3,6 +3,8 @@ local LightEquipItem, super = Class("LightEquipItem", true)
 function LightEquipItem:init()
     super.init(self)
 
+    self.menu_display_name = nil
+
     self.target = "ally"
 
     self.heal_bonus = 0
@@ -28,6 +30,13 @@ function LightEquipItem:init()
     self.attack_pitch = 1
 end
 
+function LightEquipItem:getMenuDisplayName()
+    if self.menu_display_name then
+        return self.menu_display_name
+    else
+        return self:getName()
+    end
+end
 function LightEquipItem:getFleeBonus() return 0 end
 
 function LightEquipItem:applyHealBonus(value) return value + self.heal_bonus end
@@ -192,7 +201,7 @@ function LightEquipItem:onLightAttack(battler, enemy, damage, stretch)
 end
 
 function LightEquipItem:onLightMiss(battler, enemy, finish)
-    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()})
+    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, false)
     if finish then
         Game.battle:endAttack()
     end

@@ -42,7 +42,7 @@ function item:onWorldUse(target)
 
     Assets.playSound("power")
     if target.id == Game.party[1].id then
-        if not Game:getFlag("#serious_mode") then
+        if not MagicalGlassLib.serious_mode then
             Game.world:heal(target, amount, "* You re-applied the bandage.\n* Still kind of gooey.", self)
         else
             Game.world:heal(target, amount, "* You re-applied the bandage.", self)
@@ -60,7 +60,7 @@ end
 
 function item:getLightBattleText(user, target)
     if target.chara.id == Game.battle.party[1].chara.id then
-        if not Game:getFlag("#serious_mode") then
+        if not MagicalGlassLib.serious_mode then
             return "* You re-applied the bandage.\n* Still kind of gooey."
         else
             return "* You re-applied the bandage."
