@@ -4,9 +4,10 @@
         "Nyakorita",
         "Sam Deluxe",
         "Bor",
-        "Just Another Random User"
+        "Just Another Random User",
+        "FireRainV"
     ],
-    "version": "v1.1.1",
+    "version": "v1.1.2",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -132,6 +133,14 @@
         ///// Action Button flash
         // Whether the Spell and Mercy buttons should flash in Light Battles if an enemy is pacifyable or sparable.
         /////
-        "action_button_flash": false
+        "action_button_flash": false,
+        
+        ///// Spell Action Button style
+        // Determines the appearance of the spell button in Light Battles.
+        ///// Values:
+        // "magical_glass"
+        // "deltatraveler"
+        /////
+        "spell_button_style": "magical_glass"
     }
 }

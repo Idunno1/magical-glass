@@ -370,10 +370,6 @@ function lib:init()
             self:enterMenu("encounter_select", 0)
         end, in_overworld)
 
-        self:registerOption("main", "Start Light Encounter", "Start a light encounter.", function()
-            self:enterMenu("light_encounter_select", 0)
-        end, in_overworld)
-
         self:registerOption("main", "Enter Shop", "Enter a shop.", function()
             self:enterMenu("select_shop", 0)
         end, in_overworld)
@@ -1525,7 +1521,7 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            love.graphics.printf("Use " .. item:getName() .. " on...", -45, 233, 400, "center")
+            love.graphics.printf("Use " .. item:getName() .. " on", -45, 233, 400, "center")
 
             if #Game.party == 2 then
                 local offset = 0
@@ -1836,7 +1832,7 @@ function lib:init()
                     health = (16 + (self:getLightLV() * 4)),
                     attack = (8 + (self:getLightLV() * 2)),
                     defense = (9 + math.ceil(self:getLightLV() / 4)),
-                    magic = 0
+                    magic = self.lw_stats.magic or 0
                 }
         
                 if self:getLightLV() >= #self.lw_exp_needed then
@@ -1863,7 +1859,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "gainLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = self.lw_exp + exp
+        self.lw_exp = Utils.clamp(self.lw_exp + exp, 0, 99999)
 
         if level_up then
             self:onLightLevelUp()
@@ -2376,14 +2372,21 @@ end
 
 function lib:registerDebugOptions(debug)
 
-    debug:registerMenu("encounter_select", "Encounter Select", "search")
+    debug:registerMenu("encounter_select", "Encounter Select")
+    debug:registerOption("encounter_select", "Start Dark Encounter", "Start a dark encounter.", function()
+        debug:enterMenu("dark_encounter_select", 0)
+    end)
+    debug:registerOption("encounter_select", "Start Light Encounter", "Start a light encounter.", function()
+        debug:enterMenu("light_encounter_select", 0)
+    end)
+
+    debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
-        debug:registerOption("encounter_select", id, "Start this encounter.", function()
+        debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
             Game:setFlag("current_battle_system#", "deltarune")
             if Game:isLight() then
-                Game:setFlag("temporary_world_value#", "light")
+                Game:setFlag("temporary_world_value#", "dark")
                 MagicalGlassLib:saveStorageAndEquips()
-                Game:setLight(false)
             end
             Game:encounter(id)
             debug:closeMenu()
@@ -2398,7 +2401,6 @@ function lib:registerDebugOptions(debug)
                     Game:setFlag("current_battle_system#", "undertale")
                     Game:setFlag("temporary_world_value#", "dark")
                     MagicalGlassLib:saveStorageAndEquips()
-                    Game:setLight(true)
                     Game:encounter(id)
                 else
                     Game:setFlag("current_battle_system#", "undertale")

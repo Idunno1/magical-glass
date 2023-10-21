@@ -9,6 +9,12 @@ function LightActionButton:init(type, battler, x, y)
     self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
     self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
     self.special_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_a")
+    
+    if type == "spell" and Kristal.getLibConfig("magical-glass", "spell_button_style") == "deltatraveler" then
+        self.tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type)
+        self.hover_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_h")
+        self.special_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_a")
+    end
 
     self.width = self.tex:getWidth()
     self.height = self.tex:getHeight()
@@ -36,7 +42,7 @@ function LightActionButton:select()
     elseif self.type == "spell" then
         Game.battle:clearMenuItems()
         Game.battle.current_menu_columns = 2
-        Game.battle.current_menu_rows = 2
+        Game.battle.current_menu_rows = 3
 
         if Game.battle.encounter.default_xactions and self.battler.chara:hasXAct() then
             local spell = {
@@ -165,7 +171,7 @@ function LightActionButton:select()
         end
     elseif self.type == "mercy" then
         Game.battle.current_menu_columns = 1
-        Game.battle.current_menu_rows = 2
+        Game.battle.current_menu_rows = 3
         Game.battle:clearMenuItems()
         Game.battle:addMenuItem({
             ["name"] = "Spare",
@@ -174,6 +180,17 @@ function LightActionButton:select()
                 Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
         })
+        if Game.battle.encounter:getFlag("deltarune") then
+            Game.battle:addMenuItem({
+                ["name"] = "Defend",
+                ["special"] = "defend",
+                ["callback"] = function(menu_item)
+                    Game.battle:toggleSoul(false) -- BUG? Is this how these suppose to be used? It didn't run anywhere upon choosing the option when I tried to use it in 'lightbattle.lua'.
+                    -- Game.battle.current_selecting = 0 -- Crashes, no idea how to use this, I was trying to unhighlight the MERCY button. Kind of the same problem as above.
+                    Game.battle:pushAction("DEFEND", nil, {tp = -16})
+                end
+            })
+        end
         if Game.battle.encounter.can_flee then
             Game.battle:addMenuItem({
                 ["name"] = "Flee",

@@ -43,13 +43,22 @@ function LightActionBoxSingle:createButtons()
 
     for i,btn in ipairs(btn_types) do
         if type(btn) == "string" then
-            local spacing = #btn_types
             local x
-            if #btn_types == 4 then
-                x = math.floor(67 + ((i - 1) * 156))
-                if i == 2 then
+            local loc = 2
+            if #btn_types <= 4 then
+                if btn == "fight" then
+                    loc = 1
+                elseif btn == "act" or btn == "spell" then
+                    loc = 2
+                elseif btn == "item" then
+                    loc = 3
+                elseif btn == "mercy" then
+                    loc = 4
+                end
+                x = math.floor(67 + ((loc - 1) * 156))
+                if loc == 2 then
                     x = x - 3
-                elseif i == 3 then
+                elseif loc == 3 then
                     x = x + 1
                 end
             else
@@ -128,7 +137,11 @@ function LightActionBoxSingle:drawStatusStripStory()
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
 
-    if current < 10 then
+    if max < 10 and max >= 0 then
+        max = "0" .. tostring(max)
+    end
+
+    if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
 
@@ -180,15 +193,9 @@ function LightActionBoxSingle:drawStatusStrip()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
-    
     if current < 10 then
-        current = "0" .. tostring(current)
+        current = "0" .. tostring(current) -- do i need to even do this
     end
-
-    if max < 10 then
-        max = "0" .. tostring(max)
-    end
-
     local size = max * 1.25
 
     local limit = self:getHPGaugeLengthCap()
