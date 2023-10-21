@@ -42,10 +42,11 @@ function LightBattleUI:init()
 
     -- active: 237
     -- inactive: 280
-    self.help_window = HelpWindow(SCREEN_WIDTH/2, 280) -- height is 99px in dt
-    --self.help_window:setOrigin(0.5)
-    self.help_window.layer = self.arena.layer - 10
-    Game.battle:addChild(self.help_window)
+    if Kristal.getLibConfig("magical-glass", "item_info") == "deltatraveler" then
+        self.help_window = HelpWindow(SCREEN_WIDTH/2, 280) -- height is 99px in dt
+        self.help_window.layer = self.arena.layer - 10
+        Game.battle:addChild(self.help_window)
+    end
 
     self.attack_box = nil
     self.action_boxes = {}
@@ -282,7 +283,7 @@ function LightBattleUI:drawState()
         local tp_offset = 0
         local current_item = Game.battle.menu_items[Game.battle:getItemIndex()] or Game.battle.menu_items[1] -- crash prevention in case of an invalid option
         if current_item.description then
-            if Kristal.getLibConfig("magical-glass", "item_info") == "deltatraveler" then
+            if self.help_window then
                 if #current_item.description > 0 then
                     self.help_window:setDescription(current_item.description)
                 end
@@ -294,18 +295,18 @@ function LightBattleUI:drawState()
         end
 
         if current_item.tp and current_item.tp ~= 0 then
-            if Kristal.getLibConfig("magical-glass", "item_info") == "deltatraveler" then
+            if self.help_window then
                 self.help_window:setTension(current_item.tp)
                 Game:setTensionPreview(current_item.tp)
             elseif Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" then
                 Draw.setColor(PALETTE["tension_desc"])
-                -- in memoriam of when this wasn't a pager menu
-                -- love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
-                local space = " "
+                love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
+                -- in memoriam of when this wasn't a pager menu, then was
+--[[                 local space = " "
                 if current_item.tp >= 100 then
                     space = ""
                 end
-                love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "%"..space..Game:getConfig("tpName"), 260 + 112, 64)
+                love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "%"..space..Game:getConfig("tpName"), 260 + 112, 64) ]]
                 Game:setTensionPreview(current_item.tp)
             end
         else

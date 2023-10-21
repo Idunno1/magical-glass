@@ -777,8 +777,6 @@ function LightBattle:onStateChange(old,new)
     end
 
     if new == "ACTIONSELECT" then
-        self.battle_ui.help_window:setTension(0)
-
         self.arena.layer = BATTLE_LAYERS["ui"] - 1
 
         if not self.soul then
@@ -851,6 +849,9 @@ function LightBattle:onStateChange(old,new)
             self:tryProcessNextAction()
         end
     elseif new == "MENUSELECT" then
+        if self.battle_ui.help_window then
+            self.battle_ui.help_window:setTension(0)
+        end
         self.battle_ui:clearEncounterText()
 
         if self.state_reason == "ACT" then
@@ -2584,6 +2585,11 @@ function LightBattle:onKeyPressed(key)
 
     if self.state == "MENUSELECT" then
         if Input.isConfirm(key) then
+
+            if self.battle_ui.help_window then
+                self.battle_ui.help_window:setTension(0)
+            end
+            
             local menu_item = self.menu_items[self:getItemIndex()]
             local can_select = self:canSelectMenuItem(menu_item)
             if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
@@ -2602,7 +2608,6 @@ function LightBattle:onKeyPressed(key)
             end
         elseif Input.isCancel(key) then
             Game:setTensionPreview(0)
-            self.battle_ui.help_window:setTension(0)
 
             if not self:isPagerMenu() then
                 self.menuselect_cursor_memory[self.state_reason] = {x = self.current_menu_x, y = self.current_menu_y}
