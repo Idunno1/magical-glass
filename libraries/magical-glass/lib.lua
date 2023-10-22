@@ -28,7 +28,8 @@ function lib:save(data)
     data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
-    data.lw_lv = Game.party[1]:getLightLV()
+    data.magical_glass["dark_inventory"] = lib.dark_inventory
+    data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
 end
 
 function lib:load(data, new_file)
@@ -36,11 +37,13 @@ function lib:load(data, new_file)
         Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
     end
     
-    if new_file then       
+    if new_file then
         lib.kills = 0        
         lib.game_overs = 0
         lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
+        lib.dark_inventory = DarkInventory()
+        lib.lw_save_lv = 0
     else
         if data.magical_glass["kills"] then
             lib.kills = data.magical_glass["kills"]
@@ -64,6 +67,18 @@ function lib:load(data, new_file)
             lib.name_color = data.magical_glass["name_color"]
         else
             lib.name_color = COLORS.yellow
+        end
+
+        if data.magical_glass["dark_inventory"] then
+            lib.dark_inventory = data.magical_glass["dark_inventory"]
+        else
+            lib.dark_inventory = DarkInventory()
+        end
+
+        if data.magical_glass["lw_save_lv"] then
+            lib.lw_save_lv = data.magical_glass["lw_save_lv"]
+        else
+            lib.lw_save_lv = 0
         end
     end
 end
@@ -577,7 +592,7 @@ function lib:init()
             for i = 1, storage.max do
                 local item = storage[i]
                 if item then
-                    --item.light_item = item
+                    item.light_item = item
                     item.light_location = {storage = storage.id, index = i}
     
                     new_inventory:addItemTo("light", item)
@@ -614,10 +629,8 @@ function lib:init()
                             result = Registry.createItem(result)
                         end
                         if isClass(result) then
-                            if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
-                                --result.dark_item = item
-                                result.dark_location = {storage = storage.id, index = i}
-                            end
+                            result.dark_item = item
+                            result.dark_location = {storage = storage.id, index = i}
                             new_inventory:addItem(result)
                         end
                     end
@@ -629,20 +642,7 @@ function lib:init()
             local ball = Registry.createItem("light/ball_of_junk", self)
             new_inventory:addItemTo("items", 1, ball)
         else
-            for _,base_storage in pairs(self.storages) do
-                local storage = Utils.copy(base_storage)
-                for i = 1, storage.max do
-                    local item = storage[i]
-                    if item then
-                        --item.dark_item = item
-                        item.dark_location = {storage = storage.id, index = i}
-        
-                        new_inventory:addItemTo("dark", item)
-        
-                        self:removeItem(item)
-                    end
-                end
-            end
+            MagicalGlassLib.dark_inventory = Utils.copy(self)
         end
     
         new_inventory.storage_enabled = was_storage_enabled
@@ -650,24 +650,11 @@ function lib:init()
         return new_inventory
     end)
 
-    Utils.hook(LightInventory, "clear", function(orig, self)
-        LightInventory.__super.clear(self)
-
-        self.storages = {
-            ["items"] = {id = "items", max = 8,   sorted = true,  name = "INVENTORY",  fallback = "box_a"},
-            ["box_a"] = {id = "box_a", max = 10,  sorted = true,  name = "BOX",        fallback = "box_b"},
-            ["box_b"] = {id = "box_b", max = 10,  sorted = true,  name = "BOX",        fallback = nil    },
-            ["dark"]  = {id = "dark",  max = 144, sorted = false, name = "DARK ITEMs", fallback = nil    }
-        }
-    
-        Kristal.callEvent("createLightInventory", self)
-    end)
-
     Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
         if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
             return orig(self)
         else
-            return Game.inventory:getStorage("dark")
+            return MagicalGlassLib.dark_inventory
         end
     end)
 
@@ -1089,6 +1076,26 @@ function lib:init()
     end)
 
     Utils.hook(Item, "onActionSelect", function(orig, self, battler) end)
+
+    Utils.hook(Item, "save", function(orig, self)
+        local saved_dark_item = self.dark_item
+        local saved_light_item = self.light_item
+        if isClass(self.dark_item) then saved_dark_item = self.dark_item:save() end
+        if isClass(self.light_item) then saved_light_item = self.light_item:save() end
+
+        local data = {
+            id = self.id,
+            flags = self.flags,
+
+            dark_item = saved_dark_item,
+            dark_location = self.dark_location,
+
+            light_item = saved_light_item,
+            light_location = self.light_location,
+        }
+        self:onSave(data)
+        return data
+    end)
 
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
@@ -2190,11 +2197,13 @@ function lib:init()
                 Draw.setColor(PALETTE["world_text"])
             end
         
-            local data      = self.saved_file               or {}
-            local name      = data.name                     or "EMPTY"
-            local level     = data.lw_lv                    or 0
-            local playtime  = data.playtime                 or 0
-            local room_name = data.room_name                or "--"
+            local data      = self.saved_file        or {}
+            local mg        = data.magical_glass     or {}
+
+            local name      = data.name              or "EMPTY"
+            local level     = mg.lw_save_lv          or 0
+            local playtime  = data.playtime          or 0
+            local room_name = data.room_name         or "--"
         
             love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
             love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)

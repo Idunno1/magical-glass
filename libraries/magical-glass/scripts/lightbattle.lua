@@ -180,7 +180,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, math.min(3, #Game.party) do
+    for i = 1, 1 do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -1911,12 +1911,10 @@ function LightBattle:pushAction(action_type, target, data, character_id, extra)
 
     if self.current_selecting == character_id then
         if current_state == self:getState() then
-            self:startProcessing()
-            --self:nextParty()
+            self:nextParty()
         elseif self.cutscene then
             self.cutscene:after(function()
-                self:startProcessing()
-                --self:nextParty()
+                self:nextParty()
             end)
         end
     end
@@ -2781,8 +2779,7 @@ function LightBattle:onKeyPressed(key)
             elseif self.state_reason == "ITEM" then
                 self:pushAction("ITEM", self.enemies[self.selected_enemy], self.selected_item)
             else
-                self:startProcessing()
-                --self:nextParty()
+                self:nextParty()
             end
             return
         end
@@ -2841,8 +2838,7 @@ function LightBattle:onKeyPressed(key)
             elseif self.state_reason == "ITEM" then
                 self:pushAction("ITEM", self.party[self.current_menu_y], self.selected_item)
             else
-                self:startProcessing()
-                --self:nextParty()
+                self:nextParty()
             end
             return
         end
