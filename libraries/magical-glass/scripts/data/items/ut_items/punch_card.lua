@@ -49,7 +49,10 @@ function item:getATIncrease(target)
 end
 
 function item:onWorldUse(target)
-    Game.world:openMenu(ImageViewer("world/punchcard"))
+    Game.world:closeMenu()
+    Game.world.timer:after(1/30, function()
+        Game.world:openMenu(ImageViewer("world/punchcard"))
+    end)
     return false
 end
 

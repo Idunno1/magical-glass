@@ -61,6 +61,14 @@ function Froggit:init()
     self.damage_offset = {0, -65}
 end
 
+function Froggit:getMoney()
+    if self.health >= self.max_health and self.mercy >= 100 then
+        return self.money + 2
+    else
+        return self.money
+    end
+end
+
 function Froggit:selectWave()
     local waves = self:getNextWaves()
 
