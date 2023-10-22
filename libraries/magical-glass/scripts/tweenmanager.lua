@@ -30,9 +30,9 @@ function TweenManager.updateTweens()
                 tween.object[prop] = Ease[tween.easing](math.min(tween.progress, tween.time), tween.object[prop], value - tween.object[prop], tween.time)
             end
 
-            if tween.progress > tween.time + 1 then
+            if tween.progress > tween.time then
                 tween.done = true
-                tween.progress = tween.time + 1
+                tween.progress = tween.time
                 Utils.removeFromTable(TweenManager.__TWEENS, tween)
             end
 
