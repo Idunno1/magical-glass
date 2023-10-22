@@ -21,7 +21,7 @@ end
 function Dummy:onBattleInit()
     if self:getFlag("deltarune") then
         local fuck = Game.battle.enemies[1]:getAct("deltarune")
-        Game.battle.tension_bar.visible = true
+        Game.battle.tension = true
         self.can_defend = true
         self.can_flee = false
         fuck.name = "undertale"

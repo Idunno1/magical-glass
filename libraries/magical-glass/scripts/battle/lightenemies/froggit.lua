@@ -19,6 +19,8 @@ function Froggit:init()
     self.money = 2
     self.experience = 3
 
+    self.spare_percentage = 0
+
     -- The Speech bubble offset
     self.dialogue_offset = {20, 0}
 
@@ -104,6 +106,13 @@ function Froggit:onAct(battler, name)
     -- If the act is none of the above, run the base onAct function
     -- (this handles the Check act)
     return super:onAct(self, battler, name)
+end
+
+function Froggit:onHurt(amount, battler)
+    super.onHurt(self, amount, battler)
+    if self.health < 5 then
+        self.mercy = 100
+    end
 end
 
 function Froggit:onDefeat(damage, battler)

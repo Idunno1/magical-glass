@@ -54,7 +54,9 @@ function LightEnemyBattler:init(actor, use_overlay)
 
     self.become_tired = false
     self.tired_percentage = 0.5
-    self.low_health_percentage = 0.5
+
+    self.low_health_percentage = 0.1
+    self.spare_percentage = 0.1
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -597,6 +599,10 @@ function LightEnemyBattler:onHurt(damage, battler)
 
     if self.become_tired and self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
+    end
+
+    if self.health <= (self.max_health * self.spare_percentage) then
+        self.mercy = 100
     end
 end
 

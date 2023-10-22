@@ -14,7 +14,7 @@ function Dummy:init()
     -- Enemy attack (determines bullet damage)
     self.attack = 5
     -- Enemy defense (usually 0)
-    self.defense = 999
+    self.defense = 0
     -- Enemy reward
     self.money = 69
     self.experience = 1
