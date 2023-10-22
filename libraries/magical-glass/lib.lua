@@ -2222,15 +2222,11 @@ function lib:init()
         end
     end)
 
-    Utils.hook(Spell, "onStart", function(orig, self, user, target)
-        if Game.battle.light then
-            local result = self:onLightCast(user, target)
-            Game.battle:battleText(self:getLightCastMessage(user, target))
-            if result or result == nil then
-                Game.battle:finishActionBy(user)
-            end
-        else
-            orig(self, user, target)
+    Utils.hook(Spell, "onLightStart", function(orig, self, user, target)
+        local result = self:onLightCast(user, target)
+        Game.battle:battleText(self:getLightCastMessage(user, target))
+        if result or result == nil then
+            Game.battle:finishActionBy(user)
         end
     end)
 
@@ -2238,42 +2234,6 @@ function lib:init()
 
     Utils.hook(Spell, "getLightCastMessage", function(orig, self, user, target)
         return "* "..user.chara:getNameOrYou().." cast "..self:getName().."."
-    end)
-
-    Utils.hook(Spell, "getHealMessage", function(orig, self, user, target)
-        local amount = self.amount
-        local char_maxed
-        local enemy_maxed
-        if self.target == "ally" then
-            char_maxed = target.chara:getHealth() >= target.chara:getStat("health")
-        elseif self.target == "enemy" then
-            enemy_maxed = target.health >= target.max_health
-        end
-        local message = ""
-        if self.target == "ally" then
-            if target.chara.id == Game.battle.party[1].chara.id and char_maxed then
-                message = "* Your HP was maxed out."
-            elseif char_maxed then
-                message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
-            else
-                message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
-            end
-        elseif self.target == "party" then
-            if #Game.party > 1 then
-                message = "* Everyone recovered " .. amount .. " HP."
-            else
-                message = "* You recovered " .. amount .. " HP."
-            end
-        elseif self.target == "enemy" then
-            if enemy_maxed then
-                message = "* " .. target.name .. "'s HP was maxed out."
-            else
-                message = "* " .. target.name .. " recovered " .. amount .. " HP."
-            end
-        elseif self.target == "enemies" then
-            message = "* The enemies all recovered " .. amount .. " HP."
-        end
-        return message
     end)
 
     Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)

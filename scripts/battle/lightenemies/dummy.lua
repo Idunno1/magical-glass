@@ -92,8 +92,7 @@ function Dummy:onAct(battler, name)
         Game.battle.encounter:setFlag("deltarune", true)
         Game.battle.encounter.can_defend = true
         Game.battle.encounter.can_flee = false
-        Game.battle.soul.graze_collider.collidable = true
-        Game.battle.tension_bar.visible = true
+        Game.battle.tension = true
         return "* deltrarune"
 
     elseif name == "undertale" then
@@ -102,8 +101,7 @@ function Dummy:onAct(battler, name)
         Game.battle.encounter:setFlag("deltarune", false)
         Game.battle.encounter.can_defend = false
         Game.battle.encounter.can_flee = true
-        Game.battle.soul.graze_collider.collidable = false
-        Game.battle.tension_bar.visible = false
+        Game.battle.tension = true
         return "* udnertal"
 
     elseif name == "Attack" then

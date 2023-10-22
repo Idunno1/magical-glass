@@ -90,6 +90,10 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.show_mercy = true
 end
 
+function LightEnemyBattler:getMoney()
+    return self.money
+end
+
 function LightEnemyBattler:toggleOverlay(overlay, reset)
     if overlay == nil then
         overlay = self.sprite.visible
@@ -762,7 +766,7 @@ end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"
-    Game.battle.money = Game.battle.money + self.money
+    Game.battle.money = Game.battle.money + self:getMoney()
 
     if violent then
         Game.battle.used_violence = true

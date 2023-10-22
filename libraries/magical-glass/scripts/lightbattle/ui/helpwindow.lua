@@ -3,6 +3,13 @@ local HelpWindow, super = Class(Object)
 function HelpWindow:init(x, y)
     super.init(self, x, y)
 
+    self.hide_states = {
+        "ENEMYDIALOGUE",
+        "DEFENDINGBEGIN",
+        "DEFENDING",
+        "DEFENDINGEND"
+    }
+
     self.showing = false
 
     self.box_fill = Rectangle(0, 0, 560, 45)
@@ -23,6 +30,18 @@ function HelpWindow:init(x, y)
 end
 
 function HelpWindow:update()
+    if Utils.containsValue(self.hide_states, Game.battle.state) then
+        self.box_fill.visible = false
+        self.box_line.visible = false
+        self.description_text.visible = false
+        self.cost_text.visible = false
+    else
+        self.box_fill.visible = true
+        self.box_line.visible = true
+        self.description_text.visible = true
+        self.cost_text.visible = true
+    end
+
     if Game.battle.state == "MENUSELECT" and #Game.battle.menu_items > 0 then
         local item = Game.battle.menu_items[Game.battle:getItemIndex()]
         if (#item.description > 0 or (item.tp and item.tp > 0)) then

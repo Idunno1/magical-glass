@@ -18,6 +18,8 @@ function LightBattle:init()
 
     self.post_battletext_state = "ACTIONSELECT"
 
+    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp")
+
     self.fader = Fader()
     self.fader.layer = 1000
     self.fader.alpha = 1
@@ -239,7 +241,7 @@ function LightBattle:postInit(state, encounter)
     self:addChild(self.battle_ui)
 
     self.tension_bar = LightTensionBar(29, 53, true)
-    if not Kristal.getLibConfig("magical-glass", "light_battle_tp") then
+    if self.tension then
         self.tension_bar.visible = false
     end
     self:addChild(self.tension_bar)
@@ -622,7 +624,7 @@ function LightBattle:processAction(action)
         self.battle_ui:clearEncounterText()
 
         -- The spell itself handles the animation and finishing
-        action.data:onStart(battler, action.target)
+        action.data:onLightStart(battler, action.target)
 
         return false
     elseif action.action == "ITEM" then
@@ -1084,7 +1086,9 @@ function LightBattle:onStateChange(old,new)
 
         end
 
-        if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
+        self.money = self.encounter:getVictoryMoney(self.money) or self.money
+
+        if self.tension_bar.visible then
             self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
         end
 
@@ -1094,14 +1098,11 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
-        local win_text 
-
         self.money = math.floor(self.money)
 
-        self.money = self.encounter:getVictoryMoney(self.money) or self.money
         self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
 
-        win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency") .. "."
+        local win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency") .. "."
 
         Game.lw_money = Game.lw_money + self.money
 
@@ -1542,6 +1543,8 @@ function LightBattle:sortChildren()
 end
 
 function LightBattle:update()
+    self.tension_bar.visible = self.tension
+
     if self.cutscene then
         if not self.cutscene.ended then
             self.cutscene:update()
@@ -2589,7 +2592,7 @@ function LightBattle:onKeyPressed(key)
             if self.battle_ui.help_window then
                 self.battle_ui.help_window:setTension(0)
             end
-            
+
             local menu_item = self.menu_items[self:getItemIndex()]
             local can_select = self:canSelectMenuItem(menu_item)
             if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end

@@ -39,7 +39,7 @@ function LightSoul:init(x, y, color)
     self:addChild(self.graze_sprite)
 
     self.graze_collider = CircleCollider(self, 0, 0, 25 * self.graze_size_factor)
-    self.graze_collider.collidable = Kristal.getLibConfig("magical-glass", "light_battle_tp")
+    self.graze_collider.collidable = Game.battle.tension
 
     self.original_x = x
     self.original_y = y
@@ -369,6 +369,8 @@ function LightSoul:update()
         end
         return
     end
+
+    self.graze_collider.collidable = Game.battle.tension
 
     -- Input movement
     if self.can_move then
