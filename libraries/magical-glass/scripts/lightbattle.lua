@@ -821,6 +821,10 @@ function LightBattle:onStateChange(old,new)
             party.chara:onActionSelect(party, false)
             self.encounter:onCharacterTurn(party, false)
         end
+
+        if self.battle_ui.help_window then
+            self.battle_ui.help_window:toggleVisibility(true)
+        end
     elseif new == "BUTNOBODYCAME" then
         if not self.soul then
             self:spawnSoul()
@@ -934,6 +938,10 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "ENEMYDIALOGUE" then
+        if self.battle_ui.help_window then
+            self.battle_ui.help_window:toggleVisibility(false)
+        end
+
         self.current_selecting = 0
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
