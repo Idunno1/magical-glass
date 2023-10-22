@@ -26,14 +26,14 @@ function TweenManager.updateTweens()
         if not tween.done then
             tween.progress = tween.progress + DT
 
-            for prop, value in pairs(tween.properties) do
-                tween.object[prop] = Ease[tween.easing](math.min(tween.progress, tween.time), tween.object[prop], value - tween.object[prop], tween.time)
+            if tween.progress > tween.time/30 then
+                tween.done = true
+                tween.progress = tween.time/30
+                Utils.removeFromTable(TweenManager.__TWEENS, tween)
             end
 
-            if tween.progress > tween.time then
-                tween.done = true
-                tween.progress = tween.time
-                Utils.removeFromTable(TweenManager.__TWEENS, tween)
+            for prop, value in pairs(tween.properties) do
+                tween.object[prop] = Ease[tween.easing](tween.progress, tween.object[prop], value - tween.object[prop], tween.time)
             end
 
         end

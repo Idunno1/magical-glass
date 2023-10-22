@@ -42,7 +42,7 @@ function HelpWindow:update()
         if (#item.description > 0 or (item.tp and item.tp > 0)) then
             if not self.showing then
                 self.showing = true
-                TweenManager.tween(self, {y = 237}, 6, "outExpo")
+                TweenManager.tween(self, {y = 237}, 12, "outExpo")
                 if Game.battle.tension_bar then
                     TweenManager.tween(Game.battle.tension_bar, {y = 26}, 8, "outExpo")
                 end
@@ -50,7 +50,7 @@ function HelpWindow:update()
         else
             if self.showing then
                 self.showing = false
-                TweenManager.tween(self, {y = 280}, 6, "outExpo")
+                TweenManager.tween(self, {y = 280}, 12, "outExpo")
                 if Game.battle.tension_bar then
                     TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
                 end
@@ -59,7 +59,7 @@ function HelpWindow:update()
     else
         if self.showing then
             self.showing = false
-            TweenManager.tween(self, {y = 280}, 6, "outExpo")
+            TweenManager.tween(self, {y = 280}, 12, "outExpo")
             if Game.battle.tension_bar then
                 TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
             end
