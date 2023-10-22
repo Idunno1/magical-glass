@@ -1999,12 +1999,14 @@ function lib:init()
 
         local old_selecting = self.party_selecting
     
-        if Input.pressed("right") then
-            self.party_selecting = self.party_selecting + 1
-        end
+        if not OVERLAY_OPEN or TextInput.active then
+            if Input.pressed("right") then
+                self.party_selecting = self.party_selecting + 1
+            end
 
-        if Input.pressed("left") then
-            self.party_selecting = self.party_selecting - 1
+            if Input.pressed("left") then
+                self.party_selecting = self.party_selecting - 1
+            end
         end
 
         if self.party_selecting > #Game.party then
@@ -2020,7 +2022,7 @@ function lib:init()
             self.ui_move:play()
         end
 
-        if Input.pressed("cancel") then
+        if Input.pressed("cancel") and (not OVERLAY_OPEN or TextInput.active) then
             self.ui_move:stop()
             self.ui_move:play()
             Game.world.menu:closeBox()
@@ -2037,7 +2039,7 @@ function lib:init()
         if self.style == "magical_glass" and #Game.party > 1 then
             local name_offset = 0
             for _,chara in ipairs(Game.party) do
-                love.graphics.printf(chara:getName(), name_offset - 18, 8, 100, "center")
+                love.graphics.printf(chara:getName(), (name_offset - 18) + (#chara:getName() - 4) * 7, 8, 100, "center")
                 name_offset = name_offset + 110
             end
         else
@@ -2067,7 +2069,7 @@ function lib:init()
 
             if #Game.party > 1 then
                 Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, (110 * (self.party_selecting - 1)) + 22, -8, 0, 2, 2)
+                Draw.draw(self.heart_sprite, (110 * (self.party_selecting - 1)) + (#chara:getName() * 6) - (self.party_selecting - 1), -8, 0, 2, 2)
             end
         end
 
