@@ -5,15 +5,15 @@ function LightActionButton:init(type, battler, x, y)
 
     self.type = type
     self.battler = battler
-
-    self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
-    self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
-    self.special_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_a")
     
-    if type == "spell" and Kristal.getLibConfig("magical-glass", "spell_button_style") == "deltatraveler" then
+    if Kristal.getLibConfig("magical-glass", "action_button_style") == "deltatraveler" and Assets.getTexture("ui/lightbattle/btn/alt/" .. type) then
         self.tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type)
         self.hover_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_h")
         self.special_tex = Assets.getTexture("ui/lightbattle/btn/alt/" .. type .. "_a")
+    else
+        self.tex = Assets.getTexture("ui/lightbattle/btn/" .. type)
+        self.hover_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_h")
+        self.special_tex = Assets.getTexture("ui/lightbattle/btn/" .. type .. "_a")
     end
 
     self.width = self.tex:getWidth()

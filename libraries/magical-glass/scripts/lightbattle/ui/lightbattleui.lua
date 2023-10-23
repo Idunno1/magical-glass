@@ -53,22 +53,6 @@ function LightBattleUI:init()
     
     self.attacking = false
 
---[[     self.menuselect_options = {}
-    for i = 1, 6 do
-        local item = Text("")
-        item.font = "main_mono"
-        table.insert(self.menuselect_options, item)
-        Game.battle.arena:addChild(item)
-    end
-
-    self.enemyselect_options = {}
-    for i = 1, 3 do
-        local item = Text("")
-        item.font = "main_mono"
-        table.insert(self.enemyselect_options, item)
-        Game.battle.arena:addChild(item)
-    end ]]
-
     self.action_box_ut = LightActionBoxSingle(20, 0, 1, Game.battle.party[1])
     self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
     self.action_box_ut:move(self:getRelativePos())
@@ -94,20 +78,7 @@ function LightBattleUI:clearEncounterText()
     self.encounter_text:setAdvance(true)
     self.encounter_text:setAuto(false)
     self.encounter_text:setText("")
-    --self:clearMenuText()
 end
-
---[[ function LightBattleUI:clearMenuText()
-    for _,option in ipairs(self.menuselect_options) do
-        option:setText("")
-        option:setPosition(0, 0)
-    end
-
-    for _,option in ipairs(self.enemyselect_options) do
-        option:setText("")
-        option:setPosition(0, 0)
-    end
-end ]]
 
 function LightBattleUI:beginAttack()
     Game.battle.current_selecting = 0

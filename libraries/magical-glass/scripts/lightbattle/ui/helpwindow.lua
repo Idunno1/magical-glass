@@ -37,31 +37,32 @@ function HelpWindow:toggleVisibility(value)
 end
 
 function HelpWindow:update()
-    if Game.battle.state == "MENUSELECT" and #Game.battle.menu_items > 0 then
-        local item = Game.battle.menu_items[Game.battle:getItemIndex()]
-        if (#item.description > 0 or (item.tp and item.tp > 0)) then
+    local battle = Game.battle
+    if (battle.state == "MENUSELECT" and #battle.menu_items > 0) or battle.state == "PARTYSELECT" then
+        local item = battle.state == "MENUSELECT" and Game.battle.menu_items[Game.battle:getItemIndex()]
+        if battle.state == "PARTYSELECT" or (#item.description > 0 or (item.tp and item.tp > 0)) then
             if not self.showing then
                 self.showing = true
-                TweenManager.tween(self, {y = 237}, 12, "outExpo")
+                TweenManager.tween(self, {y = 237}, 6, "outCubic")
                 if Game.battle.tension_bar then
-                    TweenManager.tween(Game.battle.tension_bar, {y = 26}, 8, "outExpo")
+                    TweenManager.tween(Game.battle.tension_bar, {y = 26}, 6, "outCubic")
                 end
             end
         else
             if self.showing then
                 self.showing = false
-                TweenManager.tween(self, {y = 280}, 12, "outExpo")
+                TweenManager.tween(self, {y = 280}, 6, "outCubic")
                 if Game.battle.tension_bar then
-                    TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
+                    TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
                 end
             end
         end
     else
         if self.showing then
             self.showing = false
-            TweenManager.tween(self, {y = 280}, 12, "outExpo")
+            TweenManager.tween(self, {y = 280}, 6, "outCubic")
             if Game.battle.tension_bar then
-                TweenManager.tween(Game.battle.tension_bar, {y = 53}, 8, "outExpo")
+                TweenManager.tween(Game.battle.tension_bar, {y = 53}, 6, "outCubic")
             end
         end
     end

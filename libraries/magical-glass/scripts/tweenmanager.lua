@@ -6,10 +6,11 @@ function TweenManager.tween(obj, prop, time, ease)
     local tween = {}
     tween.object = obj
     tween.properties = prop
+    tween.init_properties = Utils.copy(tween.object)
     tween.time = time
     tween.easing = ease or "linear"
+    tween.speed = speed or 1
 
-    tween.done = false
     tween.progress = 0
 
     for _,itween in ipairs(TweenManager.__TWEENS) do
@@ -23,20 +24,18 @@ end
 
 function TweenManager.updateTweens()
     for _,tween in ipairs(TweenManager.__TWEENS) do
-        if not tween.done then
-            tween.progress = tween.progress + DT
+        tween.progress = tween.progress + DTMULT
 
-            if tween.progress > tween.time/30 then
-                tween.done = true
-                tween.progress = tween.time/30
+        for prop, value in pairs(tween.properties) do
+            tween.object[prop] = (Ease[tween.easing](tween.progress, tween.init_properties[prop], value - tween.init_properties[prop], tween.time))
+
+            if tween.progress >= tween.time then
+                tween.progress = tween.time
                 Utils.removeFromTable(TweenManager.__TWEENS, tween)
             end
 
-            for prop, value in pairs(tween.properties) do
-                tween.object[prop] = Ease[tween.easing](tween.progress, tween.object[prop], value - tween.object[prop], tween.time)
-            end
-
         end
+
     end
 end
 

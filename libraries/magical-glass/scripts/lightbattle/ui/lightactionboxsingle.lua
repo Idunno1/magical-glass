@@ -144,11 +144,7 @@ function LightActionBoxSingle:drawStatusStripStory()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-
-    if max < 10 then
-        max = "0" .. tostring(max)
-    end
-
+    
     local size = max * 1.25
 
     local limit = self:getHPGaugeLengthCap()
