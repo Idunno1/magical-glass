@@ -7,7 +7,7 @@
         "Just Another Random User",
         "FireRainV"
     ],
-    "version": "v1.1.1",
+    "version": "v1.1.1-dev",
     "engineVer": "v0.9.0-dev",
 
     "config": {
@@ -62,8 +62,13 @@
         // or right to select a character.
         // (This option supports any amount of party members.)
         //
+        // "undertale"
+        // Prints the current member's name and portrait, and an indicator similar to the one from
+        // Deltatraveler on top of the portrait which functions the same way but has a different design choice.
+        // (This option supports any amount of party members.)
+        //
         /////
-        "light_stat_menu_style": "magical_glass",
+        "light_stat_menu_style": "undertale",
 
         ///// UNDERTALE stat display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.

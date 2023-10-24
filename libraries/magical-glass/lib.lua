@@ -1999,6 +1999,9 @@ function lib:init()
         self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
         self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
         self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
+
+        self.rightpressed = false
+        self.leftpressed = false
     end)
 
     Utils.hook(LightStatMenu, "update", function(orig, self)
@@ -2009,10 +2012,22 @@ function lib:init()
         if not OVERLAY_OPEN or TextInput.active then
             if Input.pressed("right") then
                 self.party_selecting = self.party_selecting + 1
+                if self.rightpressed ~= true then
+                    self.rightpressed = true
+                    Game.stage.timer:after(0.1, function()
+                        self.rightpressed = false
+                    end)
+                end
             end
 
             if Input.pressed("left") then
                 self.party_selecting = self.party_selecting - 1
+                if self.leftpressed ~= true then
+                    self.leftpressed = true
+                    Game.stage.timer:after(0.1, function()
+                        self.leftpressed = false
+                    end)
+                end
             end
         end
 
@@ -2077,6 +2092,37 @@ function lib:init()
             if #Game.party > 1 then
                 Draw.setColor(Game:getSoulColor())
                 Draw.draw(self.heart_sprite, (110 * (self.party_selecting - 1)) + (#chara:getName() * 6) - (self.party_selecting - 1), -8, 0, 2, 2)
+            end
+        elseif self.style == "undertale" then
+            local ox, oy = chara.actor:getPortraitOffset()
+            if chara:getLightPortrait() then
+                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
+            end
+
+            if #Game.party > 1 then
+                Draw.setColor(Game:getSoulColor())
+                Draw.draw(self.heart_sprite, 212, 8 + 4, 0, 2, 2)
+                
+                --if love.keyboard.isDown("right") then
+                if self.rightpressed == true then
+                    Draw.setColor({1,1,0})
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266 + 4, 8, 0, 2, 2)
+                else
+                    Draw.setColor(PALETTE["world_text"])
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266, 8, 0, 2, 2)
+                end
+
+                --if love.keyboard.isDown("left") then
+                if self.leftpressed == true then
+                    Draw.setColor({1,1,0})
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 8, 0, 2, 2)
+                else
+                    Draw.setColor(PALETTE["world_text"])
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 8, 0, 2, 2)
+                end
+                
+                --Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 120, 0, 2, 2)
+                --Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266, 120, 0, 2, 2)
             end
         end
 
