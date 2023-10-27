@@ -10,9 +10,20 @@ function TweenManager.tween(obj, prop, time, ease)
     tween.init_properties = Utils.copy(tween.object)
     tween.time = time
     tween.easing = ease or "linear"
+    if not Ease[tween.easing] then error(tween.easing.." is not a valid ease curve") end
 
     tween.progress = 0
     tween.props_to_remove = {}
+
+    for _,itween in ipairs(TweenManager.__TWEENS) do
+        if itween.object == tween.object then
+            for iprop in pairs(tween.properties) do
+                if itween.properties[iprop] then
+                    table.insert(itween.props_to_remove, iprop)
+                end
+            end
+        end
+    end
 
     table.insert(TweenManager.__TWEENS, tween)
 end
@@ -20,18 +31,15 @@ end
 function TweenManager.updateTweens()
     for _,tween in ipairs(TweenManager.__TWEENS) do
         tween.progress = tween.progress + DTMULT
-
         for prop, value in pairs(tween.properties) do
-            tween.object[prop] = (Ease[tween.easing](tween.progress, tween.init_properties[prop], value - tween.init_properties[prop], tween.time))
-
-            if tween.progress >= tween.time - 1 then
-                tween.progress = tween.time - 1
-                tween.object[prop] = value
+            if tween.progress >= tween.time then
                 table.insert(tween.props_to_remove, prop)
+            else
+                local t = (tween.progress) / (tween.time)
+                tween.object[prop] = Utils.ease(tween.init_properties[prop], value, t, tween.easing)
             end
 
         end
-
     end
 end
 
