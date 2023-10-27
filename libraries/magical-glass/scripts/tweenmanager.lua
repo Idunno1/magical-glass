@@ -11,6 +11,7 @@ function TweenManager.tween(obj, prop, time, ease)
     tween.time = time
     tween.easing = ease or "linear"
     if not Ease[tween.easing] then error(tween.easing.." is not a valid ease curve") end
+    tween.callback = callback
 
     tween.progress = 0
     tween.props_to_remove = {}
@@ -63,6 +64,10 @@ function TweenManager.updateTweensToRemove()
     end
 
     for _,tween in ipairs(TweenManager.__TWEENS_TO_REMOVE) do
+        if tween.callback then
+            tween.callback()
+            tween.callback = nil
+        end
         Utils.removeFromTable(TweenManager.__TWEENS, tween)
     end
 end
