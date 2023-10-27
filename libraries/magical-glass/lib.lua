@@ -1908,7 +1908,7 @@ function lib:init()
         if self.light_dmg_color and type(self.light_dmg_color) == "table" then
             return self.light_dmg_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
@@ -1916,7 +1916,7 @@ function lib:init()
         if self.light_miss_color and type(self.light_miss_color) == "table" then
             return self.light_miss_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
@@ -1924,7 +1924,7 @@ function lib:init()
         if self.light_attack_color and type(self.light_attack_color) == "table" then
             return self.light_attack_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
@@ -1932,7 +1932,7 @@ function lib:init()
         if self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
             return self.light_multibolt_attack_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
@@ -1940,7 +1940,7 @@ function lib:init()
         if self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
             return self.light_attack_bar_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
@@ -1948,7 +1948,7 @@ function lib:init()
         if self.light_xact_color and type(self.light_xact_color) == "table" then
             return self.light_xact_color
         else
-            return self.color
+            return self.light_color
         end
     end)
 
