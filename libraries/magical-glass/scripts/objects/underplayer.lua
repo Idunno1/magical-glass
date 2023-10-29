@@ -4,7 +4,7 @@ function UnderPlayer:init(chara, x, y)
     super.init(self, chara, x, y)
 
     self.force_walk = true
-    self.walk_speed = 6
+    self.walk_speed = 5
 
 end
 
@@ -61,7 +61,12 @@ function UnderPlayer:handleMovement()
         end
     end
 
-    self.sprite.facing = self.facing
+    if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
+        self.sprite.facing = "up"
+    else
+        self.sprite.facing = self.facing
+    end
+    --self.sprite.facing = self.facing
 
     self.moving_x = walk_x
     self.moving_y = walk_y
@@ -157,6 +162,13 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
                         self[type] = self[type] + 6
                         self.facing = "down"
                         self.sprite.facing = self.facing
+                        --[[
+                        if self.facing == "down" then
+                            self.sprite.facing = "down"
+                        else
+                            self.sprite.facing = "up"
+                        end
+                        --]]
                     end
                 end
 
