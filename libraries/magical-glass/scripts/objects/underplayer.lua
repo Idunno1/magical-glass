@@ -152,10 +152,12 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
                 self[type] = last_a
                 self[other] = last_b
 
-                if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
-                    self[type] = self[type] + 6
-                    self.facing = "down"
-                    self.sprite.facing = self.facing
+                if not target:includes("Event") then
+                    if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
+                        self[type] = self[type] + 6
+                        self.facing = "down"
+                        self.sprite.facing = self.facing
+                    end
                 end
 
                 if target and target.onCollide then
