@@ -118,6 +118,8 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
+        self.undertale_movement = false
+
         self.use_light_battler_sprite = true
         self.light_battle_width = 0
         self.light_battle_height = 0
@@ -2173,6 +2175,57 @@ function lib:init()
 
     Utils.hook(World, "registerCall", function(orig, self, name, scene, sound)
         table.insert(self.calls, {name, scene, sound})
+    end)
+
+    Utils.hook(World, "spawnPlayer", function(orig, self, ...)
+        local args = {...}
+
+        local x, y = 0, 0
+        local chara = self.player and self.player.actor
+        if #args > 0 then
+            if type(args[1]) == "number" then
+                x, y = args[1], args[2]
+                chara = args[3] or chara
+            elseif type(args[1]) == "string" then
+                x, y = self.map:getMarker(args[1])
+                chara = args[2] or chara
+            end
+        end
+
+        if type(chara) == "string" then
+            chara = Registry.createActor(chara)
+        end
+
+        local facing = "down"
+
+        if self.player then
+            facing = self.player.facing
+            self:removeChild(self.player)
+        end
+        if self.soul then
+            self:removeChild(self.soul)
+        end
+
+        if --[[ chara.undertale_movement ]] true then
+            self.player = UnderPlayer(chara, x, y)
+        else
+            self.player = Player(chara, x, y)
+        end
+        self.player.layer = self.map.object_layer
+        self.player:setFacing(facing)
+        self:addChild(self.player)
+
+        self.soul = OverworldSoul(self.player:getRelativePos(self.player.actor:getSoulOffset()))
+        self.soul:setColor(Game:getSoulColor())
+        self.soul.layer = WORLD_LAYERS["soul"]
+        self:addChild(self.soul)
+
+        if self.camera.attached_x then
+            self.camera:setPosition(self.player.x, self.camera.y)
+        end
+        if self.camera.attached_y then
+            self.camera:setPosition(self.camera.x, self.player.y - (self.player.height * 2)/2)
+        end
     end)
 
     Utils.hook(LightCellMenu, "runCall", function(orig, self, call)
