@@ -57,7 +57,7 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
         amount = amount + 1
     end ]]
 
-    for i = 0, max_hp do
+    for i = 0, math.min(max_hp, 99) do
         if i > 20 and i % 10 == 0 then
             amount = amount + 1
         end
