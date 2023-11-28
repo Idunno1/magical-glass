@@ -326,7 +326,7 @@ function LightBattleUI:drawState()
         local enemy_counter = {}
         local enemy_counter_init = {}
         for _,enemy in pairs(enemies) do
-            enemy_counter[enemy.id] = 0
+            enemy_counter[enemy.id] = page_offset
             enemy_counter_init[enemy.id] = 0
         end
         for _,enemy in pairs(enemies) do
@@ -346,8 +346,12 @@ function LightBattleUI:drawState()
             local name = "* " .. enemy.name
             if not enemy.done_state then
                 enemy_counter[enemy.id] = enemy_counter[enemy.id] + 1
-                if not enemy.index and letters[enemy_counter[enemy.id]] then
-                    enemy.index = letters[enemy_counter[enemy.id]]
+                if not enemy.index and enemy_counter[enemy.id] <= math.pow(#letters, 2) then
+                    if enemy_counter[enemy.id] > #letters then
+                        enemy.index = letters[math.floor((enemy_counter[enemy.id] - 1) / #letters)] .. letters[enemy_counter[enemy.id] - #letters * math.floor((enemy_counter[enemy.id] - 1) / #letters)]
+                    else
+                        enemy.index = letters[enemy_counter[enemy.id]]
+                    end
                 end
                 if enemy_counter_init[enemy.id] > 1 and enemy.index then
                     name = name .. " " .. enemy.index

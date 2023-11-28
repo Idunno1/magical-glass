@@ -10,7 +10,7 @@ function encounter:init()
     -- self:addEnemy("froggit", SCREEN_WIDTH/2 - 149, 246)
     -- self:addEnemy("froggit", SCREEN_WIDTH/2 + 55, 246)
     
-    for i = 1, 30 do
+    for i = 1, 100 do
         self:addEnemy("froggit", Utils.random(SCREEN_WIDTH), Utils.random(SCREEN_HEIGHT/2))
     end
 
