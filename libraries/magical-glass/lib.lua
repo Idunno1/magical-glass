@@ -2523,7 +2523,7 @@ function lib:changeSpareColor(color)
         lib.name_color = PALETTE["pink_spare"]
     elseif color == "white" then
         lib.name_color = COLORS.white
-    elseif type(color) == "table" then
+    else
         lib.name_color = color
     end
 end
