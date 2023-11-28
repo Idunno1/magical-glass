@@ -321,7 +321,18 @@ function LightBattleUI:drawState()
         end
 
         love.graphics.setFont(font_mono)
-
+        
+        local letters = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+        local enemy_counter = {}
+        local enemy_counter_init = {}
+        for _,enemy in pairs(enemies) do
+            enemy_counter[enemy.id] = 0
+            enemy_counter_init[enemy.id] = 0
+        end
+        for _,enemy in pairs(enemies) do
+            enemy_counter_init[enemy.id] = enemy_counter_init[enemy.id] + 1
+        end
+        
         for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
 
             local enemy = enemies[index]
@@ -333,27 +344,13 @@ function LightBattleUI:drawState()
             end
 
             local name = "* " .. enemy.name
-            if #Game.battle.enemies <= 3 then
-                if not enemy.done_state then
-                    if index == 1 and #Game.battle.enemies > 1 then
-                        if #Game.battle.enemies == 3 then
-                            if enemy.id == enemies[2].id or enemy.id == enemies[3].id then
-                                name = name .. " A"
-                            end
-                        else
-                            if enemy.id == enemies[2].id then
-                                name = name .. " A"
-                            end
-                        end
-                    elseif index == 2 and #Game.battle.enemies > 1 then
-                        if enemy.id == enemies[1].id then
-                            name = name .. " B"
-                        end
-                    elseif index == 3 and #Game.battle.enemies > 2 then
-                        if enemy.id == enemies[2].id then
-                            name = name .. " C"
-                        end
-                    end
+            if not enemy.done_state then
+                enemy_counter[enemy.id] = enemy_counter[enemy.id] + 1
+                if not enemy.index and letters[enemy_counter[enemy.id]] then
+                    enemy.index = letters[enemy_counter[enemy.id]]
+                end
+                if enemy_counter_init[enemy.id] > 1 and enemy.index then
+                    name = name .. " " .. enemy.index
                 end
             end
 
