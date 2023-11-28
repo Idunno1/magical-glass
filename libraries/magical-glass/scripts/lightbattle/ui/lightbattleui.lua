@@ -346,7 +346,7 @@ function LightBattleUI:drawState()
             local name = "* " .. enemy.name
             if not enemy.done_state then
                 enemy_counter[enemy.id] = enemy_counter[enemy.id] + 1
-                if not enemy.index and enemy_counter[enemy.id] <= math.pow(#letters, 2) then
+                if not enemy.index and enemy_counter[enemy.id] <= math.pow(#letters, 2) + #letters then
                     if enemy_counter[enemy.id] > #letters then
                         enemy.index = letters[math.floor((enemy_counter[enemy.id] - 1) / #letters)] .. letters[enemy_counter[enemy.id] - #letters * math.floor((enemy_counter[enemy.id] - 1) / #letters)]
                     else
