@@ -2145,7 +2145,13 @@ function lib:init()
         love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
         love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         local offset = 0
-        if self.always_show_magic or chara.lw_stats.magic > 0 then
+        local show_magic = false
+        for _,party in pairs(Game.party) do
+            if party.lw_stats.magic > 0 then
+                show_magic = true
+            end
+        end
+        if self.always_show_magic or show_magic then
             love.graphics.print("MG  ", 4, 228)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
             offset = 18
