@@ -2129,9 +2129,8 @@ function lib:init()
         end
 
         Draw.setColor(PALETTE["world_text"])
-        love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
-        love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
-    
+
+
         local exp_needed = math.max(0, chara:getLightEXPNeeded(chara:getLightLV() + 1) - chara:getLightEXP())
     
         local at = chara:getBaseStats()["attack"]
@@ -2142,8 +2141,6 @@ function lib:init()
             df = df - 10
         end
 
-        love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164)
-        love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196)
         local offset = 0
         local show_magic = false
         for _,party in pairs(Game.party) do
@@ -2152,10 +2149,14 @@ function lib:init()
             end
         end
         if self.always_show_magic or show_magic then
-            love.graphics.print("MG  ", 4, 228)
-            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228)
             offset = 18
+            love.graphics.print("MG  ", 4, 228 - offset)
+            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset)
         end
+        love.graphics.print("LV  "..chara:getLightLV(), 4, 68 - offset)
+        love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100 - offset)
+        love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164 - offset)
+        love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196 - offset)
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
@@ -2170,12 +2171,12 @@ function lib:init()
             armor_name = chara:getArmor(1):getEquipDisplayName() or chara:getArmor(1):getName()
         end
         
-        love.graphics.print("WEAPON: "..weapon_name, 4, 256 + offset)
-        love.graphics.print("ARMOR: "..armor_name, 4, 288 + offset)
+        love.graphics.print("WEAPON: "..weapon_name, 4, 256)
+        love.graphics.print("ARMOR: "..armor_name, 4, 288)
     
-        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328 + offset)
+        love.graphics.print(Game:getConfig("lightCurrency"):upper()..": "..Game.lw_money, 4, 328)
         if MagicalGlassLib.kills > 20 then
-            love.graphics.print("KILLS: "..MagicalGlassLib.kills, 172, 328 + offset)
+            love.graphics.print("KILLS: "..MagicalGlassLib.kills, 172, 328)
         end
     end)
 
@@ -2212,7 +2213,7 @@ function lib:init()
             self:removeChild(self.soul)
         end
 
-        if --[[ chara.undertale_movement ]] true then
+        if chara.undertale_movement == true then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)
