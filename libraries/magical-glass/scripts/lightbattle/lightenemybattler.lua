@@ -335,8 +335,8 @@ function LightEnemyBattler:addMercy(amount)
             src:setPitch(pitch)
 
             self:lightStatusMessage("mercy", amount)
-        elseif self.mercy >= 100 then
-            local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
+        elseif self.mercy == 0 then
+            local message = self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
             message:resetPhysics()
         end
     end
@@ -364,7 +364,9 @@ function LightEnemyBattler:onMercy(battler)
         self:spare()
         return true
     else
-        self:addMercy(self.spare_points)
+        if self.spare_points ~= 0 then
+            self:addMercy(self.spare_points)
+        end
         return false
     end
 end
