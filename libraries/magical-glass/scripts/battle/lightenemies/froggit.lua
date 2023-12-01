@@ -19,13 +19,8 @@ function Froggit:init()
     self.money = 2
     self.experience = 3
 
-    self.spare_percentage = 0
-
     -- The Speech bubble offset
     self.dialogue_offset = {20, 0}
-
-    -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
-    self.spare_points = 0
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
@@ -116,15 +111,7 @@ function Froggit:onAct(battler, name)
     return super:onAct(self, battler, name)
 end
 
-function Froggit:onHurt(amount, battler)
-    super.onHurt(self, amount, battler)
-    if self.health < 5 then
-        self.mercy = 100
-    end
-end
-
 function Froggit:onDefeat(damage, battler)
-    MagicalGlassLib.kills = MagicalGlassLib.kills + 1
     Game:setFlag("##test_kills", Game:getFlag("##test_kills", 0) + 1)
     super.onDefeat(self, damage, battler)
 end

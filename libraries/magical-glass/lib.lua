@@ -1839,17 +1839,7 @@ function lib:init()
             if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
                 Assets.stopAndPlaySound("levelup")
                 self:setLightLV(new_lv)
-
-                self.lw_stats = {
-                    health = (16 + (self:getLightLV() * 4)),
-                    attack = (8 + (self:getLightLV() * 2)),
-                    defense = (9 + math.ceil(self:getLightLV() / 4)),
-                    magic = self.lw_stats.magic or 0
-                }
-        
-                if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
-                    self.lw_stats.health = 99
-                end
+                self:lightLVStats()
             end
         end
     end)
@@ -1883,17 +1873,16 @@ function lib:init()
         else
             self.lw_exp = self:getLightEXPNeeded(level)
         end
-
+        self:lightLVStats()
+    end)
+    
+    Utils.hook(PartyMember, "lightLVStats", function(orig, self)
         self.lw_stats = {
-            health = (16 + (self:getLightLV() * 4)),
-            attack = (8 + (self:getLightLV() * 2)),
-            defense = (9 + math.ceil(self:getLightLV() / 4)),
-            magic = self.lw_stats.magic or 0
+            health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
+            attack = 8 + self:getLightLV() * 2,
+            defense = 9 + math.ceil(self:getLightLV() / 4),
+            magic = 0
         }
-
-        if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
-            self.lw_stats.health = 99
-        end
     end)
 
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
