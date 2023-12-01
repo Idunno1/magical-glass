@@ -2549,12 +2549,6 @@ function LightBattle:addMenuItem(tbl)
 end
 
 function LightBattle:onKeyPressed(key)
-    if Kristal.Config["debug"] and key == "delete" then
-        for _,party in ipairs(self.party) do
-            party.chara:setHealth(999)
-        end
-    end
-
     if Kristal.Config["debug"] and Input.ctrl() then
         if key == "h" then
             Assets.playSound("power")
@@ -2580,15 +2574,20 @@ function LightBattle:onKeyPressed(key)
         end
         if self.soul and key == "j" then
             self.soul:shatter(6)
-            self:getPartyBattler(Game:getSoulPartyMember().id):hurt(99999)
+            self:getPartyBattler(Game:getSoulPartyMember().id):hurt(math.huge)
         end
         if key == "b" then
             for _,battler in ipairs(self.party) do
-                battler:hurt(99999)
+                battler:hurt(math.huge)
             end
         end
         if key == "k" then
             Game.tension = (Game:getMaxTension() * 2)
+        end
+        if key == "delete" then
+            for _,party in ipairs(self.party) do
+                party.chara:setHealth(999)
+            end
         end
     end
 

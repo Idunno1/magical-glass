@@ -52,11 +52,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_text = nil
     self.spareable_text = nil
 
-    self.become_tired = false
-    self.tired_percentage = 0.5
-
-    self.low_health_percentage = 0.1
-    self.spare_percentage = 0.1
+    self.tired_percentage = 0
+    self.spare_percentage = 0.2
+    self.low_health_percentage = 0.2
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -597,7 +595,7 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end)
 
-    if self.become_tired and self.health <= (self.max_health * self.tired_percentage) then
+    if self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
     end
 
@@ -776,7 +774,10 @@ function LightEnemyBattler:defeat(reason, violent)
 
     if violent then
         Game.battle.used_violence = true
-        Game.battle.xp = Game.battle.xp + self.experience
+        if reason == "KILLED" or reason == "FROZEN" then
+            MagicalGlassLib.kills = MagicalGlassLib.kills + 1
+            Game.battle.xp = Game.battle.xp + self.experience
+        end
     end
     
     Game.battle:removeEnemy(self, true)

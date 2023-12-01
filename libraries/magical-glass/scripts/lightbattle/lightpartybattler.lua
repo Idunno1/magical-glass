@@ -32,7 +32,7 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
     local max_hp = self.chara:getStat("health", default, true)
 
     -- good shit toby
---[[     if max_hp > 90 then
+--[[     if max_hp >= 90 then
         amount = amount + 1
     end
     if max_hp >= 80 then
@@ -57,8 +57,8 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
         amount = amount + 1
     end ]]
 
-    for i = 0, math.min(max_hp, 99) do
-        if i > 20 and i % 10 == 0 then
+    for i = 21, math.min(max_hp, 99) do
+        if i % 10 == 0 or i == 21 then
             amount = amount + 1
         end
     end
