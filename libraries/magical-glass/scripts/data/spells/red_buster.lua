@@ -30,7 +30,7 @@ end
 function spell:onLightCast(user, target)
     Game.battle.timer:after(15/30, function()
         Assets.playSound("rudebuster_swing")
-        local x, y = (SCREEN_WIDTH/2), -100
+        local x, y = (SCREEN_WIDTH/2), SCREEN_HEIGHT + 250
         local tx, ty = target:getRelativePos(target.width/2, target.height/2, Game.battle)
         local blast = LightRudeBusterBeam(true, x, y, tx, ty, function(pressed)
             local damage = self:getDamage(user, target, pressed)
@@ -83,8 +83,9 @@ function spell:onCast(user, target)
 end
 
 function spell:getDamage(user, target, pressed)
-    local damage = math.ceil((user.chara:getStat("magic") * 6) + (user.chara:getStat("attack") * 13) - (target.defense * 6)) + 90    if pressed then
-        damage = damage + 30
+    local damage = math.ceil((user.chara:getStat("magic") * 6) + (user.chara:getStat("attack") * 13) - (target.defense * 6)) + 90
+    if pressed then
+        damage = Game:isLight() and damage + 20 or damage + 30
     end
     return damage
 end
