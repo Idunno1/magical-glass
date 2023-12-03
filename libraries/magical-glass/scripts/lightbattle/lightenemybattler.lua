@@ -770,7 +770,6 @@ end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"
-    Game.battle.money = Game.battle.money + self:getMoney()
 
     if violent then
         Game.battle.used_violence = true
@@ -779,6 +778,8 @@ function LightEnemyBattler:defeat(reason, violent)
             Game.battle.xp = Game.battle.xp + self.experience
         end
     end
+    
+    Game.battle.money = Game.battle.money + self:getMoney()
     
     Game.battle:removeEnemy(self, true)
 end
