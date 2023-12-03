@@ -2587,9 +2587,6 @@ function LightBattle:onKeyPressed(key)
         if key == "n" then
             NOCLIP = not NOCLIP
         end
-        if key == "n" then
-            NOCLIP = not NOCLIP
-        end
         if key == "delete" then
             for _,party in ipairs(self.party) do
                 party.chara:setHealth(999)
