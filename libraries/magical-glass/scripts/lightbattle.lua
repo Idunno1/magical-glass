@@ -2582,7 +2582,7 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "k" then
-            Game.tension = (Game:getMaxTension() * 2)
+            Game:setTension(Game:getMaxTension() * 2, true)
         end
         if key == "n" then
             NOCLIP = not NOCLIP
