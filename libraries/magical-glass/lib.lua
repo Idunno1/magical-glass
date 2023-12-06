@@ -554,7 +554,7 @@ function lib:init()
         if type(transition) == "string" then
             self.battle:postInit(transition, encounter)
         else
-            self.battle:postInit("TRANSITION", encounter)
+            self.battle:postInit(transition and "TRANSITION" or "INSTANT", encounter)
         end
 
         self.stage:addChild(self.battle)
