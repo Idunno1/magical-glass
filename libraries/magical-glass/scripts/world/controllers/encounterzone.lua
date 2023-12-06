@@ -58,7 +58,7 @@ end
 function EncounterZone:draw()
     super.draw(self)
     if DEBUG_RENDER and self.collider and Game.world.player and (self.collider:collidesWith(Game.world.player) or self.type == "map") then
-        Game.world.player:setColor(1, 0, 0)
+        Game.world.player:setColor(1, 0.5, 0.5)
     else
         Game.world.player:setColor(1, 1, 1)
     end
