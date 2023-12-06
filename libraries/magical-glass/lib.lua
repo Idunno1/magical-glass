@@ -22,6 +22,29 @@ RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter"
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
+function lib:unload()
+    TweenManager             = nil
+    LightBattle              = nil
+    LightPartyBattler        = nil
+    LightEnemyBattler        = nil
+    LightEnemySprite         = nil
+    LightArena               = nil
+    LightArenaSprite         = nil
+    LightArenaBackground     = nil
+    LightEncounter           = nil
+    LightSoul                = nil
+    LightBattleUI            = nil
+    HelpWindow               = nil
+    LightDamageNumber        = nil
+    LightGauge               = nil
+    LightTensionBar          = nil
+    LightActionButton        = nil
+    LightActionBoxSingle     = nil
+    LightAttackBox           = nil
+    LightAttackBar           = nil
+    RandomEncounter          = nil
+end
+
 function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
