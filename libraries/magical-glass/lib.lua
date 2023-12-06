@@ -22,6 +22,29 @@ RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter"
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
+function lib:unload()
+    TweenManager             = nil
+    LightBattle              = nil
+    LightPartyBattler        = nil
+    LightEnemyBattler        = nil
+    LightEnemySprite         = nil
+    LightArena               = nil
+    LightArenaSprite         = nil
+    LightArenaBackground     = nil
+    LightEncounter           = nil
+    LightSoul                = nil
+    LightBattleUI            = nil
+    HelpWindow               = nil
+    LightDamageNumber        = nil
+    LightGauge               = nil
+    LightTensionBar          = nil
+    LightActionButton        = nil
+    LightActionBoxSingle     = nil
+    LightAttackBox           = nil
+    LightAttackBar           = nil
+    RandomEncounter          = nil
+end
+
 function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
@@ -554,7 +577,7 @@ function lib:init()
         if type(transition) == "string" then
             self.battle:postInit(transition, encounter)
         else
-            self.battle:postInit("TRANSITION", encounter)
+            self.battle:postInit(transition and "TRANSITION" or "INTRO", encounter)
         end
 
         self.stage:addChild(self.battle)
@@ -1839,17 +1862,7 @@ function lib:init()
             if old_lv ~= new_lv and new_lv <= #self.lw_exp_needed then
                 Assets.stopAndPlaySound("levelup")
                 self:setLightLV(new_lv)
-
-                self.lw_stats = {
-                    health = (16 + (self:getLightLV() * 4)),
-                    attack = (8 + (self:getLightLV() * 2)),
-                    defense = (9 + math.ceil(self:getLightLV() / 4)),
-                    magic = self.lw_stats.magic or 0
-                }
-        
-                if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
-                    self.lw_stats.health = 99
-                end
+                self:lightLVStats()
             end
         end
     end)
@@ -1883,17 +1896,16 @@ function lib:init()
         else
             self.lw_exp = self:getLightEXPNeeded(level)
         end
-
+        self:lightLVStats()
+    end)
+    
+    Utils.hook(PartyMember, "lightLVStats", function(orig, self)
         self.lw_stats = {
-            health = (16 + (self:getLightLV() * 4)),
-            attack = (8 + (self:getLightLV() * 2)),
-            defense = (9 + math.ceil(self:getLightLV() / 4)),
-            magic = self.lw_stats.magic or 0
+            health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
+            attack = 8 + self:getLightLV() * 2,
+            defense = 9 + math.ceil(self:getLightLV() / 4),
+            magic = 0
         }
-
-        if self:getLightLV() == 20 then -- AT and DF should be 99, but an error makes them the defaults for lv20
-            self.lw_stats.health = 99
-        end
     end)
 
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
@@ -2351,6 +2363,41 @@ function lib:init()
 
     Utils.hook(Spell, "getLightCastMessage", function(orig, self, user, target)
         return "* "..user.chara:getNameOrYou().." cast "..self:getName().."."
+    end)
+    
+    Utils.hook(Spell, "getHealMessage", function(orig, self, user, target, amount) 
+        local char_maxed
+        local enemy_maxed
+        if self.target == "ally" then
+            char_maxed = target.chara:getHealth() >= target.chara:getStat("health")
+        elseif self.target == "enemy" then
+            enemy_maxed = target.health >= target.max_health
+        end
+        local message = ""
+        if self.target == "ally" then
+            if target.chara.id == Game.battle.party[1].chara.id and char_maxed then
+                message = "* Your HP was maxed out."
+            elseif char_maxed then
+                message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
+            else
+                message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "party" then
+            if #Game.party > 1 then
+                message = "* Everyone recovered " .. amount .. " HP."
+            else
+                message = "* You recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemy" then
+            if enemy_maxed then
+                message = "* " .. target.name .. "'s HP was maxed out."
+            else
+                message = "* " .. target.name .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemies" then
+            message = "* The enemies all recovered " .. amount .. " HP."
+        end
+        return message
     end)
 
     Utils.hook(SpeechBubble, "init", function(orig, self, text, x, y, options, speaker)

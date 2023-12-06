@@ -41,10 +41,4 @@ function item:getLightBattleText(user, target)
     return "* About time."
 end
 
-function item:onBattleStart(battler)
-    for _,enemy in ipairs(Game.battle.enemies) do
-        enemy.mercy = 999
-    end
-end
-
 return item

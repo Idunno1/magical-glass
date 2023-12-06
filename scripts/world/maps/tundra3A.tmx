@@ -104,8 +104,6 @@
   <object id="133" name="waterdivot" x="520" y="160" width="40" height="40"/>
   <object id="134" name="waterdivot" x="600" y="120" width="40" height="40"/>
   <object id="135" name="waterdivot" x="600" y="200" width="40" height="40"/>
- </objectgroup>
- <objectgroup color="#01ef09" id="14" name="controllers">
   <object id="107" name="encounterzone" x="21.1818" y="19.6319">
    <properties>
     <property name="encgroup" value="test"/>

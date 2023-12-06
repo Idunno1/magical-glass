@@ -19,9 +19,6 @@ function Dummy:init()
     self.money = 69
     self.experience = 1
 
-    -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
-    self.spare_points = 0
-
     -- List of possible wave ids, randomly picked each turn
     self.waves = {
         -- "basic",

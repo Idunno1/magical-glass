@@ -58,9 +58,12 @@ end
 function EncounterZone:draw()
     super.draw(self)
     if DEBUG_RENDER and self.collider and Game.world.player and (self.collider:collidesWith(Game.world.player) or self.type == "map") then
-        Game.world.player:setColor(1, 0, 0)
-    else
-        Game.world.player:setColor(1, 1, 1)
+        love.graphics.push()
+        love.graphics.origin()
+
+        love.graphics.print({{1,0,0},"Encounter Zone!",{1,1,0},"\nSteps Until Encounter: ",{1,1,1},MagicalGlassLib.steps_until_encounter}, 8, 0, 0, 1.25)
+
+        love.graphics.pop()
     end
 end
 

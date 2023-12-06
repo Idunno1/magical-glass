@@ -52,11 +52,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_text = nil
     self.spareable_text = nil
 
-    self.become_tired = false
-    self.tired_percentage = 0.5
-
-    self.low_health_percentage = 0.1
-    self.spare_percentage = 0.1
+    self.tired_percentage = 0
+    self.spare_percentage = 0.2
+    self.low_health_percentage = 0.2
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -335,8 +333,8 @@ function LightEnemyBattler:addMercy(amount)
             src:setPitch(pitch)
 
             self:lightStatusMessage("mercy", amount)
-        elseif self.mercy >= 100 then
-            local message = self:lightStatusMessage("msg", "miss", COLORS["yellow"])
+        elseif self.mercy == 0 then
+            local message = self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
             message:resetPhysics()
         end
     end
@@ -364,7 +362,9 @@ function LightEnemyBattler:onMercy(battler)
         self:spare()
         return true
     else
-        self:addMercy(self.spare_points)
+        if self.spare_points ~= 0 then
+            self:addMercy(self.spare_points)
+        end
         return false
     end
 end
@@ -597,7 +597,7 @@ function LightEnemyBattler:onHurt(damage, battler)
         end
     end)
 
-    if self.become_tired and self.health <= (self.max_health * self.tired_percentage) then
+    if self.health <= (self.max_health * self.tired_percentage) then
         self:setTired(true)
     end
 
@@ -772,12 +772,16 @@ end
 
 function LightEnemyBattler:defeat(reason, violent)
     self.done_state = reason or "DEFEATED"
-    Game.battle.money = Game.battle.money + self:getMoney()
 
     if violent then
         Game.battle.used_violence = true
-        Game.battle.xp = Game.battle.xp + self.experience
+        if self.done_state == "KILLED" or self.done_state == "FROZEN" then
+            MagicalGlassLib.kills = MagicalGlassLib.kills + 1
+            Game.battle.xp = Game.battle.xp + self.experience
+        end
     end
+    
+    Game.battle.money = Game.battle.money + self:getMoney()
     
     Game.battle:removeEnemy(self, true)
 end

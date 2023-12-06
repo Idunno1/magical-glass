@@ -104,7 +104,21 @@ function LightEncounter:onSoulTransition()
         Game.battle.fader:fadeIn(nil, {speed=5/30})
         Game.battle.transitioned = true
         self:onBattleStart()
+    end)
+end
 
+function LightEncounter:onBattleInit() end
+
+function LightEncounter:storyWave()
+    return "_story"
+end
+
+function LightEncounter:onBattleStart() 
+    Game.battle.timer:script(function(wait)
+        -- Wait till the battle defines itself
+        if Game.battle.transitioned ~= true then
+            wait(1/30)
+        end
         if self.nobody_came then
             Game.battle:setState("BUTNOBODYCAME")
         elseif self.story then
@@ -116,13 +130,6 @@ function LightEncounter:onSoulTransition()
     end)
 end
 
-function LightEncounter:onBattleInit() end
-
-function LightEncounter:storyWave()
-    return "_story"
-end
-
-function LightEncounter:onBattleStart() end
 function LightEncounter:onBattleEnd() end
 
 function LightEncounter:onTurnStart() end
