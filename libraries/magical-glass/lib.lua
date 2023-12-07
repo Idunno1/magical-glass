@@ -144,7 +144,7 @@ function lib:init()
         if Game:isLight() then
             return Game.lw_money
         else
-            orig(self)
+            return orig(self)
         end
     end)
     
@@ -258,47 +258,6 @@ function lib:init()
 
                     Draw.setColor(COLORS.white)
                     love.graphics.print(current_item.options["description"], left + 32, top + 20)
-
-                    if current_item.item.type == "armor" or current_item.item.type == "weapon" then
-                        for i = 1, #Game.party do
-                            -- Turn the index into a 2 wide grid (0-indexed)
-                            local transformed_x = (i - 1) % 2
-                            local transformed_y = math.floor((i - 1) / 2)
-
-                            -- Transform the grid into coordinates
-                            local offset_x = transformed_x * 100
-                            local offset_y = transformed_y * 45
-
-                            local party_member = Game.party[i]
-                            local can_equip = party_member:canEquip(current_item.item)
-                            local head_path = ""
-
-                            love.graphics.setFont(self.plain_font)
-                            Draw.setColor(COLORS.white)
-
-                            if can_equip then
-                                head_path = Assets.getTexture(party_member:getHeadIcons() .. "/head")
-                                if current_item.item.type == "armor" then
-                                    Draw.draw(self.stat_icons["defense_1"], offset_x + 470, offset_y + 127 + top)
-                                    Draw.draw(self.stat_icons["defense_2"], offset_x + 470, offset_y + 147 + top)
-
-                                    for j = 1, 2 do
-                                        self:drawBonuses(party_member, party_member:getArmor(j), current_item.options["bonuses"], "defense", offset_x + 470 + 21, offset_y + 127 + ((j - 1) * 20) + top)
-                                    end
-
-                                elseif current_item.item.type == "weapon" then
-                                    Draw.draw(self.stat_icons["attack"], offset_x + 470, offset_y + 127 + top)
-                                    Draw.draw(self.stat_icons["magic" ], offset_x + 470, offset_y + 147 + top)
-                                    self:drawBonuses(party_member, party_member:getWeapon(), current_item.options["bonuses"], "attack", offset_x + 470 + 21, offset_y + 127 + top)
-                                    self:drawBonuses(party_member, party_member:getWeapon(), current_item.options["bonuses"], "magic",  offset_x + 470 + 21, offset_y + 147 + top)
-                                end
-                            else
-                                head_path = Assets.getTexture(party_member:getHeadIcons() .. "/head_error")
-                            end
-
-                            Draw.draw(head_path, offset_x + 426, offset_y + 132 + top)
-                        end
-                    end
 
                     Draw.popScissor()
 
