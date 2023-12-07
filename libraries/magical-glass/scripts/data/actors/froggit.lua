@@ -12,6 +12,8 @@ function actor:init()
 
     self.hitbox = {0, 0, 16, 16}
 
+    self.use_light_battler_sprite = true
+
     self.path = "enemies/froggit"
     self.default = "idle"
 

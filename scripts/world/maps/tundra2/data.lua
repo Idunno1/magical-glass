@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 14,
-  nextobjectid = 178,
+  nextobjectid = 179,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -505,6 +505,22 @@ return {
             ["solid"] = true,
             ["text1"] = "* It's some sort of checkpoint\nor sentry-station.",
             ["text2"] = "* But there are bottles of\\n\nketchup,[wait:10] mustard,[wait:10] and relish\\n\nsitting inside..."
+          }
+        },
+        {
+          id = 178,
+          name = "enemy",
+          type = "",
+          shape = "rectangle",
+          x = 4841,
+          y = 193.5,
+          width = 40,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["actor"] = "noelle_lw_npc",
+            ["lightencounter"] = "noelle"
           }
         }
       }

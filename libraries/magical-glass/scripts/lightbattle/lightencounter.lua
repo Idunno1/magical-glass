@@ -234,10 +234,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     if x and y then
         enemy_obj:setPosition(x, y)
     else
-        for _,enemy in ipairs(enemies) do
-            enemy.x = enemy.x - 80
-        end
-        local x, y = (SCREEN_WIDTH/2 + (80 * #enemies)) - 15, 240
+        local x, y = (SCREEN_WIDTH/2 + (80 * #enemies)) - 3, 240
         enemy_obj:setPosition(x, y)
     end
 
@@ -346,15 +343,15 @@ function LightEncounter:createSoul(x, y, color)
 end
 
 function LightEncounter:setFlag(flag, value)
-    Game:setFlag("encounter#"..self.id..":"..flag, value)
+    Game:setFlag("lw_encounter#"..self.id..":"..flag, value)
 end
 
 function LightEncounter:getFlag(flag, default)
-    return Game:getFlag("encounter#"..self.id..":"..flag, default)
+    return Game:getFlag("lw_encounter#"..self.id..":"..flag, default)
 end
 
 function LightEncounter:addFlag(flag, amount)
-    return Game:addFlag("encounter#"..self.id..":"..flag, amount)
+    return Game:addFlag("lw_encounter#"..self.id..":"..flag, amount)
 end
 
 function LightEncounter:canDeepCopy()

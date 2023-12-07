@@ -21,6 +21,7 @@ function Froggit:init()
 
     -- The Speech bubble offset
     self.dialogue_offset = {20, 0}
+    self.dialogue_bubble = "ut_large"
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {

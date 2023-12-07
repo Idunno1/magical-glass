@@ -35,6 +35,7 @@
             "mercyBar": true,
             "mercyMessages": false,
             "enemyBarPercentages": false,
+            "enemyAuras": false,
             // End of config
         }
     }

@@ -55,10 +55,13 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_percentage = 0
     self.spare_percentage = 0.2
     self.low_health_percentage = 0.2
+    
+    -- Play the "damage" sound even when you deal 0 damage
+    self.always_play_damage_sound = false
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
-    self.dialogue_bubble = "ut_large"
+    self.dialogue_bubble = "ut_round"
 
     -- The offset for the speech bubble, also set in `battler.lua`
     self.dialogue_offset = {0, 0}
@@ -614,7 +617,9 @@ function LightEnemyBattler:onHurtEnd()
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
-    self:toggleOverlay(true)
+    if self.actor.use_light_battler_sprite == true then
+        self:toggleOverlay(true)
+    end
     if self.exit_on_defeat and not self.can_freeze then
         Game.battle.timer:after(self.hurt_timer, function()
             self:onDefeatVaporized(damage, battler)  
@@ -851,15 +856,15 @@ function LightEnemyBattler:canDeepCopy()
 end
 
 function LightEnemyBattler:setFlag(flag, value)
-    Game:setFlag("enemy#"..self.id..":"..flag, value)
+    Game:setFlag("lw_enemy#"..self.id..":"..flag, value)
 end
 
 function LightEnemyBattler:getFlag(flag, default)
-    return Game:getFlag("enemy#"..self.id..":"..flag, default)
+    return Game:getFlag("lw_enemy#"..self.id..":"..flag, default)
 end
 
 function LightEnemyBattler:addFlag(flag, amount)
-    return Game:addFlag("enemy#"..self.id..":"..flag, amount)
+    return Game:addFlag("lw_enemy#"..self.id..":"..flag, amount)
 end
 
 return LightEnemyBattler
