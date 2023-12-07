@@ -346,15 +346,15 @@ function LightEncounter:createSoul(x, y, color)
 end
 
 function LightEncounter:setFlag(flag, value)
-    Game:setFlag("lightEncounter#"..self.id..":"..flag, value)
+    Game:setFlag("light_encounter#"..self.id..":"..flag, value)
 end
 
 function LightEncounter:getFlag(flag, default)
-    return Game:getFlag("lightEncounter#"..self.id..":"..flag, default)
+    return Game:getFlag("light_encounter#"..self.id..":"..flag, default)
 end
 
 function LightEncounter:addFlag(flag, amount)
-    return Game:addFlag("lightEncounter#"..self.id..":"..flag, amount)
+    return Game:addFlag("light_encounter#"..self.id..":"..flag, amount)
 end
 
 function LightEncounter:canDeepCopy()
