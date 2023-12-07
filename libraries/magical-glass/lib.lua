@@ -152,7 +152,7 @@ function lib:init()
         if Game:isLight() then
             Game.lw_money = amount
         else
-            orig(self)
+            orig(self, amount)
         end
     end)
     
