@@ -451,15 +451,13 @@ function lib:init()
         orig(self)
         self.undertale_movement = false
 
-        self.use_light_battler_sprite = true
-        self.light_battle_width = 0
-        self.light_battle_height = 0
+        self.use_light_battler_sprite = false
         self.light_battler_parts = {}
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
         if Game.battle and Game.battle.light and self.use_light_battler_sprite then
-            return self.light_battle_width
+            return self.light_battle_width or self.width
         else
             return self.width
         end
@@ -467,7 +465,7 @@ function lib:init()
 
     Utils.hook(Actor, "getHeight", function(orig, self)
         if Game.battle and Game.battle.light and self.use_light_battler_sprite then
-            return self.light_battle_height
+            return self.light_battle_height or self.height
         else
             return self.height
         end

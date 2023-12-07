@@ -234,10 +234,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     if x and y then
         enemy_obj:setPosition(x, y)
     else
-        for _,enemy in ipairs(enemies) do
-            enemy.x = enemy.x - 80
-        end
-        local x, y = (SCREEN_WIDTH/2 + (80 * #enemies)) - 15, 240
+        local x, y = (SCREEN_WIDTH/2 + (80 * #enemies)) - 3, 240
         enemy_obj:setPosition(x, y)
     end
 
