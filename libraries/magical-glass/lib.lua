@@ -598,7 +598,7 @@ function lib:init()
     end)
 
     Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        return lib.dark_inv
+        return not Game:isLight() and Game.inventory or lib.dark_inv
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
