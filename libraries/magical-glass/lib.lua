@@ -23,6 +23,7 @@ MagicalGlassLib = {}
 local lib = MagicalGlassLib
 
 function lib:unload()
+    MagicalGlassLib          = nil
     TweenManager             = nil
     LightBattle              = nil
     LightPartyBattler        = nil
