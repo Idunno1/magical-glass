@@ -851,15 +851,15 @@ function LightEnemyBattler:canDeepCopy()
 end
 
 function LightEnemyBattler:setFlag(flag, value)
-    Game:setFlag("enemy#"..self.id..":"..flag, value)
+    Game:setFlag("lightEnemy#"..self.id..":"..flag, value)
 end
 
 function LightEnemyBattler:getFlag(flag, default)
-    return Game:getFlag("enemy#"..self.id..":"..flag, default)
+    return Game:getFlag("lightEnemy#"..self.id..":"..flag, default)
 end
 
 function LightEnemyBattler:addFlag(flag, amount)
-    return Game:addFlag("enemy#"..self.id..":"..flag, amount)
+    return Game:addFlag("lightEnemy#"..self.id..":"..flag, amount)
 end
 
 return LightEnemyBattler
