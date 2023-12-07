@@ -171,6 +171,52 @@ function lib:init()
         end
     end)
     
+    Utils.hook(Shop, "buyItem", function(orig, self, current_item)
+        if Game:isLight() then
+            if (current_item.options["price"] or 0) > self:getMoney() then
+                self:setRightText(self.buy_too_expensive_text)
+            else
+                -- PURCHASE THE ITEM
+                -- Remove the gold
+                self:removeMoney(current_item.options["price"] or 0)
+
+                -- Decrement the stock
+                if current_item.options["stock"] then
+                    current_item.options["stock"] = current_item.options["stock"] - 1
+                    self:setFlag(current_item.options["flag"], current_item.options["stock"])
+                end
+
+                -- Add the item to the inventory
+                local new_item = Registry.createItem(current_item.item.id)
+                new_item:load(current_item.item:save())
+                if Game.inventory:addItem(new_item) then
+                    -- Visual/auditorial feedback (did I spell that right?)
+                    Assets.playSound("buyitem")
+                    self:setRightText(self.buy_text)
+                else
+                    -- Not enough space, oops
+                    self:setRightText(self.buy_no_space_text)
+                end
+            end
+        else
+            orig(self, current_item)
+        end
+    end)
+    
+    Utils.hook(Shop, "sellItem", function(orig, self, current_item)
+        if Game:isLight() then
+            -- SELL THE ITEM
+            -- Add the gold
+            self:addMoney(current_item:getSellPrice())
+            Game.inventory:removeItem(current_item)
+
+            Assets.playSound("buyitem")
+            self:setRightText(self.sell_text)
+        else
+            orig(self, current_item)
+        end
+    end)
+    
     Utils.hook(Shop, "draw", function(orig, self)
         if Game:isLight() then
             self:drawBackground()
