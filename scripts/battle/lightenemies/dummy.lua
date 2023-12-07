@@ -18,6 +18,8 @@ function Dummy:init()
     -- Enemy reward
     self.money = 69
     self.experience = 1
+    
+    self.dialogue_bubble = "ut_large"
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {

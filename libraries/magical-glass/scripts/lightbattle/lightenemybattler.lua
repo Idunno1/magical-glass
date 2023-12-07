@@ -614,7 +614,9 @@ function LightEnemyBattler:onHurtEnd()
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
-    self:toggleOverlay(true)
+    if self.actor.use_light_battler_sprite == true then
+        self:toggleOverlay(true)
+    end
     if self.exit_on_defeat and not self.can_freeze then
         Game.battle.timer:after(self.hurt_timer, function()
             self:onDefeatVaporized(damage, battler)  
