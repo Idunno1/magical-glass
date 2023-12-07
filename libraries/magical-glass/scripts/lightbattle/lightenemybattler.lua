@@ -55,6 +55,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.tired_percentage = 0
     self.spare_percentage = 0.2
     self.low_health_percentage = 0.2
+    
+    -- Play the "damage" sound even when you deal 0 damage
+    self.always_play_damage_sound = false
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
