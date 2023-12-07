@@ -38,7 +38,7 @@
         // Whether the dark inventory should be stored in a flag rather than
         // the Ball of Junk item during Dark to Light item conversion.
         /////
-        "ball_of_junk": false,
+        "ball_of_junk": true,
 
         ///// Hide CELL option in the Light World menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.

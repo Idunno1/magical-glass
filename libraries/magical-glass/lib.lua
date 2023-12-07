@@ -51,8 +51,9 @@ function lib:save(data)
     data.magical_glass["game_overs"] = lib.game_overs
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
-    data.magical_glass["dark_inventory"] = lib.dark_inventory
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
+    data.magical_glass["light_inv"] = lib.light_inv
+    data.magical_glass["dark_inv"] = lib.dark_inv
 end
 
 function lib:load(data, new_file)
@@ -65,7 +66,6 @@ function lib:load(data, new_file)
         lib.game_overs = 0
         lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
-        lib.dark_inventory = DarkInventory()
         lib.lw_save_lv = 0
     else
         if data.magical_glass["kills"] then
@@ -92,17 +92,13 @@ function lib:load(data, new_file)
             lib.name_color = COLORS.yellow
         end
 
-        if data.magical_glass["dark_inventory"] then
-            lib.dark_inventory = data.magical_glass["dark_inventory"]
-        else
-            lib.dark_inventory = DarkInventory()
-        end
-
         if data.magical_glass["lw_save_lv"] then
             lib.lw_save_lv = data.magical_glass["lw_save_lv"]
         else
             lib.lw_save_lv = 0
         end
+        lib.light_inv = data.magical_glass["light_inv"]
+        lib.dark_inv = data.magical_glass["dark_inv"]
     end
 end
 
@@ -584,103 +580,25 @@ function lib:init()
     end)
 
     Utils.hook(LightInventory, "convertToDark", function(orig, self)
-        local new_inventory = DarkInventory()
-
-        local was_storage_enabled = new_inventory.storage_enabled
-        new_inventory.storage_enabled = true
-    
-        Kristal.callEvent("onConvertToDark", new_inventory)
-    
-        for _,storage_id in ipairs(self.convert_order) do
-            local storage = Utils.copy(self:getStorage(storage_id))
-            for i = 1, storage.max do
-                local item = storage[i]
-                if item then
-                    local result = item:convertToDark(new_inventory) or (storage.id == "dark" and item)
-    
-                    if result then
-                        self:removeItem(item)
-    
-                        if type(result) == "string" then
-                            result = Registry.createItem(result)
-                        end
-                        if isClass(result) then
-                            new_inventory:addItem(result)
-                        end
-                    end
-                end
-            end
+        local new_inventory = lib.dark_inv or DarkInventory()
+        if Kristal.getLibConfig("magical-glass", "ball_of_junk") and Game.inventory:getDarkInventory() and not Game.inventory:getItemByID("light/ball_of_junk") then
+            local ball = Registry.createItem("light/ball_of_junk")
+            Game.inventory:tryGiveItem(ball)
         end
-    
-        for _,base_storage in pairs(self.storages) do
-            local storage = Utils.copy(base_storage)
-            for i = 1, storage.max do
-                local item = storage[i]
-                if item then
-                    item.light_item = item
-                    item.light_location = {storage = storage.id, index = i}
-    
-                    new_inventory:addItemTo("light", item)
-    
-                    self:removeItem(item)
-                end
-            end
-        end
-    
-        new_inventory.storage_enabled = was_storage_enabled
+        lib.light_inv = Game.inventory
     
         return new_inventory
     end)
 
     Utils.hook(DarkInventory, "convertToLight", function(orig, self)
-        local new_inventory = LightInventory()
-
-        local was_storage_enabled = new_inventory.storage_enabled
-        new_inventory.storage_enabled = true
-    
-        Kristal.callEvent("onConvertToLight", new_inventory)
-
-        for _,storage_id in ipairs(self.convert_order) do
-            local storage = Utils.copy(self:getStorage(storage_id))
-            for i = 1, storage.max do
-                local item = storage[i]
-                if item then
-                    local result = item:convertToLight(new_inventory) or (storage.id == "light" and item)
-    
-                    if result then
-                        self:removeItem(item)
-    
-                        if type(result) == "string" then
-                            result = Registry.createItem(result)
-                        end
-                        if isClass(result) then
-                            result.dark_item = item
-                            result.dark_location = {storage = storage.id, index = i}
-                            new_inventory:addItem(result)
-                        end
-                    end
-                end
-            end
-        end
-    
-        if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
-            local ball = Registry.createItem("light/ball_of_junk", self)
-            new_inventory:addItemTo("items", 1, ball)
-        else
-            MagicalGlassLib.dark_inventory = Utils.copy(self)
-        end
-    
-        new_inventory.storage_enabled = was_storage_enabled
+        local new_inventory = lib.light_inv or LightInventory()
+        lib.dark_inv = Game.inventory
     
         return new_inventory
     end)
 
     Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        if Kristal.getLibConfig("magical-glass", "ball_of_junk") then
-            return orig(self)
-        else
-            return MagicalGlassLib.dark_inventory
-        end
+        return lib.dark_inv
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
