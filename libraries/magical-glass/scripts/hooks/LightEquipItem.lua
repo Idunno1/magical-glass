@@ -1,4 +1,4 @@
-local LightEquipItem, super = Class(Item)
+local LightEquipItem, super = Class("LightEquipItem", true)
 
 function LightEquipItem:init()
     super.init(self)
