@@ -22,6 +22,7 @@ RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter"
 
 MagicalGlassLib = {}
 local lib = MagicalGlassLib
+-- Mod.libs["magical-glass"]
 
 function lib:unload()
     MagicalGlassLib          = nil
@@ -55,8 +56,16 @@ function lib:save(data)
     data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
-    data.magical_glass["light_inv"] = lib.light_inv
-    data.magical_glass["dark_inv"] = lib.dark_inv
+    if lib.light_inv and not lib.light_inv_saved then
+        data.magical_glass["light_inv"] = lib.light_inv:save()
+        data.magical_glass["light_inv_saved"] = true
+    end
+    if lib.dark_inv and not lib.dark_inv_saved then
+        data.magical_glass["dark_inv"] = lib.dark_inv:save()
+        data.magical_glass["dark_inv_saved"] = true
+    end
+    data.magical_glass["light_equip"] = lib.light_equip
+    data.magical_glass["dark_equip"] = lib.dark_equip
 end
 
 function lib:load(data, new_file)
@@ -70,6 +79,8 @@ function lib:load(data, new_file)
         lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
+        lib.light_equip = {}
+        lib.dark_equip = {}
     else
         lib.kills = data.magical_glass["kills"] or 0
         lib.game_overs = data.magical_glass["game_overs"] or 0
@@ -77,7 +88,11 @@ function lib:load(data, new_file)
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.light_inv = data.magical_glass["light_inv"]
+        lib.light_inv_saved = data.magical_glass["light_inv_saved"]
         lib.dark_inv = data.magical_glass["dark_inv"]
+        lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
+        lib.light_equip = data.magical_glass["light_equip"]
+        lib.dark_equip = data.magical_glass["dark_equip"]
     end
 end
 
@@ -417,6 +432,103 @@ function lib:init()
             orig(self)
         end
     end) ]]
+
+    Utils.hook(Game, "setLight", function(orig, self, light)
+        light = light or false
+
+        if not self.started then
+            self.light = light
+            return
+        end
+
+        if self.light == light then return end
+
+        self.light = light
+        
+        if not self.light then
+            for _,party in pairs(self.party) do
+                if not lib.light_equip[party.id] then
+                    lib.light_equip[party.id] = {}
+                    lib.light_equip[party.id].armor = {}
+                end
+                lib.light_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id
+                lib.light_equip[party.id].armor[1] = party:getArmor(1) and party:getArmor(1).id
+            end
+            
+            lib.light_inv = self.inventory
+            lib.light_inv_saved = false
+            
+            self.inventory = DarkInventory()
+            if lib.dark_inv_saved then
+                self.inventory:load(lib.dark_inv)
+            elseif lib.dark_inv then
+                self.inventory = lib.dark_inv
+            end
+            
+            for _,party in pairs(Game.party) do
+                if lib.dark_equip[party.id] and lib.dark_equip[party.id].weapon then
+                    party:setWeapon(lib.dark_equip[party.id].weapon)
+                else
+                    if party.init_equipped.weapon then
+                        party:setWeapon(party.init_equipped.weapon.id)
+                    else
+                        party:setWeapon(nil)
+                    end
+                    party.init_equipped.weapon = nil
+                end
+                for i = 1, 2 do
+                    if lib.dark_equip[party.id] and lib.dark_equip[party.id].armor[i] then
+                        party:setArmor(i, lib.dark_equip[party.id].armor[i])
+                    else
+                        if party.init_equipped.armor[i] then
+                            party:setArmor(i, party.init_equipped.armor[i].id)
+                        else
+                            party:setArmor(i, nil)
+                        end
+                        party.init_equipped.armor[i] = nil
+                    end
+                end
+            end
+        else
+            for _,party in pairs(self.party) do
+                if not lib.dark_equip[party.id] then
+                    lib.dark_equip[party.id] = {}
+                    lib.dark_equip[party.id].armor = {}
+                end
+                lib.dark_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id
+                for i = 1, 2 do
+                    lib.dark_equip[party.id].armor[i] = party:getArmor(i) and party:getArmor(i).id
+                end
+            end
+            
+            lib.dark_inv = self.inventory
+            lib.dark_inv_saved = false
+            
+            self.inventory = LightInventory()
+            if lib.light_inv_saved then
+                self.inventory:load(lib.light_inv)
+            elseif lib.light_inv then
+                self.inventory = lib.light_inv
+            end
+            
+            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk2") then
+                Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
+            end
+            
+            for _,party in pairs(Game.party) do
+                if lib.light_equip[party.id] and lib.light_equip[party.id].weapon then
+                    party:setWeapon(lib.light_equip[party.id].weapon)
+                else
+                    party:setWeapon(party.lw_weapon_default)
+                end
+                if lib.light_equip[party.id] and lib.light_equip[party.id].armor[1] then
+                    party:setArmor(1, lib.light_equip[party.id].armor[1])
+                else
+                    party:setArmor(1, party.lw_armor_default)
+                end
+            end
+        end
+    end)
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
@@ -858,28 +970,6 @@ function lib:init()
         end
 
         self.stage:addChild(self.battle)
-    end)
-
-    Utils.hook(LightInventory, "convertToDark", function(orig, self)
-        local new_inventory = lib.dark_inv or DarkInventory()
-        if Kristal.getLibConfig("magical-glass", "ball_of_junk") and Game.inventory:getDarkInventory() and not Game.inventory:getItemByID("light/ball_of_junk") then
-            local ball = Registry.createItem("light/ball_of_junk")
-            Game.inventory:tryGiveItem(ball)
-        end
-        lib.light_inv = Game.inventory
-    
-        return new_inventory
-    end)
-
-    Utils.hook(DarkInventory, "convertToLight", function(orig, self)
-        local new_inventory = lib.light_inv or LightInventory()
-        lib.dark_inv = Game.inventory
-    
-        return new_inventory
-    end)
-
-    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        return lib.dark_inv
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
@@ -1996,6 +2086,8 @@ function lib:init()
         self.light_xact_color = {1, 1, 1}
 
         self.lw_stats["magic"] = 0
+        
+        self.init_equipped = self.equipped
 
     end)
 
@@ -2183,7 +2275,7 @@ function lib:init()
         -- pastency when -sam, to sam
         love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
         love.graphics.print(Game.lw_money, 82, 136 + offset)
-    
+        
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
             Draw.setColor(PALETTE["world_gray"])
