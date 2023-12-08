@@ -1,4 +1,4 @@
-local TestShop, super = Class(Shop,  "test")
+local TestShop, super = Class(LightShop,  "test")
 
 function TestShop:init()
     super.init(self)
@@ -37,14 +37,9 @@ function TestShop:init()
     -- Shown when you enter the talk menu.
     self.talk_text = "Guess I\nshould\nthink."
 
-    self.sell_options_text["items"]   = "What\nshould\nI sell?"
-    self.sell_options_text["weapons"] = "What\nshould\nI sell?"
-    self.sell_options_text["armors"]  = "What\nshould\nI sell?"
-    self.sell_options_text["storage"] = "What\nshould\nI sell?"
-
     self:registerItem("ut_weapons/tough_glove")
     self:registerItem("ut_armors/cloudy_glasses", {price = 0})
-	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3"})
+	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
     self:registerItem("ut_items/crab_apple")
 
     self:registerTalk("Reflect")

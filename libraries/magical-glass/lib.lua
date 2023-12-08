@@ -17,6 +17,7 @@ LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
+LightShop                = libRequire("magical-glass", "scripts/lightshop")
 RandomEncounter          = libRequire("magical-glass", "scripts/randomencounter")
 
 MagicalGlassLib = {}
@@ -44,6 +45,7 @@ function lib:unload()
     LightAttackBox           = nil
     LightAttackBar           = nil
     RandomEncounter          = nil
+    LightShop                = nil
 end
 
 function lib:save(data)
@@ -108,6 +110,7 @@ function lib:preInit()
     self.random_encounters = {}
     self.light_encounters = {}
     self.light_enemies = {}
+    self.light_shops = {}
 
     for _,path,rnd_enc in Registry.iterScripts("battle/randomencounters") do
         assert(rnd_enc ~= nil, '"randomencounters/'..path..'.lua" does not return value')
@@ -126,6 +129,12 @@ function lib:preInit()
         light_enemy.id = light_enemy.id or path
         self.light_enemies[light_enemy.id] = light_enemy
     end
+
+    for _,path,light_shop in Registry.iterScripts("lightshops") do
+        assert(light_shop ~= nil, '"lightshops/'..path..'.lua" does not return value')
+        light_shop.id = light_shop.id or path
+        self.light_shops[light_shop.id] = light_shop
+    end
     
 end
 
@@ -136,23 +145,7 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
-    Utils.hook(Shop, "getMoney", function(orig, self)
-        if Game:isLight() then
-            return Game.lw_money
-        else
-            return orig(self)
-        end
-    end)
-    
-    Utils.hook(Shop, "setMoney", function(orig, self, amount)
-        if Game:isLight() then
-            Game.lw_money = amount
-        else
-            orig(self, amount)
-        end
-    end)
-    
-    Utils.hook(Shop, "init", function(orig, self)
+    --[[ Utils.hook(Shop, "init", function(orig, self)
         orig(self)
         if Game:isLight() and Game:getConfig("lightCurrencyShort") ~= "$" then
             self.currency_text = "%d"..Game:getConfig("lightCurrencyShort")
@@ -447,7 +440,7 @@ function lib:init()
         else
             orig(self)
         end
-    end)
+    end) ]]
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
@@ -1226,6 +1219,19 @@ function lib:init()
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
     
+    end)
+
+    Utils.hook(Item, "getLightShopDescription", function(orig, self)
+        return self:getLightTypeName() .. "\n" .. self.shop
+    end)
+
+    Utils.hook(Item, "getLightTypeName", function(orig, self)
+        if self.type == "weapon" then
+            return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+        elseif self.type == "armor" then
+            return "Armor: " .. self:getStatBonus("defense") .. "DF"
+        end
+        return ""
     end)
 
     Utils.hook(Item, "getShortName", function(orig, self) return self.short_name or self.serious_name or self.name end)
@@ -2661,7 +2667,7 @@ function lib:init()
     PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
 end
 
-function lib:registerRandomEncounter(id)
+function lib:registerRandomEncounter(id, class)
     self.random_encounters[id] = class
 end
 
@@ -2677,7 +2683,7 @@ function lib:createRandomEncounter(id, ...)
     end
 end
 
-function lib:registerLightEncounter(id)
+function lib:registerLightEncounter(id, class)
     self.light_encounters[id] = class
 end
 
@@ -2693,7 +2699,7 @@ function lib:createLightEncounter(id, ...)
     end
 end
 
-function lib:registerLightEnemy(id)
+function lib:registerLightEnemy(id, class)
     self.light_enemies[id] = class
 end
 
@@ -2706,6 +2712,22 @@ function lib:createLightEnemy(id, ...)
         return self.light_enemies[id](...)
     else
         error("Attempt to create non existent light enemy \"" .. tostring(id) .. "\"")
+    end
+end
+
+function lib:registerLightShop(id, class)
+    self.light_shops[id] = class
+end
+
+function lib:getLightShop(id)
+    return self.light_shops[id]
+end
+
+function lib:createLightShop(id, ...)
+    if self.light_shops[id] then
+        return self.light_shops[id](...)
+    else
+        error("Attempt to create non existent light shop \"" .. tostring(id) .. "\"")
     end
 end
 
@@ -2798,6 +2820,71 @@ function lib:registerDebugOptions(debug)
             debug:closeMenu()
         end)
     end
+
+    debug:registerMenu("select_shop", "Enter Shop")
+
+    debug:registerOption("select_shop", "Enter Light Shop", "Enter a light shop.", function()
+        debug:enterMenu("light_select_shop", 0)
+    end)
+    debug:registerOption("select_shop", "Enter Shop", "Enter a vanilla shop.", function()
+        debug:enterMenu("dark_select_shop", 0)
+    end)
+
+    debug:registerMenu("light_select_shop", "Enter Light Shop", "search")
+    for id,_ in pairs(self.light_shops) do
+        debug:registerOption("light_select_shop", id, "Enter this light shop.", function()
+            self:enterLightShop(id)
+            debug:closeMenu()
+        end)
+    end
+
+    debug:registerMenu("dark_select_shop", "Enter Shop", "search")
+    for id,_ in pairs(Registry.shops) do
+        debug:registerOption("dark_select_shop", id, "Enter this shop.", function()
+            Game:enterShop(id)
+            debug:closeMenu()
+        end)
+    end
+
+end
+
+function lib:setupLightShop(shop)
+    if Game.shop then
+        error("Attempt to enter shop while already in shop")
+    end
+
+    if type(shop) == "string" then
+        shop = MagicalGlassLib:createLightShop(shop)
+    end
+
+    if shop == nil then
+        error("Attempt to enter shop with nil shop")
+    end
+
+    Game.shop = shop
+    Game.shop:postInit()
+end
+
+function lib:enterLightShop(shop, options)
+    -- Add the shop to the stage and enter it.
+    if Game.shop then
+        Game.shop:leaveImmediate()
+    end
+
+    lib:setupLightShop(shop)
+
+    if options then
+        Game.shop.leave_options = options
+    end
+
+    if Game.world and Game.shop.shop_music then
+        Game.world.music:stop()
+    end
+
+    Game.state = "SHOP"
+
+    Game.stage:addChild(Game.shop)
+    Game.shop:onEnter()
 end
 
 function lib:changeSpareColor(color)
