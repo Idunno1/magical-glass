@@ -154,6 +154,11 @@
         // "magical_glass"
         // "deltatraveler"
         /////
-        "action_button_style": "magical_glass"
+        "action_button_style": "magical_glass",
+        
+        ///// Debug Mode
+        // Determines whether the library is in its debug mode state.
+        /////
+        "debug": "true"
     }
 }
