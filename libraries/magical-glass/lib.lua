@@ -446,13 +446,13 @@ function lib:init()
         self.light = light
         
         if not self.light then
-            for _,party in pairs(self.party) do
+            for _,party in pairs(lib.all_party_members) do
                 if not lib.light_equip[party.id] then
                     lib.light_equip[party.id] = {}
                     lib.light_equip[party.id].armor = {}
                 end
-                lib.light_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id
-                lib.light_equip[party.id].armor[1] = party:getArmor(1) and party:getArmor(1).id
+                lib.light_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id or true
+                lib.light_equip[party.id].armor[1] = party:getArmor(1) and party:getArmor(1).id or true
             end
             
             lib.light_inv = self.inventory
@@ -465,39 +465,37 @@ function lib:init()
                 self.inventory = lib.dark_inv
             end
             
-            for _,party in pairs(Game.party) do
-                if lib.dark_equip[party.id] and lib.dark_equip[party.id].weapon then
-                    party:setWeapon(lib.dark_equip[party.id].weapon)
-                else
-                    if party.init_equipped.weapon then
-                        party:setWeapon(party.init_equipped.weapon.id)
+            for _,party in pairs(lib.all_party_members) do
+                if lib.dark_equip[party.id] then
+                    if lib.dark_equip[party.id].weapon ~= true then
+                        party:setWeapon(lib.dark_equip[party.id].weapon)
                     else
                         party:setWeapon(nil)
                     end
-                    party.init_equipped.weapon = nil
+                else
+                    party:setWeapon(party.weapon)
                 end
                 for i = 1, 2 do
-                    if lib.dark_equip[party.id] and lib.dark_equip[party.id].armor[i] then
-                        party:setArmor(i, lib.dark_equip[party.id].armor[i])
-                    else
-                        if party.init_equipped.armor[i] then
-                            party:setArmor(i, party.init_equipped.armor[i].id)
+                    if lib.dark_equip[party.id] then
+                        if lib.dark_equip[party.id].armor[i] ~= true then
+                            party:setArmor(i, lib.dark_equip[party.id].armor[i])
                         else
                             party:setArmor(i, nil)
                         end
-                        party.init_equipped.armor[i] = nil
+                    else
+                        party:setArmor(i, party.armor[i])
                     end
                 end
             end
         else
-            for _,party in pairs(self.party) do
+            for _,party in pairs(lib.all_party_members) do
                 if not lib.dark_equip[party.id] then
                     lib.dark_equip[party.id] = {}
                     lib.dark_equip[party.id].armor = {}
                 end
-                lib.dark_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id
+                lib.dark_equip[party.id].weapon = party:getWeapon() and party:getWeapon().id or true
                 for i = 1, 2 do
-                    lib.dark_equip[party.id].armor[i] = party:getArmor(i) and party:getArmor(i).id
+                    lib.dark_equip[party.id].armor[i] = party:getArmor(i) and party:getArmor(i).id or true
                 end
             end
             
@@ -515,17 +513,26 @@ function lib:init()
                 Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
             end
             
-            for _,party in pairs(Game.party) do
-                if lib.light_equip[party.id] and lib.light_equip[party.id].weapon then
-                    party:setWeapon(lib.light_equip[party.id].weapon)
+            for _,party in pairs(lib.all_party_members) do
+                if lib.light_equip[party.id] then
+                    if lib.light_equip[party.id].weapon ~= true then
+                        party:setWeapon(lib.light_equip[party.id].weapon)
+                    else
+                        party:setWeapon(nil)
+                    end
                 else
                     party:setWeapon(party.lw_weapon_default)
                 end
-                if lib.light_equip[party.id] and lib.light_equip[party.id].armor[1] then
-                    party:setArmor(1, lib.light_equip[party.id].armor[1])
+                if lib.light_equip[party.id] then
+                    if lib.light_equip[party.id].armor[1] ~= true then
+                        party:setArmor(1, lib.light_equip[party.id].armor[1])
+                    else
+                        party:setArmor(1, nil)
+                    end
                 else
                     party:setArmor(1, party.lw_armor_default)
                 end
+                party:setArmor(2, nil)
             end
         end
     end)
@@ -2087,7 +2094,13 @@ function lib:init()
 
         self.lw_stats["magic"] = 0
         
-        self.init_equipped = self.equipped
+        self.weapon = nil
+        self.armor = {}
+        
+        if not lib.all_party_members then
+            lib.all_party_members = {}
+        end
+        table.insert(lib.all_party_members, self)
 
     end)
 
