@@ -71,35 +71,11 @@ function lib:load(data, new_file)
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
     else
-        if data.magical_glass["kills"] then
-            lib.kills = data.magical_glass["kills"]
-        else
-            lib.kills = 0        
-        end
-
-        if data.magical_glass["game_overs"] then
-            lib.game_overs = data.magical_glass["game_overs"]
-        else
-            lib.game_overs = 0
-        end
-
-        if data.magical_glass["serious_mode"] then
-            lib.serious_mode = data.magical_glass["serious_mode"]
-        else
-            lib.serious_mode = false
-        end
-
-        if data.magical_glass["name_color"] then
-            lib.name_color = data.magical_glass["name_color"]
-        else
-            lib.name_color = COLORS.yellow
-        end
-
-        if data.magical_glass["lw_save_lv"] then
-            lib.lw_save_lv = data.magical_glass["lw_save_lv"]
-        else
-            lib.lw_save_lv = 0
-        end
+        lib.kills = data.magical_glass["kills"] or 0
+        lib.game_overs = data.magical_glass["game_overs"] or 0
+        lib.serious_mode = data.magical_glass["serious_mode"] or false
+        lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
+        lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.light_inv = data.magical_glass["light_inv"]
         lib.dark_inv = data.magical_glass["dark_inv"]
     end
@@ -903,7 +879,7 @@ function lib:init()
     end)
 
     Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
-        return not Game:isLight() and Game.inventory or lib.dark_inv
+        return lib.dark_inv
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
