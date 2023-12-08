@@ -2100,7 +2100,7 @@ function lib:init()
         self:onLightLevelUp(level)
     end)
 
-    Utils.hook(PartyMember, "forceLV", function(orig, self, level)
+    Utils.hook(PartyMember, "forceLightLV", function(orig, self, level)
         self.lw_lv = level
 
         if self.lw_lv >= #self.lw_exp_needed then
