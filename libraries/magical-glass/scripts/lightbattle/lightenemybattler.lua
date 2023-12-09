@@ -535,11 +535,6 @@ function LightEnemyBattler:forceDefeat(amount, battler)
     self:onDefeat(amount, battler)
 end
 
-function LightEnemyBattler:getAttackTension(points)
-    -- In Deltarune, this is always 10*2.5, except for JEVIL where it's 15*2.5
-    return points / 25
-end
-
 function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
     local crit = false
@@ -556,6 +551,16 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if points > (400 * (lane.weapon:getBoltCount() / 4)) then
             crit = true
         end
+        
+        if crit then
+            lane.battler.tp_gain = 6
+        elseif points > (350 * (lane.weapon:getBoltCount() / 4)) then
+            lane.battler.tp_gain = 5
+        elseif points > (300 * (lane.weapon:getBoltCount() / 4)) then
+            lane.battler.tp_gain = 4
+        else
+            lane.battler.tp_gain = 3
+        end
     else
         if damage > 0 then
             return damage
@@ -567,16 +572,16 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         else
             total_damage = Utils.round((total_damage * stretch) * 2)
         end
-    end
-    
-    if points <= 12 then
-        lane.battler.tp_gain = 6
-    elseif points <= 20 then
-        lane.battler.tp_gain = 5
-    elseif points <= 97 then
-        lane.battler.tp_gain = 4
-    else
-        lane.battler.tp_gain = 3
+        
+        if points <= 12 then
+            lane.battler.tp_gain = 6
+        elseif points <= 20 then
+            lane.battler.tp_gain = 5
+        elseif points <= 97 then
+            lane.battler.tp_gain = 4
+        else
+            lane.battler.tp_gain = 3
+        end
     end
     
     return total_damage, crit
