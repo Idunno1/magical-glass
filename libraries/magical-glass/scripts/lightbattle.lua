@@ -226,7 +226,7 @@ function LightBattle:postInit(state, encounter)
     if state == "TRANSITION" then
         self.encounter:onSoulTransition()
     else
-        self.encounter:onBattleStart()
+        self.encounter:onNoTransition()
     end
 
     if self.encounter.story then
