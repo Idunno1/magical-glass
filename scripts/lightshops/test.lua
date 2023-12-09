@@ -33,7 +33,7 @@ function TestShop:init()
     -- Shown when you sell something
     self.sell_text = "There\nwe go."
     -- Shown when you have nothing in a storage
-    self.sell_no_storage_text = "Nothing\nin there."
+    self.sell_no_storage_text = "* Nothing in there."
     -- Shown when you enter the talk menu.
     self.talk_text = "Guess I\nshould\nthink."
 
