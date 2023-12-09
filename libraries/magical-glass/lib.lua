@@ -2594,12 +2594,13 @@ function lib:registerDebugOptions(debug)
     end
 
     debug:registerMenu("select_shop", "Enter Shop")
+    
+    debug:registerOption("select_shop", "Enter Dark Shop", "Enter a dark shop.", function()
+        debug:enterMenu("dark_select_shop", 0)
+    end)
 
     debug:registerOption("select_shop", "Enter Light Shop", "Enter a light shop.", function()
         debug:enterMenu("light_select_shop", 0)
-    end)
-    debug:registerOption("select_shop", "Enter Shop", "Enter a vanilla shop.", function()
-        debug:enterMenu("dark_select_shop", 0)
     end)
 
     debug:registerMenu("light_select_shop", "Enter Light Shop", "search")
