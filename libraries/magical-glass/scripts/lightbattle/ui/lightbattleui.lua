@@ -288,10 +288,7 @@ function LightBattleUI:drawState()
 
         local offset = 0
         if Game.battle:isPagerMenu() then
-            if Game.battle.state_reason == "SPELL" then
-                offset = 96
-            end
-            love.graphics.print("PAGE " .. page + 1, 388 + offset, 64)
+            love.graphics.print("PAGE " .. page + 1, 388, 64)
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then
