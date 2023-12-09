@@ -564,9 +564,19 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
         if points <= 12 then
             total_damage = Utils.round(total_damage * 2.2)
-        elseif points > 12 then
+        else
             total_damage = Utils.round((total_damage * stretch) * 2)
         end
+    end
+    
+    if points <= 12 then
+        lane.battler.tp_gain = 6
+    elseif points <= 20 then
+        lane.battler.tp_gain = 5
+    elseif points <= 97 then
+        lane.battler.tp_gain = 4
+    else
+        lane.battler.tp_gain = 3
     end
     
     return total_damage, crit
@@ -577,6 +587,9 @@ function LightEnemyBattler:getDamageVoice() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
+    if Game.battle.tension_bar.visible then
+        Game:giveTension(battler.tp_gain or 0)
+    end
     if self.actor.use_light_battler_sprite then
         if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
             self:toggleOverlay(false)

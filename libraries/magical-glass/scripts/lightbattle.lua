@@ -562,9 +562,6 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                if self.tension_bar.visible then
-                    Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
-                end
                 weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
             else
                 weapon:onLightMiss(battler, enemy, true, false)
