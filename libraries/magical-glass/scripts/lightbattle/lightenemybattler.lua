@@ -24,8 +24,6 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether the enemy runs/slides away when defeated/spared
     self.exit_on_defeat = true
 
-    self.exit_direction = nil
-
     -- Whether this enemy is automatically spared at full mercy
     self.auto_spare = false
 
@@ -124,10 +122,6 @@ function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
 function LightEnemyBattler:getHPVisibility() return self.show_hp end
 function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
-
-function LightEnemyBattler:getExitDirection()
-    return self.exit_direction or Utils.random(-2, 2, 1)
-end
 
 function LightEnemyBattler:setTired(bool)
     self.tired = bool
@@ -244,9 +238,9 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
 end
 
 function LightEnemyBattler:spare(pacify)
-    self:toggleOverlay(true)
 
     if self.exit_on_defeat then
+        self:toggleOverlay(true)
         self.alpha = 0.5
         Game.battle.spare_sound:stop()
         Game.battle.spare_sound:play()
@@ -597,7 +591,7 @@ function LightEnemyBattler:onHurt(damage, battler)
 
     Game.battle.timer:after(1/3, function()
         local sound = self:getDamageVoice()
-        if sound and type(sound) == "string" then
+        if sound and type(sound) == "string" and not self:getActiveSprite().frozen then
             Assets.stopAndPlaySound(sound)
         end
     end)
@@ -613,16 +607,16 @@ end
 
 function LightEnemyBattler:onHurtEnd()
     self:getActiveSprite():stopShake()
-    if self.health > 0 then
+    if self.health > 0 or not self.exit_on_defeat then
         self:toggleOverlay(false, true)
     end
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
-    if self.actor.use_light_battler_sprite == true then
-        self:toggleOverlay(true)
-    end
-    if self.exit_on_defeat and not self.can_freeze then
+    if self.exit_on_defeat then
+        if self.actor.use_light_battler_sprite then
+            self:toggleOverlay(true)
+        end
         Game.battle.timer:after(self.hurt_timer, function()
             if self.can_die then
                 if self.ut_death then
@@ -634,7 +628,7 @@ function LightEnemyBattler:onDefeat(damage, battler)
                 self:onDefeatRun(damage, battler)
             end
         end)
-    else
+    elseif not self.actor.use_light_battler_sprite then
         self.sprite:setAnimation("defeat")
     end
 end
@@ -731,7 +725,10 @@ function LightEnemyBattler:freeze()
     end
     sprite:stopShake()
 
-    self:recruitMessage("frozen")
+    -- self:recruitMessage("frozen")
+    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
+    message.y = message.y + 72
+    message:resetPhysics()
 
     self.hurt_timer = -1
 
@@ -740,7 +737,7 @@ function LightEnemyBattler:freeze()
 
     Game.battle.timer:tween(20/30, sprite, {freeze_progress = 1})
 
-    Game.battle.money = Game.battle.money + 24
+    Game.battle.money = Game.battle.money + 8
     self:defeat("FROZEN", true)
 end
 
