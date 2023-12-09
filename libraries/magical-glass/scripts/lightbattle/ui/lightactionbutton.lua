@@ -180,13 +180,13 @@ function LightActionButton:select()
                 Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
         })
-        if Game.battle.encounter.can_defend then
+        if Kristal.getLibConfig("magical-glass", "light_battle_defend_btn") then
             Game.battle:addMenuItem({
                 ["name"] = "Defend",
                 ["special"] = "defend",
                 ["callback"] = function(menu_item)
                     Game.battle:toggleSoul(false)
-                    Game.battle:pushAction("DEFEND", nil, {tp = -16})
+                    Game.battle:pushAction("DEFEND", nil, {tp = Game.battle.tension_bar.visible and -16 or 0})
                 end
             })
         end

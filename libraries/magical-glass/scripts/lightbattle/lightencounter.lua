@@ -33,7 +33,7 @@ function LightEncounter:init()
     self.defeated_enemies = nil
 
     self.can_flee = true
-    self.can_defend = false
+    self.serious = false
 
     self.flee_chance = 0
     self.flee_messages = {
