@@ -71,7 +71,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
         if punches > 0 then
             local sound = enemy:getDamageSound() or "damage"
-            if sound and type(sound) == "string" then
+            if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
                 Assets.stopAndPlaySound(sound)
             end
             local new_damage = math.ceil(damage * (punches / self.attack_punches))
