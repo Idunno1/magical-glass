@@ -427,9 +427,9 @@ function LightBattleUI:drawState()
             if Game.battle.state == "XACTENEMYSELECT" then
                 Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                 if Game.battle.selected_xaction.id == 0 then
-                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 0 + y_offset)
+                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 322, 0 + y_offset)
                 else
-                    love.graphics.print(Game.battle.selected_xaction.name, 282, 50 + y_offset)
+                    love.graphics.print(Game.battle.selected_xaction.name, 322, 50 + y_offset)
                 end
             end
 
