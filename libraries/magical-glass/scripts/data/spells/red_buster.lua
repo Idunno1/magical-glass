@@ -21,7 +21,7 @@ end
 
 function spell:getDamage(user, target, pressed)
     if Game:isLight() then
-        local damage = math.ceil((user.chara:getStat("magic") * 5) + (user.chara:getStat("attack") * 12) - (target.defense * 5)) + 70
+        local damage = math.ceil((user.chara:getStat("magic") * 4) + (user.chara:getStat("attack") * 8) - (target.defense * 4)) + 70
         if pressed then
             damage = damage + 20
         end
