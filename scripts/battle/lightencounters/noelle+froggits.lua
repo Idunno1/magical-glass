@@ -4,7 +4,7 @@ function Noelle:init()
     super:init(self)
 
     -- Text displayed at the bottom of the screen at the start of the encounter
-    self.text = "* Here they come!\n* (Auto Placement test :3)"
+    self.text = "* Here they come!\n* (Undefined placement test :3)"
 
     -- Battle music ("battleut" is undertale)
     self.music = "battleut"
