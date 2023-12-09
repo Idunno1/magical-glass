@@ -1094,7 +1094,7 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
 
         if self.tension_bar.visible then
-            self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 20))
         end
 
         for _,battler in ipairs(self.party) do

@@ -153,10 +153,6 @@ function LightEncounter:onFlee()
 
         local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
 
-        if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
-            money = money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
-        end
-
         for _,battler in ipairs(Game.battle.party) do
             for _,equipment in ipairs(battler.chara:getEquipment()) do
                 money = math.floor(equipment:applyMoneyBonus(money) or money)
