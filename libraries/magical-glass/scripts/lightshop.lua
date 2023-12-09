@@ -25,18 +25,8 @@ function LightShop:init()
     self.buy_too_expensive_text = "Not\nenough\nmoney."
     -- Shown when you don't have enough space to buy something.
     self.buy_no_space_text = "You're\ncarrying\ntoo much."
-    -- Shown when something doesn't have a sell price
-    self.sell_no_price_text = "No\nprice\ntext"
-    -- Shown when you're in the SELL menu
-    self.sell_menu_text = "Sell\nmenu\ntext"
-    -- Shown when you try to sell an empty spot
-    self.sell_nothing_text = "Sell\nnothing\attempt"
     -- Shown when you're about to sell something.
     self.sell_confirmation_text = "Sell it for\n%s ?"
-    -- Shown when you refuse to sell something
-    self.sell_refuse_text = "Sell\nrefuse\ntext"
-    -- Shown when you sell something
-    self.sell_text = "Sell\ntext"
     -- Shown when you have nothing in a storage
     self.sell_no_storage_text = "* Empty inventory text"
     -- Shown when you enter the talk menu.
@@ -866,15 +856,12 @@ function LightShop:onKeyPressed(key, is_repeat)
                                 self.sold_everything = true
                             end
                         end
-                    elseif self.current_selecting_choice == 2 then
-                        self:setRightText(self.sell_refuse_text)
                     else
                         self:setRightText("What?????[wait:5]\ndid you\ndo????")
                     end
                 elseif Input.isCancel(key) then
                     self.sell_confirming = false
                     Game.key_repeat = true
-                    self:setRightText(self.sell_refuse_text)
                 elseif Input.is("up", key) or Input.is("down", key) then
                     if self.current_selecting_choice == 1 then
                         self.current_selecting_choice = 2
@@ -890,11 +877,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                             Game.key_repeat = false
                             self.current_selecting_choice = 1
                             self:setRightText("")
-                        else
-                            self:setRightText(self.sell_no_price_text)
                         end
-                    else
-                        self:setRightText(self.sell_nothing_text)
                     end
                 elseif Input.isCancel(key) and not is_repeat then
                     self:setState("SELLMENU")
@@ -991,7 +974,6 @@ function LightShop:sellItem(current_item)
     Game.inventory:removeItem(current_item)
 
     Assets.playSound("buyitem")
-    self:setRightText(self.sell_text)
 end
 
 function LightShop:getMoney()
