@@ -24,8 +24,7 @@
         /////
         "light_battle_tp": false,
         
-        ///// Light Battle Defend Button
-        // Whether party members can defend in battles (located at the mercy button).
+        ///// Light Battle Defend light battles (located at the mercy button).
         /////
         "light_battle_defend_btn": true,
 
