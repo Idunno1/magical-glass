@@ -29,8 +29,10 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether this enemy is automatically spared at full mercy
     self.auto_spare = false
 
-    -- Whether this enemy can be frozen
+    -- Whether this enemy can be frozen or die, and whether it's the Undertale death or Deltarune death
     self.can_freeze = false
+    self.can_die = true
+    self.ut_death = true
 
     -- Whether this enemy can be selected or not
     self.selectable = true
@@ -622,9 +624,15 @@ function LightEnemyBattler:onDefeat(damage, battler)
     end
     if self.exit_on_defeat and not self.can_freeze then
         Game.battle.timer:after(self.hurt_timer, function()
-            self:onDefeatVaporized(damage, battler)  
-            --self:onDefeatRun(damage, battler)
-            --self:onDefeatFatal(damage, battler)      
+            if self.can_die then
+                if self.ut_death then
+                    self:onDefeatVaporized(damage, battler)
+                else
+                    self:onDefeatFatal(damage, battler)
+                end
+            else
+                self:onDefeatRun(damage, battler)
+            end
         end)
     else
         self.sprite:setAnimation("defeat")
@@ -646,7 +654,7 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
     Game.battle.timer:after(15/30, function()
         sweat:remove()
         self:getActiveSprite().run_away_light = true
-        self:getActiveSprite().run_direction = Utils.pick({2, -2})
+        self:getActiveSprite().run_direction = 2
 
         Game.battle.timer:after(15/30, function()
             self:remove()
