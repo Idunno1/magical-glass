@@ -41,14 +41,10 @@ function LightShop:init()
     self.sell_no_storage_text = "* Empty inventory text"
     -- Shown when you enter the talk menu.
     self.talk_text = "Talk\ntext"
-    
-    self.sell_options_text = {}
-    self.sell_options_text["items"]   = "Item text"
-    self.sell_options_text["weapons"] = "Weapon\ntext"
-    self.sell_options_text["armors"]  = "Armor text"
-    self.sell_options_text["storage"] = "Storage\ntext"
 
     self.hide_storage_text = false
+    
+    self.background = "ui/shop/bg_seam"
 
     -- MAINMENU
     self.menu_options = {
@@ -63,11 +59,10 @@ function LightShop:init()
     self.talk_replacements = {}
 
     -- SELLMENU
-    self.sell_storage = "items"
 
     self.sold_text = "Thank you!"
-
-    self.background = "ui/shop/bg_seam"
+    
+    self.sold_everything = false
 
     -- STATES: MAINMENU, BUYMENU, SELLMENU, SELLING, TALKMENU, LEAVE, LEAVING, DIALOGUE
     self.state = "NONE"
@@ -126,8 +121,6 @@ function LightShop:init()
     self.draw_divider = true
 
     self.hide_price = false
-    
-    self.sold_everything = false
 
     self.leave_options = {}
 end
@@ -749,7 +742,7 @@ function LightShop:draw()
         love.graphics.setFont(self.font)
         love.graphics.print(string.format(self.currency_text, self:getMoney()), 460, 420)
 
-        local current_storage = Game.inventory:getStorage(self.sell_storage)
+        local current_storage = Game.inventory:getStorage("items")
 
         love.graphics.print(#current_storage .. "/" .. current_storage.max, 560, 420)
     elseif self.state == "SELLING" then
