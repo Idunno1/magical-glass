@@ -226,7 +226,7 @@ function LightBattle:postInit(state, encounter)
     if state == "TRANSITION" then
         self.encounter:onSoulTransition()
     else
-        self.encounter:onBattleStart()
+        self.encounter:onNoTransition()
     end
 
     if self.encounter.story then
@@ -562,9 +562,6 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                if self.tension_bar.visible then
-                    Game:giveTension(Utils.round(enemy:getAttackTension(points or 100))) 
-                end
                 weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
             else
                 weapon:onLightMiss(battler, enemy, true, false)
@@ -1097,7 +1094,7 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
 
         if self.tension_bar.visible then
-            self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 20))
         end
 
         for _,battler in ipairs(self.party) do

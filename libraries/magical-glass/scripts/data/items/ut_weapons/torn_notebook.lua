@@ -101,7 +101,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     end,
     function(this)
         local sound = enemy:getDamageSound() or "damage"
-        if sound and type(sound) == "string" then
+        if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
             Assets.stopAndPlaySound(sound)
         end
         enemy:hurt(damage, battler)

@@ -201,7 +201,7 @@ function LightBattleUI:drawState()
             end
 
             local name = item.name
-            if item.seriousname and MagicalGlassLib.serious_mode then
+            if item.seriousname and Game.battle.encounter.serious then
                 name = item.seriousname
             elseif item.shortname then
                 name = item.shortname
@@ -288,10 +288,7 @@ function LightBattleUI:drawState()
 
         local offset = 0
         if Game.battle:isPagerMenu() then
-            if Game.battle.state_reason == "SPELL" then
-                offset = 96
-            end
-            love.graphics.print("PAGE " .. page + 1, 388 + offset, 64)
+            love.graphics.print("PAGE " .. page + 1, 388, 64)
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then
@@ -427,9 +424,9 @@ function LightBattleUI:drawState()
             if Game.battle.state == "XACTENEMYSELECT" then
                 Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
                 if Game.battle.selected_xaction.id == 0 then
-                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 282, 0 + y_offset)
+                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 322, 0 + y_offset)
                 else
-                    love.graphics.print(Game.battle.selected_xaction.name, 282, 50 + y_offset)
+                    love.graphics.print(Game.battle.selected_xaction.name, 322, 50 + y_offset)
                 end
             end
 

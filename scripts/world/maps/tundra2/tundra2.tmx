@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="179">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="136" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="14" nextobjectid="181">
  <editorsettings>
   <export target="data.lua" format="lua"/>
  </editorsettings>
@@ -121,6 +121,13 @@ sitting inside...</property>
    <properties>
     <property name="actor" value="noelle_lw_npc"/>
     <property name="lightencounter" value="noelle"/>
+   </properties>
+  </object>
+  <object id="180" name="interactable" x="1119.33" y="339.667" width="40" height="80.6667">
+   <properties>
+    <property name="solid" type="bool" value="false"/>
+    <property name="text1">* A big stick.[wait:20]
+* It's too heavy for you to pick up.</property>
    </properties>
   </object>
  </objectgroup>

@@ -13,7 +13,7 @@ function EncGroup:resetSteps()
         if pop_factor > 8 then
             pop_factor = 8
         end
-        local steps = 30 + (Utils.round(Utils.random(15))) * pop_factor
+        local steps = math.ceil(30 + (Utils.round(Utils.random(15))) * pop_factor)
         MagicalGlassLib.steps_until_encounter = steps
     else
         MagicalGlassLib.steps_until_encounter = 20

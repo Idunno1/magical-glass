@@ -1,7 +1,7 @@
 local spell, super = Class("ultimate_heal", true)
 
 function spell:onLightStart(user, target)
-    local amount = math.ceil((user.chara:getStat("magic") + 1))
+    local amount = math.ceil(user.chara:getStat("magic"))
     target:heal(amount, false, true)
 
     local result = self:onLightCast(user, target)

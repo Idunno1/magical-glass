@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 14,
-  nextobjectid = 179,
+  nextobjectid = 181,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -521,6 +521,22 @@ return {
           properties = {
             ["actor"] = "noelle_lw_npc",
             ["lightencounter"] = "noelle"
+          }
+        },
+        {
+          id = 180,
+          name = "interactable",
+          type = "",
+          shape = "rectangle",
+          x = 1119.33,
+          y = 339.667,
+          width = 40,
+          height = 80.6667,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["solid"] = false,
+            ["text1"] = "* A big stick.[wait:20]\n* It's too heavy for you to pick up."
           }
         }
       }

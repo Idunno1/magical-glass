@@ -3,7 +3,7 @@ local character, super = Class("susie", true)
 function character:init()
     super.init(self)
     
-    self.lw_portrait = "face/susie/smile"
+    self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/susie/bangs_smile" or "face/susie/smile"
 
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
@@ -32,6 +32,15 @@ function character:lightLVStats()
         defense = 9 + math.ceil(self:getLightLV() / 4),
         magic = math.ceil(self:getLightLV() / 4)
     }
+end
+
+function character:onAttackHit(enemy, damage)
+    if not Game.battle.light then
+        if damage > 0 then
+            Assets.playSound("impact", 0.8)
+            Game.battle:shakeCamera(4)
+        end
+    end
 end
 
 return character

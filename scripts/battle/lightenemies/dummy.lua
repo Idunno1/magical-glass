@@ -89,8 +89,6 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("deltarune")
         fuck.name = "undertale"
         Game.battle.encounter:setFlag("deltarune", true)
-        Game.battle.encounter.can_defend = true
-        Game.battle.encounter.can_flee = false
         Game.battle.tension = true
         return "* deltrarune"
 
@@ -98,8 +96,6 @@ function Dummy:onAct(battler, name)
         local fuck = self:getAct("undertale")
         fuck.name = "deltarune"
         Game.battle.encounter:setFlag("deltarune", false)
-        Game.battle.encounter.can_defend = false
-        Game.battle.encounter.can_flee = true
         Game.battle.tension = true
         return "* udnertal"
 

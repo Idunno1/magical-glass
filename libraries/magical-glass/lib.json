@@ -23,6 +23,10 @@
         // Whether the Tension Bar and grazing should be enabled in light battles.
         /////
         "light_battle_tp": false,
+        
+        ///// Light Battle Defend light battles (located at the mercy button).
+        /////
+        "light_battle_defend_btn": true,
 
         ///// Force light mode in Light Battles
         // Whether the game should enable light mode when entering a light battle in the dark world.

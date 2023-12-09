@@ -24,13 +24,13 @@ function LightEnemyBattler:init(actor, use_overlay)
     -- Whether the enemy runs/slides away when defeated/spared
     self.exit_on_defeat = true
 
-    self.exit_direction = nil
-
     -- Whether this enemy is automatically spared at full mercy
     self.auto_spare = false
 
-    -- Whether this enemy can be frozen
+    -- Whether this enemy can be frozen or die, and whether it's the Undertale death or Deltarune death
     self.can_freeze = false
+    self.can_die = true
+    self.ut_death = true
 
     -- Whether this enemy can be selected or not
     self.selectable = true
@@ -122,10 +122,6 @@ function LightEnemyBattler:getDamageOffset() return self.damage_offset end
 
 function LightEnemyBattler:getHPVisibility() return self.show_hp end
 function LightEnemyBattler:getMercyVisibility() return self.show_mercy end
-
-function LightEnemyBattler:getExitDirection()
-    return self.exit_direction or Utils.random(-2, 2, 1)
-end
 
 function LightEnemyBattler:setTired(bool)
     self.tired = bool
@@ -242,9 +238,9 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
 end
 
 function LightEnemyBattler:spare(pacify)
-    self:toggleOverlay(true)
 
     if self.exit_on_defeat then
+        self:toggleOverlay(true)
         self.alpha = 0.5
         Game.battle.spare_sound:stop()
         Game.battle.spare_sound:play()
@@ -539,11 +535,6 @@ function LightEnemyBattler:forceDefeat(amount, battler)
     self:onDefeat(amount, battler)
 end
 
-function LightEnemyBattler:getAttackTension(points)
-    -- In Deltarune, this is always 10*2.5, except for JEVIL where it's 15*2.5
-    return points / 25
-end
-
 function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
     local crit = false
@@ -560,6 +551,16 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if points > (400 * (lane.weapon:getBoltCount() / 4)) then
             crit = true
         end
+        
+        if crit then
+            lane.battler.tp_gain = 6
+        elseif points > (350 * (lane.weapon:getBoltCount() / 4)) then
+            lane.battler.tp_gain = 5
+        elseif points > (300 * (lane.weapon:getBoltCount() / 4)) then
+            lane.battler.tp_gain = 4
+        else
+            lane.battler.tp_gain = 3
+        end
     else
         if damage > 0 then
             return damage
@@ -568,8 +569,18 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         total_damage = (lane.battler.chara:getStat("attack", default, true) - self.defense) + Utils.random(0, 2, 1)
         if points <= 12 then
             total_damage = Utils.round(total_damage * 2.2)
-        elseif points > 12 then
+        else
             total_damage = Utils.round((total_damage * stretch) * 2)
+        end
+        
+        if points <= 12 then
+            lane.battler.tp_gain = 6
+        elseif points <= 20 then
+            lane.battler.tp_gain = 5
+        elseif points <= 97 then
+            lane.battler.tp_gain = 4
+        else
+            lane.battler.tp_gain = 3
         end
     end
     
@@ -581,6 +592,9 @@ function LightEnemyBattler:getDamageVoice() end
 
 function LightEnemyBattler:onHurt(damage, battler)
     self:toggleOverlay(true)
+    if Game.battle.tension_bar.visible then
+        Game:giveTension(battler.tp_gain or 0)
+    end
     if self.actor.use_light_battler_sprite then
         if not self:getActiveSprite():setAnimation("lightbattle_hurt") then
             self:toggleOverlay(false)
@@ -595,7 +609,7 @@ function LightEnemyBattler:onHurt(damage, battler)
 
     Game.battle.timer:after(1/3, function()
         local sound = self:getDamageVoice()
-        if sound and type(sound) == "string" then
+        if sound and type(sound) == "string" and not self:getActiveSprite().frozen then
             Assets.stopAndPlaySound(sound)
         end
     end)
@@ -611,22 +625,28 @@ end
 
 function LightEnemyBattler:onHurtEnd()
     self:getActiveSprite():stopShake()
-    if self.health > 0 then
+    if self.health > 0 or not self.exit_on_defeat then
         self:toggleOverlay(false, true)
     end
 end
 
 function LightEnemyBattler:onDefeat(damage, battler)
-    if self.actor.use_light_battler_sprite == true then
-        self:toggleOverlay(true)
-    end
-    if self.exit_on_defeat and not self.can_freeze then
+    if self.exit_on_defeat then
+        if self.actor.use_light_battler_sprite then
+            self:toggleOverlay(true)
+        end
         Game.battle.timer:after(self.hurt_timer, function()
-            self:onDefeatVaporized(damage, battler)  
-            --self:onDefeatRun(damage, battler)
-            --self:onDefeatFatal(damage, battler)      
+            if self.can_die then
+                if self.ut_death then
+                    self:onDefeatVaporized(damage, battler)
+                else
+                    self:onDefeatFatal(damage, battler)
+                end
+            else
+                self:onDefeatRun(damage, battler)
+            end
         end)
-    else
+    elseif not self.actor.use_light_battler_sprite then
         self.sprite:setAnimation("defeat")
     end
 end
@@ -646,7 +666,7 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
     Game.battle.timer:after(15/30, function()
         sweat:remove()
         self:getActiveSprite().run_away_light = true
-        self:getActiveSprite().run_direction = Utils.pick({2, -2})
+        self:getActiveSprite().run_direction = 2
 
         Game.battle.timer:after(15/30, function()
             self:remove()
@@ -723,7 +743,10 @@ function LightEnemyBattler:freeze()
     end
     sprite:stopShake()
 
-    self:recruitMessage("frozen")
+    -- self:recruitMessage("frozen")
+    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
+    message.y = message.y + 72
+    message:resetPhysics()
 
     self.hurt_timer = -1
 
@@ -732,7 +755,7 @@ function LightEnemyBattler:freeze()
 
     Game.battle.timer:tween(20/30, sprite, {freeze_progress = 1})
 
-    Game.battle.money = Game.battle.money + 24
+    Game.battle.money = Game.battle.money + 8
     self:defeat("FROZEN", true)
 end
 

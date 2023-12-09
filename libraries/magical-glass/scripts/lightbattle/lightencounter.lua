@@ -33,7 +33,9 @@ function LightEncounter:init()
     self.defeated_enemies = nil
 
     self.can_flee = true
-    self.can_defend = false
+    
+    -- makes items use their serious name in battle, if they have one
+    self.serious = false
 
     self.flee_chance = 0
     self.flee_messages = {
@@ -103,7 +105,13 @@ function LightEncounter:onSoulTransition()
 
         Game.battle.fader:fadeIn(nil, {speed=5/30})
         Game.battle.transitioned = true
-        self:onBattleStart()
+        self:setBattleState()
+    end)
+end
+
+function LightEncounter:onNoTransition()
+    Game.battle.timer:after(1/30, function()
+        self:setBattleState()
     end)
 end
 
@@ -113,22 +121,19 @@ function LightEncounter:storyWave()
     return "_story"
 end
 
-function LightEncounter:onBattleStart() 
-    Game.battle.timer:script(function(wait)
-        -- Wait till the battle defines itself
-        if Game.battle.transitioned ~= true then
-            wait(1/30)
-        end
-        if self.nobody_came then
-            Game.battle:setState("BUTNOBODYCAME")
-        elseif self.story then
-            Game.battle:setState("ENEMYDIALOGUE")
-            Game.battle.soul.can_move = true
-        else
-            Game.battle:setState("ACTIONSELECT")
-        end
-    end)
+function LightEncounter:setBattleState()
+    if self.nobody_came then
+        Game.battle:setState("BUTNOBODYCAME")
+    elseif self.story then
+        Game.battle:setState("ENEMYDIALOGUE")
+        Game.battle.soul.can_move = true
+    else
+        Game.battle:setState("ACTIONSELECT")
+    end
+    self:onBattleStart()
 end
+
+function LightEncounter:onBattleStart() end
 
 function LightEncounter:onBattleEnd() end
 
@@ -149,10 +154,6 @@ function LightEncounter:onFlee()
     if Game.battle.used_violence then -- level up shit
 
         local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
-
-        if Kristal.getLibConfig("magical-glass", "light_battle_tp") then
-            money = money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
-        end
 
         for _,battler in ipairs(Game.battle.party) do
             for _,equipment in ipairs(battler.chara:getEquipment()) do
@@ -234,7 +235,7 @@ function LightEncounter:addEnemy(enemy, x, y, ...)
     if x and y then
         enemy_obj:setPosition(x, y)
     else
-        local x, y = (SCREEN_WIDTH/2 + (80 * #enemies)) - 3, 240
+        local x, y = SCREEN_WIDTH/2 + math.floor((#enemies + 1) / 2) * 120 * ((#enemies % 2 == 0) and -1 or 1) - 3, 240
         enemy_obj:setPosition(x, y)
     end
 

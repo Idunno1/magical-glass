@@ -53,7 +53,6 @@ function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
     data.magical_glass["game_overs"] = lib.game_overs
-    data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
     if lib.light_inv and not lib.light_inv_saved then
@@ -76,7 +75,6 @@ function lib:load(data, new_file)
     if new_file then
         lib.kills = 0        
         lib.game_overs = 0
-        lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
         lib.light_equip = {}
@@ -84,7 +82,6 @@ function lib:load(data, new_file)
     else
         lib.kills = data.magical_glass["kills"] or 0
         lib.game_overs = data.magical_glass["game_overs"] or 0
-        lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.light_inv = data.magical_glass["light_inv"]
@@ -135,303 +132,6 @@ function lib:init()
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
-    
-    --[[ Utils.hook(Shop, "init", function(orig, self)
-        orig(self)
-        if Game:isLight() and Game:getConfig("lightCurrencyShort") ~= "$" then
-            self.currency_text = "%d"..Game:getConfig("lightCurrencyShort")
-        end
-    end)
-    
-    Utils.hook(Shop, "update", function(orig, self)
-        orig(self)
-        if Game:isLight() then
-            self.sell_menu_text = ""
-            -- self.sell_options_text["items"]   = ""
-        end
-    end)
-    
-    Utils.hook(Shop, "buyItem", function(orig, self, current_item)
-        if Game:isLight() then
-            if (current_item.options["price"] or 0) > self:getMoney() then
-                self:setRightText(self.buy_too_expensive_text)
-            else
-                -- PURCHASE THE ITEM
-                -- Remove the gold
-                self:removeMoney(current_item.options["price"] or 0)
-
-                -- Decrement the stock
-                if current_item.options["stock"] then
-                    current_item.options["stock"] = current_item.options["stock"] - 1
-                    self:setFlag(current_item.options["flag"], current_item.options["stock"])
-                end
-
-                -- Add the item to the inventory
-                local new_item = Registry.createItem(current_item.item.id)
-                new_item:load(current_item.item:save())
-                if Game.inventory:addItem(new_item) then
-                    -- Visual/auditorial feedback (did I spell that right?)
-                    Assets.playSound("buyitem")
-                    self:setRightText(self.buy_text)
-                else
-                    -- Not enough space, oops
-                    self:setRightText(self.buy_no_space_text)
-                end
-            end
-        else
-            orig(self, current_item)
-        end
-    end)
-    
-    Utils.hook(Shop, "sellItem", function(orig, self, current_item)
-        if Game:isLight() then
-            -- SELL THE ITEM
-            -- Add the gold
-            self:addMoney(current_item:getSellPrice())
-            Game.inventory:removeItem(current_item)
-
-            Assets.playSound("buyitem")
-            self:setRightText(self.sell_text)
-        else
-            orig(self, current_item)
-        end
-    end)
-    
-    Utils.hook(Shop, "draw", function(orig, self)
-        if Game:isLight() then
-            self:drawBackground()
-
-            Object.draw(self)
-
-            love.graphics.setFont(self.font)
-            if self.state == "MAINMENU" then
-                Draw.setColor(COLORS.white)
-                for i = 1, #self.menu_options do
-                    love.graphics.print(self.menu_options[i][1], 480, 220 + (i * 40))
-                end
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 450, 230 + (self.main_current_selecting * 40))
-            elseif self.state == "BUYMENU" then
-
-                while self.current_selecting - self.item_offset > 5 do
-                    self.item_offset = self.item_offset + 1
-                end
-
-                while self.current_selecting - self.item_offset < 1 do
-                    self.item_offset = self.item_offset - 1
-                end
-
-                if self.item_offset + 5 > #self.items + 1 then
-                    if #self.items + 1 > 5 then
-                        self.item_offset = self.item_offset - 1
-                    end
-                end
-
-                if #self.items + 1 == 5 then
-                    self.item_offset = 0
-                end
-
-                -- Item type (item, key, weapon, armor)
-                for i = 1 + self.item_offset, self.item_offset + math.max(4, math.min(5, #self.items)) do
-                    if i == math.max(4, #self.items) + 1 then break end
-                    local y = 220 + ((i - self.item_offset) * 40)
-                    local item = self.items[i]
-                    if not item then
-                        -- If the item is null, add some empty space
-                        Draw.setColor(COLORS.dkgray)
-                        love.graphics.print("--------", 60, y)
-                    elseif item.options["stock"] and (item.options["stock"] <= 0) then
-                        -- If we've depleted the stock, show a "sold out" message
-                        Draw.setColor(COLORS.gray)
-                        love.graphics.print("--SOLD OUT--", 60, y)
-                    else
-                        Draw.setColor(item.options["color"])
-                        local price = not self.hide_price and tostring(string.format(self.currency_text, item.options["price"] or 0) .. " - ") or ""
-                        local leading_0 = item.options["price"] < 10 and item.options["price"] >= 0 and "0" or ""
-                        love.graphics.print(leading_0 .. price .. item.options["name"], 60, y)
-                    end
-                end
-                Draw.setColor(COLORS.white)
-                if self.item_offset == math.max(4, #self.items) - 4 then
-                    love.graphics.print("Exit", 60, 220 + (math.max(4, #self.items) + 1 - self.item_offset) * 40)
-                end
-                Draw.setColor(Game:getSoulColor())
-                if not self.buy_confirming then
-                    Draw.draw(self.heart_sprite, 30, 230 + ((self.current_selecting - self.item_offset) * 40))
-                else
-                    Draw.draw(self.heart_sprite, 30 + 420, 230 + 80 + 10 + (self.current_selecting_choice * 30))
-                    Draw.setColor(COLORS.white)
-                    local lines = Utils.split(string.format(self.buy_confirmation_text, string.format(self.currency_text, self.items[self.current_selecting].options["price"] or 0)), "\n")
-                    for i = 1, #lines do
-                        love.graphics.print(lines[i], 60 + 400, 420 - 160 + ((i - 1) * 30))
-                    end
-                    love.graphics.print("Yes", 60 + 420, 420 - 80)
-                    love.graphics.print("No",  60 + 420, 420 - 80 + 30)
-                end
-                Draw.setColor(COLORS.white)
-
-                if (self.current_selecting <= #self.items) then
-                    local current_item = self.items[self.current_selecting]
-                    local box_left, box_top = self.info_box:getBorder()
-
-                    local left = self.info_box.x - self.info_box.width - (box_left / 2) * 1.5
-                    local top = self.info_box.y - self.info_box.height - (box_top / 2) * 1.5
-                    local width = self.info_box.width + box_left * 1.5
-                    local height = self.info_box.height + box_top * 1.5
-
-                    Draw.pushScissor()
-                    Draw.scissor(left, top, width, height)
-
-                    Draw.setColor(COLORS.white)
-                    love.graphics.print(current_item.options["description"], left + 32, top + 20)
-
-                    Draw.popScissor()
-
-                    Draw.setColor(COLORS.white)
-
-                end
-            elseif self.state == "SELLMENU" then
-                if not Input.pressed("cancel") and #Game.inventory.storages.items > 0 then
-                    self:enterSellMenu(self.sell_options[1])
-                else
-                    self:setState("MAINMENU")
-                end
-            elseif self.state == "SELLING" then
-                if self.item_current_selecting - self.item_offset > 5 then
-                    self.item_offset = self.item_offset + 1
-                end
-
-                if self.item_current_selecting - self.item_offset < 1 then
-                    self.item_offset = self.item_offset - 1
-                end
-
-                local inventory = Game.inventory:getStorage(self.state_reason[2])
-
-                if inventory and inventory.sorted then
-                    if self.item_offset + 5 > #inventory then
-                        if #inventory > 5 then
-                            self.item_offset = self.item_offset - 1
-                        end
-                    end
-                    if #inventory == 5 then
-                        self.item_offset = 0
-                    end
-                end
-
-                Draw.setColor(Game:getSoulColor())
-
-                Draw.draw(self.heart_sprite, 30, 230 + ((self.item_current_selecting - self.item_offset) * 40))
-                if self.sell_confirming then
-                    Draw.draw(self.heart_sprite, 30 + 420, 230 + 80 + 10 + (self.current_selecting_choice * 30))
-                    Draw.setColor(COLORS.white)
-                    local lines = Utils.split(string.format(self.sell_confirmation_text, string.format(self.currency_text, inventory[self.item_current_selecting]:getSellPrice())), "\n")
-                    for i = 1, #lines do
-                        love.graphics.print(lines[i], 60 + 400, 420 - 160 + ((i - 1) * 30))
-                    end
-                    love.graphics.print("Yes", 60 + 420, 420 - 80)
-                    love.graphics.print("No",  60 + 420, 420 - 80 + 30)
-                end
-
-                Draw.setColor(COLORS.white)
-
-                if inventory then
-                    for i = 1 + self.item_offset, self.item_offset + math.min(5, inventory.max) do
-                        local item = inventory[i]
-                        love.graphics.setFont(self.font)
-
-                        if item then
-                            Draw.setColor(COLORS.white)
-                            love.graphics.print(item:getName(), 60, 220 + ((i - self.item_offset) * 40))
-                            if item:isSellable() then
-                                love.graphics.print(string.format(self.currency_text, item:getSellPrice()), 60 + 240, 220 + ((i - self.item_offset) * 40))
-                            end
-                        else
-                            Draw.setColor(COLORS.dkgray)
-                            love.graphics.print("--------", 60, 220 + ((i - self.item_offset) * 40))
-                        end
-                    end
-
-                    local max = inventory.max
-                    if inventory.sorted then
-                        max = #inventory
-                    end
-
-                    Draw.setColor(COLORS.white)
-
-                    if max > 5 then
-
-                        for i = 1, max do
-                            local percentage = (i - 1) / (max - 1)
-                            local height = 129
-
-                            local draw_location = percentage * height
-
-                            local tocheck = self.item_current_selecting
-                            if self.sell_confirming then
-                                tocheck = self.current_selecting_choice
-                            end
-
-                            if i == tocheck then
-                                love.graphics.rectangle("fill", 372, 292 + draw_location, 9, 9)
-                            elseif inventory.sorted then
-                                love.graphics.rectangle("fill", 372 + 3, 292 + 3 + draw_location, 3, 3)
-                            end
-                        end
-
-                        -- Draw arrows
-                        if not self.sell_confirming then
-                            local sine_off = math.sin((Kristal.getTime()*30)/6) * 3
-                            if self.item_offset + 4 < (max - 1) then
-                                Draw.draw(self.arrow_sprite, 370, 149 + sine_off + 291)
-                            end
-                            if self.item_offset > 0 then
-                                Draw.draw(self.arrow_sprite, 370, 14 - sine_off + 291 - 25, 0, 1, -1)
-                            end
-                        end
-                    end
-                else
-                    love.graphics.print("Invalid storage", 60, 220 + (1 * 40))
-                end
-            elseif self.state == "TALKMENU" then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 50, 230 + (self.current_selecting * 40))
-                Draw.setColor(COLORS.white)
-                love.graphics.setFont(self.font)
-                for i = 1, math.max(4, #self.talks) do
-                    local v = self.talks[i]
-                    if v then
-                        Draw.setColor(v[2].color)
-                        love.graphics.print(v[1], 80, 220 + (i * 40))
-                    else
-                        Draw.setColor(COLORS.dkgray)
-                        love.graphics.print("--------", 80, 220 + (i * 40))
-                    end
-                end
-                Draw.setColor(COLORS.white)
-                love.graphics.print("Exit", 80, 220 + ((math.max(4, #self.talks) + 1) * 40))
-            end
-
-            if self.state == "MAINMENU" or
-               self.state == "BUYMENU"  or
-               self.state == "SELLMENU" or
-               self.state == "SELLING"  or
-               self.state == "TALKMENU" then
-                Draw.setColor(COLORS.white)
-                love.graphics.setFont(self.font)
-                love.graphics.print(string.format(self.currency_text, self:getMoney()), 440, 420)
-                
-                local items_count = #Game.inventory.storages.items
-                local max_storage = Game.inventory.storages.items.max
-
-                love.graphics.print(items_count .. "/" .. max_storage, 560, 420)
-            end
-
-            Draw.setColor(0, 0, 0, self.fade_alpha)
-            love.graphics.rectangle("fill", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-        else
-            orig(self)
-        end
-    end) ]]
 
     Utils.hook(Game, "setLight", function(orig, self, light)
         light = light or false
@@ -446,7 +146,7 @@ function lib:init()
         self.light = light
         
         if self.light then
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if not lib.dark_equip[party.id] then
                     lib.dark_equip[party.id] = {}
                     lib.dark_equip[party.id].armor = {}
@@ -471,7 +171,7 @@ function lib:init()
                 Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
             end
             
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if lib.light_equip[party.id] then
                     if lib.light_equip[party.id].weapon then
                         party:setWeapon(lib.light_equip[party.id].weapon)
@@ -493,7 +193,7 @@ function lib:init()
                 party:setArmor(2, nil)
             end
         else
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if not lib.light_equip[party.id] then
                     lib.light_equip[party.id] = {}
                     lib.light_equip[party.id].armor = {}
@@ -512,7 +212,7 @@ function lib:init()
                 self.inventory = lib.dark_inv
             end
             
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if lib.dark_equip[party.id] then
                     if lib.dark_equip[party.id].weapon then
                         party:setWeapon(lib.dark_equip[party.id].weapon)
@@ -2096,11 +1796,6 @@ function lib:init()
         
         self.weapon = nil
         self.armor = {}
-        
-        if not lib.all_party_members then
-            lib.all_party_members = {}
-        end
-        table.insert(lib.all_party_members, self)
 
     end)
 
@@ -2127,11 +1822,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
-        if self.lw_exp >= self.lw_exp_needed[#self.lw_exp_needed] then
-            return self.lw_exp_needed[#self.lw_exp_needed]
-        else
-            return self.lw_exp
-        end
+        return self.lw_exp
     end)
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
@@ -2185,7 +1876,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = exp
+        self.lw_exp = Utils.clamp(exp, 0, 99999)
 
         if level_up then
             self:onLightLevelUp()
@@ -2903,12 +2594,13 @@ function lib:registerDebugOptions(debug)
     end
 
     debug:registerMenu("select_shop", "Enter Shop")
+    
+    debug:registerOption("select_shop", "Enter Dark Shop", "Enter a dark shop.", function()
+        debug:enterMenu("dark_select_shop", 0)
+    end)
 
     debug:registerOption("select_shop", "Enter Light Shop", "Enter a light shop.", function()
         debug:enterMenu("light_select_shop", 0)
-    end)
-    debug:registerOption("select_shop", "Enter Shop", "Enter a vanilla shop.", function()
-        debug:enterMenu("dark_select_shop", 0)
     end)
 
     debug:registerMenu("light_select_shop", "Enter Light Shop", "search")
@@ -3001,6 +2693,15 @@ end
 function lib:onFootstep()
     if Game.world and self.encounters_enabled then
         self.steps_until_encounter = self.steps_until_encounter - 1
+    end
+end
+
+function lib:preUpdate()
+    Game.lw_xp = 0 -- Gets the party with the most Light EXP (might be used for shared exp at some point)
+    for _,party in pairs(Game.party_data) do
+        if party:getLightEXP() > Game.lw_xp then  
+            Game.lw_xp = party:getLightEXP()
+        end
     end
 end
 
