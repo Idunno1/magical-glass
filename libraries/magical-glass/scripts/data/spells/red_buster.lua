@@ -19,4 +19,20 @@ function spell:onLightCast(user, target)
     return false
 end
 
+function spell:getDamage(user, target, pressed)
+    if Game:isLight() then
+        local damage = math.ceil((user.chara:getStat("magic") * 5) + (user.chara:getStat("attack") * 12) - (target.defense * 5)) + 70
+        if pressed then
+            damage = damage + 20
+        end
+        return damage
+    else
+        local damage = math.ceil((user.chara:getStat("magic") * 6) + (user.chara:getStat("attack") * 13) - (target.defense * 6)) + 90
+        if pressed then
+            damage = damage + 30
+        end
+        return damage
+    end
+end
+
 return spell

@@ -1,7 +1,7 @@
 local spell, super = Class("dual_heal", true)
 
 function spell:onLightStart(user, target)
-    local amount = math.ceil((user.chara:getStat("magic") * 2.5))
+    local amount = math.ceil(user.chara:getStat("magic") * 2.75)
     for _,battler in ipairs(Game.battle.party) do
         battler:heal(amount)
     end
