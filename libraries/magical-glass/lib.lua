@@ -2119,11 +2119,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
-        if self.lw_exp >= self.lw_exp_needed[#self.lw_exp_needed] then
-            return self.lw_exp_needed[#self.lw_exp_needed]
-        else
-            return self.lw_exp
-        end
+        return self.lw_exp
     end)
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)
@@ -2177,7 +2173,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = exp
+        self.lw_exp = Utils.clamp(exp, 0, 99999)
 
         if level_up then
             self:onLightLevelUp()
@@ -2993,6 +2989,15 @@ end
 function lib:onFootstep()
     if Game.world and self.encounters_enabled then
         self.steps_until_encounter = self.steps_until_encounter - 1
+    end
+end
+
+function lib:preUpdate()
+    Game.lw_xp = 0 -- will be used for shared exp at some point
+    for _,party in pairs(Game.party_data) do
+        if party:getLightEXP() > Game.lw_xp then  
+            Game.lw_xp = party:getLightEXP()
+        end
     end
 end
 
