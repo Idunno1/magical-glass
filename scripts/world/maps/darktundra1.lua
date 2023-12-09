@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 12,
-  nextobjectid = 86,
+  nextobjectid = 88,
   properties = {
     ["name"] = "Snowdin - Dark Zone"
   },
@@ -165,32 +165,6 @@ return {
           properties = {}
         },
         {
-          id = 75,
-          name = "entry2",
-          type = "",
-          shape = "point",
-          x = 720,
-          y = 360,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 77,
-          name = "entry3",
-          type = "",
-          shape = "point",
-          x = 420,
-          y = 110,
-          width = 0,
-          height = 0,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 76,
           name = "entry",
           type = "",
@@ -244,40 +218,8 @@ return {
           rotation = 0,
           visible = true,
           properties = {
-            ["map"] = "tundra2",
-            ["marker"] = "entry2"
-          }
-        },
-        {
-          id = 74,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 760,
-          y = 280,
-          width = 40,
-          height = 160,
-          rotation = 0,
-          visible = true,
-          properties = {
             ["map"] = "tundra4",
-            ["marker"] = "entry"
-          }
-        },
-        {
-          id = 78,
-          name = "transition",
-          type = "",
-          shape = "rectangle",
-          x = 360,
-          y = 0,
-          width = 123.667,
-          height = 40,
-          rotation = 0,
-          visible = true,
-          properties = {
-            ["map"] = "tundra3A",
-            ["marker"] = "spawn"
+            ["marker"] = "entry2"
           }
         },
         {
@@ -740,6 +682,32 @@ return {
           y = 0,
           width = 40,
           height = 160,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 86,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 800,
+          y = 279,
+          width = 40,
+          height = 161,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 87,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 360,
+          y = -41,
+          width = 125,
+          height = 41,
           rotation = 0,
           visible = true,
           properties = {}

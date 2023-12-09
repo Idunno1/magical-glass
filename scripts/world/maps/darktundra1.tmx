@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="86">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="12" nextobjectid="88">
  <editorsettings>
   <export target="darktundra1.lua" format="lua"/>
  </editorsettings>
@@ -48,12 +48,6 @@
   <object id="20" name="spawn" x="260" y="360">
    <point/>
   </object>
-  <object id="75" name="entry2" x="720" y="360">
-   <point/>
-  </object>
-  <object id="77" name="entry3" x="420" y="110">
-   <point/>
-  </object>
   <object id="76" name="entry" x="80" y="400">
    <point/>
   </object>
@@ -62,20 +56,8 @@
   <object id="68" name="savepoint" x="180" y="300"/>
   <object id="72" name="transition" x="0" y="320" width="40" height="120">
    <properties>
-    <property name="map" value="tundra2"/>
-    <property name="marker" value="entry2"/>
-   </properties>
-  </object>
-  <object id="74" name="transition" x="760" y="280" width="40" height="160">
-   <properties>
     <property name="map" value="tundra4"/>
-    <property name="marker" value="entry"/>
-   </properties>
-  </object>
-  <object id="78" name="transition" x="360" y="0" width="123.667" height="40">
-   <properties>
-    <property name="map" value="tundra3A"/>
-    <property name="marker" value="spawn"/>
+    <property name="marker" value="entry2"/>
    </properties>
   </object>
   <object id="83" name="enemy" x="540" y="210" width="40" height="40">
@@ -172,5 +154,7 @@
   </object>
   <object id="64" x="524" y="154" width="80" height="40"/>
   <object id="65" x="484" y="0" width="40" height="160"/>
+  <object id="86" x="800" y="279" width="40" height="161"/>
+  <object id="87" x="360" y="-41" width="125" height="41"/>
  </objectgroup>
 </map>
