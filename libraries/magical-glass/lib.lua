@@ -446,7 +446,7 @@ function lib:init()
         self.light = light
         
         if self.light then
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if not lib.dark_equip[party.id] then
                     lib.dark_equip[party.id] = {}
                     lib.dark_equip[party.id].armor = {}
@@ -471,7 +471,7 @@ function lib:init()
                 Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
             end
             
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if lib.light_equip[party.id] then
                     if lib.light_equip[party.id].weapon then
                         party:setWeapon(lib.light_equip[party.id].weapon)
@@ -493,7 +493,7 @@ function lib:init()
                 party:setArmor(2, nil)
             end
         else
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if not lib.light_equip[party.id] then
                     lib.light_equip[party.id] = {}
                     lib.light_equip[party.id].armor = {}
@@ -512,7 +512,7 @@ function lib:init()
                 self.inventory = lib.dark_inv
             end
             
-            for _,party in pairs(lib.all_party_members) do
+            for _,party in pairs(self.party_data) do
                 if lib.dark_equip[party.id] then
                     if lib.dark_equip[party.id].weapon then
                         party:setWeapon(lib.dark_equip[party.id].weapon)
@@ -2096,11 +2096,6 @@ function lib:init()
         
         self.weapon = nil
         self.armor = {}
-        
-        if not lib.all_party_members then
-            lib.all_party_members = {}
-        end
-        table.insert(lib.all_party_members, self)
 
     end)
 
