@@ -20,7 +20,7 @@ function spell:onLightCast(user, target)
 end
 
 function spell:getDamage(user, target, pressed)
-    if Game:isLight() then
+    if Game.battle.light then
         local damage = math.ceil((user.chara:getStat("magic") * 4) + (user.chara:getStat("attack") * 8) - (target.defense * 4)) + 70
         if pressed then
             damage = damage + 20
