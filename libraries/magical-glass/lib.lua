@@ -132,6 +132,11 @@ function lib:init()
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
+    
+    Utils.hook(Battle, "init", function(orig, self)
+        orig(self)
+        self.light = false
+    end)
 
     Utils.hook(Game, "setLight", function(orig, self, light)
         light = light or false
