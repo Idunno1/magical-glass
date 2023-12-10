@@ -581,8 +581,6 @@ function LightShop:draw()
 
                 if difference >= 0 then
                     difference = "+" .. difference
-                else
-                    difference = "-" .. difference
                 end
 
                 local desc = current_item.options["description"] .. "("..difference.." "..stat..")"
