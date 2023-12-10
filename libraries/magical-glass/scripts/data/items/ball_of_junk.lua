@@ -12,6 +12,8 @@ function item:init(inventory)
     self.type = "item"
     -- Whether this item is for the light world
     self.light = true
+    
+    self.can_sell = false
 
     -- Light world check text
     self.check = "A small ball\nof accumulated things in your\npocket."
@@ -19,7 +21,7 @@ function item:init(inventory)
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
-    self.result_item = nil
+    self.result_item = "light/ball_of_junk"
 
 end
 
