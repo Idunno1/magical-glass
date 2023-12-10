@@ -21,8 +21,6 @@ function item:init(inventory)
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
-    -- Ball of Junk inventory
-    self.inventory = inventory or DarkInventory()
 end
 
 function item:onWorldUse()
@@ -50,6 +48,8 @@ function item:onToss()
 
         if dropped then
             Game.inventory:removeItem(self)
+            Mod.libs["magical-glass"].dark_inv = nil
+            Mod.libs["magical-glass"].dark_inv_saved = false
 
             Assets.playSound("bageldefeat")
             cutscene:text("* Hand shaking,[wait:5] you dropped the\nball of junk on the ground.")
@@ -60,28 +60,6 @@ function item:onToss()
         end
     end)
     return false
-end
-
-function item:convertToDark(inventory)
-    for k,storage in pairs(self.inventory.storages) do
-        for i = 1, storage.max do
-            if storage[i] then
-                if not inventory:addItemTo(storage.id, i, storage[i]) then
-                    inventory:addItem(storage[i])
-                end
-            end
-        end
-    end
-    return true
-end
-
-function item:onSave(data)
-    data.inventory = self.inventory:save()
-end
-
-function item:onLoad(data)
-    self.inventory = DarkInventory()
-    self.inventory:load(data.inventory)
 end
 
 return item

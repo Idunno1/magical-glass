@@ -172,8 +172,8 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk2") then
-                Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
+            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk") then
+                Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
             end
             
             for _,party in pairs(self.party_data) do
