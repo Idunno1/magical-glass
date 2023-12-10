@@ -1,0 +1,10 @@
+{
+    "defaultSize": 26,
+
+    "fallbacks": [
+        {
+            "font": "main",
+            "size": 32
+        }
+    ]
+}
