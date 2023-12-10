@@ -201,7 +201,7 @@ function LightBattleUI:drawState()
             end
 
             local name = item.name
-            if item.seriousname and Game.battle.encounter.serious then
+            if item.seriousname and MagicalGlassLib.serious_mode then
                 name = item.seriousname
             elseif item.shortname then
                 name = item.shortname

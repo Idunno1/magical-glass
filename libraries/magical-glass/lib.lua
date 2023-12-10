@@ -53,6 +53,7 @@ function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
     data.magical_glass["game_overs"] = lib.game_overs
+    data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
     if lib.light_inv and not lib.light_inv_saved then
@@ -75,6 +76,7 @@ function lib:load(data, new_file)
     if new_file then
         lib.kills = 0        
         lib.game_overs = 0
+        lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
         lib.light_equip = {}
@@ -82,14 +84,15 @@ function lib:load(data, new_file)
     else
         lib.kills = data.magical_glass["kills"] or 0
         lib.game_overs = data.magical_glass["game_overs"] or 0
+        lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.light_inv = data.magical_glass["light_inv"]
         lib.light_inv_saved = data.magical_glass["light_inv_saved"]
         lib.dark_inv = data.magical_glass["dark_inv"]
         lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
-        lib.light_equip = data.magical_glass["light_equip"]
-        lib.dark_equip = data.magical_glass["dark_equip"]
+        lib.light_equip = data.magical_glass["light_equip"] or {}
+        lib.dark_equip = data.magical_glass["dark_equip"] or {}
     end
 end
 

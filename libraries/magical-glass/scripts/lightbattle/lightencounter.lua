@@ -33,9 +33,6 @@ function LightEncounter:init()
     self.defeated_enemies = nil
 
     self.can_flee = true
-    
-    -- makes items use their serious name in battle, if they have one
-    self.serious = false
 
     self.flee_chance = 0
     self.flee_messages = {
