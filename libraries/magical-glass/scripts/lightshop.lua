@@ -31,8 +31,6 @@ function LightShop:init()
     self.sell_no_storage_text = "* Empty inventory text"
     -- Shown when you enter the talk menu.
     self.talk_text = "Talk\ntext"
-
-    self.hide_storage_text = false
     
     self.background = nil
 
