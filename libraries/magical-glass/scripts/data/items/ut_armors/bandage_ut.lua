@@ -4,7 +4,7 @@ function item:init()
     super.init(self)
 
     -- Display name
-    self.name = "Bandage"
+    self.name = "BandageUT"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -24,7 +24,21 @@ function item:init()
     -- Item this item will get turned into when consumed
     self.result_item = nil
 
+    -- Amount this item heals
     self.heal_amount = 10
+
+    -- Amount this item heals for in the overworld (optional)
+    self.world_heal_amount = nil
+    -- Amount this item heals for in battle (optional)
+    self.battle_heal_amount = nil
+
+    -- Amount this item heals for specific characters
+    self.heal_amounts = {}
+
+    -- Amount this item heals for specific characters in the overworld (optional)
+    self.world_heal_amounts = {}
+    -- Amount this item heals for specific characters in battle (optional)
+    self.battle_heal_amounts = {}
 end
 
 function item:getFleeBonus() return 100 end
@@ -35,7 +49,7 @@ function item:onWorldUse(target)
     for _,member in ipairs(Game.party) do
         for _,equip in ipairs(member:getEquipment()) do
             if equip.applyHealBonus then
-                amount = equip:applyHealBonus(bonus)
+                amount = equip:applyHealBonus(amount)
             end
         end
     end
@@ -110,16 +124,26 @@ function item:getLightWorldHealingText(target, amount, maxed)
     end
 
     local message
-    if self.target == "ally" then
-        if target.id == Game.party[1].id and maxed then
-            message = "* Your HP was maxed out."
-        elseif maxed then
-            message = "* " .. target:getName() .. "'s HP was maxed out."
-        else
-            message = "* " .. target:getNameOrYou() .. " recovered " .. amount .. " HP."
-        end
+    if target.id == Game.party[1].id and maxed then
+        message = "* Your HP was maxed out."
+    elseif maxed then
+        message = "* " .. target:getName() .. "'s HP was maxed out."
+    else
+        message = "* " .. target:getNameOrYou() .. " recovered " .. amount .. " HP."
     end
     return message
+end
+
+function item:getHealAmount(id)
+    return self.heal_amounts[id] or self.heal_amount
+end
+
+function item:getWorldHealAmount(id)
+    return self.world_heal_amounts[id] or self.world_heal_amount or self:getHealAmount(id)
+end
+
+function item:getBattleHealAmount(id)
+    return self.battle_heal_amounts[id] or self.battle_heal_amount or self:getHealAmount(id)
 end
 
 return item

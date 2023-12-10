@@ -43,11 +43,6 @@
         // the Ball of Junk item during Dark to Light item conversion.
         /////
         "ball_of_junk": true,
-        
-        ///// Undertale style bandage
-        // Whether to use the Undertale or Deltarune Bandage description and use text.
-        /////
-        "ut_bandage": false,
 
         ///// Hide CELL option in the Light World menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.

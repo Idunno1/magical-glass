@@ -1618,14 +1618,20 @@ function lib:init()
 
         if Game:isLight() then
             local message
-            if item then
+            if item and item.getLightWorldHealingText then
                 message = item:getLightWorldHealingText(target, amount, maxed)
+            else
+                if maxed then
+                    message = "* Your HP was maxed out."
+                else
+                    message = "* You recovered " .. amount .. " HP!"
+                end
             end
 
             if text then
                 message = text .. " \n" .. message
             end
-
+            
             if not Game.cutscene_active then
                 Game.world:showText(message)
             end
@@ -2702,10 +2708,6 @@ function lib:preUpdate()
         if party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
         end
-    end
-    if Game.inventory:getItemByID("light/bandage") then -- Replaces the armor one with the heal variant once it's in the inventory
-        Game.inventory:removeItem(Game.inventory:getItemByID("light/bandage"))
-        Game.inventory:addItem(Registry.createItem("ut_items/bandage"))
     end
 end
 
