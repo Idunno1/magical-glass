@@ -34,13 +34,4 @@ function character:lightLVStats()
     }
 end
 
-function character:onAttackHit(enemy, damage)
-    if not Game.battle.light then
-        if damage > 0 then
-            Assets.playSound("impact", 0.8)
-            Game.battle:shakeCamera(4)
-        end
-    end
-end
-
 return character

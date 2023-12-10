@@ -1,4 +1,4 @@
-local TestShop, super = Class(LightShop,  "test")
+local TestShop, super = Class(Shop,  "dark_test")
 
 function TestShop:init()
     super.init(self)
@@ -20,17 +20,35 @@ function TestShop:init()
     self.buy_too_expensive_text = "I don't\nhave enough\nmoney for\nthis."
     -- Shown when you don't have enough space to buy something.
     self.buy_no_space_text = "I'm\ncarrying\ntoo much."
+    -- Shown when something doesn't have a sell price
+    self.sell_no_price_text = "Why would\nI sell\nthis?"
+    -- Shown when you're in the SELL menu
+    self.sell_menu_text = "Guess I\ncan get\nrid of\nstuff."
+    -- Shown when you try to sell an empty spot
+    self.sell_nothing_text = "Nothing\nto give."
     -- Shown when you're about to sell something.
     self.sell_confirmation_text = "Sell it for\n%s ?"
+    -- Shown when you refuse to sell something
+    self.sell_refuse_text = "I'd\nrather\nhold on\nto this."
+    -- Shown when you sell something
+    self.sell_text = "There\nwe go."
     -- Shown when you have nothing in a storage
-    self.sell_no_storage_text = "* Nothing in there."
+    self.sell_no_storage_text = "Nothing\nin there."
     -- Shown when you enter the talk menu.
     self.talk_text = "Guess I\nshould\nthink."
 
-    self:registerItem("ut_weapons/tough_glove")
-    self:registerItem("ut_armors/cloudy_glasses", {price = 0})
-	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
-    self:registerItem("ut_items/crab_apple")
+    self.sell_options_text["items"]   = "What\nshould\nI sell?"
+    self.sell_options_text["weapons"] = "What\nshould\nI sell?"
+    self.sell_options_text["armors"]  = "What\nshould\nI sell?"
+    self.sell_options_text["storage"] = "What\nshould\nI sell?"
+
+    self:registerItem("cell_phone", {stock = 10, color = {1, 0.8, 1, 1}, price = -14, description = "*\n|_\n(O)    Sell phoe\n|#|\n'-'", name="Pone"})
+    self:registerItem("tensionbit")
+    self:registerItem("manual")
+    self:registerItem("amber_card", {bonuses = {defense = math.huge}})
+    self:registerItem("amber_card")
+    self:registerItem("fiberscarf", {price = 0})
+	self:registerItem("everybodyweapon", {description = "WEAPON\nWEAPON 2\nWEAPON 3"})
 
     self:registerTalk("Reflect")
     self:registerTalk("Where I Am")

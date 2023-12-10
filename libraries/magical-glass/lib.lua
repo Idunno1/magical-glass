@@ -53,6 +53,7 @@ function lib:save(data)
     data.magical_glass = {}
     data.magical_glass["kills"] = lib.kills
     data.magical_glass["game_overs"] = lib.game_overs
+    data.magical_glass["serious_mode"] = lib.serious_mode
     data.magical_glass["name_color"] = lib.name_color
     data.magical_glass["lw_save_lv"] = Game.party[1]:getLightLV()
     if lib.light_inv and not lib.light_inv_saved then
@@ -75,6 +76,7 @@ function lib:load(data, new_file)
     if new_file then
         lib.kills = 0        
         lib.game_overs = 0
+        lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
         lib.light_equip = {}
@@ -82,14 +84,15 @@ function lib:load(data, new_file)
     else
         lib.kills = data.magical_glass["kills"] or 0
         lib.game_overs = data.magical_glass["game_overs"] or 0
+        lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
         lib.light_inv = data.magical_glass["light_inv"]
         lib.light_inv_saved = data.magical_glass["light_inv_saved"]
         lib.dark_inv = data.magical_glass["dark_inv"]
         lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
-        lib.light_equip = data.magical_glass["light_equip"]
-        lib.dark_equip = data.magical_glass["dark_equip"]
+        lib.light_equip = data.magical_glass["light_equip"] or {}
+        lib.dark_equip = data.magical_glass["dark_equip"] or {}
     end
 end
 
@@ -132,6 +135,11 @@ function lib:init()
 
     self.encounters_enabled = false
     self.steps_until_encounter = nil
+    
+    Utils.hook(Battle, "init", function(orig, self)
+        orig(self)
+        self.light = false
+    end)
 
     Utils.hook(Game, "setLight", function(orig, self, light)
         light = light or false
@@ -167,8 +175,8 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk2") then
-                Game.inventory:addItem(Registry.createItem("light/ball_of_junk2"))
+            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk") then
+                Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
             end
             
             for _,party in pairs(self.party_data) do
@@ -1041,39 +1049,6 @@ function lib:init()
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
             Game.battle:battleText("* "..user.chara:getName().." used the "..self:getName().."!")
-        end
-    end)
-
-    Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
-        local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
-        src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
-
-        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
-        local scale = (stretch * 2) - 0.5
-        sprite:setScale(scale, scale)
-        sprite:setOrigin(0.5, 0.5)
-        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
-        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-        sprite.color = battler.chara:getLightAttackColor()
-        enemy.parent:addChild(sprite)
-        sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
-            local sound = enemy:getDamageSound() or "damage"
-            if sound and type(sound) == "string" then
-                Assets.stopAndPlaySound(sound)
-            end
-            enemy:hurt(damage, battler)
-
-            battler.chara:onAttackHit(enemy, damage)
-            this:remove()
-
-            Game.battle:endAttack()
-        end)
-    end)
-
-    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, finish)
-        enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()})
-        if finish then
-            Game.battle:endAttack()
         end
     end)
 
@@ -1959,6 +1934,8 @@ function lib:init()
             return self.light_xact_color
         end
     end)
+    
+    Utils.hook(PartyMember, "onLightAttackHit", function(orig, self, enemy, damage) end)
 
     Utils.hook(LightMenu, "draw", function(orig, self)
         Object.draw(self)
@@ -2432,6 +2409,29 @@ function lib:init()
         lib.game_overs = lib.game_overs + 1
         orig(self, x, y)
     end)
+    
+    Utils.hook(SnowGraveSpell, "update", function(orig, self)
+        if Game.battle.light then
+            Object.update(self)
+            self.timer = self.timer + DTMULT
+            self.since_last_snowflake = self.since_last_snowflake + DTMULT
+
+            if self.hurt_enemies then
+                self.hurt_enemies = false
+                for i, enemy in ipairs(Game.battle.enemies) do
+                    if enemy then
+                        enemy.hit_count = 0
+                        enemy:hurt(self.damage + Utils.round(math.random(50)), self.caster)
+                        if enemy.health <= 0 then
+                            enemy.can_die = true
+                        end
+                    end
+                end
+            end
+        else
+            orig(self)
+        end
+    end)
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
@@ -2702,6 +2702,10 @@ function lib:preUpdate()
         if party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
         end
+    end
+    if Game.inventory:getItemByID("light/bandage") then -- Replaces the armor one with the heal variant once it's in the inventory
+        Game.inventory:removeItem(Game.inventory:getItemByID("light/bandage"))
+        Game.inventory:addItem(Registry.createItem("ut_items/bandage"))
     end
 end
 

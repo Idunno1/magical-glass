@@ -1,10 +1,12 @@
-local item, super = Class(Item, "light/ball_of_junk2")
+local item, super = Class(Item, "light/ball_of_junk")
 
 function item:init(inventory)
     super.init(self)
 
     -- Display name
     self.name = "Ball of Junk"
+    self.short_name = "JunkBall"
+    self.serious_name = "Junk"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
@@ -46,8 +48,8 @@ function item:onToss()
 
         if dropped then
             Game.inventory:removeItem(self)
-            Mod.libs["magical-glass"].dark_inv = nil
-            Mod.libs["magical-glass"].dark_inv_saved = false
+            MagicalGlassLib.dark_inv = nil
+            MagicalGlassLib.dark_inv_saved = false
 
             Assets.playSound("bageldefeat")
             cutscene:text("* Hand shaking,[wait:5] you dropped the\nball of junk on the ground.")

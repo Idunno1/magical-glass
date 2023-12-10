@@ -25,7 +25,7 @@ function character:lightLVStats()
         health = self:getLightLV() == 20 and 99 or 16 + self:getLightLV() * 4,
         attack = 9 + self:getLightLV() + math.floor(self:getLightLV() / 3),
         defense = 9 + math.ceil(self:getLightLV() / 4),
-        magic = math.ceil(self:getLightLV() / 2)
+        magic = self:getLightLV()
     }
 end
 

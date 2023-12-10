@@ -2,8 +2,8 @@ local LightShop, super = Class(Object)
 
 function LightShop:init()
     super.init(self)
-    self.currency_text = "%d"..Game:getConfig("lightCurrencyShort")
-    self.sell_currency_text = "(%d "..Game:getConfig("lightCurrencyShort")..")"
+    self.currency_text = Game:getConfig("lightCurrencyShort") ~= "$" and "%d"..Game:getConfig("lightCurrencyShort") or Game:getConfig("lightCurrencyShort").."%d"
+    self.sell_currency_text = Game:getConfig("lightCurrencyShort") ~= "$" and "(%d "..Game:getConfig("lightCurrencyShort")..")" or "("..Game:getConfig("lightCurrencyShort").." %d)"
 
     -- Shown when you first enter a shop
     self.encounter_text = "* Encounter text"
@@ -31,10 +31,8 @@ function LightShop:init()
     self.sell_no_storage_text = "* Empty inventory text"
     -- Shown when you enter the talk menu.
     self.talk_text = "Talk\ntext"
-
-    self.hide_storage_text = false
     
-    self.background = "ui/shop/bg_seam"
+    self.background = nil
 
     -- MAINMENU
     self.menu_options = {
@@ -99,6 +97,7 @@ function LightShop:init()
 
     self.font = Assets.getFont("main")
     self.heart_sprite = Assets.getTexture("player/heart_menu")
+    self.arrow_sprite = Assets.getTexture("ui/page_arrow_down")
 
     self.fade_alpha = 0
     self.fading_out = false
@@ -526,7 +525,7 @@ function LightShop:draw()
                 else
                     display_item = item.options["name"]
                 end
-                if item.options["price"] and item.options["price"] < 10 then
+                if item.options["price"] and item.options["price"] < 10 and item.options["price"] >= 0 then
                     display_item = "  " .. display_item
                 end
                 love.graphics.print(display_item, 60, y)
@@ -580,8 +579,6 @@ function LightShop:draw()
 
                 if difference >= 0 then
                     difference = "+" .. difference
-                else
-                    difference = "-" .. difference
                 end
 
                 local desc = current_item.options["description"] .. "("..difference.." "..stat..")"
@@ -593,11 +590,12 @@ function LightShop:draw()
             Draw.popScissor()
         end
     elseif self.state == "SELLMENU" then
-        if not Input.pressed("cancel") and #Game.inventory.storages.items > 0 then
+        local current_storage = Game.inventory:getStorage("items")
+        if not Input.pressed("cancel") and #current_storage > 0 then
             self:enterSellMenu({"Sell Items","items"})
         else
             self:setState("MAINMENU")
-            if not self.sold_everything and #Game.inventory.storages.items == 0 then
+            if not self.sold_everything and #current_storage <= 0 then
                 self:setDialogueText(self.sell_no_storage_text)
             end
             self.sold_everything = false
@@ -648,11 +646,11 @@ function LightShop:draw()
                         Draw.setColor(COLORS.white)
                         local display_item
                         if item:isSellable() then
-                            display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getName()
+                            display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
                         else
-                            display_item = item:getName()
+                            display_item = item:getShortName()
                         end
-                        if item:isSellable() and item:getSellPrice() < 10 then
+                        if item:isSellable() and item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
                             display_item = "  " .. display_item
                         end
                         love.graphics.print(display_item, 80, 220 + ((i - self.item_offset) * 40))
@@ -671,7 +669,7 @@ function LightShop:draw()
 
             Draw.setColor(COLORS.white)
 
-            if max > 5 then
+            if max > 5 and not self.sell_confirming then
 
                 for i = 1, max do
                     local percentage = (i - 1) / (max - 1)
@@ -685,9 +683,9 @@ function LightShop:draw()
                     end
 
                     if i == tocheck then
-                        love.graphics.rectangle("fill", 372, 292 + draw_location, 9, 9)
+                        love.graphics.rectangle("fill", 372 + 230, 292 + draw_location, 9, 9)
                     elseif inventory.sorted then
-                        love.graphics.rectangle("fill", 372 + 3, 292 + 3 + draw_location, 3, 3)
+                        love.graphics.rectangle("fill", 372 + 230 + 3, 292 + 3 + draw_location, 3, 3)
                     end
                 end
 
@@ -695,10 +693,10 @@ function LightShop:draw()
                 if not self.sell_confirming then
                     local sine_off = math.sin((Kristal.getTime()*30)/6) * 3
                     if self.item_offset + 4 < (max - 1) then
-                        Draw.draw(self.arrow_sprite, 370, 149 + sine_off + 291)
+                        Draw.draw(self.arrow_sprite, 370 + 230, 149 + sine_off + 291)
                     end
                     if self.item_offset > 0 then
-                        Draw.draw(self.arrow_sprite, 370, 14 - sine_off + 291 - 25, 0, 1, -1)
+                        Draw.draw(self.arrow_sprite, 370 + 230, 14 - sine_off + 291 - 25, 0, 1, -1)
                     end
                 end
             end
@@ -856,8 +854,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                                 self.sold_everything = true
                             end
                         end
-                    else
-                        self:setRightText("What?????[wait:5]\ndid you\ndo????")
                     end
                 elseif Input.isCancel(key) then
                     self.sell_confirming = false

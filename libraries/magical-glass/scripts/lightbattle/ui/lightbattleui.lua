@@ -201,7 +201,7 @@ function LightBattleUI:drawState()
             end
 
             local name = item.name
-            if item.seriousname and Game.battle.encounter.serious then
+            if item.seriousname and MagicalGlassLib.serious_mode then
                 name = item.seriousname
             elseif item.shortname then
                 name = item.shortname
@@ -255,9 +255,7 @@ function LightBattleUI:drawState()
         local current_item = Game.battle.menu_items[Game.battle:getItemIndex()] or Game.battle.menu_items[1] -- crash prevention in case of an invalid option
         if current_item.description then
             if self.help_window then
-                if #current_item.description > 0 then
-                    self.help_window:setDescription(current_item.description)
-                end
+                self.help_window:setDescription(current_item.description)
             elseif Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" then
                 Draw.setColor(COLORS.gray)
                 local str = current_item.description:gsub('\n', ' ')
@@ -265,19 +263,13 @@ function LightBattleUI:drawState()
             end
         end
 
-        if current_item.tp and current_item.tp ~= 0 then
+        if current_item.tp then
             if self.help_window then
                 self.help_window:setTension(current_item.tp)
                 Game:setTensionPreview(current_item.tp)
             elseif Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" then
                 Draw.setColor(PALETTE["tension_desc"])
                 love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "% "..Game:getConfig("tpName"), 260 + 208, 64)
-                -- in memoriam of when this wasn't a pager menu, then was
---[[                 local space = " "
-                if current_item.tp >= 100 then
-                    space = ""
-                end
-                love.graphics.print(math.floor((current_item.tp / Game:getMaxTension()) * 100) .. "%"..space..Game:getConfig("tpName"), 260 + 112, 64) ]]
                 Game:setTensionPreview(current_item.tp)
             end
         else

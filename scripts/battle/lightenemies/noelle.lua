@@ -9,8 +9,8 @@ function Noelle:init()
     self:setActor("noelle_ut")
 
     -- Enemy health
-    self.max_health = 80
-    self.health = 80
+    self.max_health = 90
+    self.health = 90
     -- Enemy attack (determines bullet damage)
     self.attack = 6
     -- Enemy defense (usually 0)

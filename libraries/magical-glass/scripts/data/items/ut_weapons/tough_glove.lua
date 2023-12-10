@@ -58,15 +58,34 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local punches = 0
     local punch_time = 0
 
-    local press_z = Sprite("ui/lightbattle/pressz")
+    local confirm_button
+    local press = Sprite("ui/lightbattle/pressz_press")
+    if Input.usingGamepad() then
+        confirm_button = Sprite(Input.getTexture("confirm"))
+        confirm_button:setScale(2)
+        confirm_button:setOrigin(0.5, 0.5)
+        confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6))
+    elseif string.sub(Input.getText("confirm"), 2, -2) ~= "Z" then
+        confirm_button = Text(string.sub(Input.getText("confirm"), 2, -2))
+        confirm_button:setColor(0,1,0)
+        confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2) - 3, (enemy.height / 2) - 3))
+    else
+        confirm_button = Sprite("ui/lightbattle/pressz_z")
+        confirm_button:setOrigin(0.5, 0.5)
+        confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+    end
     local press_timer = 3
-    press_z:setOrigin(0.5, 0.5)
-    press_z:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
-    press_z.layer = BATTLE_LAYERS["above_ui"] + 5
+    press:setOrigin(0.5, 0.5)
+    press:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+    press:setLayer(BATTLE_LAYERS["above_ui"] + 5)
+    confirm_button:setLayer(BATTLE_LAYERS["above_ui"] + 5)
 
     local function finishAttack()
-        if press_z then
-            press_z:remove()
+        if press then
+            press:remove()
+        end
+        if confirm_button then
+            confirm_button:remove()
         end
 
         if punches > 0 then
@@ -91,11 +110,13 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         press_timer = press_timer - 1 * DTMULT
 
         if press_timer < 0 then
-            if press_z.visible == false then
+            if press.visible == false and confirm_button.visible == false then
                 press_timer = 6
-                press_z.visible = true
+                press.visible = true
+                confirm_button.visible = true
             else
-                press_z.visible = false
+                press.visible = false
+                confirm_button.visible = false
                 press_timer = 3
             end
         end
@@ -103,15 +124,19 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         if Input.pressed("confirm") and state ~= "DONE" then
 
             if state == "PRESS" then
-                enemy.parent:addChild(press_z)
+                enemy.parent:addChild(press)
+                enemy.parent:addChild(confirm_button)
                 state = "PUNCHING"
             elseif state == "PUNCHING" then
 
                 punches = punches + 1
 
                 if punches < self.attack_punches then
-                    if press_z then
-                        press_z:remove()
+                    if press then
+                        press:remove()
+                    end
+                    if confirm_button then
+                        confirm_button:remove()
                     end
 
                     Assets.playSound("punchweak")

@@ -22,16 +22,9 @@
         "key_items": ["cell_phone"]
     },
 
-    "equipment": {
-        "kris": {
-            "weapon": "light/pencil",
-            "armor": ["ut_armors/bandage"]
-        }
-    },
-
     "config": {
         "kristal": {
-            "lightCurrency": "gold",
+            "lightCurrency": "Gold",
             "lightCurrencyShort": "G",
             "mercyBar": true,
             "mercyMessages": false,

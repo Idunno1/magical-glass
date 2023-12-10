@@ -1,13 +1,7 @@
 local spell, super = Class("snowgrave", true)
 
 function spell:onLightCast(user, target)
-    local object = SnowGraveSpell(user)
-    object.damage = 0 -- Doesn't work yet
-    -- object.damage = self:getDamage(user, target)
-    object.layer = BATTLE_LAYERS["above_ui"]
-    Game.battle:addChild(object)
-
-    return false
+    return self:onCast(user, target)
 end
 
 return spell
