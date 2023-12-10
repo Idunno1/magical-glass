@@ -2,8 +2,8 @@ local LightShop, super = Class(Object)
 
 function LightShop:init()
     super.init(self)
-    self.currency_text = "%d"..Game:getConfig("lightCurrencyShort")
-    self.sell_currency_text = "(%d "..Game:getConfig("lightCurrencyShort")..")"
+    self.currency_text = Game:getConfig("lightCurrencyShort") ~= "$" and "%d"..Game:getConfig("lightCurrencyShort") or Game:getConfig("lightCurrencyShort").."%d"
+    self.sell_currency_text = Game:getConfig("lightCurrencyShort") ~= "$" and "(%d "..Game:getConfig("lightCurrencyShort")..")" or "("..Game:getConfig("lightCurrencyShort").." %d)"
 
     -- Shown when you first enter a shop
     self.encounter_text = "* Encounter text"
@@ -34,7 +34,7 @@ function LightShop:init()
 
     self.hide_storage_text = false
     
-    self.background = "ui/shop/bg_seam"
+    self.background = nil
 
     -- MAINMENU
     self.menu_options = {
@@ -593,11 +593,12 @@ function LightShop:draw()
             Draw.popScissor()
         end
     elseif self.state == "SELLMENU" then
-        if not Input.pressed("cancel") and #Game.inventory.storages.items > 0 then
+        local current_storage = Game.inventory:getStorage("items")
+        if not Input.pressed("cancel") and #current_storage > 0 then
             self:enterSellMenu({"Sell Items","items"})
         else
             self:setState("MAINMENU")
-            if not self.sold_everything and #Game.inventory.storages.items == 0 then
+            if not self.sold_everything and #current_storage <= 0 then
                 self:setDialogueText(self.sell_no_storage_text)
             end
             self.sold_everything = false

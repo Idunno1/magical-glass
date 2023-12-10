@@ -31,7 +31,7 @@
 
     "config": {
         "kristal": {
-            "lightCurrency": "gold",
+            "lightCurrency": "Gold",
             "lightCurrencyShort": "G",
             "mercyBar": true,
             "mercyMessages": false,
