@@ -527,7 +527,7 @@ function LightShop:draw()
                     display_item = item.options["name"]
                 end
                 if item.options["price"] and item.options["price"] < 10 then
-                    display_item = "  " .. display_item
+                    display_item = " " .. display_item
                 end
                 love.graphics.print(display_item, 60, y)
             end
@@ -654,7 +654,7 @@ function LightShop:draw()
                             display_item = item:getShortName()
                         end
                         if item:isSellable() and item:getSellPrice() < 10 then
-                            display_item = "  " .. display_item
+                            display_item = " " .. display_item
                         end
                         love.graphics.print(display_item, 80, 220 + ((i - self.item_offset) * 40))
                         -- love.graphics.print(display_item, 80 + ((i % 2) == 0 and 250 or 0), 220 + ((i - ((i-1) % 2) - self.item_offset) * 40))
