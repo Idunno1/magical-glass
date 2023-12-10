@@ -169,7 +169,7 @@ function LightEncounter:onFlee()
 
         local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 
-        self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):lower() .. "."
+        self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
         for _,member in ipairs(Game.battle.party) do
             local lv = member.chara:getLightLV()
