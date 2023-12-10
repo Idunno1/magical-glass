@@ -649,9 +649,9 @@ function LightShop:draw()
                         Draw.setColor(COLORS.white)
                         local display_item
                         if item:isSellable() then
-                            display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getName()
+                            display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
                         else
-                            display_item = item:getName()
+                            display_item = item:getShortName()
                         end
                         if item:isSellable() and item:getSellPrice() < 10 then
                             display_item = "  " .. display_item
