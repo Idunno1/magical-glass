@@ -48,8 +48,8 @@ function item:onToss()
 
         if dropped then
             Game.inventory:removeItem(self)
-            Mod.libs["magical-glass"].dark_inv = nil
-            Mod.libs["magical-glass"].dark_inv_saved = false
+            MagicalGlassLib.dark_inv = nil
+            MagicalGlassLib.dark_inv_saved = false
 
             Assets.playSound("bageldefeat")
             cutscene:text("* Hand shaking,[wait:5] you dropped the\nball of junk on the ground.")
