@@ -2401,6 +2401,29 @@ function lib:init()
         lib.game_overs = lib.game_overs + 1
         orig(self, x, y)
     end)
+    
+    Utils.hook(SnowGraveSpell, "update", function(orig, self)
+        if Game.battle.light then
+            Object.update(self)
+            self.timer = self.timer + DTMULT
+            self.since_last_snowflake = self.since_last_snowflake + DTMULT
+
+            if self.hurt_enemies then
+                self.hurt_enemies = false
+                for i, enemy in ipairs(Game.battle.enemies) do
+                    if enemy then
+                        enemy.hit_count = 0
+                        enemy:hurt(self.damage + Utils.round(math.random(50)), self.caster)
+                        if enemy.health <= 0 then
+                            enemy.can_die = true
+                        end
+                    end
+                end
+            end
+        else
+            orig(self)
+        end
+    end)
 
     PALETTE["pink_spare"] = {1, 167/255, 212/255, 1}
 
