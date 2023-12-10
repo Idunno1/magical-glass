@@ -2703,6 +2703,10 @@ function lib:preUpdate()
             Game.lw_xp = party:getLightEXP()
         end
     end
+    if Game.inventory:getItemByID("light/bandage") then -- Replaces the armor one with the heal variant once it's in the inventory
+        Game.inventory:removeItem(Game.inventory:getItemByID("light/bandage"))
+        Game.inventory:addItem(Registry.createItem("ut_items/bandage"))
+    end
 end
 
 return lib
