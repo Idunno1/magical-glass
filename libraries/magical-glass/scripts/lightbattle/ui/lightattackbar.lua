@@ -16,6 +16,7 @@ function LightAttackBar:init(x, y, battler)
     self.perfect = false
     self.perfect_counter = 2
     self.bursting = false
+    self.flashing = false
 
     self.fading = false
     self.fade_speed = nil
@@ -27,6 +28,7 @@ end
 
 function LightAttackBar:flash(flash_speed)
     self.sprite:play(self.flash_speed, true)
+    self.flashing = true
 end
 
 function LightAttackBar:burst()
@@ -44,6 +46,10 @@ function LightAttackBar:fade(speed, direction)
 end
 
 function LightAttackBar:update()
+    if self.flashing then
+        
+    end
+
     if self.fading then
         self:move(self.fade_speed * DTMULT, 0)
 
