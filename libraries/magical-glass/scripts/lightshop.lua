@@ -99,6 +99,7 @@ function LightShop:init()
 
     self.font = Assets.getFont("main")
     self.heart_sprite = Assets.getTexture("player/heart_menu")
+    self.arrow_sprite = Assets.getTexture("ui/page_arrow_down")
 
     self.fade_alpha = 0
     self.fading_out = false
@@ -672,7 +673,7 @@ function LightShop:draw()
 
             Draw.setColor(COLORS.white)
 
-            if max > 5 then
+            if max > 5 and not self.sell_confirming then
 
                 for i = 1, max do
                     local percentage = (i - 1) / (max - 1)
@@ -686,9 +687,9 @@ function LightShop:draw()
                     end
 
                     if i == tocheck then
-                        love.graphics.rectangle("fill", 372, 292 + draw_location, 9, 9)
+                        love.graphics.rectangle("fill", 372 + 230, 292 + draw_location, 9, 9)
                     elseif inventory.sorted then
-                        love.graphics.rectangle("fill", 372 + 3, 292 + 3 + draw_location, 3, 3)
+                        love.graphics.rectangle("fill", 372 + 230 + 3, 292 + 3 + draw_location, 3, 3)
                     end
                 end
 
@@ -696,10 +697,10 @@ function LightShop:draw()
                 if not self.sell_confirming then
                     local sine_off = math.sin((Kristal.getTime()*30)/6) * 3
                     if self.item_offset + 4 < (max - 1) then
-                        Draw.draw(self.arrow_sprite, 370, 149 + sine_off + 291)
+                        Draw.draw(self.arrow_sprite, 370 + 230, 149 + sine_off + 291)
                     end
                     if self.item_offset > 0 then
-                        Draw.draw(self.arrow_sprite, 370, 14 - sine_off + 291 - 25, 0, 1, -1)
+                        Draw.draw(self.arrow_sprite, 370 + 230, 14 - sine_off + 291 - 25, 0, 1, -1)
                     end
                 end
             end
@@ -857,8 +858,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                                 self.sold_everything = true
                             end
                         end
-                    else
-                        self:setRightText("What?????[wait:5]\ndid you\ndo????")
                     end
                 elseif Input.isCancel(key) then
                     self.sell_confirming = false
