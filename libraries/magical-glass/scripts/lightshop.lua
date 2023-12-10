@@ -643,11 +643,12 @@ function LightShop:draw()
 
                 if not self.sell_confirming then
                     if item then
-                        Draw.setColor(COLORS.white)
                         local display_item
                         if item:isSellable() then
+                            Draw.setColor(COLORS.white)
                             display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
                         else
+                            Draw.setColor(COLORS.gray)
                             display_item = item:getShortName()
                         end
                         if item:isSellable() and item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
