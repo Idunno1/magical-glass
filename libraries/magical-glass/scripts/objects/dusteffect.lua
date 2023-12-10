@@ -28,22 +28,24 @@ function DustEffect:init(texture, x, y, after)
 
     local delay = 0
 
-    for y = 1, self.height do
-        for x = 1, self.width do
-            local r, g, b, a = data:getPixel(x-1, y-1)
-            if --[[(a == 1) and]] not (r == 0 and g == 0 and b == 0) then
+    if #Game.stage:getObjects(DustEffectParticle) <= 5000 then -- Prevents your PC from exploding
+        for y = 1, self.height do
+            for x = 1, self.width do
+                local r, g, b, a = data:getPixel(x-1, y-1)
+                if --[[(a == 1) and]] not (r == 0 and g == 0 and b == 0) then
 
-                local particle = DustEffectParticle({r, g, b, a}, x - 1, y - 1)
-                self:addChild(particle)
-                Game.battle.timer:after(math.floor(delay / 3) / 30, function()
-                    particle.activated = true
-                    particle.physics.gravity_direction = math.rad(-90)
-                    particle.physics.gravity = (Utils.random(0.25) + 0.1)
-                    particle.physics.speed_x = (Utils.random(2) - 1)
-                end)
+                    local particle = DustEffectParticle({r, g, b, a}, x - 1, y - 1)
+                    self:addChild(particle)
+                    Game.battle.timer:after(math.floor(delay / 3) / 30, function()
+                        particle.activated = true
+                        particle.physics.gravity_direction = math.rad(-90)
+                        particle.physics.gravity = (Utils.random(0.25) + 0.1)
+                        particle.physics.speed_x = (Utils.random(2) - 1)
+                    end)
+                end
             end
+            delay = delay + 1
         end
-        delay = delay + 1
     end
 end
 
