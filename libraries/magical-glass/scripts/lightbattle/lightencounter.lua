@@ -150,11 +150,11 @@ function LightEncounter:onCharacterTurn(battler, undo) end
 function LightEncounter:onFlee()
 
     Assets.playSound("escaped")
+    
+    local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
+    local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 
-    if Game.battle.used_violence then -- level up shit
-
-        local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
-
+    if money ~= 0 or xp ~= 0 then
         for _,battler in ipairs(Game.battle.party) do
             for _,equipment in ipairs(battler.chara:getEquipment()) do
                 money = math.floor(equipment:applyMoneyBonus(money) or money)
@@ -167,15 +167,12 @@ function LightEncounter:onFlee()
             Game.lw_money = 0
         end
 
-        local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
-
         self.used_flee_message = "* Ran away with " .. xp .. " EXP\n  and " .. money .. " " .. Game:getConfig("lightCurrency"):upper() .. "."
 
         for _,member in ipairs(Game.battle.party) do
             local lv = member.chara:getLightLV()
             member.chara:gainLightEXP(xp, true)
         end
-
     else
         self.used_flee_message = self:getFleeMessage()
     end
