@@ -462,7 +462,7 @@ function LightBattleUI:drawState()
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
 
                                 Draw.setColor(PALETTE["action_health"])
-                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 101), 17)
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 101)), 17)
                             end
                         elseif self.style == "deltarune" then
                             if enemy:getHPVisibility() then
@@ -470,7 +470,7 @@ function LightBattleUI:drawState()
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
             
                                 Draw.setColor(PALETTE["action_health"])
-                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.floor(hp_percent * 81), 17)
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 81)), 17)
                             else
                                 Draw.setColor(PALETTE["action_health_bg"])
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
@@ -480,7 +480,7 @@ function LightBattleUI:drawState()
                         if self.draw_percents and self.style ~= "undertale" then
                             Draw.setColor(PALETTE["action_health_text"])
                             if enemy:getHPVisibility() then
-                                love.graphics.print(math.floor(hp_percent * 100) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                                love.graphics.print(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             else
                                 love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             end
