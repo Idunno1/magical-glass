@@ -1051,6 +1051,39 @@ function lib:init()
             Game.battle:battleText("* "..user.chara:getName().." used the "..self:getName().."!")
         end
     end)
+    
+    Utils.hook(Item, "onLightAttack", function(orig, self, battler, enemy, damage, stretch)
+        local src = Assets.stopAndPlaySound(self.getLightAttackSound and self:getLightAttackSound() or "laz_c") 
+        src:setPitch(self.getLightAttackPitch and self:getLightAttackPitch() or 1)
+
+        local sprite = Sprite(self.getLightAttackSprite and self:getLightAttackSprite() or "effects/attack/strike")
+        local scale = (stretch * 2) - 0.5
+        sprite:setScale(scale, scale)
+        sprite:setOrigin(0.5, 0.5)
+        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
+        sprite.layer = BATTLE_LAYERS["above_ui"] + 5
+        sprite.color = battler.chara:getLightAttackColor()
+        enemy.parent:addChild(sprite)
+        sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
+            local sound = enemy:getDamageSound() or "damage"
+            if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
+                Assets.stopAndPlaySound(sound)
+            end
+            enemy:hurt(damage, battler)
+
+            battler.chara:onLightAttackHit(enemy, damage)
+            this:remove()
+
+            Game.battle:endAttack()
+        end)
+    end)
+
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, finish, anim)
+        enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
+        if finish then
+            Game.battle:endAttack()
+        end
+    end)
 
     Utils.hook(Item, "onCheck", function(orig, self)
         if type(self.check) == "string" then

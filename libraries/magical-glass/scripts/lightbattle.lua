@@ -1706,6 +1706,10 @@ function LightBattle:update()
         self:updateMenuWaves()
     end
     
+    if Utils.containsValue({"DEFENDINGEND", "ACTIONSELECT", "ACTIONS", "VICTORY", "TRANSITIONOUT", "BATTLETEXT"}, self.state) then
+        self.darkify_fader.alpha = Utils.approach(self.darkify_fader.alpha, 0, DTMULT * 0.05)
+    end
+    
     self.update_child_list = true
     super.update(self)
 
@@ -2554,6 +2558,9 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "y" then
+            if self.state == "DEFENDING" then
+                self.encounter:onWavesDone()
+            end
             Input.clear(nil, true)
             self:setState("VICTORY")
         end
