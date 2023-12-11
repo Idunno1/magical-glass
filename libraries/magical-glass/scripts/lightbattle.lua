@@ -2558,6 +2558,9 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "y" then
+            if self.state == "DEFENDING" then
+                self.encounter:onWavesDone()
+            end
             Input.clear(nil, true)
             self:setState("VICTORY")
         end
