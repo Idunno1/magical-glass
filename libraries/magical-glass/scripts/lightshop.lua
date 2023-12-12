@@ -803,6 +803,14 @@ function LightShop:onKeyPressed(key, is_repeat)
                     local current_item = inventory[self:getSellMenuIndex()]
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
+                        if not self:isValidMenuLocation() then
+                            if self.sell_current_selecting_x >= 2 then
+                                self.sell_current_selecting_x = self.sell_current_selecting_x - 1
+                            else
+                                self.sell_current_selecting_x = 2
+                                self.sell_current_selecting_y = self.sell_current_selecting_y - 1
+                            end
+                        end
                         self.sold_items = self.sold_items + 1
                         if #Game.inventory:getStorage("items") <= 0 then
                             self:setState("MAINMENU")
