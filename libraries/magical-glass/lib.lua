@@ -169,6 +169,7 @@ function lib:init()
             lib.dark_inv_saved = false
             
             local has_shadowcrystal = Game.inventory:getItemByID("shadowcrystal") and true or false
+            local has_egg = Game.inventory:getItemByID("egg") and true or false
             
             self.inventory = LightInventory()
             if lib.light_inv_saved then
@@ -189,6 +190,15 @@ function lib:init()
                 else
                     if Game.inventory:getItemByID("light/glass") then
                         Game.inventory:removeItem(Game.inventory:getItemByID("light/glass"))
+                    end
+                end
+                if has_egg then
+                    if not Game.inventory:getItemByID("light/egg") then
+                        Game.inventory:addItem(Registry.createItem("light/egg"))
+                    end
+                else
+                    if Game.inventory:getItemByID("light/egg") then
+                        Game.inventory:removeItem(Game.inventory:getItemByID("light/egg"))
                     end
                 end
             end
@@ -1055,8 +1065,11 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(Item, "battleUseSound", function(orig, self, user, target) end)
 
     Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
+        self:battleUseSound(user, target)
         if self.getLightBattleText then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
