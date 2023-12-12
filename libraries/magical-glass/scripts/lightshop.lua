@@ -92,8 +92,6 @@ function LightShop:init()
     -- Same here too...
     self.sell_current_selecting_x = 1
     self.sell_current_selecting_y = 1
-    -- Oh my god
-    self.item_current_selecting = 1
 
     self.item_offset = 0
 
@@ -852,10 +850,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.sell_current_selecting_y = old
                         end
                     end
---[[                     self.item_current_selecting = self.item_current_selecting - 1
-                    if (self.item_current_selecting <= 0) then
-                        self.item_current_selecting = 1
-                    end ]]
                 elseif Input.is("down", key) then
                     local old = self.sell_current_selecting_y
                     self.sell_current_selecting_y = self.sell_current_selecting_y + 1
@@ -867,15 +861,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.sell_current_selecting_y = old
                         end
                     end
-
---[[                     local max = inventory.max
-                    if inventory.sorted then
-                        max = #inventory
-                    end
-                    self.item_current_selecting = self.item_current_selecting + 1
-                    if (self.item_current_selecting > max) then
-                        self.item_current_selecting = max
-                    end ]]
                 elseif Input.is("right", key) then
                     local old = self.sell_current_selecting_x
                     self.sell_current_selecting_x = self.sell_current_selecting_x + 1
