@@ -612,8 +612,6 @@ function LightShop:draw()
             Draw.draw(self.heart_sprite, 30 + (self.sell_current_selecting_x - 1 - (page*2)) * 280, 228 + ((self.sell_current_selecting_y) * 40), 0, 2)
         end
 
-        Draw.setColor(COLORS.white)
-
         if inventory then
             for i = 1, 8 do
                 local item = inventory[i]
@@ -640,6 +638,8 @@ function LightShop:draw()
                     end
                 end
             end
+            
+            Draw.setColor(COLORS.white)
 
             if not self.sell_confirming then
                 love.graphics.print("Exit", 60, SCREEN_HEIGHT - 60)
@@ -649,8 +649,6 @@ function LightShop:draw()
             if inventory.sorted then
                 max = #inventory
             end
-
-            Draw.setColor(COLORS.white)
 
             if max > 8 and not self.sell_confirming then
                 -- draw page text
