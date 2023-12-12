@@ -2741,7 +2741,7 @@ function lib:preUpdate()
         end
     end
     if not Game:isLight() then
-        if Game:getFlag("has_cell_phone", Kristal.getModOption("cell")) then
+        if Game:getFlag("has_cell_phone") then
             if not Game.inventory:getItemByID("cell_phone") then
                 Game.inventory:addItemTo("key_items", 1, Registry.createItem("cell_phone"))
             end
