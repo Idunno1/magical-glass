@@ -923,7 +923,7 @@ function LightShop:isValidMenuLocation()
     if self.sell_current_selecting_y > 4 or self.sell_current_selecting_y < 1 then
         return false
     end
-    if self.sell_current_selecting_x > 2 or self.sell_current_selecting_y < 1 then
+    if self.sell_current_selecting_x > 2 or self.sell_current_selecting_x < 1 then
         return false
     end
     return true
