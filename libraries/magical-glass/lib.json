@@ -38,11 +38,10 @@
         /////
         "undertale_text_skipping": true,
 
-        ///// Ball of Junk
-        // Whether the dark inventory should be stored in a flag rather than
-        // the Ball of Junk item during Dark to Light item conversion.
+        ///// Key Items Conversion
+        // Whether you'll have in your light inventory items like Ball of Junk or Glass when needed.
         /////
-        "ball_of_junk": true,
+        "key_items_conversion": true,
 
         ///// Hide CELL option in the Light World menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.

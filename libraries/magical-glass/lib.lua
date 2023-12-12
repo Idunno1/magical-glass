@@ -168,6 +168,8 @@ function lib:init()
             lib.dark_inv = self.inventory
             lib.dark_inv_saved = false
             
+            local has_shadowcrystal = Game.inventory:getItemByID("shadowcrystal") and true or false
+            
             self.inventory = LightInventory()
             if lib.light_inv_saved then
                 self.inventory:load(lib.light_inv)
@@ -175,8 +177,20 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk") then
-                Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+                if not Game.inventory:getItemByID("light/ball_of_junk") then
+                    Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+                end
+                
+                if has_shadowcrystal then
+                    if not Game.inventory:getItemByID("light/glass") then
+                        Game.inventory:addItem(Registry.createItem("light/glass"))
+                    end
+                else
+                    if Game.inventory:getItemByID("light/glass") then
+                        Game.inventory:removeItem(Game.inventory:getItemByID("light/glass"))
+                    end
+                end
             end
             
             for _,party in pairs(self.party_data) do
