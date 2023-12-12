@@ -583,9 +583,7 @@ function lib:init()
             end
         
             if self.is_new_file then
-                if self.light then
-                    Game:setFlag("has_cell_phone", Kristal.getModOption("cell"))
-                end
+                Game:setFlag("has_cell_phone", Kristal.getModOption("cell"))
         
                 for id,equipped in pairs(Kristal.getModOption("equipment") or {}) do
                     if equipped["weapon"] then
