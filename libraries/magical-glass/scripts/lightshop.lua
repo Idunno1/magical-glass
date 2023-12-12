@@ -49,6 +49,9 @@ function LightShop:init()
     -- SELLMENU
 
     self.sold_text = "Thank you!"
+    self.sold_items = 0
+    self.sell_item_rotation = 0
+    -- self.sell_item_rotation = math.rad(-0.3) -- I think this is exclusive to Tem's shop
 
     -- STATES: MAINMENU, BUYMENU, SELLMENU, SELLING, TALKMENU, LEAVE, LEAVING, DIALOGUE
     self.state = "NONE"
@@ -241,6 +244,7 @@ function LightShop:onStateChange(old,new)
         self.dialogue_text.width = 372
         self:setDialogueText(self.shop_text)
         self:setRightText("")
+        self.sold_items = 0
     elseif new == "BUYMENU" then
         self:setDialogueText("")
         self:setRightText(self.buy_menu_text)
@@ -266,7 +270,8 @@ function LightShop:onStateChange(old,new)
         self.draw_divider = false
         self:setRightText("")
         self.info_box.visible = false
-        self.item_current_selecting = 1
+        self.sell_current_selecting_x = 1
+        self.sell_current_selecting_y = 1
         self.item_offset = 0
     elseif new == "TALKMENU" then
         self:setDialogueText("")
@@ -610,14 +615,11 @@ function LightShop:draw()
             love.graphics.print("No",  60 + 420, 420 - 80 + 30)
         else
             Draw.draw(self.heart_sprite, 30 + (self.sell_current_selecting_x - 1 - (page*2)) * 280, 228 + ((self.sell_current_selecting_y) * 40), 0, 2)
-        end
+            if inventory then
+                for i = 1, 8 do
+                    local item = inventory[i]
+                    love.graphics.setFont(self.font)
 
-        if inventory then
-            for i = 1, 8 do
-                local item = inventory[i]
-                love.graphics.setFont(self.font)
-
-                if not self.sell_confirming then
                     if item then
                         local display_item
                         if item:isSellable() then
@@ -631,30 +633,29 @@ function LightShop:draw()
                             display_item = "  " .. display_item
                         end
                         --love.graphics.print(display_item, 80, 220 + ((i - self.item_offset) * 40))
-                        love.graphics.print(display_item, 74 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), math.rad(-0.3))
-                    -- else
-                        -- Draw.setColor(COLORS.dkgray)
-                        -- love.graphics.print("--------", 80, 220 + ((i - self.item_offset) * 40))
+                        love.graphics.print(display_item, 74 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), self.sell_item_rotation)
                     end
                 end
-            end
-            
-            Draw.setColor(COLORS.white)
+                for i = 8, 9 - self.sold_items, -1 do
+                    Draw.setColor(COLORS.gray)
+                    love.graphics.print(self.sold_text, 74 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20))
+                end
+                
+                Draw.setColor(COLORS.white)
 
-            if not self.sell_confirming then
                 love.graphics.print("Exit", 60, SCREEN_HEIGHT - 60)
-            end
 
-            local max = inventory.max
-            if inventory.sorted then
-                max = #inventory
-            end
+                local max = inventory.max
+                if inventory.sorted then
+                    max = #inventory
+                end
 
-            if max > 8 and not self.sell_confirming then
-                -- draw page text
+                if max > 8 then
+                    -- draw page text
+                end
+            else
+                love.graphics.print("Invalid storage", 60, 220 + (1 * 40))
             end
-        else
-            love.graphics.print("Invalid storage", 60, 220 + (1 * 40))
         end
     elseif self.state == "TALKMENU" then
         Draw.setColor(Game:getSoulColor())
@@ -689,7 +690,7 @@ function LightShop:draw()
     elseif self.state == "SELLING" then
         Draw.setColor(COLORS.yellow)
         love.graphics.setFont(self.font)
-        love.graphics.print(string.format(self.sell_currency_text, self:getMoney()), 380, 420)
+        love.graphics.print(string.format(self.sell_currency_text, self:getMoney()), 400, 420)
     end
 
     Draw.setColor(0, 0, 0, self.fade_alpha)
@@ -800,6 +801,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                     local current_item = inventory[self:getSellMenuIndex()]
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
+                        self.sold_items = self.sold_items + 1
                         if #Game.inventory:getStorage("items") <= 0 then
                             self:setState("MAINMENU")
                         end
@@ -916,7 +918,7 @@ function LightShop:isValidMenuLocation()
     if self:getSellMenuIndex() > #Game.inventory:getStorage(self.state_reason[2]) then
         return false
     end
-    if self.sell_current_selecting_y > 2 or self.sell_current_selecting_y < 1 then
+    if self.sell_current_selecting_y > 4 or self.sell_current_selecting_y < 1 then
         return false
     end
     return true
