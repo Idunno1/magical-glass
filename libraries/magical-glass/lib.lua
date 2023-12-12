@@ -2761,9 +2761,8 @@ function lib:onFootstep()
 end
 
 function lib:preUpdate()
-    Game.lw_xp = 0 -- Gets the party with the most Light EXP (might be used for shared exp at some point)
-    for _,party in pairs(Game.party_data) do
-        if party:getLightEXP() > Game.lw_xp then  
+    for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP (might be used for shared exp at some point)
+        if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
         end
     end
