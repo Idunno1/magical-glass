@@ -584,7 +584,7 @@ function lib:init()
         
             if self.is_new_file then
                 if self.light then
-                    Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
+                    Game:setFlag("has_cell_phone", Kristal.getModOption("cell"))
                 end
         
                 for id,equipped in pairs(Kristal.getModOption("equipment") or {}) do
