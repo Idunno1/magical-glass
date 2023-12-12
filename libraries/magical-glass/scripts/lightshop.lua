@@ -634,13 +634,12 @@ function LightShop:draw()
                         if item:isSellable() and item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
                             display_item = "  " .. display_item
                         end
-                        --love.graphics.print(display_item, 80, 220 + ((i - self.item_offset) * 40))
-                        love.graphics.print(display_item, 74 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), self.sell_item_rotation)
+                        love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), self.sell_item_rotation)
                     end
                 end
                 for i = 8, 9 - self.sold_items, -1 do
                     Draw.setColor(COLORS.gray)
-                    love.graphics.print(self.sold_text, 74 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20))
+                    love.graphics.print(self.sold_text, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20))
                 end
                 
                 Draw.setColor(COLORS.white)
