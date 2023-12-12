@@ -168,6 +168,9 @@ function lib:init()
             lib.dark_inv = self.inventory
             lib.dark_inv_saved = false
             
+            local has_shadowcrystal = Game.inventory:getItemByID("shadowcrystal") and true or false
+            local has_egg = Game.inventory:getItemByID("egg") and true or false
+            
             self.inventory = LightInventory()
             if lib.light_inv_saved then
                 self.inventory:load(lib.light_inv)
@@ -175,8 +178,29 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "ball_of_junk") and not Game.inventory:getItemByID("light/ball_of_junk") then
-                Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+                if not Game.inventory:getItemByID("light/ball_of_junk") then
+                    Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+                end
+                
+                if has_shadowcrystal then
+                    if not Game.inventory:getItemByID("light/glass") then
+                        Game.inventory:addItem(Registry.createItem("light/glass"))
+                    end
+                else
+                    if Game.inventory:getItemByID("light/glass") then
+                        Game.inventory:removeItem(Game.inventory:getItemByID("light/glass"))
+                    end
+                end
+                if has_egg then
+                    if not Game.inventory:getItemByID("light/egg") then
+                        Game.inventory:addItem(Registry.createItem("light/egg"))
+                    end
+                else
+                    if Game.inventory:getItemByID("light/egg") then
+                        Game.inventory:removeItem(Game.inventory:getItemByID("light/egg"))
+                    end
+                end
             end
             
             for _,party in pairs(self.party_data) do
@@ -583,9 +607,7 @@ function lib:init()
             end
         
             if self.is_new_file then
-                if self.light then
-                    Game:setFlag("has_cell_phone", Kristal.getModOption("cell") ~= false)
-                end
+                Game:setFlag("has_cell_phone", Kristal.getModOption("cell"))
         
                 for id,equipped in pairs(Kristal.getModOption("equipment") or {}) do
                     if equipped["weapon"] then
@@ -1043,8 +1065,11 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(Item, "battleUseSound", function(orig, self, user, target) end)
 
     Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
+        self:battleUseSound(user, target)
         if self.getLightBattleText then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
@@ -2007,6 +2032,13 @@ function lib:init()
         love.graphics.print("STAT", 84, 188 + (36 * 1))
     
         if not Kristal.getLibConfig("magical-glass", "hide_cell") then
+            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
+                Draw.setColor(PALETTE["world_text"])
+            else
+                Draw.setColor(PALETTE["world_gray"])
+            end
+            love.graphics.print("CELL", 84, 188 + (36 * 2))
+        else
             if Game:getFlag("has_cell_phone") then
                 if #Game.world.calls > 0 then
                     Draw.setColor(PALETTE["world_text"])
@@ -2014,13 +2046,6 @@ function lib:init()
                     Draw.setColor(PALETTE["world_gray"])
                 end
                 love.graphics.print("CELL", 84, 188 + (36 * 2))
-            end
-        else
-            if Game:getFlag("has_cell_phone") then
-                if #Game.world.calls > 0 then
-                    Draw.setColor(PALETTE["world_text"])
-                    love.graphics.print("CELL", 84, 188 + (36 * 2))
-                end
             end
         end
     
@@ -2736,10 +2761,20 @@ function lib:onFootstep()
 end
 
 function lib:preUpdate()
-    Game.lw_xp = 0 -- Gets the party with the most Light EXP (might be used for shared exp at some point)
-    for _,party in pairs(Game.party_data) do
-        if party:getLightEXP() > Game.lw_xp then  
+    for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP (might be used for shared exp at some point)
+        if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
             Game.lw_xp = party:getLightEXP()
+        end
+    end
+    if not Game:isLight() then
+        if Game:getFlag("has_cell_phone") then
+            if not Game.inventory:getItemByID("cell_phone") then
+                Game.inventory:addItemTo("key_items", 1, Registry.createItem("cell_phone"))
+            end
+        else
+            if Game.inventory:getItemByID("cell_phone") then
+                Game.inventory:removeItem(Game.inventory:getItemByID("cell_phone"))
+            end
         end
     end
 end

@@ -96,7 +96,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             local new_damage = math.ceil(damage * (punches / self.attack_punches))
             enemy:hurt(new_damage, battler)
     
-            battler.chara:onAttackHit(enemy, damage)
+            battler.chara:onLightAttackHit(enemy, damage)
     
             Game.battle:endAttack()
         else
