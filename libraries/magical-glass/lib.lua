@@ -168,8 +168,8 @@ function lib:init()
             lib.dark_inv = self.inventory
             lib.dark_inv_saved = false
             
-            local has_shadowcrystal = Game.inventory:getItemByID("shadowcrystal") and true or false
-            local has_egg = Game.inventory:getItemByID("egg") and true or false
+            local has_shadowcrystal = self.inventory:getItemByID("shadowcrystal") and true or false
+            local has_egg = self.inventory:getItemByID("egg") and true or false
             
             self.inventory = LightInventory()
             if lib.light_inv_saved then
@@ -179,26 +179,26 @@ function lib:init()
             end
             
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
-                if not Game.inventory:getItemByID("light/ball_of_junk") then
-                    Game.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+                if not self.inventory:getItemByID("light/ball_of_junk") then
+                    self.inventory:addItem(Registry.createItem("light/ball_of_junk"))
                 end
                 
                 if has_shadowcrystal then
-                    if not Game.inventory:getItemByID("light/glass") then
-                        Game.inventory:addItem(Registry.createItem("light/glass"))
+                    if not self.inventory:getItemByID("light/glass") then
+                        self.inventory:addItem(Registry.createItem("light/glass"))
                     end
                 else
-                    if Game.inventory:getItemByID("light/glass") then
-                        Game.inventory:removeItem(Game.inventory:getItemByID("light/glass"))
+                    if self.inventory:getItemByID("light/glass") then
+                        self.inventory:removeItem(self.inventory:getItemByID("light/glass"))
                     end
                 end
                 if has_egg then
-                    if not Game.inventory:getItemByID("light/egg") then
-                        Game.inventory:addItem(Registry.createItem("light/egg"))
+                    if not self.inventory:getItemByID("light/egg") then
+                        self.inventory:addItem(Registry.createItem("light/egg"))
                     end
                 else
-                    if Game.inventory:getItemByID("light/egg") then
-                        Game.inventory:removeItem(Game.inventory:getItemByID("light/egg"))
+                    if self.inventory:getItemByID("light/egg") then
+                        self.inventory:removeItem(self.inventory:getItemByID("light/egg"))
                     end
                 end
             end
@@ -237,7 +237,7 @@ function lib:init()
             lib.light_inv = self.inventory
             lib.light_inv_saved = false
             
-            local has_ballofjunk = Game.inventory:getItemByID("light/ball_of_junk") and true or false
+            local has_ballofjunk = self.inventory:getItemByID("light/ball_of_junk") and true or false
             
             self.inventory = DarkInventory()
             if lib.dark_inv_saved then
@@ -254,7 +254,7 @@ function lib:init()
                     for i = 1, self.inventory.storages.weapons.max do
                         self.inventory.storages.weapons[i] = nil
                     end
-                    for i = 1, MagicalGlassLib.dark_inv.storages.armors.max do
+                    for i = 1, self.inventory.storages.armors.max do
                         self.inventory.storages.armors[i] = nil
                     end
                 end
