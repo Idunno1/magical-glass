@@ -806,14 +806,9 @@ function LightShop:onKeyPressed(key, is_repeat)
                     local current_item = inventory[self:getSellMenuIndex()]
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
-                        if inventory.sorted then
---[[                             if self.item_current_selecting > #inventory then
-                                self.item_current_selecting = self.item_current_selecting - 1
-                            end ]]
-                            if self:getSellMenuIndex() == 0 then
-                                self:setState("SELLMENU", true)
-                                self.sold_everything = true
-                            end
+                        if #Game.inventory:getStorage("items") <= 0 then
+                            self:setState("SELLMENU", true)
+                            self.sold_everything = true
                         end
                     end
                 elseif Input.isCancel(key) then
