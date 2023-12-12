@@ -2012,8 +2012,12 @@ function lib:init()
             end
             love.graphics.print("CELL", 84, 188 + (36 * 2))
         else
-            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
-                Draw.setColor(PALETTE["world_text"])
+            if Game:getFlag("has_cell_phone") then
+                if #Game.world.calls > 0 then
+                    Draw.setColor(PALETTE["world_text"])
+                else
+                    Draw.setColor(PALETTE["world_gray"])
+                end
                 love.graphics.print("CELL", 84, 188 + (36 * 2))
             end
         end
