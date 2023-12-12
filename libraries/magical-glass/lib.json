@@ -47,7 +47,7 @@
         ///// Hide CELL option in the Light World menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
         /////
-        "hide_cell": true,
+        "hide_cell": false,
 
         ///// Light World STAT menu style
         // Determines the appearance of the Light World STAT menu when more than one character is

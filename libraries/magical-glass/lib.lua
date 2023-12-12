@@ -2005,20 +2005,16 @@ function lib:init()
         love.graphics.print("STAT", 84, 188 + (36 * 1))
     
         if not Kristal.getLibConfig("magical-glass", "hide_cell") then
-            if Game:getFlag("has_cell_phone") then
-                if #Game.world.calls > 0 then
-                    Draw.setColor(PALETTE["world_text"])
-                else
-                    Draw.setColor(PALETTE["world_gray"])
-                end
-                love.graphics.print("CELL", 84, 188 + (36 * 2))
+            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
+                Draw.setColor(PALETTE["world_text"])
+            else
+                Draw.setColor(PALETTE["world_gray"])
             end
+            love.graphics.print("CELL", 84, 188 + (36 * 2))
         else
-            if Game:getFlag("has_cell_phone") then
-                if #Game.world.calls > 0 then
-                    Draw.setColor(PALETTE["world_text"])
-                    love.graphics.print("CELL", 84, 188 + (36 * 2))
-                end
+            if Game:getFlag("has_cell_phone") and #Game.world.calls > 0 then
+                Draw.setColor(PALETTE["world_text"])
+                love.graphics.print("CELL", 84, 188 + (36 * 2))
             end
         end
     

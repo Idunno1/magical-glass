@@ -44,10 +44,10 @@ function LightMenu:init()
 
     self.storage = "items"
     
-    if Kristal.getLibConfig("magical-glass", "hide_cell") then
-        self.max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
-    else
+    if Kristal.getLibConfig("magical-glass", "hide_cell") and not Game:getFlag("has_cell_phone") then
         self.max_selecting = 2
+    else
+        self.max_selecting = 3
     end
     if self.current_selecting > self.max_selecting then
         self.current_selecting = 1
