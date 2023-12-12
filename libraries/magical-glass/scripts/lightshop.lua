@@ -48,7 +48,7 @@ function LightShop:init()
 
     -- SELLMENU
 
-    self.sold_text = "Thank you!"
+    self.sold_text = "(Thank you!)"
     self.sold_items = 0
     self.sell_item_rotation = 0
     -- self.sell_item_rotation = math.rad(-0.3) -- I think this is exclusive to Tem's shop
