@@ -43,6 +43,15 @@ function LightMenu:init()
     self:addChild(self.choice_box)
 
     self.storage = "items"
+    
+    if Kristal.getLibConfig("magical-glass", "hide_cell") then
+        self.max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
+    else
+        self.max_selecting = 2
+    end
+    if self.current_selecting > self.max_selecting then
+        self.current_selecting = 1
+    end
 end
 
 function LightMenu:onKeyPressed(key)
@@ -55,13 +64,8 @@ function LightMenu:onKeyPressed(key)
         local old_selected = self.current_selecting
         if Input.is("up", key)    then self.current_selecting = self.current_selecting - 1 end
         if Input.is("down", key) then self.current_selecting = self.current_selecting + 1 end
-        local max_selecting
-        if Kristal.getLibConfig("magical-glass", "hide_cell") then
-            max_selecting = Game:getFlag("has_cell_phone") and 3 or 2
-        else
-            max_selecting = 2
-        end
-        self.current_selecting = Utils.clamp(self.current_selecting, 1, max_selecting)
+
+        self.current_selecting = Utils.clamp(self.current_selecting, 1, self.max_selecting)
         if old_selected ~= self.current_selecting then
             self.ui_move:stop()
             self.ui_move:play()
