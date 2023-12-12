@@ -50,18 +50,6 @@ function item:onToss()
 
         if dropped then
             Game.inventory:removeItem(self)
-            if MagicalGlassLib.dark_inv then
-                for i = 1, MagicalGlassLib.dark_inv.storages.items.max do
-                    MagicalGlassLib.dark_inv.storages.items[i] = nil
-                end
-                for i = 1, MagicalGlassLib.dark_inv.storages.weapons.max do
-                    MagicalGlassLib.dark_inv.storages.weapons[i] = nil
-                end
-                for i = 1, MagicalGlassLib.dark_inv.storages.armors.max do
-                    MagicalGlassLib.dark_inv.storages.armors[i] = nil
-                end
-            end
-
             Assets.playSound("bageldefeat")
             cutscene:text("* Hand shaking,[wait:5] you dropped the\nball of junk on the ground.")
             cutscene:text("* It broke into pieces.")
