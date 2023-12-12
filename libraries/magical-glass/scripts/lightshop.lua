@@ -803,7 +803,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
                         if not self:isValidMenuLocation() then
-                            if self.sell_current_selecting_x >= 2 then
+                            if self.sell_current_selecting_x > 1 then
                                 self.sell_current_selecting_x = self.sell_current_selecting_x - 1
                             else
                                 self.sell_current_selecting_x = 2
