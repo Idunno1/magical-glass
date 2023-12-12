@@ -627,12 +627,12 @@ function LightShop:draw()
                         if item:isSellable() then
                             Draw.setColor(COLORS.white)
                             display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
+                            if item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
+                                display_item = "  " .. display_item
+                            end
                         else
                             Draw.setColor(COLORS.gray)
                             display_item = item:getShortName()
-                        end
-                        if item:isSellable() and item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
-                            display_item = "  " .. display_item
                         end
                         love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), self.sell_item_rotation)
                     end
