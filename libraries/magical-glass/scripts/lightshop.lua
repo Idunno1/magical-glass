@@ -803,7 +803,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                     if self.current_selecting_choice == 1 then
                         self:sellItem(current_item)
                         if #Game.inventory:getStorage("items") <= 0 then
-                            self:setState("MAINMENU", true)
+                            self:setState("MAINMENU")
                         end
                     end
                 elseif Input.isCancel(key) then
@@ -825,6 +825,8 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.current_selecting_choice = 1
                             self:setRightText("")
                         end
+                    else
+                        self:setState("MAINMENU")
                     end
                 elseif Input.isCancel(key) and not is_repeat then
                     self:setState("MAINMENU")
