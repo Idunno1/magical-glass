@@ -598,7 +598,9 @@ function LightShop:draw()
             self:enterSellMenu({"Sell Items","items"})
         else
             self:setState("MAINMENU")
-            self:setDialogueText(self.sell_no_storage_text)
+            self:startDialogue(
+                self.sell_no_storage_text
+            )
         end
     elseif self.state == "SELLING" then
         local inventory = Game.inventory:getStorage(self.state_reason[2])
