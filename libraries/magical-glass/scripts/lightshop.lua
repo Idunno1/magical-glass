@@ -647,7 +647,9 @@ function LightShop:draw()
                 end
             end
 
-            love.graphics.print("Exit", 60, SCREEN_HEIGHT - 60)
+            if not self.sell_confirming then
+                love.graphics.print("Exit", 60, SCREEN_HEIGHT - 60)
+            end
 
             local max = inventory.max
             if inventory.sorted then
