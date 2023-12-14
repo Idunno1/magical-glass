@@ -136,6 +136,21 @@ function LightActionBoxSingle:drawStatusStripStory()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
+    
+    local limit = self:getHPGaugeLengthCap()
+    if limit == true then
+        limit = 99
+    end
+    local size = max
+    if limit and size > limit then
+        size = limit
+        limit = true
+    end
+
+    love.graphics.setColor(COLORS["red"])
+    love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
+    love.graphics.setColor(COLORS["yellow"])
+    love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((current / max) * size) * 1.25 or current * 1.25, 21)
 
     if max < 10 and max >= 0 then
         max = "0" .. tostring(max)
@@ -144,23 +159,6 @@ function LightActionBoxSingle:drawStatusStripStory()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-
-    local limit = self:getHPGaugeLengthCap()
-    if limit == true then
-        limit = 99
-    end
-    local size = max
-    local length = current
-    if limit then
-        if size >= limit then
-            size = limit
-        end
-    end
-
-    love.graphics.setColor(COLORS["red"])
-    love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
-    love.graphics.setColor(COLORS["yellow"])
-    love.graphics.rectangle("fill", x + 110, y, length * 1.25, 21)
 
     love.graphics.setColor(COLORS["white"])
     love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14, y)
@@ -179,6 +177,21 @@ function LightActionBoxSingle:drawStatusStrip()
 
     local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
+    
+    local limit = self:getHPGaugeLengthCap()
+    if limit == true then
+        limit = 99
+    end
+    local size = max
+    if limit and size > limit then
+        size = limit
+        limit = true
+    end
+
+    love.graphics.setColor(COLORS["red"])
+    love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
+    love.graphics.setColor(COLORS["yellow"])
+    love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((current / max) * size) * 1.25 or current * 1.25, 21)
 
     if max < 10 and max >= 0 then
         max = "0" .. tostring(max)
@@ -187,23 +200,6 @@ function LightActionBoxSingle:drawStatusStrip()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-
-    local limit = self:getHPGaugeLengthCap()
-    if limit == true then
-        limit = 99
-    end
-    local size = max
-    local length = current
-    if limit then
-        if size >= limit then
-            size = limit
-        end
-    end
-
-    love.graphics.setColor(COLORS["red"])
-    love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
-    love.graphics.setColor(COLORS["yellow"])
-    love.graphics.rectangle("fill", x + 245, y, length * 1.25, 21)
 
     local color = COLORS.white
     if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
