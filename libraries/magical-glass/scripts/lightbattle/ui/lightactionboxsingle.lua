@@ -126,7 +126,7 @@ end
 
 function LightActionBoxSingle:drawStatusStripStory()
     local x, y = 180, 130
-    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara.level
+    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(COLORS["white"])
@@ -167,7 +167,7 @@ end
 function LightActionBoxSingle:drawStatusStrip()
     local x, y = 10, 130
     local name = self.battler.chara:getName()
-    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara.level
+    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))
     love.graphics.setColor(COLORS["white"])
