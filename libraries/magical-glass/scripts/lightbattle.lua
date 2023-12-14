@@ -7,7 +7,6 @@ function LightBattle:init()
     super.init(self)
 
     self.light = true
-    self.forced_victory = false
 
     self.party = {}
 
