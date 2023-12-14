@@ -1931,7 +1931,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(exp, 0, 99999)
+        self.lw_exp = Utils.clamp(exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
 
         if level_up then
             self:onLightLevelUp()
@@ -1939,7 +1939,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "gainLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(self.lw_exp + exp, 0, 99999)
+        self.lw_exp = Utils.clamp(self.lw_exp + exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
 
         if level_up then
             self:onLightLevelUp()
