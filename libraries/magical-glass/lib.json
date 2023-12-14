@@ -45,7 +45,7 @@
         // boolean (If true, limits it to 99. If false, disables the length cap)
         // number (If set a number, limits it to the amount set)
         /////
-        "hp_gauge_length_cap": false,
+        "hp_gauge_length_cap": true,
 
         ///// Key Items Conversion
         // Whether you'll have in your light inventory items like Ball of Junk or Glass when needed.
