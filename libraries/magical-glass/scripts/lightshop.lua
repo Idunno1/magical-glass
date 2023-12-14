@@ -31,7 +31,7 @@ function LightShop:init()
     self.sell_no_storage_text = "* Empty inventory text"
     -- Shown when you enter the talk menu.
     self.talk_text = "Talk\ntext"
-    -- If true (has a string/table of strings), it will prevent selling and will start a dialogue
+    -- If has a string/table of strings, it will prevent selling and will start a dialogue
     self.sell_no_selling_text = nil
     
     self.background = nil
@@ -603,9 +603,7 @@ function LightShop:draw()
             end
         else
             self:setState("MAINMENU")
-            if type(self.sell_no_selling_text) == "string" or type(self.sell_no_selling_text) == "table" then
-                self:startDialogue(self.sell_no_selling_text)
-            end
+            self:startDialogue(self.sell_no_selling_text)
         end
     elseif self.state == "SELLING" then
         local inventory = Game.inventory:getStorage(self.state_reason[2])
