@@ -187,14 +187,6 @@ function LightBattle:createPartyBattlers()
         battler.visible = false
         self:addChild(battler)
         table.insert(self.party, battler)
-
-        if party_member:getHealth() > party_member:getStat("health") + 15 then
-            party_member:setHealth(party_member:getStat("health") + 15)
-        end
-
-        if party_member:getHealth() < 1 then
-            party_member:setHealth(1)
-        end
     end
 end
 
