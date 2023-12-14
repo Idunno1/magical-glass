@@ -36,7 +36,7 @@
         ///// UNDERTALE text skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.
         /////
-        "undertale_text_skipping": true,
+        "undertale_text_skipping": false,
         
         ///// Light Battles HP Gauge Length Cap
         // Limits the length of the HP bar in light battles.
