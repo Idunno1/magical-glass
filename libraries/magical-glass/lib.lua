@@ -576,7 +576,15 @@ function lib:init()
 
         self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
             Game.battle:setState("VICTORY")
-        end, in_battle)
+        end, in_dark_battle)
+        
+        self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
+            Game.battle.forced_victory = true
+            if Game.battle.state == "DEFENDING" then
+                Game.battle.encounter:onWavesDone()
+            end
+            Game.battle:setState("VICTORY")
+        end, in_light_battle)
 
     end)
 

@@ -7,6 +7,7 @@ function LightBattle:init()
     super.init(self)
 
     self.light = true
+    self.forced_victory = false
 
     self.party = {}
 
@@ -1691,7 +1692,7 @@ function LightBattle:update()
         end
         self.waves = {}
 
-        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 then
+        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
             self:nextTurn()
         end
     end
@@ -2558,10 +2559,11 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "y" then
+            Input.clear(nil, true)
+            self.forced_victory = true
             if self.state == "DEFENDING" then
                 self.encounter:onWavesDone()
             end
-            Input.clear(nil, true)
             self:setState("VICTORY")
         end
         if key == "m" then
