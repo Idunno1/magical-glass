@@ -19,7 +19,7 @@ function LightActionBoxSingle:init(x, y, index, battler)
 end
 
 function LightActionBoxSingle:getHPGaugeLengthCap()
-    return false
+    return Kristal.getLibConfig("magical-glass", "hp_gauge_length_cap")
 end
 
 function LightActionBoxSingle:getButtons(battler) end
@@ -144,36 +144,26 @@ function LightActionBoxSingle:drawStatusStripStory()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-    
-    local size = max * 1.25
 
     local limit = self:getHPGaugeLengthCap()
+    if limit == true then
+        limit = 99
+    end
+    local size = max
     local length = current
-    if type(limit) == "boolean" and limit == true then
-        if length >= 99 then
-            length = 99
-        end
-
-        if size >= 99 then
-            size = 99
-        end
-    elseif type(limit) == "number" then
-        if length >= limit then
-            length = limit
-        end
-
+    if limit then
         if size >= limit then
             size = limit
         end
     end
 
     love.graphics.setColor(COLORS["red"])
-    love.graphics.rectangle("fill", x + 110, y, size, 21)
+    love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
     love.graphics.setColor(COLORS["yellow"])
     love.graphics.rectangle("fill", x + 110, y, length * 1.25, 21)
 
     love.graphics.setColor(COLORS["white"])
-    love.graphics.print(current .. " / " .. max, x + 115 + size + 14, y)
+    love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14, y)
 end
 
 function LightActionBoxSingle:drawStatusStrip()
@@ -197,31 +187,21 @@ function LightActionBoxSingle:drawStatusStrip()
     if current < 10 and current >= 0 then
         current = "0" .. tostring(current)
     end
-    
-    local size = max * 1.25
 
     local limit = self:getHPGaugeLengthCap()
+    if limit == true then
+        limit = 99
+    end
+    local size = max
     local length = current
-    if type(limit) == "boolean" and limit == true then
-        if length >= 99 then
-            length = 99
-        end
-
-        if size >= 99 then
-            size = 99
-        end
-    elseif type(limit) == "number" then
-        if length >= limit then
-            length = limit
-        end
-
+    if limit then
         if size >= limit then
             size = limit
         end
     end
 
     love.graphics.setColor(COLORS["red"])
-    love.graphics.rectangle("fill", x + 245, y, size, 21)
+    love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
     love.graphics.setColor(COLORS["yellow"])
     love.graphics.rectangle("fill", x + 245, y, length * 1.25, 21)
 
@@ -230,7 +210,7 @@ function LightActionBoxSingle:drawStatusStrip()
         color = COLORS.aqua
     end
     love.graphics.setColor(color)
-    love.graphics.print(current .. " / " .. max, x + 245 + size + 14, y)
+    love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14, y)
 end
 
 function LightActionBoxSingle:draw()
