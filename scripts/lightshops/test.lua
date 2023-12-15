@@ -21,7 +21,7 @@ function TestShop:init()
     -- Shown when you don't have enough space to buy something.
     self.buy_no_space_text = "I'm\ncarrying\ntoo much."
     -- Shown when you're about to sell something.
-    self.sell_confirmation_text = "Sell it for\n%s ?"
+    self.sell_confirmation_text = "Sell %s for %s ?"
     -- Shown when you have nothing in a storage
     self.sell_no_storage_text = "* Nothing in there."
     -- Shown when you enter the talk menu.
