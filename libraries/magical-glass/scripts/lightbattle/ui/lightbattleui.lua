@@ -314,12 +314,20 @@ function LightBattleUI:drawState()
         local letters = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
         local enemy_counter = {}
         local enemy_counter_init = {}
+        local enemy_index = {}
         for _,enemy in pairs(enemies) do
             enemy_counter[enemy.id] = page_offset
             enemy_counter_init[enemy.id] = 0
+            enemy_index[enemy.id] = page_offset
         end
         for _,enemy in pairs(enemies) do
             enemy_counter_init[enemy.id] = enemy_counter_init[enemy.id] + 1
+            if enemy.index then
+                enemy_index[enemy.id] = enemy_index[enemy.id] - 1
+            end
+        end
+        for id,counter in pairs(enemy_index) do
+            enemy_counter[id] = enemy_counter[id] - counter
         end
         
         for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
