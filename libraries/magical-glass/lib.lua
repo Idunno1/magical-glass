@@ -70,12 +70,12 @@ end
 
 function lib:load(data, new_file)
     if Kristal.getModOption("encounter") then
-        Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
+        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
     end
     
     if new_file then
         lib.kills = 0        
-        lib.game_overs = 0
+        lib.game_overs = lib.game_overs or 0
         lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
@@ -83,7 +83,7 @@ function lib:load(data, new_file)
         lib.dark_equip = {}
     else
         lib.kills = data.magical_glass["kills"] or 0
-        lib.game_overs = data.magical_glass["game_overs"] or 0
+        lib.game_overs = lib.game_overs or data.magical_glass["game_overs"] or 0
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
@@ -2494,8 +2494,8 @@ function lib:init()
     end)
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
-        lib.game_overs = lib.game_overs + 1
         orig(self, x, y)
+        lib.game_overs = lib.game_overs + 1
     end)
     
     Utils.hook(SnowGraveSpell, "update", function(orig, self)
