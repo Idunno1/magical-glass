@@ -70,12 +70,12 @@ end
 
 function lib:load(data, new_file)
     if Kristal.getModOption("encounter") then
-        Game.save_name = Kristal.Config["defaultName"] or "PLAYER"
+        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
     end
     
     if new_file then
         lib.kills = 0        
-        lib.game_overs = 0
+        lib.game_overs = lib.game_overs or 0
         lib.serious_mode = false -- makes items use their serious name in battle, if they have one
         lib.name_color = COLORS.yellow -- use MagicalGlassLib:changeSpareColor() to change this
         lib.lw_save_lv = 0
@@ -83,7 +83,7 @@ function lib:load(data, new_file)
         lib.dark_equip = {}
     else
         lib.kills = data.magical_glass["kills"] or 0
-        lib.game_overs = data.magical_glass["game_overs"] or 0
+        lib.game_overs = lib.game_overs or data.magical_glass["game_overs"] or 0
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
@@ -576,7 +576,15 @@ function lib:init()
 
         self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
             Game.battle:setState("VICTORY")
-        end, in_battle)
+        end, in_dark_battle)
+        
+        self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
+            Game.battle.forced_victory = true
+            if Game.battle.state == "DEFENDING" then
+                Game.battle.encounter:onWavesDone()
+            end
+            Game.battle:setState("VICTORY")
+        end, in_light_battle)
 
     end)
 
@@ -1931,7 +1939,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "setLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(exp, 0, 99999)
+        self.lw_exp = Utils.clamp(exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
 
         if level_up then
             self:onLightLevelUp()
@@ -1939,7 +1947,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "gainLightEXP", function(orig, self, exp, level_up)
-        self.lw_exp = Utils.clamp(self.lw_exp + exp, 0, 99999)
+        self.lw_exp = Utils.clamp(self.lw_exp + exp, self.lw_exp_needed[1], self.lw_exp_needed[#self.lw_exp_needed])
 
         if level_up then
             self:onLightLevelUp()
@@ -2486,8 +2494,8 @@ function lib:init()
     end)
 
     Utils.hook(Game, "gameOver", function(orig, self, x, y)
-        lib.game_overs = lib.game_overs + 1
         orig(self, x, y)
+        lib.game_overs = lib.game_overs + 1
     end)
     
     Utils.hook(SnowGraveSpell, "update", function(orig, self)
@@ -2501,7 +2509,7 @@ function lib:init()
                 for i, enemy in ipairs(Game.battle.enemies) do
                     if enemy then
                         enemy.hit_count = 0
-                        enemy:hurt(self.damage + Utils.round(math.random(50)), self.caster)
+                        enemy:hurt(self.damage + Utils.round(math.random(100)), self.caster)
                         if enemy.health <= 0 then
                             enemy.can_die = true
                         end

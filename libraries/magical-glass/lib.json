@@ -36,7 +36,16 @@
         ///// UNDERTALE text skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.
         /////
-        "undertale_text_skipping": true,
+        "undertale_text_skipping": false,
+        
+        ///// Light Battles HP Gauge Length Cap
+        // Limits the length of the HP bar in light battles.
+        ///// Values:
+        //
+        // boolean (If true, limits it to 99. If false, disables the length cap)
+        // number (If set a number, limits it to the amount set)
+        /////
+        "hp_gauge_length_cap": true,
 
         ///// Key Items Conversion
         // Whether you'll have in your light inventory items like Ball of Junk or Glass when needed.

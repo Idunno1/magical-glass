@@ -7,6 +7,7 @@ function LightBattle:init()
     super.init(self)
 
     self.light = true
+    self.forced_victory = false
 
     self.party = {}
 
@@ -187,14 +188,6 @@ function LightBattle:createPartyBattlers()
         battler.visible = false
         self:addChild(battler)
         table.insert(self.party, battler)
-
-        if party_member:getHealth() > party_member:getStat("health") + 15 then
-            party_member:setHealth(party_member:getStat("health") + 15)
-        end
-
-        if party_member:getHealth() < 1 then
-            party_member:setHealth(1)
-        end
     end
 end
 
@@ -1691,7 +1684,7 @@ function LightBattle:update()
         end
         self.waves = {}
 
-        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 then
+        if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
             self:nextTurn()
         end
     end
@@ -2558,10 +2551,11 @@ function LightBattle:onKeyPressed(key)
             end
         end
         if key == "y" then
+            Input.clear(nil, true)
+            self.forced_victory = true
             if self.state == "DEFENDING" then
                 self.encounter:onWavesDone()
             end
-            Input.clear(nil, true)
             self:setState("VICTORY")
         end
         if key == "m" then

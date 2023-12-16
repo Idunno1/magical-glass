@@ -15,6 +15,8 @@ function LightShop:init()
     self.buy_menu_text = "Purchase\ntext"
     -- Shown when you're about to buy something.
     self.buy_confirmation_text = "Buy it for\n%s ?"
+    self.buy_confirmation_yes_text = "Yes"
+    self.buy_confirmation_no_text = "No"
     -- Shown when you refuse to buy something
     self.buy_refuse_text = "Buy\nrefused\ntext"
     -- Shown when you buy something
@@ -26,12 +28,15 @@ function LightShop:init()
     -- Shown when you don't have enough space to buy something.
     self.buy_no_space_text = "You're\ncarrying\ntoo much."
     -- Shown when you're about to sell something.
-    self.sell_confirmation_text = "Sell it for\n%s ?"
+    self.sell_confirmation_text = "Sell %s for %s ?"
+    self.sell_confirmation_yes_text = "Yes"
+    self.sell_confirmation_no_text = "No"
     -- Shown when you have nothing in a storage
     self.sell_no_storage_text = "* Empty inventory text"
+    --
     -- Shown when you enter the talk menu.
     self.talk_text = "Talk\ntext"
-    -- If true (has a string/table of strings), it will prevent selling and will start a dialogue
+    -- If has a string/table of strings, it will prevent selling and will start a dialogue
     self.sell_no_selling_text = nil
     
     self.background = nil
@@ -49,11 +54,9 @@ function LightShop:init()
     self.talk_replacements = {}
 
     -- SELLMENU
-
     self.sold_text = "(Thank you!)"
-    self.sold_items = 0
+    -- Rotates the name of the items in the sell menu (in degrees)
     self.sell_item_rotation = 0
-    -- self.sell_item_rotation = math.rad(-0.3) -- I think this is exclusive to Tem's shop
 
     -- STATES: MAINMENU, BUYMENU, SELLMENU, SELLING, TALKMENU, LEAVE, LEAVING, DIALOGUE
     self.state = "NONE"
@@ -96,6 +99,7 @@ function LightShop:init()
     self.sell_current_selecting_y = 1
 
     self.item_offset = 0
+    self.sold_items = 0
 
     self.font = Assets.getFont("main")
     self.heart_sprite = Assets.getTexture("player/heart_menu")
@@ -549,8 +553,8 @@ function LightShop:draw()
             for i = 1, #lines do
                 love.graphics.print(lines[i], 60 + 400, 420 - 160 + ((i - 1) * 30))
             end
-            love.graphics.print("Yes", 60 + 420, 420 - 80)
-            love.graphics.print("No",  60 + 420, 420 - 80 + 30)
+            love.graphics.print(self.buy_confirmation_yes_text, 60 + 420, 420 - 80)
+            love.graphics.print(self.buy_confirmation_no_text,  60 + 420, 420 - 80 + 30)
         end
         Draw.setColor(COLORS.white)
 
@@ -603,9 +607,7 @@ function LightShop:draw()
             end
         else
             self:setState("MAINMENU")
-            if type(self.sell_no_selling_text) == "string" or type(self.sell_no_selling_text) == "table" then
-                self:startDialogue(self.sell_no_selling_text)
-            end
+            self:startDialogue(self.sell_no_selling_text)
         end
     elseif self.state == "SELLING" then
         local inventory = Game.inventory:getStorage(self.state_reason[2])
@@ -615,11 +617,11 @@ function LightShop:draw()
         Draw.setColor(Game:getSoulColor())
 
         if self.sell_confirming then
-            Draw.draw(self.heart_sprite, 30 + 420, 228 + 80 + 10 + (self.current_selecting_choice * 30), 0, 2)
+            Draw.draw(self.heart_sprite, -90 + (self.current_selecting_choice * 220), 360 + 10, 0, 2)
             Draw.setColor(COLORS.white)
-            love.graphics.print(string.format(self.sell_confirmation_text, string.format(self.currency_text, inventory[self:getSellMenuIndex()]:getSellPrice())), 60 + 400, 420 - 160)
-            love.graphics.print("Yes", 60 + 420, 420 - 80)
-            love.graphics.print("No",  60 + 420, 420 - 80 + 30)
+            love.graphics.print(string.format(self.sell_confirmation_text, inventory[self:getSellMenuIndex()]:getShortName(), string.format(self.currency_text, inventory[self:getSellMenuIndex()]:getSellPrice())), 60 + 50, 300)
+            love.graphics.print(self.sell_confirmation_yes_text, 60 + 100, 360)
+            love.graphics.print(self.sell_confirmation_no_text,  60 + 100 + 220, 360)
         else
             Draw.draw(self.heart_sprite, 30 + (self.sell_current_selecting_x - 1 - (page*2)) * 280, 228 + ((self.sell_current_selecting_y) * 40), 0, 2)
             if inventory then
@@ -632,14 +634,17 @@ function LightShop:draw()
                         if item:isSellable() then
                             Draw.setColor(COLORS.white)
                             display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
-                            if item:getSellPrice() < 10 and item:getSellPrice() >= 0 then
+                            if item:getSellPrice() < 10 then
+                                display_item = "  " .. display_item
+                            end
+                            if item:getSellPrice() < 100 then
                                 display_item = "  " .. display_item
                             end
                         else
                             Draw.setColor(COLORS.gray)
                             display_item = item:getShortName()
                         end
-                        love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), self.sell_item_rotation)
+                        love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), math.rad(self.sell_item_rotation))
                     end
                 end
                 for i = 8, 9 - self.sold_items, -1 do
@@ -823,7 +828,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                 elseif Input.isCancel(key) then
                     self.sell_confirming = false
                     Game.key_repeat = true
-                elseif Input.is("up", key) or Input.is("down", key) then
+                elseif Input.is("left", key) or Input.is("right", key) then
                     if self.current_selecting_choice == 1 then
                         self.current_selecting_choice = 2
                     else

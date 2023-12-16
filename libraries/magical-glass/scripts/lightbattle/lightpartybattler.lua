@@ -28,8 +28,8 @@ function LightPartyBattler:onTurnStart()
 end
 
 function LightPartyBattler:calculateDamage(amount, min, cap)
-    local def = self.chara:getStat("defense", default, true)
-    local max_hp = self.chara:getStat("health", default, true)
+    local def = self.chara:getStat("defense")
+    local max_hp = self.chara:getStat("health")
 
     -- good shit toby
 --[[     if max_hp >= 90 then
