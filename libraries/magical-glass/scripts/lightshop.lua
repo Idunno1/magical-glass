@@ -631,8 +631,8 @@ function LightShop:draw()
 
                     if item then
                         local display_item
+                        Draw.setColor(COLORS.white)
                         if item:isSellable() then
-                            Draw.setColor(COLORS.white)
                             display_item = string.format(self.currency_text, item:getSellPrice() or 0) .. " - " .. item:getShortName()
                             if item:getSellPrice() < 10 then
                                 display_item = "  " .. display_item
@@ -641,8 +641,7 @@ function LightShop:draw()
                                 display_item = "  " .. display_item
                             end
                         else
-                            Draw.setColor(COLORS.gray)
-                            display_item = item:getShortName()
+                            display_item = "  NO! - " .. item:getShortName()
                         end
                         love.graphics.print(display_item, 60 + ((i % 2) == 0 and 282 or 0), 240 + ((i - ((i-1) % 2)) * 20), math.rad(self.sell_item_rotation))
                     end
@@ -843,6 +842,8 @@ function LightShop:onKeyPressed(key, is_repeat)
                             Game.key_repeat = false
                             self.current_selecting_choice = 1
                             self:setRightText("")
+                        else
+                            Assets.playSound("nosell" , 1.5)
                         end
                     else
                         self:setState("MAINMENU")
