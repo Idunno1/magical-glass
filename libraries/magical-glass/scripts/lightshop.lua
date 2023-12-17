@@ -843,7 +843,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                             self.current_selecting_choice = 1
                             self:setRightText("")
                         else
-                            Assets.playSound("nosell" , 1.5)
+                            Assets.playSound("nosell")
                         end
                     else
                         self:setState("MAINMENU")
