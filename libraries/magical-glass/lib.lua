@@ -268,7 +268,7 @@ function lib:init()
                         party:setWeapon(nil)
                     end
                 else
-                    party:setWeapon(party.weapon)
+                    party:setWeapon(party.weapon_default)
                 end
                 for i = 1, 2 do
                     if lib.dark_equip[party.id] then
@@ -278,7 +278,7 @@ function lib:init()
                             party:setArmor(i, nil)
                         end
                     else
-                        party:setArmor(i, party.armor[i])
+                        party:setArmor(i, party.armor_default[i])
                     end
                 end
             end
@@ -1857,8 +1857,8 @@ function lib:init()
 
         self.lw_stats["magic"] = 0
         
-        self.weapon = nil
-        self.armor = {}
+        self.weapon_default = nil
+        self.armor_default = {}
 
     end)
 
