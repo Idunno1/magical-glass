@@ -237,8 +237,6 @@ function lib:init()
             lib.light_inv = self.inventory
             lib.light_inv_saved = false
             
-            local has_ballofjunk = self.inventory:getItemByID("light/ball_of_junk") and true or false
-            
             self.inventory = DarkInventory()
             if lib.dark_inv_saved then
                 self.inventory:load(lib.dark_inv)
@@ -247,7 +245,7 @@ function lib:init()
             end
             
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
-                if not has_ballofjunk then
+                if Game:getFlag("tossed_ball_of_junk") then
                     for i = 1, self.inventory.storages.items.max do
                         self.inventory.storages.items[i] = nil
                     end
@@ -259,6 +257,8 @@ function lib:init()
                     end
                 end
             end
+            
+            Game:setFlag("tossed_ball_of_junk", nil)
 
             for _,party in pairs(self.party_data) do
                 if lib.dark_equip[party.id] then
@@ -268,7 +268,7 @@ function lib:init()
                         party:setWeapon(nil)
                     end
                 else
-                    party:setWeapon(party.weapon)
+                    party:setWeapon(party.weapon_default)
                 end
                 for i = 1, 2 do
                     if lib.dark_equip[party.id] then
@@ -278,7 +278,7 @@ function lib:init()
                             party:setArmor(i, nil)
                         end
                     else
-                        party:setArmor(i, party.armor[i])
+                        party:setArmor(i, party.armor_default[i])
                     end
                 end
             end
@@ -1857,8 +1857,8 @@ function lib:init()
 
         self.lw_stats["magic"] = 0
         
-        self.weapon = nil
-        self.armor = {}
+        self.weapon_default = nil
+        self.armor_default = {}
 
     end)
 
