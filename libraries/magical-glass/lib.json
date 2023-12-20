@@ -96,7 +96,7 @@
         // Always shows the MG stat.
         //
         // false
-        // Only shows the MG stat if at least one party member has a magic stat of greater than 0.
+        // Only shows the MG stat if at least one party member has a magic stat greater than 0.
         //
         /////
         "always_show_magic": false,
