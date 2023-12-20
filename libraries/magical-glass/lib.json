@@ -24,7 +24,8 @@
         /////
         "light_battle_tp": false,
         
-        ///// Light Battle Defend light battles (located at the mercy button).
+        ///// Light Battle Defend command
+        // Adds the Defend command to the mercy action button in light battles.
         /////
         "light_battle_defend_btn": true,
 
