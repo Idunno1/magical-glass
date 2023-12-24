@@ -1582,6 +1582,21 @@ function lib:init()
 
     end)
 
+    Utils.hook(LightActionButton, "draw", function(orig, self)
+        if (Game.battle.current_selecting == Game.battle:getPartyIndex(self.battler.chara.id)) and self.selectable and self.hovered then
+            love.graphics.draw(self.hover_tex or self.tex)
+        else
+            love.graphics.draw(self.tex)
+            if self.selectable and self.special_tex and self:hasSpecial() then
+                local r, g, b, a = self:getDrawColor()
+                love.graphics.setColor(r, g, b, a * (0.4 + math.sin((Kristal.getTime() * 30) / 6) * 0.4))
+                love.graphics.draw(self.special_tex)
+            end
+        end
+    
+        LightActionButton.__super.draw(self)
+    end)
+
     Utils.hook(LightItemMenu, "draw", function(orig, self)
         love.graphics.setFont(self.font)
 

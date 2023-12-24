@@ -138,6 +138,9 @@ function LightBattle:init()
     self.menu_wave_length = 0
     self.menu_wave_timer = 0
 
+    self.last_action_battler_selected = 1
+    self.current_action_battler_selected = 1
+
     self.darkify_fader = Fader()
     self.darkify_fader.layer = BATTLE_LAYERS["below_arena"]
     self:addChild(self.darkify_fader)
@@ -2888,7 +2891,13 @@ function LightBattle:handleActionSelectInput(key)
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting
 
-            --self:previousParty()
+            self:previousParty()
+
+            if self.current_selecting ~= old_selecting then
+                self.ui_move:stop()
+                self.ui_move:play()
+                self.battle_ui.action_boxes[self.current_selecting]:unselect()
+            end
 
             if self.current_selecting ~= old_selecting then
                 self:playMoveSound()
