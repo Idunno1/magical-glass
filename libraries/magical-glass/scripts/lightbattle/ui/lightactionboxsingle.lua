@@ -120,6 +120,19 @@ function LightActionBoxSingle:update()
                 end
             end
         end
+        local hasselect = false
+        for i,btn in ipairs(self.buttons) do
+            if btn.hovered == false then
+                if hasselect ~= true then
+                    hasselect = false
+                end
+            else
+                hasselect = true
+            end
+        end
+        if hasselect == true then
+            self.buttons[1]:select()
+        end
     end
 
     super.update(self)
