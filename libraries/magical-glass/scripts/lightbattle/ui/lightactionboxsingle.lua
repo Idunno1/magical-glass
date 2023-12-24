@@ -3,7 +3,7 @@ local LightActionBoxSingle, super = Class(Object)
 function LightActionBoxSingle:init(x, y, index, battler)
     super.init(self, x, y)
 
-    self.index = 1
+    self.index = index
     self.battler = battler
 
     self.selected_button = 1
@@ -98,89 +98,15 @@ function LightActionBoxSingle:snapSoulToButton()
     end
 end
 
-
---[[]
-function ActionBox:update()
-    self.selection_siner = self.selection_siner + 2 * DTMULT
-
-    if Game.battle.current_selecting == self.index then
-        if self.box.y > -32 then self.box.y = self.box.y - 2 * DTMULT end
-        if self.box.y > -24 then self.box.y = self.box.y - 4 * DTMULT end
-        if self.box.y > -16 then self.box.y = self.box.y - 6 * DTMULT end
-        if self.box.y > -8  then self.box.y = self.box.y - 8 * DTMULT end
-        -- originally '= -64' but that was an oversight by toby
-        if self.box.y < -32 then self.box.y = -32 end
-    elseif self.box.y < -14 then
-        self.box.y = self.box.y + 15 * DTMULT
-    else
-        self.box.y = 0
-    end
-
-    self.head_sprite.y = 11 - self.data_offset + self.head_offset_y
-    if self.name_sprite then
-        self.name_sprite.y = 14 - self.data_offset
-    end
-    self.hp_sprite.y = 22 - self.data_offset
-
-    if not self.force_head_sprite then
-        local current_head = self.battler.chara:getHeadIcons().."/"..self.battler:getHeadIcon()
-        if not self.head_sprite:hasSprite(current_head) then
-            current_head = self.battler.chara:getHeadIcons().."/head"
-        end
-
-        if not self.head_sprite:isSprite(current_head) then
-            self.head_sprite:setSprite(current_head)
-        end
-    end
-
-    for i,button in ipairs(self.buttons) do
-        if (Game.battle.current_selecting == self.index) then
-            button.selectable = true
-            button.hovered = (self.selected_button == i)
-        else
-            button.selectable = false
-            button.hovered = false
-        end
-    end
-
-    super.update(self)
-end
---]]
-
---[[]]
 function LightActionBoxSingle:update()
-    if Game.battle.current_selecting == 0 then
-        if Game.battle.party[1] == self.battler then
-            self.visible = true
+    for _,button in ipairs(self.buttons) do
+        if (Game.battle.current_selecting == 0 and self.index == 1) or (Game.battle.current_selecting == self.index) then
+            button.visible = true
         else
-            self.visible = false
-        end
-    elseif Game.battle.party[Game.battle.current_selecting] ~= self.battler then
-        self.visible = false
-    else
-        self.visible = true
-        if self.buttons then
-            for i,button in ipairs(self.buttons) do
-                if (Game.battle.current_selecting == self.index) then
-                    button.selectable = true
-                    button.hovered = (self.selected_button == i)
-                else
-                    button.selectable = false
-                    button.hovered = false
-                end
-            end
-        end
-        local hasselect = false
-        for i,btn in ipairs(self.buttons) do
-            if btn.hovered == false then
-                if hasselect ~= true then
-                    hasselect = false
-                end
-            else
-                hasselect = true
-            end
+            button.visible = false
         end
     end
+
     if self.buttons and (Game.battle.current_selecting == self.index) then
         for i,button in ipairs(self.buttons) do
             if (Game.battle.current_selecting == self.index) then
@@ -196,24 +122,6 @@ function LightActionBoxSingle:update()
     super.update(self)
 
 end
---]]
-
---[[
-function LightActionBoxSingle:update()
-    if self.buttons then
-        for i,button in ipairs(self.buttons) do
-            if (Game.battle.current_selecting == self.index) then
-                button.selectable = true
-                button.hovered = (self.selected_button == i)
-            else
-                button.selectable = false
-                button.hovered = false
-            end
-        end
-    end
-    super.update(self)
-end
---]]
 
 function LightActionBoxSingle:select()
     self.buttons[self.selected_button]:select()

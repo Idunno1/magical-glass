@@ -53,8 +53,8 @@ function LightBattleUI:init()
     
     self.attacking = false
 
-    for index,battler in ipairs(Game.battle.party) do
-        local action_box = LightActionBoxSingle(20, 0, 1, battler)
+    for i ,battler in ipairs(Game.battle.party) do
+        local action_box = LightActionBoxSingle(20, 0, i, battler)
         self:addChild(action_box)
         table.insert(self.action_boxes, action_box)
         battler.chara:onActionBox(action_box, false)
