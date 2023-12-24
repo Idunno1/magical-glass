@@ -254,7 +254,7 @@ function LightActionButton:hasSpecial()
 end
 
 function LightActionButton:draw()
-    if self.selectable and self.hovered then
+    if (Game.battle.current_selecting == Game.battle:getPartyIndex(self.battler.chara.id)) and self.selectable and self.hovered then
         love.graphics.draw(self.hover_tex or self.tex)
     else
         love.graphics.draw(self.tex)
