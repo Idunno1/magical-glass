@@ -101,9 +101,9 @@ end
 function LightActionBoxSingle:update()
     for _,button in ipairs(self.buttons) do
         if (Game.battle.current_selecting == 0 and self.index == 1) or (Game.battle.current_selecting == self.index) then
-            button.visible = true
+            self.visible = true
         else
-            button.visible = false
+            self.visible = false
         end
     end
 
