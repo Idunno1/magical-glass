@@ -490,9 +490,9 @@ function LightEnemyBattler:isXActionShort(battler)
 end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
-    if amount == 0 then
+    if amount <= 0 then
         local message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
-        if message and anim == false then
+        if message and (anim and anim ~= nil) then
             message:resetPhysics()
         else
             self.hurt_timer = 1

@@ -82,7 +82,6 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     end
 
     Game.battle.timer:during(25/30, function()
-
         sprite.rotation = sprite.rotation + math.rad(angle) * DTMULT
         if form == 0 then
             size = size + 0.3 * DTMULT
@@ -126,9 +125,10 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             star:remove()
         end
 
-        Game.battle:endAttack()
+        Game.battle:finishActionBy(battler)
     end)
 
+    return false
 end
 
 return item

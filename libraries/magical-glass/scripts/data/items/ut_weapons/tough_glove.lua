@@ -97,11 +97,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             enemy:hurt(new_damage, battler)
     
             battler.chara:onLightAttackHit(enemy, damage)
-    
-            Game.battle:endAttack()
+            Game.battle:finishActionBy(battler)
         else
-            self:onLightMiss(battler, enemy, false, false)
-            Game.battle:endAttack()
+            self:onLightMiss(battler, enemy, false, punches)
         end
 
     end
@@ -170,6 +168,12 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             state = "DONE" 
         end
     end)
+    return false
+end
+
+function item:onLightMiss(battler, enemy)
+    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, true)
+    Game.battle:finishActionBy(battler)
 end
 
 return item

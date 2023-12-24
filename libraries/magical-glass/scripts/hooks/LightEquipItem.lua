@@ -170,41 +170,4 @@ function LightEquipItem:scoreHit(battler, score, eval, close)
     return new_score
 end
 
-function LightEquipItem:onLightAttack(battler, enemy, damage, stretch)
-
-    local src = Assets.stopAndPlaySound(self:getLightAttackSound())
-    src:setPitch(self:getLightAttackPitch() or 1)
-
-    local sprite = Sprite(self:getLightAttackSprite())
-    local scale = (stretch * 2) - 0.5
-    sprite:setScale(scale, scale)
-    sprite:setOrigin(0.5, 0.5)
-    sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
-    sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara:getLightAttackColor() -- need to swap this to the get function
-    enemy.parent:addChild(sprite)
-    sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
-        
-        local sound = enemy:getDamageSound() or "damage"
-        if sound and type(sound) == "string" and (damage > 0 or enemy.always_play_damage_sound) then
-            Assets.stopAndPlaySound(sound)
-        end
-        enemy:hurt(damage, battler)
-
-        battler.chara:onLightAttackHit(enemy, damage)
-        this:remove()
-
-        Game.battle:endAttack()
-
-    end)
-
-end
-
-function LightEquipItem:onLightMiss(battler, enemy, finish, anim)
-    enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
-    if finish then
-        Game.battle:endAttack()
-    end
-end
-
 return LightEquipItem

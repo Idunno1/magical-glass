@@ -1124,15 +1124,14 @@ function lib:init()
             battler.chara:onLightAttackHit(enemy, damage)
             this:remove()
 
-            Game.battle:endAttack()
+            Game.battle:finishActionBy(battler)
         end)
+
+        return false
     end)
 
-    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, finish, anim)
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim)
         enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
-        if finish then
-            Game.battle:endAttack()
-        end
     end)
 
     Utils.hook(Item, "onCheck", function(orig, self)

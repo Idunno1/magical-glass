@@ -81,10 +81,10 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         battler.chara:onLightAttackHit(enemy, damage)
         this:remove()
 
-        Game.battle:endAttack()
-
+        Game.battle:finishActionBy(battler)
     end)
 
+    return false
 end
 
 return item

@@ -120,8 +120,6 @@ function LightBattle:init()
     self.menu_items = {}
     self.pager_menus = {"ITEM"}
 
-    self.actions_done_timer = 0
-
     self.xactions = {}
 
     self.selected_enemy = 1
@@ -459,25 +457,6 @@ function LightBattle:retargetEnemy()
     end
 end
 
-function LightBattle:endAttack()
-    self:finishAction(action)
-
-    Utils.removeFromTable(self.normal_attackers, battler)
-    Utils.removeFromTable(self.auto_attackers, battler)
-
-    if not self:retargetEnemy() then
-        self.cancel_attack = true
-    elseif #self.normal_attackers == 0 and #self.auto_attackers > 0 then
-        local next_attacker = self.auto_attackers[1]
-
-        local next_action = self:getActionBy(next_attacker)
-        if next_action then
-            self:beginAction(next_action)
-            self:processAction(next_action)
-        end
-    end
-end
-
 function LightBattle:processAction(action)
     local battler = self.party[action.character_id]
     local party_member = battler.chara
@@ -555,9 +534,15 @@ function LightBattle:processAction(action)
                     damage = 0
                 end
 
-                weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
+                local result = weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
+                if result or result == nil then
+                    self:finishAction(action)
+                end
             else
-                weapon:onLightMiss(battler, enemy, true, false)
+                local result = weapon:onLightMiss(battler, enemy, true, false)
+                if result or result == nil then
+                    self:finishAction(action)
+                end
             end
 
         end
@@ -1555,7 +1540,6 @@ function LightBattle:update()
     if self.state == "ATTACKING" then
         self:updateAttacking()
     elseif self.state == "ACTIONSDONE" then
-        self.actions_done_timer = Utils.approach(self.actions_done_timer, 0, DT)
         local any_hurt = false
         for _,enemy in ipairs(self.enemies) do
             if enemy.hurt_timer > 0 then
@@ -1573,7 +1557,7 @@ function LightBattle:update()
             if not self.encounter:onActionsEnd() then
                 self:setState("ENEMYDIALOGUE")
             end
-        elseif self.actions_done_timer == 0 and not any_hurt then
+        elseif not any_hurt then
             self.attackers = {}
             self.normal_attackers = {}
             self.auto_attackers = {}
