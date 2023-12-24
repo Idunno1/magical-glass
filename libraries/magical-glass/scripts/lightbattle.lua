@@ -179,7 +179,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, 1 do
+    for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)

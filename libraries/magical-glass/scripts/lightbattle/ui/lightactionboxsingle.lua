@@ -99,15 +99,39 @@ function LightActionBoxSingle:snapSoulToButton()
 end
 
 function LightActionBoxSingle:update()
-    if self.buttons then
-        for i,button in ipairs(self.buttons) do
-            if (Game.battle.current_selecting == self.index) then
-                button.selectable = true
-                button.hovered = (self.selected_button == i)
-            else
-                button.selectable = false
-                button.hovered = false
+    if Game.battle.current_selecting == 0 then
+        if Game.battle.party[1] == self.battler then
+            self.visible = true
+        else
+            self.visible = false
+        end
+    elseif Game.battle.party[Game.battle.current_selecting] ~= self.battler then
+        self.visible = false
+    else
+        self.visible = true
+        if self.buttons then
+            for i,button in ipairs(self.buttons) do
+                if (Game.battle.current_selecting == self.index) then
+                    button.selectable = true
+                    button.hovered = (self.selected_button == i)
+                else
+                    button.selectable = false
+                    button.hovered = false
+                end
             end
+        end
+        local hasselect = false
+        for i,btn in ipairs(self.buttons) do
+            if btn.hovered == false then
+                if hasselect ~= true then
+                    hasselect = false
+                end
+            else
+                hasselect = true
+            end
+        end
+        if hasselect == true then
+            self.buttons[1]:select()
         end
     end
 

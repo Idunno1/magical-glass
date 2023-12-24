@@ -40,11 +40,28 @@ function LightAttackBox:createBolts()
             lane.attack_type = "slice"
         end
 
+        --[[
+        local fuck = {0, 40, 80, 120}
+        if self.attackers == 1 then
+            table.remove(fuck, 3)
+            table.remove(fuck, 4)
+        end
+        local start_x = self.bolt_target + (370 + Utils.pick(fuck))
+        ]]
+
+        local fuck = {10, 50, 100, 160}
+        if self.attackers == 1 then
+            table.remove(fuck, 1)
+            table.remove(fuck, 2)
+            table.remove(fuck, 3)
+            table.remove(fuck, 4)
+            table.insert(fuck, 0)
+        end
         local start_x
         if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) 
+            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) + Utils.pick(fuck) + love.math.random(2,38) 
         elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) 
+            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + Utils.pick(fuck) + love.math.random(2,38) 
         else
             error("Invalid attack direction")
         end
@@ -161,7 +178,7 @@ function LightAttackBox:hit(battler)
             battler.bolts[1].sprite:setSprite(bolt.active_sprite)
         end
 
-        return self:checkAttackEnd(battler, battler.score, battler.bolts, close), 2
+        return self:checkAttackEnd(battler, battler.score, battler.bolts, close)--[[]], 2
     elseif battler.attack_type == "slice" then
         battler.score = math.abs(self:getClose(battler))
         if battler.score == 0 then
