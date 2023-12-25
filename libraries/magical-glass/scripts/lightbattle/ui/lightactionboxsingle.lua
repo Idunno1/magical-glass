@@ -46,14 +46,18 @@ function LightActionBoxSingle:createButtons()
             local x
             local loc = 2
             if #btn_types <= 4 then
-                if btn == "fight" then
-                    loc = 1
-                elseif btn == "act" or btn == "spell" then
-                    loc = 2
-                elseif btn == "item" then
-                    loc = 3
-                elseif btn == "mercy" then
-                    loc = 4
+                if #btn_types < 4 then
+                    if btn == "fight" then
+                        loc = 1
+                    elseif btn == "act" or btn == "spell" then
+                        loc = 2
+                    elseif btn == "item" then
+                        loc = 3
+                    elseif btn == "mercy" then
+                        loc = 4
+                    end
+                else
+                    loc = i
                 end
                 x = math.floor(67 + ((loc - 1) * 156))
                 if loc == 2 then
