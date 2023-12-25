@@ -49,15 +49,26 @@ function LightAttackBox:createBolts()
         local start_x = self.bolt_target + (370 + Utils.pick(fuck))
         ]]
 
-        local fuck = {10, 50, 100, 160}
+        local fuck = {0, 40, 80, 120}
         if self.attackers == 1 then
-            table.remove(fuck, 1)
-            table.remove(fuck, 2)
             table.remove(fuck, 3)
             table.remove(fuck, 4)
-            table.insert(fuck, 0)
         end
+        local start_x = (0 + Utils.pick(fuck))
+        
+        --[[
         local start_x
+
+        if lane.direction == "left" then
+            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8)  + (Utils.pick(fuck))
+        elseif lane.direction == "right" then
+            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8)  + (Utils.pick(fuck))
+        else
+            error("Invalid attack direction")
+        end
+        ]]
+
+        --[[
         if lane.direction == "left" then
             start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) + Utils.pick(fuck) + love.math.random(2,38) 
         elseif lane.direction == "right" then
@@ -65,23 +76,26 @@ function LightAttackBox:createBolts()
         else
             error("Invalid attack direction")
         end
+        --]]
 
         for i = 1, lane.weapon.getBoltCount and lane.weapon:getBoltCount() or 1 do
             local bolt
+            local scale_y = (1 / #Game.battle.party)
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler, scale_y)
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
+            bolt.y = math.ceil(bolt.y + (bolt.sprite.height * scale_y * (Game.battle:getPartyIndex(lane.battler.chara.id) - 1)))
             bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
@@ -189,6 +203,7 @@ function LightAttackBox:hit(battler)
 
         bolt:flash()
         battler.attacked = true
+        table.remove(battler.bolts, 1)
     
         return battler.score, battler.stretch
     end

@@ -1,9 +1,11 @@
 local LightAttackBar, super = Class(Object)
 
-function LightAttackBar:init(x, y, battler)
+function LightAttackBar:init(x, y, battler, scale_y)
     super.init(self, x, y)
 
     self.battler = battler
+    
+    self.scale_y = scale_y or 1
 
     self.sprite = Sprite("ui/lightbattle/targetchoice")
     self.active_sprite = "ui/lightbattle/targetchoice_1"
