@@ -2,10 +2,6 @@ function Mod:init()
     print("Loaded "..self.info.name.."!")
 end
 
-function Mod:postInit()
-    Game:setFlag("has_cell_phone", true)
-end
-
 function Mod:load(new_file)
     if new_file then
         Game.money = Kristal.getLibConfig("magical-glass", "debug") and 1000 or 0
