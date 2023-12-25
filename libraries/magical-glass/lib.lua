@@ -192,7 +192,7 @@ function lib:init()
                         self.inventory:addItem(Registry.createItem("light/glass"))
                     end
                 else
-                    if self.inventory:getItemByID("light/glass") then
+                    while self.inventory:getItemByID("light/glass") do
                         self.inventory:removeItem(self.inventory:getItemByID("light/glass"))
                     end
                 end
@@ -201,7 +201,7 @@ function lib:init()
                         self.inventory:addItem(Registry.createItem("light/egg"))
                     end
                 else
-                    if self.inventory:getItemByID("light/egg") then
+                    while self.inventory:getItemByID("light/egg") do
                         self.inventory:removeItem(self.inventory:getItemByID("light/egg"))
                     end
                 end
