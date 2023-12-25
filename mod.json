@@ -26,11 +26,13 @@
         "kristal": {
             "lightCurrency": "Gold",
             "lightCurrencyShort": "G",
-            "mercyBar": true,
-            "mercyMessages": false,
-            "enemyBarPercentages": false,
             "enemyAuras": false,
             // End of config
+        },
+        "magical-glass": {
+            "light_battle_defend_btn": true,
+            "mercy_messages": true,
+            "debug": true,
         }
     }
 }

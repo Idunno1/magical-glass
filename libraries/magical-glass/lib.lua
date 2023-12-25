@@ -2298,7 +2298,7 @@ function lib:init()
             self:removeChild(self.soul)
         end
 
-        if chara.undertale_movement == true then
+        if chara.undertale_movement then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)
