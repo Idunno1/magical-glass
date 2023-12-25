@@ -843,6 +843,7 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_rows = 3
         end
 
+        --[[
         if self.menuselect_cursor_memory[self.state_reason] then
             self.current_menu_x = self.menuselect_cursor_memory[self.state_reason].x
             self.current_menu_y = self.menuselect_cursor_memory[self.state_reason].y
@@ -850,6 +851,9 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_x = 1
             self.current_menu_y = 1
         end
+        ]]
+        self.current_menu_x = 1
+        self.current_menu_y = 1
 
         if not self:isValidMenuLocation() then
             self.current_menu_x = 1
@@ -1530,6 +1534,7 @@ end
 
 function LightBattle:update()
     self.tension_bar.visible = self.tension
+    
 
     if self.cutscene then
         if not self.cutscene.ended then

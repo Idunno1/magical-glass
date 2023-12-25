@@ -50,11 +50,38 @@ function LightBattleUI:init()
 
     self.attack_box = nil
     self.action_boxes = {}
+    self.defending_action_boxes = {}
     
     self.attacking = false
 
+    local size_offset = 0
+    local box_gap = 0
+    
+    if #Game.battle.party == 3 then
+        size_offset = 0
+        box_gap = 0
+    elseif #Game.battle.party == 2 then
+        size_offset = 108
+        box_gap = 1
+        if Game:getConfig("oldUIPositions") then
+            size_offset = 106
+            box_gap = 7
+        end
+    elseif #Game.battle.party == 1 then
+        size_offset = 213
+        box_gap = 0
+    end
+    --270
+
     for i ,battler in ipairs(Game.battle.party) do
         local action_box = LightActionBoxSingle(20, 0, i, battler)
+        self:addChild(action_box)
+        table.insert(self.action_boxes, action_box)
+        battler.chara:onActionBox(action_box, false)
+    end
+
+    for index,battler in ipairs(Game.battle.party) do
+        local action_box = DefendingActionBox(size_offset+ (index - 1) * (213 + box_gap), -270-44, index, battler)
         self:addChild(action_box)
         table.insert(self.action_boxes, action_box)
         battler.chara:onActionBox(action_box, false)
