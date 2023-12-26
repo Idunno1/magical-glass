@@ -687,11 +687,13 @@ function LightEnemyBattler:onDefeatVaporized(damage, battler)
     sprite.visible = false
     sprite:stopShake()
 
-    local death_x, death_y = sprite:getRelativePos(0, 0, self)
-    local death = DustEffect(sprite:getTexture(), death_x, death_y, function() self:remove() end)
-    death:setColor(sprite:getDrawColor())
-    death:setScale(sprite:getScale())
-    self:addChild(death)
+    if self then
+        local death_x, death_y = sprite:getRelativePos(0, 0, self)
+        local death = DustEffect(sprite:getTexture(), death_x, death_y, function() self:remove() end)
+        death:setColor(sprite:getDrawColor())
+        death:setScale(sprite:getScale())
+        self:addChild(death)
+    end
 
     self:defeat("KILLED", true)
 end

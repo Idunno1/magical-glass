@@ -95,7 +95,15 @@ function LightAttackBox:createBolts()
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
-            bolt.y = math.ceil(bolt.y + (bolt.sprite.height * scale_y * (Game.battle:getPartyIndex(lane.battler.chara.id) - 1)))
+            local nn = 0
+            if #Game.battle.party == 1 then
+                nn = 0
+            elseif #Game.battle.party == 2 then
+                nn = 33
+            else
+                nn = 43
+            end
+            bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (Game.battle:getPartyIndex(lane.battler.chara.id) - 1))) + nn
             bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
