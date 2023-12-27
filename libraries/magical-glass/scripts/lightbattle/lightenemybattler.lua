@@ -333,7 +333,7 @@ function LightEnemyBattler:addMercy(amount)
 
             self:lightStatusMessage("mercy", amount)
         elseif self.mercy == 0 then
-            local message = self:lightStatusMessage("msg", "miss", {1,1,1} --[[{192/255, 192/255, 192/255}]])
+            local message = self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
             message:resetPhysics()
         end
     end
