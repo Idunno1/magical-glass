@@ -281,7 +281,11 @@ function lib:init()
                         party:setWeapon(nil)
                     end
                 else
-                    party:setWeapon(party.weapon_default)
+                    if party:getFlag("weapon_default") then
+                        party:setWeapon(party:getFlag("weapon_default"))
+                    else
+                        party:setWeapon(nil)
+                    end
                 end
                 for i = 1, 2 do
                     if lib.dark_equip[party.id] then
@@ -291,7 +295,11 @@ function lib:init()
                             party:setArmor(i, nil)
                         end
                     else
-                        party:setArmor(i, party.armor_default[i])
+                        if party:getFlag("armor_default")[i] then
+                            party:setArmor(i, party:getFlag("armor_default")[i])
+                        else
+                            party:setArmor(i, nil)
+                        end
                     end
                 end
             end
@@ -1869,8 +1877,15 @@ function lib:init()
 
         self.lw_stats["magic"] = 0
         
-        self.weapon_default = nil
-        self.armor_default = {}
+        local equipment = self.equipped
+        Game.stage.timer:after(1/30, function()
+            if self:getFlag("weapon_default") == nil then
+                self:setFlag("weapon_default", equipment.weapon and equipment.weapon.id or false)
+            end
+            if self:getFlag("armor_default") == nil then
+                self:setFlag("armor_default", {equipment.armor[1] and equipment.armor[1].id or false, equipment.armor[2] and equipment.armor[2].id or false})
+            end
+        end)
 
     end)
 

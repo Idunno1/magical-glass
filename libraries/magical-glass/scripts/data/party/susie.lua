@@ -16,12 +16,6 @@ function character:init()
     -- Default light world equipment item IDs (saves current equipment)
     self.lw_weapon_default = "weapons/toothbrush"
     self.lw_armor_default = "light/bandage"
-    
-    self.weapon_default = "mane_ax"
-    if Game.chapter >= 2 then
-        self.armor_default[1] = "amber_card"
-        self.armor_default[2] = "amber_card"
-    end
 
 end
 
