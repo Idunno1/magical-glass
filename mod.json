@@ -25,8 +25,7 @@
     "config": {
         "kristal": {
             "lightCurrency": "Gold",
-            "lightCurrencyShort": "G",
-            "enemyAuras": false,
+            "lightCurrencyShort": "G"
             // End of config
         },
         "magical-glass": {
