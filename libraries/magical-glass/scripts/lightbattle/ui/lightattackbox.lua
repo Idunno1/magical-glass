@@ -32,7 +32,7 @@ function LightAttackBox:createBolts()
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = lane.weapon.getBoltDirection and lane.weapon:getBoltDirection() or "right"
+        lane.direction = "right"
 
         if (lane.weapon.getBoltCount and lane.weapon:getBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"
@@ -40,59 +40,21 @@ function LightAttackBox:createBolts()
             lane.attack_type = "slice"
         end
 
-        --[[
         local fuck = {0, 40, 80, 120}
         if self.attackers == 1 then
             table.remove(fuck, 3)
             table.remove(fuck, 4)
         end
-        local start_x = self.bolt_target + (370 + Utils.pick(fuck))
-        ]]
 
-        local fuck = {0, 40, 80, 120}
-        if self.attackers == 1 then
-            table.remove(fuck, 3)
-            table.remove(fuck, 4)
-        end
-        local start_x = (0 + Utils.pick(fuck))
-        
-        --[[
-        local start_x
-
-        if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8)  + (Utils.pick(fuck))
-        elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8)  + (Utils.pick(fuck))
-        else
-            error("Invalid attack direction")
-        end
-        ]]
-
-        --[[
-        if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) + Utils.pick(fuck) + love.math.random(2,38) 
-        elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + Utils.pick(fuck) + love.math.random(2,38) 
-        else
-            error("Invalid attack direction")
-        end
-        --]]
+        local start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + (Utils.pick(fuck))
 
         for i = 1, lane.weapon.getBoltCount and lane.weapon:getBoltCount() or 1 do
             local bolt
             local scale_y = (1 / #Game.battle.party)
             if i == 1 then
-                if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler, scale_y)
-                else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler, scale_y)
-                end
+                bolt = LightAttackBar(start_x - (lane.weapon.getBoltStart and lane.weapon:getBoltStart() or -16), 319, battler, scale_y)
             else
-                if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
-                else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
-                end
+                bolt = LightAttackBar(start_x - (lane.weapon.getMultiboltVariance and lane.weapon:getMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
             local nn = 0
@@ -211,7 +173,6 @@ function LightAttackBox:hit(battler)
 
         bolt:flash()
         battler.attacked = true
-        table.remove(battler.bolts, 1)
     
         return battler.score, battler.stretch
     end
@@ -265,11 +226,15 @@ function LightAttackBox:update()
             for _,lane in ipairs(self.lanes) do
                 if lane.direction == "right" then
                     for _,bolt in ipairs(lane.bolts) do
-                        bolt:move(lane.speed * DTMULT, 0)
+                        if not bolt.hit then
+                            bolt:move(lane.speed * DTMULT, 0)
+                        end
                     end
                 elseif lane.direction == "left" then
                     for _,bolt in ipairs(lane.bolts) do
+                        if not bolt.hit then
                         bolt:move(-lane.speed * DTMULT, 0)
+                        end
                     end
                 end
             end

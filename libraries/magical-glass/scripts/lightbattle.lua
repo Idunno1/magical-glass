@@ -2940,7 +2940,7 @@ function LightBattle:handleAttackingInput(key)
                         table.insert(closest_attacks, attack)
                     elseif close == closest then
                         table.insert(closest_attacks, attack)
-                    elseif close < closest then
+                    elseif close > closest then
                         closest = close
                         closest_attacks = {attack}
                     end
