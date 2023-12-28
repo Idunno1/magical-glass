@@ -399,7 +399,7 @@ function lib:init()
             self.run_away_timer = self.run_away_timer + DTMULT
         end
     
-        ActorSprite.__super.update(self)
+        Sprite.update(self)
     
         self.actor:onSpriteUpdate(self)
     end)
