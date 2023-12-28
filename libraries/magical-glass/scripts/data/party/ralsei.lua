@@ -5,6 +5,7 @@ function character:init()
     
     self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/ralsei_hat/smile" or "face/ralsei/smile"
     
+    self.lw_health = 20
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
         health = 20,

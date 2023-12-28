@@ -5,6 +5,7 @@ function character:init()
 
     self.lw_portrait = "face/noelle/smile"
 
+    self.lw_health = 20
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
         health = 20,
