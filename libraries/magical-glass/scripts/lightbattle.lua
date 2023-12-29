@@ -1098,7 +1098,7 @@ function LightBattle:onStateChange(old,new)
             member.chara:gainLightEXP(self.xp, true)
 
             if lv ~= member.chara:getLightLV() then
-                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency") .. ".\n* Your LOVE increased."
+                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
             end
         end
 
