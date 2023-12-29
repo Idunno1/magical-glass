@@ -5,6 +5,7 @@ function character:init()
 
     self.lw_portrait = "face/noelle/smile"
 
+    self.lw_health = 20
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
         health = 20,
@@ -16,12 +17,6 @@ function character:init()
     -- Default light world equipment item IDs (saves current equipment)
     self.lw_weapon_default = "weapons/ring"
     self.lw_armor_default = "light/wristwatch"
-    
-    self.weapon_default = "snowring"
-    self.armor_default[1] = "silver_watch"
-    if Game.chapter >= 2 then
-        self.armor_default[2] = "royalpin"
-    end
     
     if Kristal.getLibConfig("magical-glass", "debug") then
         -- Whether the party member can act / use spells

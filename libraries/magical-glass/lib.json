@@ -156,6 +156,12 @@
         /////
         "enemy_bar_percentages": false,
 
+        ///// Light Enemy Chaser Auras
+        // Whether enemies in the light world will also have auras.
+        // (requires auras to be enabled as well)
+        /////
+        "light_enemy_auras": false,
+
         ///// Action Button flash
         // Whether the Spell and Mercy buttons should flash in Light Battles if an enemy is pacifyable or sparable.
         /////

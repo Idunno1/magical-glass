@@ -5,6 +5,7 @@ function character:init()
     
     self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/ralsei_hat/smile" or "face/ralsei/smile"
     
+    self.lw_health = 20
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
         health = 20,
@@ -13,11 +14,6 @@ function character:init()
         magic = 1
     }
     
-    self.weapon_default = "red_scarf"
-    if Game.chapter >= 2 then
-        self.armor_default[1] = "amber_card"
-        self.armor_default[2] = "white_ribbon"
-    end
 end
 
 function character:lightLVStats()

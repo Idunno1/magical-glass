@@ -5,6 +5,7 @@ function character:init()
     
     self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/susie/bangs_smile" or "face/susie/smile"
 
+    self.lw_health = 30
     -- Light world base stats (saved to the save file)
     self.lw_stats = {
         health = 30,
@@ -16,12 +17,6 @@ function character:init()
     -- Default light world equipment item IDs (saves current equipment)
     self.lw_weapon_default = "weapons/toothbrush"
     self.lw_armor_default = "light/bandage"
-    
-    self.weapon_default = "mane_ax"
-    if Game.chapter >= 2 then
-        self.armor_default[1] = "amber_card"
-        self.armor_default[2] = "amber_card"
-    end
 
 end
 

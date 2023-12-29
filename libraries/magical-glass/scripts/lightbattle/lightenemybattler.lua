@@ -666,7 +666,6 @@ function LightEnemyBattler:onDefeatRun(damage, battler)
     Game.battle.timer:after(15/30, function()
         sweat:remove()
         self:getActiveSprite().run_away_light = true
-        self:getActiveSprite().run_direction = 2
 
         Game.battle.timer:after(15/30, function()
             self:remove()
