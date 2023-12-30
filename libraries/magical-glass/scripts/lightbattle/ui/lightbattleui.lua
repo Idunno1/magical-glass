@@ -330,7 +330,6 @@ function LightBattleUI:drawState()
         
         local letters = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
         local enemy_counter = {}
-        local enemy_counter_init = {}
         
         for _,enemy in pairs(enemies) do
             enemy_counter[enemy.id] = 0
