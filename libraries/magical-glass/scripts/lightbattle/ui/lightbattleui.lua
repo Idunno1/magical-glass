@@ -293,10 +293,10 @@ function LightBattleUI:drawState()
             love.graphics.print("PAGE " .. page + 1, 388, 64)
         else
             if page < max_page then
-                Draw.draw(self.arrow_sprite, 45, 90 --[[ + (math.sin(Kristal.getTime()*6) * 2)]])
+                Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
             end
             if page > 0 then
-                Draw.draw(self.arrow_sprite, 45, 10 --[[ - (math.sin(Kristal.getTime()*6) * 2)]], 0, 1, -1)
+                Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
             end
         end
 
@@ -536,7 +536,7 @@ function LightBattleUI:drawState()
         
         Draw.setColor(1, 1, 1, 1)
         local arrow_down = page_offset + 3
-        for i = 1, 100 do
+        while true do
             arrow_down = arrow_down + 1
             if arrow_down > #Game.battle.enemies then
                 arrow_down = false
@@ -547,7 +547,7 @@ function LightBattleUI:drawState()
             end
         end
         local arrow_up = page_offset + 1
-        for i = 1, 100 do
+        while true do
             arrow_up = arrow_up - 1
             if arrow_up < 1 then
                 arrow_up = false
@@ -558,10 +558,10 @@ function LightBattleUI:drawState()
             end
         end
         if arrow_down == true then
-            Draw.draw(self.arrow_sprite, 45, 90 --[[ + (math.sin(Kristal.getTime()*6) * 2)]])
+            Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
         end
         if arrow_up == true then
-            Draw.draw(self.arrow_sprite, 45, 10 --[[ - (math.sin(Kristal.getTime()*6) * 2)]], 0, 1, -1)
+            Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "PARTYSELECT" then
         local page = math.ceil(Game.battle.current_menu_y / 3) - 1
