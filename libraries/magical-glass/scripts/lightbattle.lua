@@ -1802,11 +1802,17 @@ function LightBattle:isValidMenuLocation()
         if self:getItemIndex() > #self.menu_items then
             return false
         end
-        if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
-            return false
-        end
-        if not self:isPagerMenu() and (self.current_menu_x > self.current_menu_columns) then
-            return false
+        if self:isPagerMenu() then
+            if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
+                return false
+            end
+        else
+            if self:getItemIndex() > #self.menu_items then
+                return false
+            end
+            if (self.current_menu_x > 2) or self.current_menu_x < 1 then
+                return false
+            end
         end
     elseif self.state == "ENEMYSELECT" then
         if self.current_menu_y > #self.enemies then
@@ -2577,6 +2583,8 @@ function LightBattle:onKeyPressed(key)
     end
 
     if self.state == "MENUSELECT" then
+        local menu_width = 2
+        local menu_height = math.ceil(#self.menu_items / 2)
         if Input.isConfirm(key) then
 
             if self.battle_ui.help_window then
@@ -2668,11 +2676,18 @@ function LightBattle:onKeyPressed(key)
             local old_position = self.current_menu_y
             self.current_menu_y = self.current_menu_y - 1
             if (self.current_menu_y < 1) or (not self:isValidMenuLocation()) then
-                self.current_menu_y = self.current_menu_rows
-                if not self:isValidMenuLocation() then
-                    self.current_menu_y = self.current_menu_rows - 1
+                if self:isPagerMenu() then
+                    self.current_menu_y = self.current_menu_rows
                     if not self:isValidMenuLocation() then
-                        self.current_menu_y = self.current_menu_rows - 2
+                        self.current_menu_y = self.current_menu_rows - 1
+                        if not self:isValidMenuLocation() then
+                            self.current_menu_y = self.current_menu_rows - 2
+                        end
+                    end
+                else
+                    self.current_menu_y = menu_height
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_x = self.current_menu_x - 1
                     end
                 end
             end
@@ -2681,9 +2696,21 @@ function LightBattle:onKeyPressed(key)
             end
         elseif Input.is("down", key) then
             local old_position = self.current_menu_y
-            self.current_menu_y = self.current_menu_y + 1
-            if (self.current_menu_y > self.current_menu_rows) or (not self:isValidMenuLocation()) then
-                self.current_menu_y = 1
+            if self:isPagerMenu() then 
+                self.current_menu_y = self.current_menu_y + 1
+                if (self.current_menu_y > self.current_menu_rows) or (not self:isValidMenuLocation()) then
+                    self.current_menu_y = 1
+                end
+            else
+                if self:getItemIndex() % 6 == 0 and #self.menu_items % 6 == 1 then
+                    self.current_menu_x = self.current_menu_x - 1
+                end
+                self.current_menu_y = self.current_menu_y + 1
+                if (self.current_menu_y > menu_height) or (not self:isValidMenuLocation()) then
+                    if not self:isValidMenuLocation() then
+                        self.current_menu_y = 1
+                    end
+                end
             end
             if self:isPagerMenu() or self.current_menu_y ~= old_position then
                 self:playMoveSound()

@@ -61,6 +61,8 @@ function LightBattleUI:init()
     Game.battle.party[1].chara:onActionBox(self.action_box_ut, false)
 
     self.shown = true 
+    
+    self.arrow_sprite = Assets.getTexture("ui/page_arrow_down")
 
     if self.style == "deltarune" then
         self.sparestar = Assets.getTexture("ui/battle/sparestar")
@@ -117,8 +119,8 @@ end
 function LightBattleUI:drawState()
     local state = Game.battle.state
     if state == "MENUSELECT" then
-        local page = math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1
-        local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
+        local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / 3) - 1
+        local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1 or math.ceil(#Game.battle.menu_items / 6) - 1
 
         local x = 0
         local y = 0
@@ -143,7 +145,11 @@ function LightBattleUI:drawState()
         end
 
         --Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * 248), 255 + ((Game.battle.current_menu_y) * 31.5))
-        Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y) * 31.5))
+        if Game.battle:isPagerMenu() then
+            Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y) * 31.5))
+        else
+            Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y - (page*3)) * 31.5))
+        end
 
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font, 32)
@@ -152,9 +158,9 @@ function LightBattleUI:drawState()
         local row = Game.battle.current_menu_rows
         local draw_amount = col * row
 
-        local page_offset = page * draw_amount
-
-        for i = page_offset + 1, math.min(page_offset + (draw_amount), #Game.battle.menu_items) do
+        local page_offset = Game.battle:isPagerMenu() and page * draw_amount or page * 6
+        
+        for i = page_offset + 1, math.min(Game.battle:isPagerMenu() and page_offset + (draw_amount) or page_offset + 6, #Game.battle.menu_items) do
             local item = Game.battle.menu_items[i]
 
             Draw.setColor(1, 1, 1, 1)
@@ -283,9 +289,15 @@ function LightBattleUI:drawState()
 
         Draw.setColor(1, 1, 1, 1)
 
-        local offset = 0
         if Game.battle:isPagerMenu() then
             love.graphics.print("PAGE " .. page + 1, 388, 64)
+        else
+            if page < max_page then
+                Draw.draw(self.arrow_sprite, 45, 90 --[[ + (math.sin(Kristal.getTime()*6) * 2)]])
+            end
+            if page > 0 then
+                Draw.draw(self.arrow_sprite, 45, 10 --[[ - (math.sin(Kristal.getTime()*6) * 2)]], 0, 1, -1)
+            end
         end
 
     elseif state == "ENEMYSELECT" or state == "XACTENEMYSELECT" then
@@ -319,20 +331,20 @@ function LightBattleUI:drawState()
         local letters = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
         local enemy_counter = {}
         local enemy_counter_init = {}
-        local enemy_index = {}
+        
         for _,enemy in pairs(enemies) do
-            enemy_counter[enemy.id] = page_offset
-            enemy_counter_init[enemy.id] = 0
-            enemy_index[enemy.id] = page_offset
+            enemy_counter[enemy.id] = 0
         end
+        
         for _,enemy in pairs(enemies) do
-            enemy_counter_init[enemy.id] = enemy_counter_init[enemy.id] + 1
-            if enemy.index then
-                enemy_index[enemy.id] = enemy_index[enemy.id] - 1
+            enemy_counter[enemy.id] = enemy_counter[enemy.id] + 1
+            if not enemy.index and enemy_counter[enemy.id] <= math.pow(#letters, 2) + #letters then
+                if enemy_counter[enemy.id] > #letters then
+                    enemy.index = letters[math.floor((enemy_counter[enemy.id] - 1) / #letters)] .. letters[enemy_counter[enemy.id] - #letters * math.floor((enemy_counter[enemy.id] - 1) / #letters)]
+                else
+                    enemy.index = letters[enemy_counter[enemy.id]]
+                end
             end
-        end
-        for id,counter in pairs(enemy_index) do
-            enemy_counter[id] = enemy_counter[id] - counter
         end
         
         for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
@@ -346,18 +358,8 @@ function LightBattleUI:drawState()
             end
 
             local name = "* " .. enemy.name
-            if not enemy.done_state then
-                enemy_counter[enemy.id] = enemy_counter[enemy.id] + 1
-                if not enemy.index and enemy_counter[enemy.id] <= math.pow(#letters, 2) + #letters then
-                    if enemy_counter[enemy.id] > #letters then
-                        enemy.index = letters[math.floor((enemy_counter[enemy.id] - 1) / #letters)] .. letters[enemy_counter[enemy.id] - #letters * math.floor((enemy_counter[enemy.id] - 1) / #letters)]
-                    else
-                        enemy.index = letters[enemy_counter[enemy.id]]
-                    end
-                end
-                if enemy_counter_init[enemy.id] > 1 and enemy.index then
-                    name = name .. " " .. enemy.index
-                end
+            if enemy_counter[enemy.id] > 1 and enemy.index then
+                name = name .. " " .. enemy.index
             end
 
             if not enemy.done_state then
@@ -531,6 +533,36 @@ function LightBattleUI:drawState()
                     end
                 end
             end
+        end
+        
+        Draw.setColor(1, 1, 1, 1)
+        local arrow_down = page_offset + 3
+        for i = 1, 100 do
+            arrow_down = arrow_down + 1
+            if arrow_down > #Game.battle.enemies then
+                arrow_down = false
+                break
+            elseif Game.battle.enemies[arrow_down].selectable then
+                arrow_down = true
+                break
+            end
+        end
+        local arrow_up = page_offset + 1
+        for i = 1, 100 do
+            arrow_up = arrow_up - 1
+            if arrow_up < 1 then
+                arrow_up = false
+                break
+            elseif Game.battle.enemies[arrow_up].selectable then
+                arrow_up = true
+                break
+            end
+        end
+        if arrow_down == true then
+            Draw.draw(self.arrow_sprite, 45, 90 --[[ + (math.sin(Kristal.getTime()*6) * 2)]])
+        end
+        if arrow_up == true then
+            Draw.draw(self.arrow_sprite, 45, 10 --[[ - (math.sin(Kristal.getTime()*6) * 2)]], 0, 1, -1)
         end
     elseif state == "PARTYSELECT" then
         local page = math.ceil(Game.battle.current_menu_y / 3) - 1
