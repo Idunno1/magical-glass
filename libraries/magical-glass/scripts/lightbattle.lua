@@ -1669,6 +1669,7 @@ function LightBattle:update()
         self.waves = {}
 
         if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
+            Input.clear("cancel", true)
             self:nextTurn()
         end
     end
@@ -2621,6 +2622,7 @@ function LightBattle:onKeyPressed(key)
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         elseif Input.is("left", key) then
             local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1
@@ -2804,6 +2806,7 @@ function LightBattle:onKeyPressed(key)
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         end
         if Input.is("up", key) then
@@ -2863,6 +2866,7 @@ function LightBattle:onKeyPressed(key)
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         end
         if Input.is("up", key) then
