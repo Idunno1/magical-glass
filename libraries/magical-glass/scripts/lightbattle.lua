@@ -1401,28 +1401,12 @@ end
 
 function LightBattle:shortActText(text)
     self:toggleSoul(false)
-    local advances = 3 --initial override so we can run it
-    local function recurseiveSHAT()
-        advances = advances + 1
-        if(advances >= 3) then
-            self.battle_ui:clearEncounterText()
-            advances = 0
-        
-            local t1, t2, t3 = table.remove(text,1), table.remove(text,1), table.remove(text,1)
-            local text_exhausted = not (t1 and t2 and t3) or #text == 0
-            local opt_shat = (not text_exhausted) and recurseiveSHAT
-            self.battle_ui.short_act_text_1:setText(t1 or "",  opt_shat)
-            self.battle_ui.short_act_text_2:setText(t2 or "",  opt_shat)
-            self.battle_ui.short_act_text_3:setText(t3 or "",  opt_shat)
+    self:setState("SHORTACTTEXT")
+    self.battle_ui:clearEncounterText()
 
-            if(text_exhausted) then
-                --this controls wheter or not we can advance to the next line?
-                self:setState("SHORTACTTEXT")
-            end
-        end
-    end
-    
-    recurseiveSHAT()
+    self.battle_ui.short_act_text_1:setText(text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] or "")
 end
 
 function LightBattle:hurt(amount, exact)
