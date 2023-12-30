@@ -2899,6 +2899,7 @@ function LightBattle:handleActionSelectInput(key)
         if Input.isConfirm(key) then
             actbox:select()
             self:playSelectSound()
+            self:toggleSoul(true)
             return
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting
