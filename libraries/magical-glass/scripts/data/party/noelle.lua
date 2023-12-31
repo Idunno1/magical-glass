@@ -25,6 +25,10 @@ function character:init()
 
         self:addSpell("snowgrave")
         self:addSpell("rude_buster")
+        self:addSpell("red_buster")
+        self:addSpell("pacify")
+        self:addSpell("dual_heal")
+        self:addSpell("ultimate_heal")
     end
 
 end
