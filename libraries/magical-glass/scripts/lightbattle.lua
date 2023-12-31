@@ -2668,7 +2668,11 @@ function LightBattle:onKeyPressed(key)
                 else
                     self.current_menu_y = menu_height
                     if not self:isValidMenuLocation() then
-                        self.current_menu_x = self.current_menu_x - 1
+                        if #self.menu_items <= 6 then
+                            self.current_menu_y = self.current_menu_y - 1
+                        else
+                            self.current_menu_x = self.current_menu_x - 1
+                        end
                     end
                 end
             end
