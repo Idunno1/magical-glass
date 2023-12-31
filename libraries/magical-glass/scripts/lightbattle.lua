@@ -2785,7 +2785,7 @@ function LightBattle:onKeyPressed(key)
         if Input.isCancel(key) then
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
-            if self.state_reason == "SPELL" then
+            if self.state_reason == "SPELL" or self.state_reason == "XACT" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then
                 self:setState("MENUSELECT", "ITEM")
