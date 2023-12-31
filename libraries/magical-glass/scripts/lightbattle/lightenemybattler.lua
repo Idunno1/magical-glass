@@ -132,14 +132,6 @@ function LightEnemyBattler:setTired(bool)
     end
 end
 
-function LightEnemyBattler:removeAct(name)
-    for _,act in ipairs(self.acts) do
-        if act.name == name then
-            act = nil
-        end
-    end
-end
-
 function LightEnemyBattler:registerAct(name, description, party, tp, highlight, icons)
     if type(party) == "string" then
         if party == "all" then
@@ -213,6 +205,7 @@ function LightEnemyBattler:registerActFor(char, name, description, party, tp, hi
     }
     table.insert(self.acts, act)
 end
+
 function LightEnemyBattler:registerShortActFor(char, name, description, party, tp, highlight, icons)
     if type(party) == "string" then
         if party == "all" then
@@ -235,6 +228,15 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
         ["icons"] = icons
     }
     table.insert(self.acts, act)
+end
+
+function LightEnemyBattler:removeAct(name)
+    for i,act in ipairs(self.acts) do
+        if act.name == name then
+            table.remove(self.acts, i)
+            break
+        end
+    end
 end
 
 function LightEnemyBattler:spare(pacify)

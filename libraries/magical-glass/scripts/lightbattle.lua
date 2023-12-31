@@ -2610,17 +2610,15 @@ function LightBattle:onKeyPressed(key)
         elseif Input.is("left", key) then
             local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1
             local max_page = math.ceil(#self.menu_items / (self.current_menu_columns * self.current_menu_rows))
-            local old = self.current_menu_x
+            local old_position = self.current_menu_x
 
             self.current_menu_x = self.current_menu_x - 1
-
             if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns * (max_page - self.current_menu_x)
                 while not self:isValidMenuLocation() do
                     self.current_menu_x = self.current_menu_x - 1
                 end
-
-                if not self:isPagerMenu() and self.current_menu_columns > 1 and self.current_menu_x % 2 ~= 0 then
+                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 then
                     self.current_menu_y = self.current_menu_y - 1
                     self.current_menu_x = self.current_menu_columns
 
@@ -2629,17 +2627,13 @@ function LightBattle:onKeyPressed(key)
                     end
                 end
             end
-
-            if self.current_menu_x ~= old then
+            if self.current_menu_x ~= old_position then
                 self:playMoveSound()
             end
-
         elseif Input.is("right", key) then
-            if self.current_menu_columns > 1 then
-                self:playMoveSound()
-            end
+            local old_position = self.current_menu_x
             self.current_menu_x = self.current_menu_x + 1
-            if not self:isPagerMenu() and not self:isValidMenuLocation() and self.current_menu_columns > 1 then
+            if not self:isPagerMenu() and not self:isValidMenuLocation() then
                 if self.current_menu_x % 2 == 0 then
                     self.current_menu_y = self.current_menu_y - 1
                     if not self:isValidMenuLocation() then
@@ -2655,7 +2649,9 @@ function LightBattle:onKeyPressed(key)
             elseif not self:isValidMenuLocation() then
                 self.current_menu_x = 1  
             end
-            
+            if self:isPagerMenu() or self.current_menu_x ~= old_position then
+                self:playMoveSound()
+            end
         end
         if Input.is("up", key) then
             local old_position = self.current_menu_y
@@ -2691,17 +2687,14 @@ function LightBattle:onKeyPressed(key)
                     self.current_menu_x = self.current_menu_x - 1
                 end
                 self.current_menu_y = self.current_menu_y + 1
-                if (self.current_menu_y > menu_height) or (not self:isValidMenuLocation()) then
-                    if not self:isValidMenuLocation() then
-                        self.current_menu_y = 1
-                    end
+                if self.current_menu_y > menu_height or not self:isValidMenuLocation() then
+                    self.current_menu_y = 1
                 end
             end
             if self:isPagerMenu() or self.current_menu_y ~= old_position then
                 self:playMoveSound()
             end
         end
-
     elseif self.state == "BUTNOBODYCAME" then
         if Input.isConfirm(key) then
             self.music:stop()
