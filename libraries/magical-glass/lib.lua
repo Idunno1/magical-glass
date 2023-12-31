@@ -333,7 +333,7 @@ function lib:init()
             item = Registry.createItem(item)
         end
         if ignore_dark or item.light then
-            return super.tryGiveItem(self, item, ignore_dark)
+            return LightInventory.__super.tryGiveItem(self, item, ignore_dark)
         else
             local dark_inv = self:getDarkInventory()
             local result = dark_inv:addItem(item)
