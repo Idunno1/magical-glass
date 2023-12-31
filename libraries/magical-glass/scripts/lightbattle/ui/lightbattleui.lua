@@ -427,18 +427,18 @@ function LightBattleUI:drawState()
                 end
             end
 
-            if Game.battle.state == "XACTENEMYSELECT" and enemy.selectable then
-                Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
-                if Game.battle.selected_xaction.id == 0 then
-                    love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 322, y_offset)
-                else
-                    love.graphics.print(Game.battle.selected_xaction.name, 322, y_offset)
-                end
-            end
-
             if Game.battle.state == "ENEMYSELECT" then -- in dr/dt mode, hp and mercy is shown while acting
 
-                if Game.battle.state_reason ~= "ACT" then
+                if Game.battle.state_reason == "XACT" and enemy.selectable then
+                    Draw.setColor(Game.battle.party[Game.battle.current_selecting].chara:getXActColor())
+                    if Game.battle.selected_xaction.id == 0 then
+                        love.graphics.print(enemy:getXAction(Game.battle.party[Game.battle.current_selecting]), 322, y_offset)
+                    else
+                        love.graphics.print(Game.battle.selected_xaction.name, 322, y_offset)
+                    end
+                end
+
+                if Game.battle.state_reason ~= "ACT" and Game.battle.state_reason ~= "XACT" then
                     local namewidth = font_mono:getWidth(enemy.name)
 
                     Draw.setColor(128/255, 128/255, 128/255, 1)

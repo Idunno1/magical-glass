@@ -1661,6 +1661,8 @@ function LightBattle:update()
             Input.clear("cancel", true)
             self:nextTurn()
         end
+    elseif self.state == "XACTENEMYSELECT" then
+        self:setState("ENEMYSELECT", "XACT")
     end
 
     if self.state ~= "TRANSITIONOUT" then
@@ -2723,7 +2725,7 @@ function LightBattle:onKeyPressed(key)
             self.encounter:onBattleEnd()
         end
 
-    elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
+    elseif self.state == "ENEMYSELECT" then
 
         if Input.isConfirm(key) then
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
@@ -2731,7 +2733,7 @@ function LightBattle:onKeyPressed(key)
             self:playSelectSound()
             if #self.enemies == 0 then return end
             self.selected_enemy = self.current_menu_y
-            if self.state == "XACTENEMYSELECT" then
+            if self.state_reason == "XACT" then
                 local xaction = Utils.copy(self.selected_xaction)
                 if xaction.default then
                     xaction.name = self.enemies[self.selected_enemy]:getXAction(self.party[self.current_selecting])
