@@ -1116,7 +1116,11 @@ function LightBattle:onStateChange(old,new)
 
     elseif new == "TRANSITIONOUT" then
         self.current_selecting = 0
-
+        if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
+            for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do
+                enemy:onEncounterTransitionOut(enemy == self.encounter_context, self.encounter)
+            end
+        end
         Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
 
     elseif new == "DEFENDINGBEGIN" then
@@ -1360,9 +1364,6 @@ function LightBattle:returnToWorld()
     end
 
     self.encounter:setFlag("done", true)
-    local all_enemies = {}
-    Utils.merge(all_enemies, self.defeated_enemies)
-    Utils.merge(all_enemies, self.enemies)
 
     self.music:stop()
     if self.resume_world_music then
@@ -2790,10 +2791,7 @@ function LightBattle:onKeyPressed(key)
         if Input.is("up", key) then
             if #self.enemies == 0 then return end
             local old_location = self.current_menu_y
-            local give_up = 0
             repeat
-                give_up = give_up + 1
-                if give_up > 100 then return end
                 self.current_menu_y = self.current_menu_y - 1
                 if self.current_menu_y < 1 then
                     self.current_menu_y = #self.enemies
@@ -2806,10 +2804,7 @@ function LightBattle:onKeyPressed(key)
         elseif Input.is("down", key) then
             local old_location = self.current_menu_y
             if #self.enemies == 0 then return end
-            local give_up = 0
             repeat
-                give_up = give_up + 1
-                if give_up > 100 then return end
                 self.current_menu_y = self.current_menu_y + 1
                 if self.current_menu_y > #self.enemies then
                     self.current_menu_y = 1
