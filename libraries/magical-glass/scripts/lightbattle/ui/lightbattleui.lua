@@ -557,10 +557,10 @@ function LightBattleUI:drawState()
                 break
             end
         end
-        if arrow_down == true then
+        if arrow_down then
             Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
         end
-        if arrow_up == true then
+        if arrow_up then
             Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "PARTYSELECT" then
