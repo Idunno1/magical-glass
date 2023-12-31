@@ -327,6 +327,31 @@ function lib:init()
         Game:setLight(false, true)
         return Game.inventory
     end)
+    
+    Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        if ignore_dark or item.light then
+            return super.tryGiveItem(self, item, ignore_dark)
+        else
+            local dark_inv = self:getDarkInventory()
+            local result = dark_inv:addItem(item)
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+                if result then
+                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]BALL OF JUNK[color:reset].)"
+                else
+                    return false, "* (Your [color:yellow]BALL OF JUNK[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
+                end
+            else
+                if result then
+                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]DARK INVENTORY[color:reset].)"
+                else
+                    return false, "* (Your [color:yellow]DARK INVENTORY[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
+                end
+            end
+        end
+    end)
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
