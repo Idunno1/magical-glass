@@ -1791,10 +1791,7 @@ function LightBattle:isValidMenuLocation()
                 return false
             end
         else
-            if self:getItemIndex() > #self.menu_items then
-                return false
-            end
-            if (self.current_menu_x > 2) or self.current_menu_x < 1 then
+            if (self.current_menu_x > Game.battle.current_menu_columns) or self.current_menu_x < 1 then
                 return false
             end
         end
