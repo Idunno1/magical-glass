@@ -320,6 +320,7 @@ end
 function LightShop:leaveImmediate()
     self:remove()
     Game.shop = nil
+    MagicalGlassLib.in_light_shop = false
     Game.state = "OVERWORLD"
     Game.fader.alpha = 1
     Game.fader:fadeIn()
