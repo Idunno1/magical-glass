@@ -119,8 +119,8 @@ end
 function LightBattleUI:drawState()
     local state = Game.battle.state
     if state == "MENUSELECT" then
-        local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / 3) - 1
-        local max_page = Game.battle:isPagerMenu() and math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1 or math.ceil(#Game.battle.menu_items / 6) - 1
+        local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / Game.battle.current_menu_rows) - 1
+        local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1
 
         local x = 0
         local y = 0
@@ -158,9 +158,9 @@ function LightBattleUI:drawState()
         local row = Game.battle.current_menu_rows
         local draw_amount = col * row
 
-        local page_offset = Game.battle:isPagerMenu() and page * draw_amount or page * 6
+        local page_offset = page * draw_amount
         
-        for i = page_offset + 1, math.min(Game.battle:isPagerMenu() and page_offset + (draw_amount) or page_offset + 6, #Game.battle.menu_items) do
+        for i = page_offset + 1, math.min(page_offset + draw_amount, #Game.battle.menu_items) do
             local item = Game.battle.menu_items[i]
 
             Draw.setColor(1, 1, 1, 1)

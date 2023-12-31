@@ -2567,8 +2567,8 @@ function LightBattle:onKeyPressed(key)
     end
 
     if self.state == "MENUSELECT" then
-        local menu_width = 2
-        local menu_height = math.ceil(#self.menu_items / 2)
+        local menu_width = self.current_menu_columns
+        local menu_height = math.ceil(#self.menu_items / self.current_menu_columns)
         if Input.isConfirm(key) then
 
             if self.battle_ui.help_window then
@@ -2618,7 +2618,7 @@ function LightBattle:onKeyPressed(key)
                 while not self:isValidMenuLocation() do
                     self.current_menu_x = self.current_menu_x - 1
                 end
-                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 then
+                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 and menu_width > 1 and #self.menu_items > 1 then
                     self.current_menu_y = self.current_menu_y - 1
                     self.current_menu_x = self.current_menu_columns
 
@@ -2633,7 +2633,7 @@ function LightBattle:onKeyPressed(key)
         elseif Input.is("right", key) then
             local old_position = self.current_menu_x
             self.current_menu_x = self.current_menu_x + 1
-            if not self:isPagerMenu() and not self:isValidMenuLocation() then
+            if not self:isPagerMenu() and not self:isValidMenuLocation() and menu_width > 1 and #self.menu_items > 1 then
                 if self.current_menu_x % 2 == 0 then
                     self.current_menu_y = self.current_menu_y - 1
                     if not self:isValidMenuLocation() then
@@ -2643,7 +2643,8 @@ function LightBattle:onKeyPressed(key)
                             self.current_menu_x = 1
                         end
                     end
-                elseif not self:isValidMenuLocation() then
+                end
+                if not self:isValidMenuLocation() then
                     self.current_menu_x = 1
                 end
             elseif not self:isValidMenuLocation() then
@@ -2687,7 +2688,7 @@ function LightBattle:onKeyPressed(key)
                     self.current_menu_y = 1
                 end
             else
-                if self:getItemIndex() % 6 == 0 and #self.menu_items % 6 == 1 and self.current_menu_y == menu_height - 1 then
+                if self:getItemIndex() % 6 == 0 and #self.menu_items % 6 == 1 and self.current_menu_y == menu_height - 1 and menu_width == 2 then
                     self.current_menu_x = self.current_menu_x - 1
                 end
                 self.current_menu_y = self.current_menu_y + 1
