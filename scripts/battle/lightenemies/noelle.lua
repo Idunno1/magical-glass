@@ -18,6 +18,10 @@ function Noelle:init()
     -- Enemy reward
     self.money = 87
     self.experience = 50
+    
+    if Kristal.getLibConfig("magical-glass", "debug") then
+        self.can_freeze = true
+    end
 
     -- List of possible wave ids, randomly picked each turn
     self.waves = {

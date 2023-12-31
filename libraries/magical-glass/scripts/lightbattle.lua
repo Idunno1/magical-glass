@@ -238,13 +238,18 @@ function LightBattle:postInit(state, encounter)
     self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
-        for _,enemy in ipairs(Game.encounter_enemies) do
-            if not isClass(enemy) then
-                local battler = self:parseEnemyIdentifier(enemy[1])
-                enemy[2].battler = battler
-                self.enemy_world_characters[battler] = enemy[2]
-                if state == "TRANSITION" then
-                    battler:setPosition(enemy[2]:getScreenPos())
+        for _,from in ipairs(Game.encounter_enemies) do
+            if not isClass(from) then
+                local enemy = self:parseEnemyIdentifier(from[1])
+                from[2].battler = enemy
+                self.enemy_world_characters[enemy] = from[2]
+            else
+                for _,enemy in ipairs(self.enemies) do
+                    if enemy.actor and from.actor and enemy.actor.name == from.actor.name then
+                        from.battler = enemy
+                        self.enemy_world_characters[enemy] = from
+                        break
+                    end
                 end
             end
         end
