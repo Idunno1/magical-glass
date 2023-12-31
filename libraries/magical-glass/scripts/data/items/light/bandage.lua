@@ -70,11 +70,7 @@ end
 
 function item:getLightBattleText(user, target)
     if target.chara.id == Game.battle.party[1].chara.id then
-        if not MagicalGlassLib.serious_mode then
-            return "* You re-applied the bandage.\n* Still kind of gooey."
-        else
-            return "* You re-applied the bandage."
-        end
+        return "* You re-applied the bandage."
     else
         return "* "..target.chara:getName().." applied the bandage."
     end
