@@ -2906,13 +2906,13 @@ function LightBattle:handleActionSelectInput(key)
                 self:playMoveSound()
             end
             return
-        elseif Input.is("left", key) then
+        elseif Input.is("left", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
             actbox.selected_button = actbox.selected_button - 1
             self:playMoveSound()
             if actbox then
                 actbox:snapSoulToButton()
             end
-        elseif Input.is("right", key) then
+        elseif Input.is("right", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
             actbox.selected_button = actbox.selected_button + 1
             self:playMoveSound()
             if actbox then
