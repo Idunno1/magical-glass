@@ -28,7 +28,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.auto_spare = false
 
     -- Whether this enemy can be frozen or die, and whether it's the Undertale death or Deltarune death
-    self.can_freeze = false
+    self.can_freeze = true
     self.can_die = true
     self.ut_death = true
 
