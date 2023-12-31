@@ -83,6 +83,8 @@ function lib:load(data, new_file)
         lib.light_equip = {}
         lib.dark_equip = {}
         lib.in_light_shop = false
+        lib.light_inv = LightInventory()
+        lib.dark_inv = DarkInventory()
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -90,9 +92,9 @@ function lib:load(data, new_file)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
-        lib.light_inv = data.magical_glass["light_inv"]
+        lib.light_inv = data.magical_glass["light_inv"] or LightInventory()
         lib.light_inv_saved = data.magical_glass["light_inv_saved"]
-        lib.dark_inv = data.magical_glass["dark_inv"]
+        lib.dark_inv = data.magical_glass["dark_inv"] or DarkInventory()
         lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
         lib.light_equip = data.magical_glass["light_equip"] or {}
         lib.dark_equip = data.magical_glass["dark_equip"] or {}
@@ -153,19 +155,23 @@ function lib:init()
         self.light = false
     end)
 
-    Utils.hook(Game, "setLight", function(orig, self, light)
+    Utils.hook(Game, "setLight", function(orig, self, light, temp)
+        local temp_light = self.light
         light = light or false
-
         if not self.started then
             self.light = light
             return
         end
-
         if self.light == light then return end
-
         self.light = light
         
-        if self.light then
+        if temp then
+            Game.stage.timer:after(1/30, function()
+                self:setLight(temp_light, false)
+            end)
+        end
+        
+        if light then
             for _,party in pairs(self.party_data) do
                 if not lib.dark_equip[party.id] then
                     lib.dark_equip[party.id] = {}
@@ -189,7 +195,7 @@ function lib:init()
             self.inventory = LightInventory()
             if lib.light_inv_saved then
                 self.inventory:load(lib.light_inv)
-            elseif lib.light_inv then
+            else
                 self.inventory = lib.light_inv
             end
             
@@ -255,7 +261,7 @@ function lib:init()
             self.inventory = DarkInventory()
             if lib.dark_inv_saved then
                 self.inventory:load(lib.dark_inv)
-            elseif lib.dark_inv then
+            else
                 self.inventory = lib.dark_inv
             end
             
@@ -315,6 +321,11 @@ function lib:init()
                 end
             end
         end
+    end)
+    
+    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
+        Game:setLight(false, true)
+        return Game.inventory
     end)
 
     Utils.hook(Actor, "init", function(orig, self)
