@@ -120,7 +120,7 @@ function LightBattleUI:drawState()
     local state = Game.battle.state
     if state == "MENUSELECT" then
         local page = Game.battle:isPagerMenu() and math.ceil(Game.battle.current_menu_x / Game.battle.current_menu_columns) - 1 or math.ceil(Game.battle.current_menu_y / 3) - 1
-        local max_page = math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1 or math.ceil(#Game.battle.menu_items / 6) - 1
+        local max_page = Game.battle:isPagerMenu() and math.ceil(#Game.battle.menu_items / (Game.battle.current_menu_columns * Game.battle.current_menu_rows)) - 1 or math.ceil(#Game.battle.menu_items / 6) - 1
 
         local x = 0
         local y = 0
