@@ -47,6 +47,7 @@ function lib:unload()
     LightAttackBar           = nil
     RandomEncounter          = nil
     LightShop                = nil
+    TEMP_LIGHT               = nil
 end
 
 function lib:save(data)
@@ -156,7 +157,7 @@ function lib:init()
     end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
-        local temp_light = self.light
+        TEMP_LIGHT = self:isLight()
         light = light or false
         if not self.started then
             self.light = light
@@ -165,11 +166,12 @@ function lib:init()
         if self.light == light then return end
         self.light = light
         
-        if temp then
-            Game.stage.timer:after(1/30, function()
-                self:setLight(temp_light, false)
-            end)
-        end
+        Game.stage.timer:after(1/30, function()
+            if temp then
+                self:setLight(TEMP_LIGHT, false)
+            end
+            TEMP_LIGHT = nil
+        end)
         
         if light then
             for _,party in pairs(self.party_data) do
@@ -199,7 +201,14 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Game:getFlag("give_light_items") and not temp then
+                for _,item in ipairs(Game:getFlag("give_light_items")) do
+                    self.inventory:addItem(item)
+                end
+                Game:setFlag("give_light_items", nil)
+            end
+            
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
                 if not self.inventory:getItemByID("light/ball_of_junk") then
                     self.inventory:addItem(Registry.createItem("light/ball_of_junk"))
                 end
@@ -352,6 +361,49 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(Inventory, "addItem", function(orig, self, item, ignore_convert)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        if item.light and not Game:isLight() and not ignore_convert then
+            if not Game:getFlag("give_light_items") then
+                Game:setFlag("give_light_items", {})
+            end
+            Game:setLight(true, true)
+            if #Game.inventory.storages.items + #Game:getFlag("give_light_items", {}) < Game.inventory.storages.items.max then
+                table.insert(Game.flags["give_light_items"], item.id)
+                return true
+            else
+                return false
+            end
+        else
+            return self:addItemTo(self:getDefaultStorage(item, ignore_convert), item)
+        end
+    end)
+    
+    Utils.hook(Inventory, "tryGiveItem", function(orig, self, item, ignore_convert)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        local result = self:addItem(item, ignore_convert)
+        if item.light and TEMP_LIGHT == false and not ignore_convert then
+            if result then
+                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]LIGHT ITEMs[color:reset].)"
+            else
+                return false, "* (You have too many [color:yellow]LIGHT ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
+            end
+        else
+            if result then
+                local destination = self:getStorage(self.stored_items[result].storage)
+                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]"..destination.name.."[color:reset].)"
+            else
+                local destination = self:getDefaultStorage(item)
+                return false, "* (You have too many [color:yellow]"..destination.name.."[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
+            end
+        end
+    end)
+
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
