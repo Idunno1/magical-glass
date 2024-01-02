@@ -8,6 +8,7 @@ function LightBattle:init()
 
     self.light = true
     self.forced_victory = false
+    self.ended = false
 
     self.party = {}
 
@@ -1120,6 +1121,7 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
+        self.ended = true
         self.current_selecting = 0
         if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
             for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do

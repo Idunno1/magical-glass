@@ -414,7 +414,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
+        if Game.battle and Game.battle.light and not Game.battle.ended and self.use_light_battler_sprite then
             return self.light_battle_width or self.width
         else
             return self.width
@@ -422,7 +422,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
+        if Game.battle and Game.battle.light and not Game.battle.ended and self.use_light_battler_sprite then
             return self.light_battle_height or self.height
         else
             return self.height
