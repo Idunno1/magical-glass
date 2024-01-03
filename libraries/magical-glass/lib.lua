@@ -2057,6 +2057,48 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "onLightAttackHit", function(orig, self, enemy, damage) end)
+    
+    Utils.hook(PartyMember, "save", function(orig, self) 
+        local data = {
+            id = self.id,
+            title = self.title,
+            level = self.level,
+            health = self.health,
+            stats = self.stats,
+            lw_lv = self.lw_lv,
+            lw_exp = self.lw_exp,
+            lw_health = self.lw_health,
+            lw_stats = self.lw_stats,
+            spells = self:saveSpells(),
+            equipped = self:saveEquipment(),
+            flags = self.flags,
+            
+            lw_portrait = self.lw_portrait
+        }
+        self:onSave(data)
+        return data
+    end)
+    
+    Utils.hook(PartyMember, "load", function(orig, self, data) 
+        self.title = data.title or self.title
+        self.level = data.level or self.level
+        self.stats = data.stats or self.stats
+        self.lw_lv = data.lw_lv or self.lw_lv
+        self.lw_exp = data.lw_exp or self.lw_exp
+        self.lw_stats = data.lw_stats or self.lw_stats
+        if data.spells then
+            self:loadSpells(data.spells)
+        end
+        if data.equipped then
+            self:loadEquipment(data.equipped)
+        end
+        self.flags = data.flags or self.flags
+        self.health = data.health or self:getStat("health", 0, false)
+        self.lw_health = data.lw_health or self:getStat("health", 0, true)
+        self.lw_portrait = data.lw_portrait or self.lw_portrait
+
+        self:onLoad(data)
+    end)
 
     Utils.hook(LightMenu, "draw", function(orig, self)
         Object.draw(self)

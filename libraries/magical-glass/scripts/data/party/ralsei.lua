@@ -3,6 +3,7 @@ local character, super = Class("ralsei", true)
 function character:init()
     super.init(self)
     
+    -- Light world portrait in the menu (saved to the save file)
     self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/ralsei_hat/smile" or "face/ralsei/smile"
     
     self.lw_health = 20
