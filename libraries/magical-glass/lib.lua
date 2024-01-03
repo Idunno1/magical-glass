@@ -2095,6 +2095,7 @@ function lib:init()
         self.flags = data.flags or self.flags
         self.health = data.health or self:getStat("health", 0, false)
         self.lw_health = data.lw_health or self:getStat("health", 0, true)
+        
         self.lw_portrait = data.lw_portrait or self.lw_portrait
 
         self:onLoad(data)
