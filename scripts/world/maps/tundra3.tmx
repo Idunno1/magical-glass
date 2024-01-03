@@ -65,7 +65,6 @@
     <property name="text1">* (The convenience of that
 lamp still fills you
 with determination.)</property>
-    <property name="ut" type="bool" value="true"/>
    </properties>
   </object>
   <object id="70" gid="676" x="508.667" y="227" width="40" height="40"/>

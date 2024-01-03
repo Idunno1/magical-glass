@@ -2408,42 +2408,11 @@ function lib:init()
 
     Utils.hook(Savepoint, "init", function(orig, self, x, y, properties)
         orig(self, x, y, properties)
-        self.undertale = properties["ut"] or false
-        if self.undertale then
-            self:setSprite("world/events/savepointut", 1/6)
-        end
-    end)
-
-    Utils.hook(Savepoint, "onTextEnd", function(orig, self)
-        if not self.world then return end
-
-        if self.heals then
-            for _,party in ipairs(Game.party) do
-                party:heal(math.huge, false)
+        Game.world.timer:after(1/30, function()
+            if Game:isLight() then
+                self:setSprite("world/events/savepointut", 1/6)
             end
-        end
-        
-        if Game:isLight() then
-            self.world:openMenu(LightSaveMenu(Game.save_id, self.marker, self.undertale))
-        elseif self.simple_menu or (self.simple_menu == nil and Game:getConfig("smallSaveMenu")) then
-            self.world:openMenu(SimpleSaveMenu(Game.save_id, self.marker))
-        else
-            self.world:openMenu(SaveMenu(self.marker))
-        end
-    end)
-
-    Utils.hook(SaveMenu, "init", function(orig, self, marker)
-        orig(self, marker)
-        if Game:isLight() then
-            self.divider_sprite = Assets.getTexture("ui/box/light/top")
-        else
-            self.divider_sprite = Assets.getTexture("ui/box/dark/top")
-        end
-    end)
-
-    Utils.hook(LightSaveMenu, "init", function(orig, self, save_id, marker, undertale)
-        orig(self, save_id, marker, undertale)
-        self.undertale = undertale
+        end)
     end)
 
     Utils.hook(LightSaveMenu, "update", function(orig, self)
@@ -2454,49 +2423,45 @@ function lib:init()
     end)
 
     Utils.hook(LightSaveMenu, "draw", function(orig, self)
-        if self.undertale then
-            love.graphics.setFont(self.font)
+        love.graphics.setFont(self.font)
 
-            if self.state == "SAVED" then
-                Draw.setColor(PALETTE["world_text_selected"])
-            else
-                Draw.setColor(PALETTE["world_text"])
-            end
-        
-            local data      = self.saved_file        or {}
-            local mg        = data.magical_glass     or {}
-
-            local name      = data.name              or "EMPTY"
-            local level     = mg.lw_save_lv          or 0
-            local playtime  = data.playtime          or 0
-            local room_name = data.room_name         or "--"
-        
-            love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
-            love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
-        
-            local minutes = math.floor(playtime / 60)
-            local seconds = math.floor(playtime % 60)
-            local time_text = string.format("%d:%02d", minutes, seconds)
-            love.graphics.printf(time_text, self.box.x - 280 + 148, self.box.y - 10 + 8, 500, "right")
-        
-            love.graphics.print(room_name, self.box.x + 8, self.box.y + 38)
-        
-            if self.state == "MAIN" then
-                love.graphics.print("Save",   self.box.x + 30  + 8, self.box.y + 98)
-                love.graphics.print("Return", self.box.x + 210 + 8, self.box.y + 98)
-        
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, self.box.x + 10 + (self.selected_x - 1) * 180, self.box.y + 96 + 8, 0, 2, 2)
-            elseif self.state == "SAVED" then
-                love.graphics.print("File saved.", self.box.x + 30 + 8, self.box.y + 98)
-            end
-        
-            Draw.setColor(1, 1, 1)
-        
-            LightSaveMenu.__super.draw(self)
+        if self.state == "SAVED" then
+            Draw.setColor(PALETTE["world_text_selected"])
         else
-            orig(self)
+            Draw.setColor(PALETTE["world_text"])
         end
+    
+        local data      = self.saved_file        or {}
+        local mg        = data.magical_glass     or {}
+
+        local name      = data.name              or "EMPTY"
+        local level     = mg.lw_save_lv          or 0
+        local playtime  = data.playtime          or 0
+        local room_name = data.room_name         or "--"
+    
+        love.graphics.print(name,         self.box.x + 8,        self.box.y - 10 + 8)
+        love.graphics.print("LV "..level, self.box.x + 210 - 42, self.box.y - 10 + 8)
+    
+        local minutes = math.floor(playtime / 60)
+        local seconds = math.floor(playtime % 60)
+        local time_text = string.format("%d:%02d", minutes, seconds)
+        love.graphics.printf(time_text, self.box.x - 280 + 148, self.box.y - 10 + 8, 500, "right")
+    
+        love.graphics.print(room_name, self.box.x + 8, self.box.y + 38)
+    
+        if self.state == "MAIN" then
+            love.graphics.print("Save",   self.box.x + 30  + 8, self.box.y + 98)
+            love.graphics.print("Return", self.box.x + 210 + 8, self.box.y + 98)
+    
+            Draw.setColor(Game:getSoulColor())
+            Draw.draw(self.heart_sprite, self.box.x + 10 + (self.selected_x - 1) * 180, self.box.y + 96 + 8, 0, 2, 2)
+        elseif self.state == "SAVED" then
+            love.graphics.print("File saved.", self.box.x + 30 + 8, self.box.y + 98)
+        end
+    
+        Draw.setColor(1, 1, 1)
+    
+        Object.draw(self)
     end)
 
     Utils.hook(Spell, "onLightStart", function(orig, self, user, target)
