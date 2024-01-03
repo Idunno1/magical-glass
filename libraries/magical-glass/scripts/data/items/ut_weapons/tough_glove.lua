@@ -60,15 +60,17 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     local confirm_button
     local press = Sprite("ui/lightbattle/pressz_press")
+    local confirm_key = string.sub(Input.getText("confirm"), 2, -2)
     if Input.usingGamepad() then
         confirm_button = Sprite(Input.getTexture("confirm"))
         confirm_button:setScale(2)
         confirm_button:setOrigin(0.5, 0.5)
         confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2) + 6))
-    elseif string.sub(Input.getText("confirm"), 2, -2) ~= "Z" then
-        confirm_button = Text(string.sub(Input.getText("confirm"), 2, -2))
+    elseif confirm_key ~= "Z" then
+        confirm_button = Text(confirm_key)
         confirm_button:setColor(0,1,0)
-        confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2) - 3, (enemy.height / 2) - 3))
+        confirm_button:addFX(OutlineFX({0,0,0}))
+        confirm_button:setPosition(enemy:getRelativePos((enemy.width / 2) - 3 - (#confirm_key - 1) * 3.5, (enemy.height / 2) - 3))
     else
         confirm_button = Sprite("ui/lightbattle/pressz_z")
         confirm_button:setOrigin(0.5, 0.5)

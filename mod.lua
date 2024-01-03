@@ -10,3 +10,7 @@ function Mod:load(new_file)
     Game.world:registerCall("Dimensional Box A", "cell.box_a", false, 5/30)
     Game.world:registerCall("Dimensional Box B", "cell.box_b", false, 5/30)
 end
+
+-- function Mod:getLightActionButtons(battler, buttons)
+    -- return {"fight", "act"}
+-- end

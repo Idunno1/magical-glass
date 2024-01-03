@@ -28,7 +28,7 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.auto_spare = false
 
     -- Whether this enemy can be frozen or die, and whether it's the Undertale death or Deltarune death
-    self.can_freeze = false
+    self.can_freeze = true
     self.can_die = true
     self.ut_death = true
 
@@ -132,14 +132,6 @@ function LightEnemyBattler:setTired(bool)
     end
 end
 
-function LightEnemyBattler:removeAct(name)
-    for _,act in ipairs(self.acts) do
-        if act.name == name then
-            act = nil
-        end
-    end
-end
-
 function LightEnemyBattler:registerAct(name, description, party, tp, highlight, icons)
     if type(party) == "string" then
         if party == "all" then
@@ -213,6 +205,7 @@ function LightEnemyBattler:registerActFor(char, name, description, party, tp, hi
     }
     table.insert(self.acts, act)
 end
+
 function LightEnemyBattler:registerShortActFor(char, name, description, party, tp, highlight, icons)
     if type(party) == "string" then
         if party == "all" then
@@ -235,6 +228,15 @@ function LightEnemyBattler:registerShortActFor(char, name, description, party, t
         ["icons"] = icons
     }
     table.insert(self.acts, act)
+end
+
+function LightEnemyBattler:removeAct(name)
+    for i,act in ipairs(self.acts) do
+        if act.name == name then
+            table.remove(self.acts, i)
+            break
+        end
+    end
 end
 
 function LightEnemyBattler:spare(pacify)
@@ -755,7 +757,7 @@ function LightEnemyBattler:freeze()
 
     Game.battle.timer:tween(20/30, sprite, {freeze_progress = 1})
 
-    Game.battle.money = Game.battle.money + 8
+    Game.battle.money = Game.battle.money + 2
     self:defeat("FROZEN", true)
 end
 

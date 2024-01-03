@@ -47,6 +47,7 @@ function lib:unload()
     LightAttackBar           = nil
     RandomEncounter          = nil
     LightShop                = nil
+    TEMP_LIGHT               = nil
 end
 
 function lib:save(data)
@@ -66,6 +67,7 @@ function lib:save(data)
     end
     data.magical_glass["light_equip"] = lib.light_equip
     data.magical_glass["dark_equip"] = lib.dark_equip
+    data.magical_glass["in_light_shop"] = lib.in_light_shop
 end
 
 function lib:load(data, new_file)
@@ -81,6 +83,9 @@ function lib:load(data, new_file)
         lib.lw_save_lv = 0
         lib.light_equip = {}
         lib.dark_equip = {}
+        lib.in_light_shop = false
+        lib.light_inv = LightInventory()
+        lib.dark_inv = DarkInventory()
     else
         data.magical_glass = data.magical_glass or {}
         lib.kills = data.magical_glass["kills"] or 0
@@ -88,12 +93,13 @@ function lib:load(data, new_file)
         lib.serious_mode = data.magical_glass["serious_mode"] or false
         lib.name_color = data.magical_glass["name_color"] or COLORS.yellow
         lib.lw_save_lv = data.magical_glass["lw_save_lv"] or 0
-        lib.light_inv = data.magical_glass["light_inv"]
+        lib.light_inv = data.magical_glass["light_inv"] or LightInventory()
         lib.light_inv_saved = data.magical_glass["light_inv_saved"]
-        lib.dark_inv = data.magical_glass["dark_inv"]
+        lib.dark_inv = data.magical_glass["dark_inv"] or DarkInventory()
         lib.dark_inv_saved = data.magical_glass["dark_inv_saved"]
         lib.light_equip = data.magical_glass["light_equip"] or {}
         lib.dark_equip = data.magical_glass["dark_equip"] or {}
+        lib.in_light_shop = data.magical_glass["in_light_shop"] or false
     end
 end
 
@@ -137,24 +143,37 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(Game, "enterShop", function(orig, self, shop, options)
+        if lib.in_light_shop then
+            MagicalGlassLib:enterLightShop(shop, options)
+        else
+            orig(self, shop, options)
+        end
+    end)
+    
     Utils.hook(Battle, "init", function(orig, self)
         orig(self)
         self.light = false
     end)
 
-    Utils.hook(Game, "setLight", function(orig, self, light)
+    Utils.hook(Game, "setLight", function(orig, self, light, temp)
+        TEMP_LIGHT = self:isLight()
         light = light or false
-
         if not self.started then
             self.light = light
             return
         end
-
         if self.light == light then return end
-
         self.light = light
         
-        if self.light then
+        Game.stage.timer:after(1/30, function()
+            if temp then
+                self:setLight(TEMP_LIGHT, false)
+            end
+            TEMP_LIGHT = nil
+        end)
+        
+        if light then
             for _,party in pairs(self.party_data) do
                 if not lib.dark_equip[party.id] then
                     lib.dark_equip[party.id] = {}
@@ -178,11 +197,18 @@ function lib:init()
             self.inventory = LightInventory()
             if lib.light_inv_saved then
                 self.inventory:load(lib.light_inv)
-            elseif lib.light_inv then
+            else
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Game:getFlag("give_light_items") and not temp then
+                for _,item in ipairs(Game:getFlag("give_light_items")) do
+                    self.inventory:addItem(item)
+                end
+                Game:setFlag("give_light_items", nil)
+            end
+            
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
                 if not self.inventory:getItemByID("light/ball_of_junk") then
                     self.inventory:addItem(Registry.createItem("light/ball_of_junk"))
                 end
@@ -244,7 +270,7 @@ function lib:init()
             self.inventory = DarkInventory()
             if lib.dark_inv_saved then
                 self.inventory:load(lib.dark_inv)
-            elseif lib.dark_inv then
+            else
                 self.inventory = lib.dark_inv
             end
             
@@ -305,6 +331,79 @@ function lib:init()
             end
         end
     end)
+    
+    Utils.hook(LightInventory, "getDarkInventory", function(orig, self)
+        Game:setLight(false, true)
+        return Game.inventory
+    end)
+    
+    Utils.hook(LightInventory, "tryGiveItem", function(orig, self, item, ignore_dark)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        if ignore_dark or item.light then
+            return LightInventory.__super.tryGiveItem(self, item, ignore_dark)
+        else
+            local dark_inv = self:getDarkInventory()
+            local result = dark_inv:addItem(item)
+            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+                if result then
+                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]BALL OF JUNK[color:reset].)"
+                else
+                    return false, "* (Your [color:yellow]BALL OF JUNK[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
+                end
+            else
+                if result then
+                    return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]DARK INVENTORY[color:reset].)"
+                else
+                    return false, "* (Your [color:yellow]DARK INVENTORY[color:reset] is too big to take [color:yellow]"..item:getName().."[color:reset].)"
+                end
+            end
+        end
+    end)
+    
+    Utils.hook(Inventory, "addItem", function(orig, self, item, ignore_convert)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        if item.light and not Game:isLight() and not ignore_convert then
+            if not Game:getFlag("give_light_items") then
+                Game:setFlag("give_light_items", {})
+            end
+            Game:setLight(true, true)
+            if #Game.inventory.storages.items + #Game:getFlag("give_light_items", {}) < Game.inventory.storages.items.max then
+                table.insert(Game.flags["give_light_items"], item.id)
+                return true
+            else
+                return false
+            end
+        else
+            return self:addItemTo(self:getDefaultStorage(item, ignore_convert), item)
+        end
+    end)
+    
+    Utils.hook(Inventory, "tryGiveItem", function(orig, self, item, ignore_convert)
+        if type(item) == "string" then
+            item = Registry.createItem(item)
+        end
+        local result = self:addItem(item, ignore_convert)
+        if item.light and TEMP_LIGHT == false and not ignore_convert then
+            if result then
+                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]LIGHT ITEMs[color:reset].)"
+            else
+                return false, "* (You have too many [color:yellow]LIGHT ITEMs[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
+            end
+        else
+            if result then
+                local destination = self:getStorage(self.stored_items[result].storage)
+                return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]"..destination.name.."[color:reset].)"
+            else
+                local destination = self:getDefaultStorage(item)
+                return false, "* (You have too many [color:yellow]"..destination.name.."[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
+            end
+        end
+    end)
+
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
@@ -315,7 +414,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getWidth", function(orig, self)
-        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
+        if Game.battle and Game.battle.light and not Game.battle.ended and self.use_light_battler_sprite then
             return self.light_battle_width or self.width
         else
             return self.width
@@ -323,7 +422,7 @@ function lib:init()
     end)
 
     Utils.hook(Actor, "getHeight", function(orig, self)
-        if Game.battle and Game.battle.light and self.use_light_battler_sprite then
+        if Game.battle and Game.battle.light and not Game.battle.ended and self.use_light_battler_sprite then
             return self.light_battle_height or self.height
         else
             return self.height
@@ -363,7 +462,7 @@ function lib:init()
         
         if self.texture and self.run_away_light then
             local r,g,b,a = self:getDrawColor()
-            for i = 0, 120 do
+            for i = 0, 160 do
                 local alph = a * 0.4
                 Draw.setColor(r,g,b, ((alph - (self.run_away_timer / 8)) + (i / 200)))
                 Draw.draw(self.texture, i * 2, 0)
@@ -2127,24 +2226,24 @@ function lib:init()
 
             if #Game.party > 1 then
                 Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 212, 8 + 4, 0, 2, 2)
+                Draw.draw(self.heart_sprite, 213, 12 + 4, 0, 2, 2)
                 
                 --if love.keyboard.isDown("right") then
                 if self.rightpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266 + 4, 8, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 13, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266, 8, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 13, 0, 2, 2)
                 end
 
                 --if love.keyboard.isDown("left") then
                 if self.leftpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 8, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 13, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 8, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 13, 0, 2, 2)
                 end
                 
                 --Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 120, 0, 2, 2)
@@ -2662,6 +2761,7 @@ function lib:setupLightShop(shop)
     end
 
     Game.shop = shop
+    lib.in_light_shop = true
     Game.shop:postInit()
 end
 

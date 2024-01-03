@@ -8,6 +8,7 @@ function LightBattle:init()
 
     self.light = true
     self.forced_victory = false
+    self.ended = false
 
     self.party = {}
 
@@ -238,13 +239,18 @@ function LightBattle:postInit(state, encounter)
     self:addChild(self.tension_bar)
 
     if Game.encounter_enemies then
-        for _,enemy in ipairs(Game.encounter_enemies) do
-            if not isClass(enemy) then
-                local battler = self:parseEnemyIdentifier(enemy[1])
-                enemy[2].battler = battler
-                self.enemy_world_characters[battler] = enemy[2]
-                if state == "TRANSITION" then
-                    battler:setPosition(enemy[2]:getScreenPos())
+        for _,from in ipairs(Game.encounter_enemies) do
+            if not isClass(from) then
+                local enemy = self:parseEnemyIdentifier(from[1])
+                from[2].battler = enemy
+                self.enemy_world_characters[enemy] = from[2]
+            else
+                for _,enemy in ipairs(self.enemies) do
+                    if enemy.actor and from.actor and enemy.actor.name == from.actor.name then
+                        from.battler = enemy
+                        self.enemy_world_characters[enemy] = from
+                        break
+                    end
                 end
             end
         end
@@ -865,11 +871,10 @@ function LightBattle:onStateChange(old,new)
 
         if not self:isValidMenuLocation() then
             repeat
+                self.current_menu_y = self.current_menu_y + 1
                 if not self.enemies[self.current_menu_y] then
                     self.current_menu_y = 1
-                    break
                 end
-                self.current_menu_y = self.current_menu_y + 1
             until(self:isValidMenuLocation())
         end
 
@@ -1072,7 +1077,7 @@ function LightBattle:onStateChange(old,new)
         self.money = self.encounter:getVictoryMoney(self.money) or self.money
 
         if self.tension_bar.visible then
-            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 20))
+            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
         end
 
         for _,battler in ipairs(self.party) do
@@ -1116,8 +1121,13 @@ function LightBattle:onStateChange(old,new)
         end
 
     elseif new == "TRANSITIONOUT" then
+        self.ended = true
         self.current_selecting = 0
-
+        if self.encounter_context and self.encounter_context:includes(ChaserEnemy) then
+            for _,enemy in ipairs(self.encounter_context:getGroupedEnemies(true)) do
+                enemy:onEncounterTransitionOut(enemy == self.encounter_context, self.encounter)
+            end
+        end
         Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
 
     elseif new == "DEFENDINGBEGIN" then
@@ -1361,9 +1371,6 @@ function LightBattle:returnToWorld()
     end
 
     self.encounter:setFlag("done", true)
-    local all_enemies = {}
-    Utils.merge(all_enemies, self.defeated_enemies)
-    Utils.merge(all_enemies, self.enemies)
 
     self.music:stop()
     if self.resume_world_music then
@@ -1401,28 +1408,12 @@ end
 
 function LightBattle:shortActText(text)
     self:toggleSoul(false)
-    local advances = 3 --initial override so we can run it
-    local function recurseiveSHAT()
-        advances = advances + 1
-        if(advances >= 3) then
-            self.battle_ui:clearEncounterText()
-            advances = 0
-        
-            local t1, t2, t3 = table.remove(text,1), table.remove(text,1), table.remove(text,1)
-            local text_exhausted = not (t1 and t2 and t3) or #text == 0
-            local opt_shat = (not text_exhausted) and recurseiveSHAT
-            self.battle_ui.short_act_text_1:setText(t1 or "",  opt_shat)
-            self.battle_ui.short_act_text_2:setText(t2 or "",  opt_shat)
-            self.battle_ui.short_act_text_3:setText(t3 or "",  opt_shat)
+    self:setState("SHORTACTTEXT")
+    self.battle_ui:clearEncounterText()
 
-            if(text_exhausted) then
-                --this controls wheter or not we can advance to the next line?
-                self:setState("SHORTACTTEXT")
-            end
-        end
-    end
-    
-    recurseiveSHAT()
+    self.battle_ui.short_act_text_1:setText(text[1] or "")
+    self.battle_ui.short_act_text_2:setText(text[2] or "")
+    self.battle_ui.short_act_text_3:setText(text[3] or "")
 end
 
 function LightBattle:hurt(amount, exact)
@@ -1669,8 +1660,11 @@ function LightBattle:update()
         self.waves = {}
 
         if self.state_reason == "WAVEENDED" and #self.arena.target_position == 0 and #self.arena.target_shape == 0 and not self.forced_victory then
+            Input.clear("cancel", true)
             self:nextTurn()
         end
+    elseif self.state == "XACTENEMYSELECT" then
+        self:setState("ENEMYSELECT", "XACT")
     end
 
     if self.state ~= "TRANSITIONOUT" then
@@ -1802,11 +1796,14 @@ function LightBattle:isValidMenuLocation()
         if self:getItemIndex() > #self.menu_items then
             return false
         end
-        if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
-            return false
-        end
-        if not self:isPagerMenu() and (self.current_menu_x > self.current_menu_columns) then
-            return false
+        if self:isPagerMenu() then
+            if (self.current_menu_y > self.current_menu_rows) or (self.current_menu_y < 1) then
+                return false
+            end
+        else
+            if (self.current_menu_x > Game.battle.current_menu_columns) or self.current_menu_x < 1 then
+                return false
+            end
         end
     elseif self.state == "ENEMYSELECT" then
         if self.current_menu_y > #self.enemies then
@@ -2577,6 +2574,8 @@ function LightBattle:onKeyPressed(key)
     end
 
     if self.state == "MENUSELECT" then
+        local menu_width = self.current_menu_columns
+        local menu_height = math.ceil(#self.menu_items / self.current_menu_columns)
         if Input.isConfirm(key) then
 
             if self.battle_ui.help_window then
@@ -2613,21 +2612,20 @@ function LightBattle:onKeyPressed(key)
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         elseif Input.is("left", key) then
             local page = math.ceil(self.current_menu_x / self.current_menu_columns) - 1
             local max_page = math.ceil(#self.menu_items / (self.current_menu_columns * self.current_menu_rows))
-            local old = self.current_menu_x
+            local old_position = self.current_menu_x
 
             self.current_menu_x = self.current_menu_x - 1
-
             if self.current_menu_x < 1 then -- vomit
                 self.current_menu_x = self.current_menu_columns * (max_page - self.current_menu_x)
                 while not self:isValidMenuLocation() do
                     self.current_menu_x = self.current_menu_x - 1
                 end
-
-                if not self:isPagerMenu() and self.current_menu_columns > 1 and self.current_menu_x % 2 ~= 0 then
+                if not self:isPagerMenu() and self.current_menu_x % 2 ~= 0 and menu_width > 1 and #self.menu_items > 1 then
                     self.current_menu_y = self.current_menu_y - 1
                     self.current_menu_x = self.current_menu_columns
 
@@ -2636,17 +2634,13 @@ function LightBattle:onKeyPressed(key)
                     end
                 end
             end
-
-            if self.current_menu_x ~= old then
+            if self.current_menu_x ~= old_position then
                 self:playMoveSound()
             end
-
         elseif Input.is("right", key) then
-            if self.current_menu_columns > 1 then
-                self:playMoveSound()
-            end
+            local old_position = self.current_menu_x
             self.current_menu_x = self.current_menu_x + 1
-            if not self:isPagerMenu() and not self:isValidMenuLocation() and self.current_menu_columns > 1 then
+            if not self:isPagerMenu() and not self:isValidMenuLocation() and menu_width > 1 and #self.menu_items > 1 then
                 if self.current_menu_x % 2 == 0 then
                     self.current_menu_y = self.current_menu_y - 1
                     if not self:isValidMenuLocation() then
@@ -2656,23 +2650,37 @@ function LightBattle:onKeyPressed(key)
                             self.current_menu_x = 1
                         end
                     end
-                elseif not self:isValidMenuLocation() then
+                end
+                if not self:isValidMenuLocation() then
                     self.current_menu_x = 1
                 end
             elseif not self:isValidMenuLocation() then
                 self.current_menu_x = 1  
             end
-            
+            if self:isPagerMenu() or self.current_menu_x ~= old_position then
+                self:playMoveSound()
+            end
         end
         if Input.is("up", key) then
             local old_position = self.current_menu_y
             self.current_menu_y = self.current_menu_y - 1
             if (self.current_menu_y < 1) or (not self:isValidMenuLocation()) then
-                self.current_menu_y = self.current_menu_rows
-                if not self:isValidMenuLocation() then
-                    self.current_menu_y = self.current_menu_rows - 1
+                if self:isPagerMenu() then
+                    self.current_menu_y = self.current_menu_rows
                     if not self:isValidMenuLocation() then
-                        self.current_menu_y = self.current_menu_rows - 2
+                        self.current_menu_y = self.current_menu_rows - 1
+                        if not self:isValidMenuLocation() then
+                            self.current_menu_y = self.current_menu_rows - 2
+                        end
+                    end
+                else
+                    self.current_menu_y = menu_height
+                    if not self:isValidMenuLocation() then
+                        if #self.menu_items <= 6 then
+                            self.current_menu_y = self.current_menu_y - 1
+                        else
+                            self.current_menu_x = self.current_menu_x - 1
+                        end
                     end
                 end
             end
@@ -2681,15 +2689,24 @@ function LightBattle:onKeyPressed(key)
             end
         elseif Input.is("down", key) then
             local old_position = self.current_menu_y
-            self.current_menu_y = self.current_menu_y + 1
-            if (self.current_menu_y > self.current_menu_rows) or (not self:isValidMenuLocation()) then
-                self.current_menu_y = 1
+            if self:isPagerMenu() then 
+                self.current_menu_y = self.current_menu_y + 1
+                if (self.current_menu_y > self.current_menu_rows) or (not self:isValidMenuLocation()) then
+                    self.current_menu_y = 1
+                end
+            else
+                if self:getItemIndex() % 6 == 0 and #self.menu_items % 6 == 1 and self.current_menu_y == menu_height - 1 and menu_width == 2 then
+                    self.current_menu_x = self.current_menu_x - 1
+                end
+                self.current_menu_y = self.current_menu_y + 1
+                if self.current_menu_y > menu_height or not self:isValidMenuLocation() then
+                    self.current_menu_y = 1
+                end
             end
             if self:isPagerMenu() or self.current_menu_y ~= old_position then
                 self:playMoveSound()
             end
         end
-
     elseif self.state == "BUTNOBODYCAME" then
         if Input.isConfirm(key) then
             self.music:stop()
@@ -2710,7 +2727,7 @@ function LightBattle:onKeyPressed(key)
             self.encounter:onBattleEnd()
         end
 
-    elseif self.state == "ENEMYSELECT" or self.state == "XACTENEMYSELECT" then
+    elseif self.state == "ENEMYSELECT" then
 
         if Input.isConfirm(key) then
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
@@ -2718,7 +2735,7 @@ function LightBattle:onKeyPressed(key)
             self:playSelectSound()
             if #self.enemies == 0 then return end
             self.selected_enemy = self.current_menu_y
-            if self.state == "XACTENEMYSELECT" then
+            if self.state_reason == "XACT" then
                 local xaction = Utils.copy(self.selected_xaction)
                 if xaction.default then
                     xaction.name = self.enemies[self.selected_enemy]:getXAction(self.party[self.current_selecting])
@@ -2770,22 +2787,20 @@ function LightBattle:onKeyPressed(key)
         if Input.isCancel(key) then
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
-            if self.state_reason == "SPELL" then
+            if self.state_reason == "SPELL" or self.state_reason == "XACT" then
                 self:setState("MENUSELECT", "SPELL")
             elseif self.state_reason == "ITEM" then
                 self:setState("MENUSELECT", "ITEM")
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         end
         if Input.is("up", key) then
             if #self.enemies == 0 then return end
             local old_location = self.current_menu_y
-            local give_up = 0
             repeat
-                give_up = give_up + 1
-                if give_up > 100 then return end
                 self.current_menu_y = self.current_menu_y - 1
                 if self.current_menu_y < 1 then
                     self.current_menu_y = #self.enemies
@@ -2798,10 +2813,7 @@ function LightBattle:onKeyPressed(key)
         elseif Input.is("down", key) then
             local old_location = self.current_menu_y
             if #self.enemies == 0 then return end
-            local give_up = 0
             repeat
-                give_up = give_up + 1
-                if give_up > 100 then return end
                 self.current_menu_y = self.current_menu_y + 1
                 if self.current_menu_y > #self.enemies then
                     self.current_menu_y = 1
@@ -2836,6 +2848,7 @@ function LightBattle:onKeyPressed(key)
             else
                 self:setState("ACTIONSELECT", "CANCEL")
             end
+            Input.clear(key, true)
             return
         end
         if Input.is("up", key) then
@@ -2884,6 +2897,7 @@ function LightBattle:handleActionSelectInput(key)
         if Input.isConfirm(key) then
             actbox:select()
             self:playSelectSound()
+            self:toggleSoul(true)
             return
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting
@@ -2894,13 +2908,13 @@ function LightBattle:handleActionSelectInput(key)
                 self:playMoveSound()
             end
             return
-        elseif Input.is("left", key) then
+        elseif Input.is("left", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
             actbox.selected_button = actbox.selected_button - 1
             self:playMoveSound()
             if actbox then
                 actbox:snapSoulToButton()
             end
-        elseif Input.is("right", key) then
+        elseif Input.is("right", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
             actbox.selected_button = actbox.selected_button + 1
             self:playMoveSound()
             if actbox then

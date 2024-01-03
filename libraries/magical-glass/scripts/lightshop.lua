@@ -108,9 +108,10 @@ function LightShop:init()
     self.fade_alpha = 0
     self.fading_out = false
     self.box_ease_timer = 0
+    self.box_ease_timer_old = 0
     self.box_ease_beginning = -8
     self.box_ease_top = 220 - 53
-    self.box_ease_method = "outExpo"
+    self.box_ease_method = "linear"
     self.box_ease_multiplier = 1
 
     self.draw_divider = true
@@ -152,7 +153,7 @@ function LightShop:postInit()
     -- find a more elegant way to do this...
     self.info_box.y = SCREEN_HEIGHT - top - self.large_box.height - (1 * 2) + 16 + 1
     self.info_box.width = 174
-    self.info_box.height = 180
+    self.info_box.height = -8
     self.info_box:setLayer(SHOP_LAYERS["info_box"])
 
     self.info_box.visible = false
@@ -253,16 +254,19 @@ function LightShop:onStateChange(old,new)
         self:setDialogueText("")
         self:setRightText(self.buy_menu_text)
         self.info_box.visible = true
-        self.info_box.height = -8
         self.box_ease_timer = 0
-        self.box_ease_beginning = -8
         if #self.items > 0 then
+            if self.info_box.height > -8 then
+                self.box_ease_timer = self.box_ease_timer_old
+            end
+            self.box_ease_beginning = self.info_box.height
             self.box_ease_top = 220 - 53
         else
+            self.box_ease_beginning = -8
             self.box_ease_top = -8
         end
-        self.box_ease_method = "outExpo"
-        self.box_ease_multiplier = 1
+        self.box_ease_method = "out-sine"
+        self.box_ease_multiplier = 1.6
         self.current_selecting = 1
     elseif new == "SELLMENU" then
         self:setDialogueText("")
@@ -316,6 +320,7 @@ end
 function LightShop:leaveImmediate()
     self:remove()
     Game.shop = nil
+    MagicalGlassLib.in_light_shop = false
     Game.state = "OVERWORLD"
     Game.fader.alpha = 1
     Game.fader:fadeIn()
@@ -771,6 +776,7 @@ function LightShop:onKeyPressed(key, is_repeat)
                     self:setRightText("")
                 end
             elseif Input.isCancel(key) then
+                self.box_ease_timer_old = self.box_ease_timer
                 self:setState("MAINMENU")
             elseif Input.is("up", key) then
                 self.current_selecting = self.current_selecting - 1
@@ -786,16 +792,16 @@ function LightShop:onKeyPressed(key, is_repeat)
             if Input.is("up", key) or Input.is("down", key) then
                 if self.current_selecting >= #self.items + 1 then
                     self.box_ease_timer = 0
-                    self.box_ease_beginning = self.info_box.height
+                    self.box_ease_beginning = -8
                     self.box_ease_top = -8
                     self.box_ease_method = "linear"
-                    self.box_ease_multiplier = 8
+                    self.box_ease_multiplier = 1
                 elseif (old_selecting >= #self.items + 1) and (self.current_selecting <= #self.items) then
                     self.box_ease_timer = 0
                     self.box_ease_beginning = self.info_box.height
                     self.box_ease_top = 220 - 53
-                    self.box_ease_method = "outExpo"
-                    self.box_ease_multiplier = 1
+                    self.box_ease_method = "out-sine"
+                    self.box_ease_multiplier = 1.6
                 end
             end
         end
