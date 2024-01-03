@@ -143,7 +143,7 @@ function lib:init()
     self.steps_until_encounter = nil
     
     Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
-        if not self.music.current == "toomuch" then
+        if self.music.current ~= "toomuch" then
             orig(self, next, fade_out)
         end
     end)
