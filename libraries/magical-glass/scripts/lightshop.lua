@@ -443,7 +443,19 @@ function LightShop:update()
     self.box_ease_timer = math.min(1, self.box_ease_timer + (DT * self.box_ease_multiplier))
 
     if self.state == "BUYMENU" then
-        self.info_box.height = Utils.ease(self.box_ease_beginning, self.box_ease_top, self.box_ease_timer, self.box_ease_method)
+        --self.info_box.height = Utils.ease(self.box_ease_beginning, self.box_ease_top, self.box_ease_timer, self.box_ease_method)
+        if self.info_box.height < self.box_ease_top then
+            self.info_box.height = self.info_box.height + 3 * DTMULT
+        end
+        if self.info_box.height < 55 then
+            self.info_box.height = self.info_box.height + 2 * DTMULT
+        end
+        if self.info_box.height < 80 then
+            self.info_box.height = self.info_box.height + 4 * DTMULT
+        end
+        if self.info_box.height < 100 then
+            self.info_box.height = self.info_box.height + 5 * DTMULT
+        end
 
         if self.shopkeeper.slide then
             local target_x = SCREEN_WIDTH/2 - 80
