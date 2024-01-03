@@ -232,8 +232,7 @@ return {
           rotation = 0,
           visible = true,
           properties = {
-            ["text1"] = "* (The convenience of that\nlamp still fills you\nwith determination.)",
-            ["ut"] = true
+            ["text1"] = "* (The convenience of that\nlamp still fills you\nwith determination.)"
           }
         },
         {

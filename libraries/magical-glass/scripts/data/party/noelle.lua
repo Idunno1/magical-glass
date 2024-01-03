@@ -3,6 +3,7 @@ local character, super = Class("noelle", true)
 function character:init()
     super.init(self)
 
+    -- Light world portrait in the menu (saved to the save file)
     self.lw_portrait = "face/noelle/smile"
 
     self.lw_health = 20
