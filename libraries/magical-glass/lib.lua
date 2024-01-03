@@ -142,6 +142,12 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
+        if not self.music.current == "toomuch" then
+            orig(self, next, fade_out)
+        end
+    end)
+    
     Utils.hook(Game, "enterShop", function(orig, self, shop, options)
         if lib.in_light_shop then
             MagicalGlassLib:enterLightShop(shop, options)
