@@ -2272,8 +2272,8 @@ function lib:init()
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
-        local weapon_name = ""
-        local armor_name = ""
+        local weapon_name = "(NONE)"
+        local armor_name = "(NONE)"
 
         if chara:getWeapon() then
             weapon_name = chara:getWeapon():getEquipDisplayName() or chara:getWeapon():getName()
