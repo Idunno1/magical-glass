@@ -47,7 +47,6 @@ function lib:unload()
     LightAttackBar           = nil
     RandomEncounter          = nil
     LightShop                = nil
-    TEMP_LIGHT               = nil
 end
 
 function lib:save(data)
@@ -157,7 +156,7 @@ function lib:init()
     end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
-        TEMP_LIGHT = self:isLight()
+        lib.temp_light = self:isLight()
         light = light or false
         if not self.started then
             self.light = light
@@ -168,9 +167,9 @@ function lib:init()
         
         Game.stage.timer:after(1/30, function()
             if temp then
-                self:setLight(TEMP_LIGHT, false)
+                self:setLight(lib.temp_light, false)
             end
-            TEMP_LIGHT = nil
+            lib.temp_light = nil
         end)
         
         if light then
@@ -199,13 +198,6 @@ function lib:init()
                 self.inventory:load(lib.light_inv)
             else
                 self.inventory = lib.light_inv
-            end
-            
-            if Game:getFlag("give_light_items") and not temp then
-                for _,item in ipairs(Game:getFlag("give_light_items")) do
-                    self.inventory:addItem(item)
-                end
-                Game:setFlag("give_light_items", nil)
             end
             
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
@@ -367,12 +359,9 @@ function lib:init()
             item = Registry.createItem(item)
         end
         if item.light and not Game:isLight() and not ignore_convert then
-            if not Game:getFlag("give_light_items") then
-                Game:setFlag("give_light_items", {})
-            end
             Game:setLight(true, true)
-            if #Game.inventory.storages.items + #Game:getFlag("give_light_items", {}) < Game.inventory.storages.items.max then
-                table.insert(Game.flags["give_light_items"], item.id)
+            if #Game.inventory.storages.items < Game.inventory.storages.items.max then
+                Game.inventory:addItem(item.id)
                 return true
             else
                 return false
@@ -387,7 +376,7 @@ function lib:init()
             item = Registry.createItem(item)
         end
         local result = self:addItem(item, ignore_convert)
-        if item.light and TEMP_LIGHT == false and not ignore_convert then
+        if item.light and lib.temp_light == false and not ignore_convert then
             if result then
                 return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]LIGHT ITEMs[color:reset].)"
             else
