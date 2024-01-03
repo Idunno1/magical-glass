@@ -107,12 +107,6 @@ function LightShop:init()
 
     self.fade_alpha = 0
     self.fading_out = false
-    self.box_ease_timer = 0
-    self.box_ease_timer_old = 0
-    self.box_ease_beginning = -8
-    self.box_ease_top = 220 - 53
-    self.box_ease_method = "linear"
-    self.box_ease_multiplier = 1
 
     self.draw_divider = true
 
@@ -254,19 +248,6 @@ function LightShop:onStateChange(old,new)
         self:setDialogueText("")
         self:setRightText(self.buy_menu_text)
         self.info_box.visible = true
-        self.box_ease_timer = 0
-        if #self.items > 0 then
-            if self.info_box.height > -8 then
-                self.box_ease_timer = self.box_ease_timer_old
-            end
-            self.box_ease_beginning = self.info_box.height
-            self.box_ease_top = 220 - 53
-        else
-            self.box_ease_beginning = -8
-            self.box_ease_top = -8
-        end
-        self.box_ease_method = "out-sine"
-        self.box_ease_multiplier = 1.6
         self.current_selecting = 1
     elseif new == "SELLMENU" then
         self:setDialogueText("")
@@ -440,21 +421,22 @@ function LightShop:update()
 
     super.update(self)
 
-    self.box_ease_timer = math.min(1, self.box_ease_timer + (DT * self.box_ease_multiplier))
-
     if self.state == "BUYMENU" then
-        --self.info_box.height = Utils.ease(self.box_ease_beginning, self.box_ease_top, self.box_ease_timer, self.box_ease_method)
-        if self.info_box.height < self.box_ease_top then
-            self.info_box.height = self.info_box.height + 3 * DTMULT
-        end
-        if self.info_box.height < 55 then
-            self.info_box.height = self.info_box.height + 2 * DTMULT
-        end
-        if self.info_box.height < 80 then
-            self.info_box.height = self.info_box.height + 4 * DTMULT
-        end
-        if self.info_box.height < 100 then
-            self.info_box.height = self.info_box.height + 5 * DTMULT
+        if self.current_selecting >= #self.items + 1 then
+            self.info_box.height = -8
+        else
+            if self.info_box.height < 55 then
+                self.info_box.height = self.info_box.height + 2 * DTMULT
+            end
+            if self.info_box.height < 80 then
+                self.info_box.height = self.info_box.height + 3 * DTMULT
+            end
+            if self.info_box.height < 100 then
+                self.info_box.height = self.info_box.height + 4 * DTMULT
+            end
+            if self.info_box.height < 167 then
+                self.info_box.height = self.info_box.height + (5 + 3) * DTMULT
+            end
         end
 
         if self.shopkeeper.slide then
@@ -788,7 +770,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                     self:setRightText("")
                 end
             elseif Input.isCancel(key) then
-                self.box_ease_timer_old = self.box_ease_timer
                 self:setState("MAINMENU")
             elseif Input.is("up", key) then
                 self.current_selecting = self.current_selecting - 1
@@ -799,21 +780,6 @@ function LightShop:onKeyPressed(key, is_repeat)
                 self.current_selecting = self.current_selecting + 1
                 if (self.current_selecting > math.max(#self.items, 4) + 1) then
                     self.current_selecting = 1
-                end
-            end
-            if Input.is("up", key) or Input.is("down", key) then
-                if self.current_selecting >= #self.items + 1 then
-                    self.box_ease_timer = 0
-                    self.box_ease_beginning = -8
-                    self.box_ease_top = -8
-                    self.box_ease_method = "linear"
-                    self.box_ease_multiplier = 1
-                elseif (old_selecting >= #self.items + 1) and (self.current_selecting <= #self.items) then
-                    self.box_ease_timer = 0
-                    self.box_ease_beginning = self.info_box.height
-                    self.box_ease_top = 220 - 53
-                    self.box_ease_method = "out-sine"
-                    self.box_ease_multiplier = 1.6
                 end
             end
         end
