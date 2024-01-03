@@ -4,7 +4,7 @@ function character:init()
     super.init(self)
     
     -- Light world portrait in the menu (saved to the save file)
-    self.lw_portrait = Game:getConfig("ralseiStyle") == 1 and "face/susie/bangs_smile" or "face/susie/smile"
+    self.lw_portrait = Game:getConfig("susieStyle") == 1 and "face/susie/bangs_smile" or "face/susie/smile"
 
     self.lw_health = 30
     -- Light world base stats (saved to the save file)
