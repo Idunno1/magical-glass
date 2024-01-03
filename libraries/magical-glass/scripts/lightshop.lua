@@ -434,8 +434,11 @@ function LightShop:update()
             if self.info_box.height < 100 then
                 self.info_box.height = self.info_box.height + 4 * DTMULT
             end
-            if self.info_box.height < 167 then
+            if self.info_box.height < 220 - 48 then
                 self.info_box.height = self.info_box.height + (5 + 3) * DTMULT
+            end
+            if self.info_box.height > 220 - 48 then
+                self.info_box.height = 220 - 48
             end
         end
 

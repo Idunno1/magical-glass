@@ -142,6 +142,12 @@ function lib:init()
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
+    Utils.hook(World, "transitionMusic", function(orig, self, next, fade_out)
+        if not self.music.current == "toomuch" then
+            orig(self, next, fade_out)
+        end
+    end)
+    
     Utils.hook(Game, "enterShop", function(orig, self, shop, options)
         if lib.in_light_shop then
             MagicalGlassLib:enterLightShop(shop, options)
@@ -2272,8 +2278,8 @@ function lib:init()
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
-        local weapon_name = ""
-        local armor_name = ""
+        local weapon_name = "(NONE)"
+        local armor_name = "(NONE)"
 
         if chara:getWeapon() then
             weapon_name = chara:getWeapon():getEquipDisplayName() or chara:getWeapon():getName()

@@ -14,6 +14,10 @@ function character:init()
         magic = 1
     }
     
+    -- Default light world equipment item IDs (saves current equipment)
+    self.lw_weapon_default = "light/scarf"
+    self.lw_armor_default = "light/red_horns"
+    
 end
 
 function character:lightLVStats()

@@ -15,7 +15,7 @@ end
 function encounter:onBattleStart()
     Game.world.music:stop()
     Game.world.music:resume()
-    Game.world.music:play("toomuch")
+    Game.world.music:play("toomuch", 1)
 end
 
 return encounter
