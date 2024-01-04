@@ -15,7 +15,7 @@ function LightEncounter:init()
 
     -- Whether the default grid background is drawn
     self.background = true
-    self.background_image = "ui/lightbattle/backgrounds/battle"
+    self.background_image = Game:isLight() and "ui/lightbattle/backgrounds/battle" or "ui/lightbattle/backgrounds/battle_dark"
 
     -- The music used for this encounter
     self.music = "battleut"
