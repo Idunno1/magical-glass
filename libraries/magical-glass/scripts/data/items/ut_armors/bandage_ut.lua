@@ -84,6 +84,10 @@ function item:getLightBattleText(user, target)
     end
 end
 
+function item:getBattleText(user, target)
+    return "* ".. target.chara:getName() .. " used the " .. self:getName():upper() .. "!"
+end
+
 function item:onLightBattleUse(user, target)
     Assets.stopAndPlaySound("power")
     local amount = self:getBattleHealAmount(target.chara.id)
