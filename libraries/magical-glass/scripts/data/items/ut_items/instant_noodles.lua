@@ -3,6 +3,8 @@ local item, super = Class(HealItem, "ut_items/instant_noodles")
 function item:init(inventory)
     super.init(self)
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Display name
     self.name = "Instant Noodles"
     self.short_name = "InstaNood"
@@ -13,6 +15,7 @@ function item:init(inventory)
     -- Whether this item is for the light world
     self.light = true
 
+    self.heal_amount = 90
     self.world_heal_amount = 15
 
     -- Default shop sell price

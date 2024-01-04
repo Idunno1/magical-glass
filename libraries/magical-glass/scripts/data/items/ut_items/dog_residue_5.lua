@@ -112,4 +112,22 @@ function item:onLightBattleUse(user, target)
     return true
 end
 
+function item:onBattleUse(user, target)
+    Assets.playSound("dogresidue")
+
+    while #Game.inventory:getStorage("items") < Game.inventory:getStorage("items").max do
+        local items = {
+            "ut_items/dog_salad",
+            "ut_items/dog_residue_1",
+            "ut_items/dog_residue_2",
+            "ut_items/dog_residue_3",
+            "ut_items/dog_residue_4",
+            "ut_items/dog_residue_5",
+            "ut_items/dog_residue_6",
+        }
+        Game.inventory:addItem(Utils.pick(items))
+    end
+    return true
+end
+
 return item

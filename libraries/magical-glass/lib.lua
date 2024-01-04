@@ -506,6 +506,20 @@ function lib:init()
         end
     end)
 
+    Utils.hook(TensionItem, "onBattleSelect", function(orig, self, user, target)
+        if Game.battle.light then
+            self.tension_given = Game:giveTension(self:getTensionAmount())
+
+            local sound = Assets.newSound("cardrive")
+            sound:setPitch(1.4)
+            sound:setVolume(0.8)
+            sound:play()
+            
+            Game.battle:toggleSoul(false)
+        else
+            orig(self, user, target)
+        end
+    end)
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
@@ -1128,7 +1142,7 @@ function lib:init()
         self.tags = {}
 
         -- How this item is used on you (ate, drank, eat, etc.)
-        self.use_method = "ate"
+        self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
     
@@ -1960,6 +1974,13 @@ function lib:init()
         else
             return orig(self, damage, battler, points)
         end
+    end)
+    
+    Utils.hook(EnemyBattler, "freeze", function(orig, self)
+        if Game:isLight() then
+            Game.battle.money = Game.battle.money - 24 + 2
+        end
+        orig(self)
     end)
 
     Utils.hook(PartyMember, "init", function(orig, self)

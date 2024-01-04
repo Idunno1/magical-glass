@@ -84,12 +84,24 @@ function item:getLightBattleText(user, target)
     end
 end
 
+function item:getBattleText(user, target)
+    return item:getLightBattleText(user, target)
+end
+
 function item:onLightBattleUse(user, target)
     if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
         Assets.playSound("tearcard")
         target.chara:addStatBuff("attack", self:getATIncrease(target))
     end
     Game.battle:battleText(self:getLightBattleText(user, target))
+    return true
+end
+
+function item:onBattleUse(user, target)
+    if Utils.containsValue(target.chara:getWeapon().tags, "punch") then
+        Assets.playSound("tearcard")
+        target.chara:addStatBuff("attack", self:getATIncrease(target))
+    end
     return true
 end
 

@@ -58,6 +58,28 @@ function item:onLightBattleUse(user, target)
     return true
 end
 
+function item:onBattleUse(user, target)
+    if not Game.battle.item_soul_speed then
+        Game.battle.item_soul_speed = 4
+        Game.battle.timer:every(1/30, function()
+            if Game.battle.soul then
+                Game.battle.soul.speed = Game.battle.item_soul_speed
+            end
+        end)
+    end
+    if Game.battle.item_soul_speed < 8 then
+        Game.battle.item_soul_speed = Game.battle.item_soul_speed + 1
+    end
+    Assets.stopAndPlaySound("speedup")
+
+    local amount = self:getBattleHealAmount(target.chara.id)
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        amount = equip:applyHealBonus(amount)
+    end
+    target:heal(amount)
+    return true
+end
+
 function item:battleUseSound(user, target)
     Game.battle.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")

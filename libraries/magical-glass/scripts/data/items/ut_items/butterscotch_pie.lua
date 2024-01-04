@@ -8,6 +8,8 @@ function item:init(inventory)
     self.short_name = "ButtsPie"
     self.serious_name = "Pie"
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
@@ -46,6 +48,11 @@ function item:onLightBattleUse(user, target)
         target:heal(target.max_health)
     end
     Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target))
+    return true
+end
+
+function item:onBattleUse(user, target)
+    target:heal(math.huge)
     return true
 end
 

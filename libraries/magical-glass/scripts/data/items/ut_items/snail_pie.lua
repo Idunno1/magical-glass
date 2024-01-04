@@ -6,6 +6,8 @@ function item:init(inventory)
     -- Display name
     self.name = "Snail Pie"
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
@@ -50,13 +52,23 @@ function item:onLightBattleUse(user, target)
             target.chara:setHealth(target.chara:getStat("health") - 1)
         end
     elseif self.target == "enemy" then
-        target:heal(target.max_health)
+        target:heal(math.huge)
     end
 
     if target.chara.id == Game.battle.party[1].chara.id then
         Game.battle:battleText(self:getLightBattleText(user, target).."\n* Your HP was maxed out.")
     else
         Game.battle:battleText(self:getLightBattleText(user, target).."\n* "..target.chara:getName().."'s HP was maxed out.")
+    end
+
+    return true
+end
+
+function item:onBattleUse(user, target)
+    if self.target == "ally" then
+        target:heal(target.chara:getStat("health") - target.chara:getHealth() - 1)
+    elseif self.target == "enemy" then
+        target:heal(math.huge)
     end
 
     return true

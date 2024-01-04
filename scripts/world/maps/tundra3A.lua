@@ -10,7 +10,7 @@ return {
   tilewidth = 40,
   tileheight = 40,
   nextlayerid = 17,
-  nextobjectid = 137,
+  nextobjectid = 138,
   properties = {
     ["light"] = true,
     ["name"] = "Snowdin - Box Road"
@@ -503,6 +503,22 @@ return {
           visible = true,
           properties = {
             ["encgroup"] = "test"
+          }
+        },
+        {
+          id = 137,
+          name = "enemy",
+          type = "",
+          shape = "rectangle",
+          x = 261.247,
+          y = 282.504,
+          width = 40,
+          height = 40,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["actor"] = "dummy",
+            ["encounter"] = "dummy"
           }
         }
       }

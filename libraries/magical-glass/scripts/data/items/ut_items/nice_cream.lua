@@ -7,6 +7,8 @@ function item:init(inventory)
     self.name = "Nice Cream"
     self.short_name = "NiceCream"
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world

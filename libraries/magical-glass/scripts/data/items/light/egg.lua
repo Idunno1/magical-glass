@@ -11,4 +11,9 @@ function item:battleUseSound(user, target)
     Assets.playSound("egg")
 end
 
+function item:onBattleUse(user, target)
+    Assets.playSound("egg")
+    return true
+end
+
 return item

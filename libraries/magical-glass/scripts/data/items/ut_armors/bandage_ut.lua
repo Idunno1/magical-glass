@@ -84,6 +84,10 @@ function item:getLightBattleText(user, target)
     end
 end
 
+function item:getBattleText(user, target)
+    return "* ".. target.chara:getName() .. " used the " .. self:getName():upper() .. "!"
+end
+
 function item:onLightBattleUse(user, target)
     Assets.stopAndPlaySound("power")
     local amount = self:getBattleHealAmount(target.chara.id)
@@ -92,6 +96,14 @@ function item:onLightBattleUse(user, target)
     end
     target:heal(amount)
     Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
+end
+
+function item:onBattleUse(user, target)
+    local amount = self:getBattleHealAmount(target.chara.id)
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        amount = equip:applyHealBonus(amount)
+    end
+    target:heal(amount)
 end
 
 function item:getLightBattleHealingText(user, target, amount)

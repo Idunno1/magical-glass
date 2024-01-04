@@ -77,6 +77,17 @@ function item:onLightBattleUse(user, target)
     return true
 end
 
+function item:onBattleUse(user, target)
+    if target.chara:getHealth() <= 2 then
+        target.chara:setHealth(target.chara:getStat("health"))
+        Assets.stopAndPlaySound("power")
+    else
+        target.chara:setHealth(target.chara:getHealth() - 1)
+        Assets.stopAndPlaySound("hurt")
+    end
+    return true
+end
+
 function item:battleUseSound(user, target, hurt)
     Game.battle.timer:script(function(wait)
         Assets.stopAndPlaySound("swallow")

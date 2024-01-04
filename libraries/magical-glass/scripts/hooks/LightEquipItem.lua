@@ -131,6 +131,10 @@ function LightEquipItem:getLightBattleText(user, target)
     return "* ".. target.chara:getNameOrYou() .. " equipped the " .. self:getName() .. "."
 end
 
+function LightEquipItem:getBattleText(user, target)
+    return "* ".. target.chara:getName() .. " equipped the " .. self:getName():upper() .. "!"
+end
+
 function LightEquipItem:onLightBattleUse(user, target)
     Assets.playSound("item")
     local chara = target.chara
@@ -153,6 +157,29 @@ function LightEquipItem:onLightBattleUse(user, target)
 
     self:onEquip(chara, replacing)
     Game.battle:battleText(self:getLightBattleText(user, target))
+end
+
+function LightEquipItem:onBattleUse(user, target)
+    Assets.playSound("item")
+    local chara = target.chara
+    local replacing = nil
+    if self.type == "weapon" then
+        if chara:getWeapon() then
+            replacing = chara:getWeapon()
+            replacing:onUnequip(chara, self)
+            Game.inventory:replaceItem(self, replacing)
+        end
+        chara:setWeapon(self)
+    elseif self.type == "armor" then
+        if chara:getArmor(1) then
+            replacing = chara:getArmor(1)
+            replacing:onUnequip(chara, self)
+            Game.inventory:replaceItem(self, replacing)
+        end
+        chara:setArmor(1, self)
+    end
+
+    self:onEquip(chara, replacing)
 end
 
 function LightEquipItem:onBoltHit(battler) end

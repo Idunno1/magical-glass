@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="17" nextobjectid="137">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="40" tileheight="40" infinite="0" nextlayerid="17" nextobjectid="138">
  <editorsettings>
   <export target="tundra3A.lua" format="lua"/>
  </editorsettings>
@@ -109,6 +109,12 @@
     <property name="encgroup" value="test"/>
    </properties>
    <point/>
+  </object>
+  <object id="137" name="enemy" x="261.247" y="282.504" width="40" height="40">
+   <properties>
+    <property name="actor" value="dummy"/>
+    <property name="encounter" value="dummy"/>
+   </properties>
   </object>
  </objectgroup>
 </map>

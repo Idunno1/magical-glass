@@ -3,6 +3,8 @@ local item, super = Class(HealItem, "ut_items/ghost_fruit")
 function item:init(inventory)
     super.init(self)
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Display name
     self.name = "Ghost Fruit"
     self.short_name = "GhostFrut"

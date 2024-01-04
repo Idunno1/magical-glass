@@ -7,6 +7,8 @@ function item:init(inventory)
     self.name = "Monster Candy"
     self.short_name = "MnstrCndy"
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
@@ -30,9 +32,6 @@ function item:init(inventory)
     self.result_item = nil
     -- Will this item be instantly consumed in battles?
     self.instant = false
-    
-    -- Default dark item conversion for this item
-    self.dark_item = "dark_candy"
 end
 
 function item:getWorldUseText(target)
