@@ -402,7 +402,6 @@ function lib:init()
 
     Utils.hook(Actor, "init", function(orig, self)
         orig(self)
-        self.undertale_movement = false
 
         self.use_light_battler_sprite = false
         self.light_battler_parts = {}
@@ -2373,8 +2372,16 @@ function lib:init()
         if self.soul then
             self:removeChild(self.soul)
         end
-
-        if chara.undertale_movement then
+        
+        local undertale_movement = false
+        for _,party in ipairs(Kristal.getLibConfig("magical-glass", "ut_movement_chara")) do
+            if Game.party[1].id == party then
+                undertale_movement = true
+                break
+            end
+        end
+        
+        if undertale_movement then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)
