@@ -1961,6 +1961,13 @@ function lib:init()
             return orig(self, damage, battler, points)
         end
     end)
+    
+    Utils.hook(EnemyBattler, "freeze", function(orig, self)
+        if Game:isLight() then
+            Game.battle.money = Game.battle.money - 24 + 2
+        end
+        orig(self)
+    end)
 
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
