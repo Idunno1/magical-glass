@@ -770,7 +770,11 @@ function LightEnemyBattler:freeze()
 
     Game.battle.timer:tween(20/30, sprite, {freeze_progress = 1})
 
-    Game.battle.money = Game.battle.money + 2
+    if Game:isLight() then
+        Game.battle.money = Game.battle.money + 2
+    else
+        Game.battle.money = Game.battle.money + 24
+    end
     self:defeat("FROZEN", true)
 end
 
