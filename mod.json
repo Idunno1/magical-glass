@@ -29,6 +29,7 @@
             // End of config
         },
         "magical-glass": {
+            "light_battle_tp": true,
             "light_battle_defend_btn": true,
             "mercy_messages": true,
             "mercy_bar": true,
