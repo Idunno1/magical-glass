@@ -1924,6 +1924,43 @@ function lib:init()
             end
         end)
     end
+    
+    Utils.hook(PartyBattler, "calculateDamage", function(orig, self, amount)
+        if Game:isLight() then
+            local def = self.chara:getStat("defense")
+            local max_hp = self.chara:getStat("health")
+            
+            for i = 21, math.min(max_hp, 99) do
+                if i % 10 == 0 or i == 21 then
+                    amount = amount + 1
+                end
+            end
+            amount = Utils.round((amount - def) / 5)
+            
+            if min and amount < min then
+                amount = min
+            end
+
+            if cap and amount > cap then
+                amount = cap
+            end
+            
+            return math.max(amount, 1)
+        else
+            return orig(self, amount)
+        end
+    end)
+    
+    Utils.hook(EnemyBattler, "getAttackDamage", function(orig, self, damage, battler, points)
+        if damage > 0 then
+            return damage
+        end
+        if Game:isLight() then
+            return ((battler.chara:getStat("attack") * points) / 60) - (self.defense * 2.25)
+        else
+            return orig(self, damage, battler, points)
+        end
+    end)
 
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)

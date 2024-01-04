@@ -30,46 +30,37 @@ end
 function LightPartyBattler:calculateDamage(amount, min, cap)
     local def = self.chara:getStat("defense")
     local max_hp = self.chara:getStat("health")
-
-    -- good shit toby
---[[     if max_hp >= 90 then
-        amount = amount + 1
-    end
-    if max_hp >= 80 then
-        amount = amount + 1
-    end
-    if max_hp >= 70 then
-        amount = amount + 1
-    end
-    if max_hp >= 60 then
-        amount = amount + 1
-    end
-    if max_hp >= 50 then
-        amount = amount + 1
-    end
-    if max_hp >= 40 then
-        amount = amount + 1
-    end
-    if max_hp >= 30 then
-        amount = amount + 1
-    end
-    if max_hp > 20 then
-        amount = amount + 1
-    end ]]
-
-    for i = 21, math.min(max_hp, 99) do
-        if i % 10 == 0 or i == 21 then
-            amount = amount + 1
+    if Game:isLight() then
+        for i = 21, math.min(max_hp, 99) do
+            if i % 10 == 0 or i == 21 then
+                amount = amount + 1
+            end
         end
-    end
-    amount = Utils.round((amount - def) / 5)
-    
-    if min and amount < min then
-        amount = min
-    end
+        amount = Utils.round((amount - def) / 5)
+        
+        if min and amount < min then
+            amount = min
+        end
 
-    if cap and amount > cap then
-        amount = cap
+        if cap and amount > cap then
+            amount = cap
+        end
+    else
+        local threshold_a = (max_hp / 5)
+        local threshold_b = (max_hp / 8)
+        for i = 1, def do
+            if amount > threshold_a then
+                amount = amount - 3
+            elseif amount > threshold_b then
+                amount = amount - 2
+            else
+                amount = amount - 1
+            end
+            if amount <= 0 or def == math.huge then
+                amount = 0
+                break
+            end
+        end
     end
 
     return math.max(amount, 1)
