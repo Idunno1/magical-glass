@@ -142,11 +142,10 @@ function LightBattleUI:drawState()
             end
         end
 
-        --Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * 248), 255 + ((Game.battle.current_menu_y) * 31.5))
         if Game.battle:isPagerMenu() then
             Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y) * 31.5))
         else
-            Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y - (page*3)) * 31.5))
+            Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1) * (248 + extra_offset[1])), 255 + ((Game.battle.current_menu_y - (page * Game.battle.current_menu_rows)) * 31.5))
         end
 
         local font = Assets.getFont("main_mono")
@@ -272,7 +271,7 @@ function LightBattleUI:drawState()
             end
         end
 
-        if current_item.tp then
+        if current_item.tp and current_item.tp ~= 0 then
             if self.help_window then
                 self.help_window:setTension(current_item.tp)
                 Game:setTensionPreview(current_item.tp)

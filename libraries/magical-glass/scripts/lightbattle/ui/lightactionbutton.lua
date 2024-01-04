@@ -42,7 +42,7 @@ function LightActionButton:select()
     elseif self.type == "spell" then
         Game.battle:clearMenuItems()
         Game.battle.current_menu_columns = 2
-        Game.battle.current_menu_rows = 3
+        Game.battle.current_menu_rows = Kristal.getLibConfig("magical-glass", "item_info") == "magical_glass" and 2 or 3
 
         if Game.battle.encounter.default_xactions and self.battler.chara:hasXAct() then
             local spell = {
@@ -61,7 +61,7 @@ function LightActionButton:select()
                 ["data"] = spell,
                 ["callback"] = function(menu_item)
                     Game.battle.selected_xaction = spell
-                    Game.battle:setState("XACTENEMYSELECT", "SPELL")
+                    Game.battle:setState("ENEMYSELECT", "XACT")
                 end
             })
         end
@@ -85,7 +85,7 @@ function LightActionButton:select()
                     ["data"] = spell,
                     ["callback"] = function(menu_item)
                         Game.battle.selected_xaction = spell
-                        Game.battle:setState("XACTENEMYSELECT", "SPELL")
+                        Game.battle:setState("ENEMYSELECT", "XACT")
                     end
                 })
             end

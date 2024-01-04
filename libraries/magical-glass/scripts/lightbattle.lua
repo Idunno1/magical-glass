@@ -1663,8 +1663,6 @@ function LightBattle:update()
             Input.clear("cancel", true)
             self:nextTurn()
         end
-    elseif self.state == "XACTENEMYSELECT" then
-        self:setState("ENEMYSELECT", "XACT")
     end
 
     if self.state ~= "TRANSITIONOUT" then
