@@ -51,4 +51,9 @@ function item:onLightBattleUse(user, target)
     return true
 end
 
+function item:onBattleUse(user, target)
+    target:heal(math.huge)
+    return true
+end
+
 return item
