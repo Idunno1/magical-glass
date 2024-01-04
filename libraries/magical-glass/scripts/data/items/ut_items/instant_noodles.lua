@@ -15,6 +15,7 @@ function item:init(inventory)
     -- Whether this item is for the light world
     self.light = true
 
+    self.heal_amount = 90
     self.world_heal_amount = 15
 
     -- Default shop sell price
