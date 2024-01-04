@@ -1128,7 +1128,7 @@ function lib:init()
         self.tags = {}
 
         -- How this item is used on you (ate, drank, eat, etc.)
-        self.use_method = "ate"
+        self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
     
