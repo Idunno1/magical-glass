@@ -44,7 +44,16 @@ function item:getLightBattleText(user, target, buff)
     if buff then
         message = "\n* ATTACK increased by 4!"
     end
-    return "* " ..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the Legendary Hero."..message
+    return "* " ..target.chara:getNameOrYou().." "..self:getUseMethod(target.chara).." the "..self.name.."."..message
+end
+
+function item:getBattleText(user, target)
+    local message = ""
+    if target.chara:getStat("attack") < 150 then
+        target.chara:addStatBuff("attack", 4)
+        message = "\n* ATTACK increased by 4!"
+    end
+    return "* " ..target.chara:getName().. " used the "..self.name:upper().."."..message
 end
 
 function item:onLightBattleUse(user, target)
@@ -64,6 +73,24 @@ function item:onLightBattleUse(user, target)
 
     target:heal(amount)
     Game.battle:battleText(self:getLightBattleText(user, target, buff).."\n"..self:getLightBattleHealingText(user, target, amount))
+    return true
+end
+
+function item:onBattleUse(user, target)
+    if not MagicalGlassLib.serious_mode then
+        Assets.stopAndPlaySound("hero")
+    else
+        Assets.stopAndPlaySound("power")
+    end
+    local amount = self:getBattleHealAmount(target.chara.id)
+
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        if equip.applyHealBonus then
+            amount = equip:applyHealBonus(amount)
+        end
+    end
+
+    target:heal(amount)
     return true
 end
 
