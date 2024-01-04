@@ -52,13 +52,25 @@ function item:onLightBattleUse(user, target)
             target.chara:setHealth(target.chara:getStat("health") - 1)
         end
     elseif self.target == "enemy" then
-        target:heal(target.max_health)
+        target:heal(math.huge)
     end
 
     if target.chara.id == Game.battle.party[1].chara.id then
         Game.battle:battleText(self:getLightBattleText(user, target).."\n* Your HP was maxed out.")
     else
         Game.battle:battleText(self:getLightBattleText(user, target).."\n* "..target.chara:getName().."'s HP was maxed out.")
+    end
+
+    return true
+end
+
+function item:onBattleUse(user, target)
+    if self.target == "ally" then
+        if target.chara:getHealth() < target.chara:getStat("health") - 1 then
+            target.chara:setHealth(target.chara:getStat("health") - 1)
+        end
+    elseif self.target == "enemy" then
+        target:heal(math.huge)
     end
 
     return true
