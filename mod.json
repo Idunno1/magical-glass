@@ -31,6 +31,11 @@
         "magical-glass": {
             "light_battle_defend_btn": true,
             "mercy_messages": true,
+<<<<<<< Updated upstream
+=======
+            "mercy_bar": true,
+            "ut_movement_chara": ["noelle"],
+>>>>>>> Stashed changes
             "debug": true,
         }
     }
