@@ -314,7 +314,7 @@ function LightBattleUI:drawState()
 
         Draw.setColor(1, 1, 1, 1)
 
-        if self.draw_percents and self.style ~= "undertale" then
+        if self.style ~= "undertale" then
             love.graphics.setFont(font_main)
             if Game.battle.state_reason ~= "XACT" then
                 love.graphics.print("HP", 400, -10, 0, 1, 0.5)
@@ -347,6 +347,7 @@ function LightBattleUI:drawState()
         for index = page_offset + 1, math.min(page_offset + 3, #enemies) do
 
             local hp_x = self.style == "undertale" and 190 or 400
+            local bar_height = self.style == "undertale" and 17 or 16
             
             local enemy = enemies[index]
             local y_offset = (index - page_offset - 1) * 32
@@ -466,22 +467,22 @@ function LightBattleUI:drawState()
 
                             if Game.battle.state_reason ~= "ACT" then
                                 Draw.setColor(1,0,0,1)
-                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, 17)
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, bar_height)
 
                                 Draw.setColor(PALETTE["action_health"])
-                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 101)), 17)
+                                love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 101)), bar_height)
                             end
                         end
                     elseif self.style == "deltarune" then
                         if enemy:getHPVisibility() then
                             Draw.setColor(PALETTE["action_health_bg"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
+                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
         
                             Draw.setColor(PALETTE["action_health"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 81)), 17)
+                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 81)), bar_height)
                         else
                             Draw.setColor(PALETTE["action_health_bg"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, 17)
+                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
                         end
                     end
 
@@ -505,17 +506,17 @@ function LightBattleUI:drawState()
                 else
                     Draw.setColor(127/255, 127/255, 127/255, 1)
                 end
-                love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, 17)
+                love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, bar_height)
 
                 if enemy.disable_mercy then
                     Draw.setColor(PALETTE["battle_mercy_text"])
                     love.graphics.setLineWidth(2)
-                    love.graphics.line(mercy_x, 11 + y_offset, mercy_x + mercy_lenght, 10 + y_offset + 17 - 1)
-                    love.graphics.line(mercy_x, 10 + y_offset + 17 - 1, mercy_x + mercy_lenght, 11 + y_offset)
+                    love.graphics.line(mercy_x, 11 + y_offset, mercy_x + mercy_lenght, 10 + y_offset + bar_height - 1)
+                    love.graphics.line(mercy_x, 10 + y_offset + bar_height - 1, mercy_x + mercy_lenght, 11 + y_offset)
                 else
                     Draw.setColor(1, 1, 0, 1)
                     if enemy:getMercyVisibility() then
-                        love.graphics.rectangle("fill", mercy_x, 10 + y_offset, ((enemy.mercy / 100) * mercy_lenght), 17)
+                        love.graphics.rectangle("fill", mercy_x, 10 + y_offset, ((enemy.mercy / 100) * mercy_lenght), bar_height)
                     end
 
                     if self.draw_percents and enemy.selectable then
