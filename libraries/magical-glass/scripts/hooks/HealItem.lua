@@ -1,4 +1,4 @@
-local HealItem, super = Class("HealItem", true)
+local HealItem, super = Class("HealItem", false)
 
 function HealItem:onWorldUse(target)
     local text = self:getWorldUseText(target)
@@ -86,6 +86,42 @@ function HealItem:onLightBattleUse(user, target)
     else
         -- No target or enemy target (?), do nothing
         return false
+    end
+end
+
+function HealItem:onBattleUse(user, target)
+    if self.target == "ally" then
+        -- Heal single party member
+        local amount = self:getBattleHealAmount(target.chara.id)
+        for _,equip in ipairs(user.chara:getEquipment()) do
+            if equip.applyHealBonus then
+                amount = equip:applyHealBonus(amount)
+            end
+        end
+        target:heal(amount)
+    elseif self.target == "party" then
+        -- Heal all party members
+        for _,battler in ipairs(target) do
+            local amount = self:getBattleHealAmount(battler.chara.id)
+            for _,equip in ipairs(user.chara:getEquipment()) do
+                if equip.applyHealBonus then
+                    amount = equip:applyHealBonus(amount)
+                end
+            end
+            battler:heal(amount)
+        end
+    elseif self.target == "enemy" then
+        -- Heal single enemy (why)
+        local amount = self:getBattleHealAmount(target.id)
+        target:heal(amount)
+    elseif self.target == "enemies" then
+        -- Heal all enemies (why????)
+        for _,enemy in ipairs(target) do
+            local amount = self:getBattleHealAmount(enemy.id)
+            enemy:heal(amount)
+        end
+    else
+        -- No target, do nothing
     end
 end
 
