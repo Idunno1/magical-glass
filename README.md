@@ -39,6 +39,10 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ### Testers:
 * Racckoon
 
+### Resources:
+* AccurateJaney (Kris and Noelle Light World Sprites)
+* Discarded_Vessel (Susie Light World Sprites)
+
 ### Emotional Support <3:
 * Lots of people from the Kristal Discord and its subcommunities
 * Eli
