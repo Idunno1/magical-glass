@@ -160,6 +160,113 @@ function lib:init()
         orig(self)
         self.light = false
     end)
+    
+    Utils.hook(Battle, "drawBackground", function(orig, self)
+        if Game:isLight() then
+            Draw.setColor(0, 0, 0, self.transition_timer / 10)
+            love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
+
+            love.graphics.setLineStyle("rough")
+            love.graphics.setLineWidth(1)
+
+            for i = 2, 16 do
+                Draw.setColor(0, 66 / 255, 0, (self.transition_timer / 10) / 2)
+                love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
+                love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
+            end
+
+            for i = 3, 16 do
+                Draw.setColor(0, 66 / 255, 0, self.transition_timer / 10)
+                love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
+                love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
+            end
+        else
+            orig(self)
+        end
+    end)
+    
+    Utils.hook(Battle, "onStateChange", function(orig, self, old, new)
+        local result = self.encounter:beforeStateChange(old,new)
+        if result or self.state ~= new then
+            return
+        end
+        if new == "VICTORY" and Game:isLight() then
+            self.current_selecting = 0
+
+            if self.tension_bar then
+                self.tension_bar:hide()
+            end
+
+            for _,battler in ipairs(self.party) do
+                battler:setSleeping(false)
+                battler.defending = false
+                battler.action = nil
+
+                battler.chara:resetBuffs()
+
+                if battler.chara:getHealth() <= 0 then
+                    battler:revive()
+                    battler.chara:setHealth(battler.chara:autoHealAmount())
+                end
+
+                battler:setAnimation("battle/victory")
+
+                local box = self.battle_ui.action_boxes[self:getPartyIndex(battler.chara.id)]
+                box:resetHeadIcon()
+            end
+
+            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
+
+            for _,battler in ipairs(self.party) do
+                for _,equipment in ipairs(battler.chara:getEquipment()) do
+                    self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
+                end
+            end
+
+            self.money = math.floor(self.money)
+
+            self.money = self.encounter:getVictoryMoney(self.money) or self.money
+            self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
+            -- if (in_dojo) then
+            --     self.money = 0
+            -- end
+
+            Game.lw_money = Game.lw_money + self.money
+
+            if (Game.lw_money < 0) then
+                Game.lw_money = 0
+            end
+
+            local win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("lightCurrency"):lower().."."
+            -- if (in_dojo) then
+            --     win_text == "* You won the battle!"
+            -- end
+            
+            for _,member in ipairs(self.party) do
+                local lv = member.chara:getLightLV()
+                member.chara:gainLightEXP(self.xp, true)
+
+                if lv ~= member.chara:getLightLV() then
+                    win_text = "* You won!\n* Got " .. self.xp .. " EXP and " .. self.money .. " "..Game:getConfig("lightCurrency"):lower()..".\n* Your LOVE increased."
+                end
+            end
+
+            win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
+
+            if self.encounter.no_end_message then
+                self:setState("TRANSITIONOUT")
+                self.encounter:onBattleEnd()
+            else
+                self:battleText(win_text, function()
+                    self:setState("TRANSITIONOUT")
+                    self.encounter:onBattleEnd()
+                    return true
+                end)
+            end
+        else
+            orig(self, old, new)
+        end
+    end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
         lib.temp_light = self:isLight()
