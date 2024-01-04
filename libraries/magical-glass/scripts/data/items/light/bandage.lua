@@ -86,6 +86,14 @@ function item:onLightBattleUse(user, target)
     Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
 end
 
+function item:onBattleUse(user, target)
+    local amount = self:getBattleHealAmount(target.chara.id)
+    for _,equip in ipairs(user.chara:getEquipment()) do
+        amount = equip:applyHealBonus(amount)
+    end
+    target:heal(amount)
+end
+
 function item:getLightBattleHealingText(user, target, amount)
     if target then
         if self.target == "ally" then
