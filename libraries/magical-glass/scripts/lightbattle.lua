@@ -1073,42 +1073,97 @@ function LightBattle:onStateChange(old,new)
             end
 
         end
+        
+        local win_text = ""
+        
+        if Game:isLight() then
 
-        self.money = self.encounter:getVictoryMoney(self.money) or self.money
+            self.money = self.encounter:getVictoryMoney(self.money) or self.money
 
-        if self.tension_bar.visible then
-            self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
-        end
-
-        for _,battler in ipairs(self.party) do
-            for _,equipment in ipairs(battler.chara:getEquipment()) do
-                self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
+            if self.tension_bar.visible then
+                self.money = self.money + (math.floor((Game:getTension() * 2.5) / 30))
             end
-        end
 
-        self.money = math.floor(self.money)
-
-        self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
-
-        local win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. "."
-
-        Game.lw_money = Game.lw_money + self.money
-
-        if (Game.lw_money < 0) then
-            Game.lw_money = 0
-        end
-
-        for _,member in ipairs(self.party) do
-            local lv = member.chara:getLightLV()
-            member.chara:gainLightEXP(self.xp, true)
-
-            if lv ~= member.chara:getLightLV() then
-                win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
+            for _,battler in ipairs(self.party) do
+                for _,equipment in ipairs(battler.chara:getEquipment()) do
+                    self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
+                end
             end
+
+            self.money = math.floor(self.money)
+
+            self.money = self.encounter:getVictoryMoney(self.money) or self.money
+            self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
+
+            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. "."
+
+            Game.lw_money = Game.lw_money + self.money
+
+            if (Game.lw_money < 0) then
+                Game.lw_money = 0
+            end
+
+            for _,member in ipairs(self.party) do
+                local lv = member.chara:getLightLV()
+                member.chara:gainLightEXP(self.xp, true)
+
+                if lv ~= member.chara:getLightLV() then
+                    win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("lightCurrency"):lower() .. ".\n* Your LOVE increased."
+                end
+            end
+
+            win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
+        else
+            if self.tension_bar.visible then
+                self.money = self.money + (math.floor(((Game:getTension() * 2.5) / 10)) * Game.chapter)
+            end
+
+            for _,battler in ipairs(self.party) do
+                for _,equipment in ipairs(battler.chara:getEquipment()) do
+                    self.money = math.floor(equipment:applyMoneyBonus(self.money) or self.money)
+                end
+            end
+
+            self.money = math.floor(self.money)
+
+            self.money = self.encounter:getVictoryMoney(self.money) or self.money
+            self.xp = self.encounter:getVictoryXP(self.xp) or self.xp
+            -- if (in_dojo) then
+            --     self.money = 0
+            -- end
+
+            Game.money = Game.money + self.money
+            Game.xp = Game.xp + self.xp
+
+            if (Game.money < 0) then
+                Game.money = 0
+            end
+
+            win_text = "[noskip]* YOU WON!\n* You earned " .. self.xp .. " EXP and " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. "."
+            -- if (in_dojo) then
+            --     win_text == "* You won the battle!"
+            -- end
+            if self.used_violence and Game:getConfig("growStronger") then
+                local stronger = "You"
+
+                for _,battler in ipairs(self.party) do
+                    Game.level_up_count = Game.level_up_count + 1
+                    battler.chara:onLevelUp(Game.level_up_count)
+
+                    if battler.chara.id == Game:getConfig("growStrongerChara") then
+                        stronger = battler.chara:getName()
+                    end
+                end
+
+                win_text = "[noskip]* YOU WON!\n* You earned " .. self.money .. " " .. Game:getConfig("darkCurrencyShort") .. ".\n* "..stronger.." became stronger."
+
+                Assets.playSound("dtrans_lw", 0.7, 2)
+                --scr_levelup()
+            end
+
+            win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
         end
-
-        win_text = self.encounter:getVictoryText(win_text, self.money, self.xp) or win_text
-
+        
         if self.encounter.no_end_message then
             self:setState("TRANSITIONOUT")
             self.encounter:onBattleEnd()
@@ -1663,8 +1718,6 @@ function LightBattle:update()
             Input.clear("cancel", true)
             self:nextTurn()
         end
-    elseif self.state == "XACTENEMYSELECT" then
-        self:setState("ENEMYSELECT", "XACT")
     end
 
     if self.state ~= "TRANSITIONOUT" then

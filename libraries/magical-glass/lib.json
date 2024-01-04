@@ -108,7 +108,7 @@
         //
         // "magical_glass"
         // Battle descriptions are displayed in the main window.
-        // This style will overlap with the bottom row of menu options.
+        // This style will overlap with the bottom row of menu options. (doesn't apply to spells since it limits them to 2 rows.)
         //
         // "deltatraveler"
         // Battle descriptions and TP costs are displayed in a small window underneath
@@ -122,8 +122,7 @@
         ///// Values:
         //
         // "undertale"
-        // UNDERTALE-styled HP gauges.
-        // This style does not support mercy bars.
+        // UNDERTALE-styled HP gauge. (Also supports Mercy gauge)
         //
         // "deltarune"
         // deltarune-styled HP and Mercy gauges.
@@ -140,25 +139,26 @@
         "gauge_style": "undertale",
 
         ///// Mercy Bar
-        // Draws the Mercy Bar in Light Battles if gauge_style is set to deltarune.
-        // Works identically to the mercyBar mod config option.
+        // Draws the Mercy Bar in Light Battles.
+        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "mercy_bar": false,
 
         ///// Mercy Messages
         // Shows the amount of mercy added to an enemy when their mercy gauge increases in Light Battles.
+        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "mercy_messages": false,
 
         ///// Enemy Bar Percentages
-        // Draws the HP and Mercy text and Percentages on the gauges in ENEMYSELECT if gauge_style is set to deltarune.
-        // Works identically to the enemyBarPercentages mod config option.
+        // Draws the HP and Mercy text and Percentages on the gauges.
+        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "enemy_bar_percentages": false,
 
         ///// Light Enemy Chaser Auras
         // Whether enemies in the light world will also have auras.
-        // (requires auras to be enabled as well)
+        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "light_enemy_auras": false,
 
