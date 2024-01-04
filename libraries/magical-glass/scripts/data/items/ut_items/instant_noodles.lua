@@ -3,6 +3,8 @@ local item, super = Class(HealItem, "ut_items/instant_noodles")
 function item:init(inventory)
     super.init(self)
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Display name
     self.name = "Instant Noodles"
     self.short_name = "InstaNood"

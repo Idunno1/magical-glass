@@ -4,6 +4,8 @@ function item:init(inventory)
     -- this guy's probably pretty happy he got moved to an entirely different game
     super.init(self)
 
+    -- How this item is used on you (ate, drank, eat, etc.)
+    self.use_method = "ate"
     -- Display name
     self.name = "Snowman Piece"
     self.short_name = "SnowPiece"
