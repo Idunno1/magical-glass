@@ -151,7 +151,7 @@ function LightEncounter:onFlee()
     local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
     local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 
-    if money ~= 0 or xp ~= 0 then
+    if money ~= 0 or xp ~= 0 or Game.battle.used_violence and Game:getConfig("growStronger") and not Game:isLight() then
         if Game:isLight() then
             for _,battler in ipairs(Game.battle.party) do
                 for _,equipment in ipairs(battler.chara:getEquipment()) do
