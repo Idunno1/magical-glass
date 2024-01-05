@@ -308,7 +308,9 @@ function lib:init()
     end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
-        lib.temp_light = self:isLight()
+        if lib.temp_light == nil and temp then
+            lib.temp_light = self:isLight()
+        end
         light = light or false
         if not self.started then
             self.light = light
@@ -317,12 +319,15 @@ function lib:init()
         if self.light == light then return end
         self.light = light
         
-        Game.stage.timer:after(1/30, function()
-            if temp then
+        if temp and not lib.temp_running then
+            Game.stage.timer:script(function(wait)
+                lib.temp_running = true
+                wait(1/30)
                 self:setLight(lib.temp_light, false)
-            end
-            lib.temp_light = nil
-        end)
+                lib.temp_light = nil
+                lib.temp_running = false
+            end)
+        end
         
         if light then
             for _,party in pairs(self.party_data) do
@@ -339,10 +344,10 @@ function lib:init()
             lib.dark_inv = self.inventory
             lib.dark_inv_saved = false
             
-            local has_shadowcrystal = self.inventory:getItemByID("shadowcrystal") and true or false
-            local has_egg = self.inventory:getItemByID("egg") and true or false
+            local has_shadowcrystal = self.inventory:hasItem("shadowcrystal")
+            local has_egg = self.inventory:hasItem("egg")
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
-                Game:setFlag("has_cell_phone", Game.inventory:getItemByID("cell_phone") and true or false)
+                Game:setFlag("has_cell_phone", Game.inventory:hasItem("cell_phone"))
             end
             
             self.inventory = LightInventory()
@@ -353,25 +358,25 @@ function lib:init()
             end
             
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
-                if not self.inventory:getItemByID("light/ball_of_junk") then
+                if not self.inventory:hasItem("light/ball_of_junk") then
                     self.inventory:addItem(Registry.createItem("light/ball_of_junk"))
                 end
                 
                 if has_shadowcrystal then
-                    if not self.inventory:getItemByID("light/glass") then
+                    if not self.inventory:hasItem("light/glass") then
                         self.inventory:addItem(Registry.createItem("light/glass"))
                     end
                 else
-                    while self.inventory:getItemByID("light/glass") do
+                    while self.inventory:hasItem("light/glass") do
                         self.inventory:removeItem(self.inventory:getItemByID("light/glass"))
                     end
                 end
                 if has_egg then
-                    if not self.inventory:getItemByID("light/egg") then
+                    if not self.inventory:hasItem("light/egg") then
                         self.inventory:addItem(Registry.createItem("light/egg"))
                     end
                 else
-                    while self.inventory:getItemByID("light/egg") do
+                    while self.inventory:hasItem("light/egg") do
                         self.inventory:removeItem(self.inventory:getItemByID("light/egg"))
                     end
                 end
@@ -431,11 +436,11 @@ function lib:init()
                     end
                 end
                 if Game:getFlag("has_cell_phone", Kristal.getModOption("cell") ~= false) then
-                    if not Game.inventory:getItemByID("cell_phone") then
+                    if not Game.inventory:hasItem("cell_phone") then
                         Game.inventory:addItemTo("key_items", 1, Registry.createItem("cell_phone"))
                     end
                 else
-                    while Game.inventory:getItemByID("cell_phone") do
+                    while Game.inventory:hasItem("cell_phone") do
                         Game.inventory:removeItem(Game.inventory:getItemByID("cell_phone"))
                     end
                 end
@@ -542,6 +547,19 @@ function lib:init()
                 local destination = self:getDefaultStorage(item)
                 return false, "* (You have too many [color:yellow]"..destination.name.."[color:reset] to take [color:yellow]"..item:getName().."[color:reset].)"
             end
+        end
+    end)
+    
+    Utils.hook(Inventory, "removeItem", function(orig, self, item, light)
+        if light == nil then
+            if Game.inventory:hasItem(item) then
+                return orig(self, item)
+            else
+                return
+            end
+        else
+            Game:setLight(light, true)
+            return Game.inventory:removeItem(item)
         end
     end)
 
