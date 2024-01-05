@@ -5,6 +5,7 @@ function EncGroup:init()
     
     -- Table with the encounters that can be triggered by this random encounter
     self.encounters = {"froggit", "froggit2"}
+    self.light = true
 end
 
 function EncGroup:resetSteps()

@@ -736,11 +736,19 @@ function lib:init()
 
     end)
 
-    Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
+    Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context, light)
         if Game:getFlag("current_battle_system#") then
             if Game:getFlag("current_battle_system#") == "undertale" then
                 Game:encounterLight(encounter, transition, enemy, context)
             else
+                orig(self, encounter, transition, enemy, context)
+            end
+        elseif light ~= nil then
+            if light then
+                Game:setFlag("current_battle_system#", "undertale")
+                Game:encounterLight(encounter, transition, enemy, context)
+            else
+                Game:setFlag("current_battle_system#", "deltarune")
                 orig(self, encounter, transition, enemy, context)
             end
         elseif context and isClass(context) and context:includes(ChaserEnemy) then
