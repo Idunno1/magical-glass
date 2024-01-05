@@ -53,8 +53,8 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.spareable_text = nil
 
     self.tired_percentage = 0
-    self.spare_percentage = 0.2
-    self.low_health_percentage = 0.2
+    self.spare_percentage = 1/3
+    self.low_health_percentage = 1/3
     
     -- Play the "damage" sound even when you deal 0 damage
     self.always_play_damage_sound = false
