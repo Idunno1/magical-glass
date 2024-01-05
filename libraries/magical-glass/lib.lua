@@ -280,6 +280,17 @@ function lib:init()
             orig(self, old, new)
         end
     end)
+    
+    Utils.hook(Soul, "onDamage", function(orig, self)
+        for _,party in ipairs(Game.battle.party) do
+            for _,equip in ipairs(party.chara:getEquipment()) do
+                if equip.applyInvBonus then
+                    self.inv_timer = equip:applyInvBonus(self.inv_timer)
+                end
+            end
+        end
+        orig(self)
+    end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
         lib.temp_light = self:isLight()
