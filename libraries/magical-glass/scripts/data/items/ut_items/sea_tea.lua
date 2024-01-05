@@ -59,16 +59,8 @@ function item:onLightBattleUse(user, target)
 end
 
 function item:onBattleUse(user, target)
-    if not Game.battle.item_soul_speed then
-        Game.battle.item_soul_speed = 4
-        Game.battle.timer:every(1/30, function()
-            if Game.battle.soul then
-                Game.battle.soul.speed = Game.battle.item_soul_speed
-            end
-        end)
-    end
-    if Game.battle.item_soul_speed < 8 then
-        Game.battle.item_soul_speed = Game.battle.item_soul_speed + 1
+    if Game.battle.soul_speed_bonus < 4 then
+        Game.battle.soul_speed_bonus = Game.battle.soul_speed_bonus + 1
     end
     Assets.stopAndPlaySound("speedup")
 
