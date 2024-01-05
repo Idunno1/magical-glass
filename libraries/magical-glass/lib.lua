@@ -1967,53 +1967,6 @@ function lib:init()
         end)
 
     end)
-    
-    Utils.hook(PartyMember, "convertToLight", function(orig, self)
-        local last_weapon = self:getWeapon()
-        local last_armors = {self:getArmor(1), self:getArmor(2)}
-
-        self.equipped = {weapon = nil, armor = {}}
-
-        if last_weapon then
-            local result = last_weapon:convertToLightEquip(self)
-            if result then
-                if type(result) == "string" then
-                    result = Registry.createItem(result)
-                end
-                if isClass(result) then
-                    self.equipped.weapon = result
-                end
-            end
-        end
-        for i = 1, 2 do
-            if last_armors[i] then
-                local result = last_armors[i]:convertToLightEquip(self)
-                if result then
-                    if type(result) == "string" then
-                        result = Registry.createItem(result)
-                    end
-                    if isClass(result) then
-                        self.equipped.armor[1] = result
-                    end
-                    break
-                end
-            end
-        end
-
-        if not self.equipped.weapon then
-            self.equipped.weapon = Registry.createItem(self.lw_weapon_default)
-        end
-        if not self.equipped.armor[1] then
-            self.equipped.armor[1] = Registry.createItem(self.lw_armor_default)
-        end
-
-        self.equipped.weapon.dark_item = last_weapon
-        self.equipped.armor[1]:setFlag("dark_armors", {
-            ["1"] = last_armors[1] and last_armors[1]:save(),
-            ["2"] = last_armors[2] and last_armors[2]:save()
-        })
-
-    end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
         if Game:isLight() then
@@ -2200,25 +2153,8 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "load", function(orig, self, data) 
-        self.title = data.title or self.title
-        self.level = data.level or self.level
-        self.stats = data.stats or self.stats
-        self.lw_lv = data.lw_lv or self.lw_lv
-        self.lw_exp = data.lw_exp or self.lw_exp
-        self.lw_stats = data.lw_stats or self.lw_stats
-        if data.spells then
-            self:loadSpells(data.spells)
-        end
-        if data.equipped then
-            self:loadEquipment(data.equipped)
-        end
-        self.flags = data.flags or self.flags
-        self.health = data.health or self:getStat("health", 0, false)
-        self.lw_health = data.lw_health or self:getStat("health", 0, true)
-        
         self.lw_portrait = data.lw_portrait or self.lw_portrait
-
-        self:onLoad(data)
+        orig(self, data)
     end)
 
     Utils.hook(LightMenu, "draw", function(orig, self)
@@ -2900,24 +2836,6 @@ function lib:changeSpareColor(color)
         lib.name_color = COLORS.white
     elseif type(color) == "table" then
         lib.name_color = color
-    end
-end
-
-function lib:saveStorageAndEquips()
-    Game:setFlag("temp_inventory#", Game.inventory:save())
-    for _,party in ipairs(Game.party) do
-        Game:setFlag("temp_equips_.."..party.id.."#", party:saveEquipment())
-    end
-end
-
-function lib:loadStorageAndEquips()
-    if Game:getFlag("temp_inventory#") then
-        Game.inventory:load(Game:getFlag("temp_inventory#"))
-        for _,party in ipairs(Game.party) do
-            party:loadEquipment(Game:getFlag("temp_equips_.."..party.id.."#"))
-            Game:setFlag("temp_equips_.."..party.id.."#", nil)
-        end
-        Game:setFlag("temp_inventory#", nil)
     end
 end
 
