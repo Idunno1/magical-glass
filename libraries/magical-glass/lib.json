@@ -18,7 +18,7 @@
         //
         // Second value sets the default world type if no map is present.
         // Used when playing using just an encounter without a map.
-        ///// Values:
+        ///// First Value:
         // "undertale"
         // "deltarune"
         //
