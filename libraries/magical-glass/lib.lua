@@ -74,6 +74,8 @@ function lib:load(data, new_file)
         Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
     end
     
+    Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or Game.light
+    
     if new_file then
         lib.kills = 0        
         lib.game_overs = lib.game_overs or 0
@@ -760,7 +762,7 @@ function lib:init()
                 orig(self, encounter, transition, enemy, context)
             end
         else
-            if Kristal.getLibConfig("magical-glass", "default_battle_system") == "undertale" then
+            if Kristal.getLibConfig("magical-glass", "default_battle_system")[1] == "undertale" then
                 Game:setFlag("current_battle_system#", "undertale")
                 Game:encounterLight(encounter, transition, enemy, context)
             else

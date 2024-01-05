@@ -14,12 +14,19 @@
         
         ///// Default battle system
         // If an encounter isn't forcing a battle system, use this system as a fallback.
-        // Useful if starting from an encounter instead of a map.
+        // Useful if starting from an encounter.
+        //
+        // Second value sets the default world type if no map is present.
+        // Used when playing using just an encounter without a map.
         ///// Values:
         // "undertale"
         // "deltarune"
+        //
+        ///// Second Value:
+        // true = Light
+        // false = Dark
         /////
-        "default_battle_system": "deltarune",
+        "default_battle_system": ["deltarune", false],
 
         ///// Light Battle TP
         // Whether the Tension Bar and grazing should be enabled in light battles.
