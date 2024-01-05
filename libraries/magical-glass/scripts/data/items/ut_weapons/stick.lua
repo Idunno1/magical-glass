@@ -14,6 +14,9 @@ function item:init()
     -- Default shop sell price
     self.sell_price = 150
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Its bark is worse than its bite."
+
     -- Light world check text
     -- self.check = "Weapon AT 0\n* Whoa-oh-oh-oh-oh-oh-oh-oh story of undertale"
     self.check = "Weapon AT 0\n* Its bark is worse than\nits bite."

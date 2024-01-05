@@ -17,6 +17,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Used to make punching attacks stronger for one battle.\nUse outside of battle to look at the card."
+
     -- Light world check text
     self.check = {
         "Battle Item\n* Used to make punching attacks\nstronger for one battle.",

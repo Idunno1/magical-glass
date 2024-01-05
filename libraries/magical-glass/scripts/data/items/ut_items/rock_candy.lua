@@ -21,6 +21,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Here is a recipe to make this at home:\n1. Find a rock"
+
     -- Light world check text
     self.check = {
         "Heals 1 HP\n* Here is a recipe to make\nthis at home:",

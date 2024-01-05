@@ -21,6 +21,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Has a distinct, non licorice flavor."
+
     -- Light world check text
     self.check = "Heals 10 HP\n* Has a distinct,[wait:10]\nnon licorice flavor."
 

@@ -18,6 +18,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "An antique revolver.\nIt has no ammo."
+
     -- Light world check text
     self.check = {
         "Weapon AT 12\n* An antique revolver.[wait:10]\n* It has no ammo.",

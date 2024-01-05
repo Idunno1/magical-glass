@@ -13,6 +13,9 @@ function item:init()
     -- Whether this item is for the light world
     self.light = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "A worn pink leather glove.\nFor five-fingered folk."
+
     -- Light world check text
     self.check = "Weapon AT 5\n* A worn pink leather glove.[wait:10]\nFor five-fingered folk."
 

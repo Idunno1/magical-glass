@@ -27,6 +27,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Huge steak in the shape of Mettaton's face.\n(You don't feel like it's made of real meat...)"
+
     -- Light world check text
     self.check = {
         "Heals 60 HP\n* Huge steak in the shape\nof Mettaton's face.",

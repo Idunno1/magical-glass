@@ -18,6 +18,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Heals 1 HP every other turn."
+
     -- Light world check text
     self.check = "Armor DF 11\n* Heals 1 HP every other\nturn."
 

@@ -10,6 +10,9 @@ function item:init()
     self.type = "weapon"
     -- Whether this item is for the light world
     self.light = true
+    
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "A magical pink scarf.\nVery fluffy."
 
     -- Light world check text
     self.check = "Weapon 2 MG\n* A magical pink scarf.\n* Very fluffy."

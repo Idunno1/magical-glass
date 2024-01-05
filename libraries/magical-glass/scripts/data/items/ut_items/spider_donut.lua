@@ -24,6 +24,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "A donut made with Spider Cider in the batter."
+
     -- Light world check text
     self.check = "Heals 12 HP\n* A donut made with Spider\nCider in the batter."
 

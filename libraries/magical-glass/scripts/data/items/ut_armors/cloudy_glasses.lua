@@ -20,6 +20,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Glasses marred with wear."
+
     -- Light world check text
     self.check = {
         "Weapon DF 6\n* Glasses marred with wear.\n* Increases INV by 9.",
