@@ -2332,6 +2332,7 @@ function lib:init()
 
         self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
         self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
+        self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
 
         self.rightpressed = false
         self.leftpressed = false
@@ -2461,7 +2462,7 @@ function lib:init()
                 show_magic = true
             end
         end
-        if show_magic then
+        if self.always_show_magic or show_magic then
             offset = 18
             love.graphics.print("MG  ", 4, 228 - offset)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset)

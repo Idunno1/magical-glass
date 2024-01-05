@@ -69,6 +69,19 @@
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
         /////
         "undertale_stat_display": true,
+        
+        ///// Always show magic
+        // Whether the MG stat should always be shown in the Light World STAT menu.
+        ///// Values:
+        //
+        // true
+        // Always shows the MG stat.
+        //
+        // false
+        // Only shows the MG stat if at least one party member has a magic stat greater than 0.
+        //
+        /////
+        "always_show_magic": false,
 
         ///// Item info
         // Determines whether battle descriptions and TP costs should be displayed in the main
