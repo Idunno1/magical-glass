@@ -137,6 +137,8 @@ end
 
 function lib:init()
 
+    print("Loaded Magical Glass! (" .. self.info.version .. ")")
+
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
