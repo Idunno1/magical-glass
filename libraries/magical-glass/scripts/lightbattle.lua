@@ -611,6 +611,7 @@ function LightBattle:processAction(action)
     elseif action.action == "ITEM" then
         local item = action.data
         if item.instant then
+            self:toggleSoul(false)
             self:finishAction(action)
         else
             local result = item:onLightBattleUse(battler, action.target)
