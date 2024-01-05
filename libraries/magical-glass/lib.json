@@ -11,6 +11,15 @@
     "engineVer": "v0.9.0-dev",
 
     "config": {
+        
+        ///// Default battle system
+        // If an encounter isn't forcing a battle system, use this system as a fallback.
+        // Useful if starting from an encounter instead of a map.
+        ///// Values:
+        // "undertale"
+        // "deltarune"
+        /////
+        "default_battle_system": "deltarune",
 
         ///// Light Battle TP
         // Whether the Tension Bar and grazing should be enabled in light battles.

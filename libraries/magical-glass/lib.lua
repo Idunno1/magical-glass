@@ -720,45 +720,29 @@ function lib:init()
     end)
 
     Utils.hook(Game, "encounter", function(orig, self, encounter, transition, enemy, context)
-        -- the worst thing ever
-
-        if Game:getFlag("temporary_world_value#") then
-            if Game:getFlag("temporary_world_value#") == "dark" then
-                if Game:isLight() then
-                    Game:setLight(true)
-                else
-                    Game.light = true
-                end
-            elseif Game:getFlag("temporary_world_value#") == "light" then
-                if not Game:isLight() then
-                    Game:setLight(false)
-                else
-                    Game.light = false
-                end
-            end
-        end
-
         if Game:getFlag("current_battle_system#") then
             if Game:getFlag("current_battle_system#") == "undertale" then
                 Game:encounterLight(encounter, transition, enemy, context)
-            elseif Game:getFlag("current_battle_system#") == "deltarune" then
+            else
                 orig(self, encounter, transition, enemy, context)
             end
-        elseif context then
-            if isClass(context) and context:includes(ChaserEnemy) then
-                if context.light_encounter then
-                    Game:setFlag("current_battle_system#", "undertale")
-                    Game:encounterLight(encounter, transition, enemy, context)
-                elseif context.encounter then
-                    Game:setFlag("current_battle_system#", "deltarune")
-                    orig(self, encounter, transition, enemy, context)
-                end
+        elseif context and isClass(context) and context:includes(ChaserEnemy) then
+            if context.light_encounter then
+                Game:setFlag("current_battle_system#", "undertale")
+                Game:encounterLight(encounter, transition, enemy, context)
+            else
+                Game:setFlag("current_battle_system#", "deltarune")
+                orig(self, encounter, transition, enemy, context)
             end
         else
-            Game:setFlag("current_battle_system#", "deltarune")
-            orig(self, encounter, transition, enemy, context)
+            if Kristal.getLibConfig("magical-glass", "default_battle_system") == "undertale" then
+                Game:setFlag("current_battle_system#", "undertale")
+                Game:encounterLight(encounter, transition, enemy, context)
+            else
+                Game:setFlag("current_battle_system#", "deltarune")
+                orig(self, encounter, transition, enemy, context)
+            end
         end
-
     end)
 
     Utils.hook(Game, "encounterLight", function(orig, self, encounter, transition, enemy, context)
@@ -975,11 +959,6 @@ function lib:init()
     Utils.hook(Battle, "returnToWorld", function(orig, self)
         orig(self)
         Game:setFlag("current_battle_system#", nil)
-        if Game:getFlag("temporary_world_value#") == "light" then
-            Game:setLight(true)
-            MagicalGlassLib:loadStorageAndEquips()
-            Game:setFlag("temporary_world_value#", nil)
-        end
     end)
 
     Utils.hook(Wave, "init", function(orig, self)
