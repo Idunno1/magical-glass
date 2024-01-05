@@ -33,11 +33,13 @@ function RandomEncounter:nobodyCame()
 end
 
 function RandomEncounter:start()
-    if self.bubble then
-        Game.lock_movement = true
-        Game.world.player:alert(15/30 + Utils.random(5/30), {layer = WORLD_LAYERS["above_events"], sprite = self.bubble, callback = function() Game:encounter(self:getNextEncounter(), true, nil, nil, self.light);Game.lock_movement = false end})
-    else
-        Game:encounter(self:getNextEncounter(), true, nil, nil, self.light)
+    if not (self:nobodyCame() and not self.light) then
+        if self.bubble then
+            Game.lock_movement = true
+            Game.world.player:alert(15/30 + Utils.random(5/30), {layer = WORLD_LAYERS["above_events"], sprite = self.bubble, callback = function() Game:encounter(self:getNextEncounter(), true, nil, nil, self.light);Game.lock_movement = false end})
+        else
+            Game:encounter(self:getNextEncounter(), true, nil, nil, self.light)
+        end
     end
 end
 
