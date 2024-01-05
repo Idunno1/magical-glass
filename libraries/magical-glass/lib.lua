@@ -2804,8 +2804,8 @@ function lib:changeSpareColor(color)
     end
 end
 
-function lib:onFootstep()
-    if Game.world and self.encounters_enabled then
+function lib:onFootstep(char, num)
+    if self.encounters_enabled and char == Game.world.player then
         self.steps_until_encounter = self.steps_until_encounter - 1
     end
 end
