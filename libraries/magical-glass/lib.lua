@@ -162,6 +162,15 @@ function lib:init()
         self.soul_speed_bonus = 0
     end)
     
+    Utils.hook(Battle, "onKeyPressed", function(orig, self, key)
+        if Kristal.Config["debug"] and Input.ctrl() then
+            if key == "y" and self.state == "DEFENDING" and Game:isLight() then
+                Game.battle:setState("DEFENDINGEND", "NONE")
+            end
+        end
+        orig(self, key)
+    end)
+    
     Utils.hook(Battle, "drawBackground", function(orig, self)
         if Game:isLight() then
             Draw.setColor(0, 0, 0, self.transition_timer / 10)
