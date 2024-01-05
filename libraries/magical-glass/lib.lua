@@ -1905,7 +1905,7 @@ function lib:init()
             return damage
         end
         if Game:isLight() then
-            return ((battler.chara:getStat("attack") * points) / 65) - (self.defense * 2.25)
+            return ((battler.chara:getStat("attack") * points) / 65) - (self.defense * 2)
         else
             return orig(self, damage, battler, points)
         end
