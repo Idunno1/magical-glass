@@ -538,8 +538,6 @@ function lib:init()
             sound:setPitch(1.4)
             sound:setVolume(0.8)
             sound:play()
-            
-            Game.battle:toggleSoul(false)
         else
             orig(self, user, target)
         end
