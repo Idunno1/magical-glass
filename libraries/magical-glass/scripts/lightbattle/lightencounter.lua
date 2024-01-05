@@ -46,7 +46,7 @@ function LightEncounter:init()
 end
 
 function LightEncounter:onSoulTransition()
-    local soul_player
+    local soul_player = Game.world.player
     if Game:getSoulPartyMember() == Game.world.player:getPartyMember() then
         soul_player = Game.world.player
     else
