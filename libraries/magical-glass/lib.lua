@@ -320,9 +320,8 @@ function lib:init()
         self.light = light
         
         if temp and not lib.temp_running then
-            Game.stage.timer:script(function(wait)
-                lib.temp_running = true
-                wait(1/30)
+            lib.temp_running = true
+            Game.stage.timer:after(1/30, function()
                 self:setLight(lib.temp_light, false)
                 lib.temp_light = nil
                 lib.temp_running = false
