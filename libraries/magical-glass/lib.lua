@@ -185,6 +185,19 @@ function lib:init()
         end
     end)
     
+    Utils.hook(Battle, "nextTurn", function(orig, self)
+        self.turn_count = self.turn_count + 1
+        if self.turn_count > 1 then
+            for _,party in ipairs(self.party) do
+                if party.chara:onTurnEnd() then
+                    return
+                end
+            end
+        end
+        self.turn_count = self.turn_count - 1
+        return orig(self)
+    end)
+    
     Utils.hook(Battle, "onStateChange", function(orig, self, old, new)
         local result = self.encounter:beforeStateChange(old,new)
         if result or self.state ~= new then
@@ -1146,6 +1159,54 @@ function lib:init()
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
     
+    end)
+    
+    Utils.hook(Item, "getLightBattleText", function(orig, self, user, target)
+        if self.target == "ally" then
+            return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
+        elseif self.target == "party" then
+            if #Game.party > 1 then
+                return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+            else
+                return "* You "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+            end
+        elseif self.target == "enemy" then
+            return "* " .. target.name .. " "..self:getUseMethod(target).." the " .. self:getUseName() .. "."
+        elseif self.target == "enemies" then
+            return "* " .. target.name .. " "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+        end
+    end)
+    
+    Utils.hook(Item, "getLightBattleHealingText", function(orig, self, user, target, amount)
+        if target then
+            if self.target == "ally" then
+                maxed = target.chara:getHealth() >= target.chara:getStat("health")
+            elseif self.target == "enemy" then
+                maxed = target.health >= target.max_health
+            end
+        end
+
+        local message
+        if self.target == "ally" then
+            if target.chara.id == Game.battle.party[1].chara.id and maxed then
+                message = "* Your HP was maxed out."
+            elseif maxed then
+                message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
+            else
+                message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "party" then
+            message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
+        elseif self.target == "enemy" --[[why]] then
+            if maxed then
+                message = "* " .. target.name .. "'s HP was maxed out."
+            else
+                message = "* " .. target.name .. " recovered " .. amount .. " HP."
+            end
+        elseif self.target == "enemies" --[[why 2]] then
+            message = "* The enemies all recovered " .. amount .. " HP."
+        end
+        return message
     end)
 
     Utils.hook(Item, "getLightShopDescription", function(orig, self)
