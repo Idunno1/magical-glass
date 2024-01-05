@@ -12,7 +12,7 @@
     //"map": "darktundra1",
 
     //"party": ["kris"],
-    "party": ["noelle"],
+    "party": ["noelle", "susie"],
 
     "inventory": {
         // "items": ["ut_items/rock_candy", "ut_items/monster_candy", "ut_items/spider_donut", "ut_items/spider_cider", "ut_items/butterscotch_pie", "ut_items/ghost_fruit"],
