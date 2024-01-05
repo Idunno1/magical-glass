@@ -2691,8 +2691,7 @@ function lib:registerDebugOptions(debug)
     debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
-            Game:setFlag("current_battle_system#", "deltarune")
-            Game:encounter(id)
+            Game:encounter(id, true, nil, nil, false)
             debug:closeMenu()
         end)
     end
@@ -2701,8 +2700,7 @@ function lib:registerDebugOptions(debug)
     for id,_ in pairs(self.light_encounters) do
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
-                Game:setFlag("current_battle_system#", "undertale")
-                Game:encounter(id)
+                Game:encounter(id, true, nil, nil, true)
                 debug:closeMenu()
             end)
         end
