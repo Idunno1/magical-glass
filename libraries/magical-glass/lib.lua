@@ -792,49 +792,11 @@ function lib:init()
     end)
 
     Utils.hook(ChaserEnemy, "init", function(orig, self, actor, x, y, properties)
-    
-        ChaserEnemy.__super.init(self, actor, x, y)
+        orig(self, actor, x, y, properties)
 
-        properties = properties or {}
-    
-        if properties["sprite"] then
-            self.sprite:setSprite(properties["sprite"])
-        elseif properties["animation"] then
-            self.sprite:setAnimation(properties["animation"])
-        end
-    
-        if properties["facing"] then
-            self:setFacing(properties["facing"])
-        end
-    
-        self.encounter = properties["encounter"]
+        self.sprite.aura = nil
         self.light_encounter = properties["lightencounter"]
-
-        self.enemy = properties["enemy"]
         self.light_enemy = properties["lightenemy"]
-
-        self.group = properties["group"]
-    
-        self.path = properties["path"]
-        self.speed = properties["speed"] or 6
-    
-        self.progress = (properties["progress"] or 0) % 1
-        self.reverse_progress = false
-    
-        self.can_chase = properties["chase"]
-        self.chase_speed = properties["chasespeed"] or 9
-        self.chase_dist = properties["chasedist"] or 200
-        self.chasing = properties["chasing"] or false
-    
-        self.alert_timer = 0
-        self.alert_icon = nil
-    
-        self.noclip = true
-        self.enemy_collision = true
-    
-        self.remove_on_encounter = true
-        self.encountered = false
-        self.once = properties["once"] or false
     
         if properties["aura"] == nil then
             Game.world.timer:after(1/30, function()
@@ -2419,7 +2381,6 @@ function lib:init()
                 Draw.setColor(Game:getSoulColor())
                 Draw.draw(self.heart_sprite, 213, 12 + 4, 0, 2, 2)
                 
-                --if love.keyboard.isDown("right") then
                 if self.rightpressed == true then
                     Draw.setColor({1,1,0})
                     Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 13, 0, 2, 2)
@@ -2428,7 +2389,6 @@ function lib:init()
                     Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 13, 0, 2, 2)
                 end
 
-                --if love.keyboard.isDown("left") then
                 if self.leftpressed == true then
                     Draw.setColor({1,1,0})
                     Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 13, 0, 2, 2)
@@ -2436,9 +2396,6 @@ function lib:init()
                     Draw.setColor(PALETTE["world_text"])
                     Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 13, 0, 2, 2)
                 end
-                
-                --Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 120, 0, 2, 2)
-                --Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 266, 120, 0, 2, 2)
             end
         end
 
