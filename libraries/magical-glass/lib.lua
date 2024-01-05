@@ -137,8 +137,6 @@ end
 
 function lib:init()
 
-    print(self.info.id .. " version " .. self.info.version .. ": Getting ready...")
-
     self.encounters_enabled = false
     self.steps_until_encounter = nil
     
