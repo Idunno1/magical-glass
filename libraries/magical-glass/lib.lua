@@ -1755,18 +1755,12 @@ function lib:init()
     end)
 
     Utils.hook(World, "heal", function(orig, self, target, amount, text, item)
-        if type(target) == "string" then
-            target = Game:getPartyMember(target)
-        end
-        
-        local play_sound = true
         if Game:isLight() then
-            play_sound = false
-        end
+            if type(target) == "string" then
+                target = Game:getPartyMember(target)
+            end
 
-        local maxed = target:heal(amount, play_sound)
-
-        if Game:isLight() then
+            local maxed = target:heal(amount, false)
             local message
             if item and item.getLightWorldHealingText then
                 message = item:getLightWorldHealingText(target, amount, maxed)
@@ -1785,15 +1779,8 @@ function lib:init()
             if not Game.cutscene_active then
                 Game.world:showText(message)
             end
-        elseif self.healthbar then
-            for _, actionbox in ipairs(self.healthbar.action_boxes) do
-                if actionbox.chara.id == target.id then
-                    local text = HPText("+" .. amount, self.healthbar.x + actionbox.x + 69, self.healthbar.y + actionbox.y + 15)
-                    text.layer = WORLD_LAYERS["ui"] + 1
-                    Game.world:addChild(text)
-                    return
-                end
-            end
+        else
+            orig(self, target, amount, text, item)
         end
     end)
 
@@ -2036,10 +2023,10 @@ function lib:init()
             if self:getHealth() < self:getStat("health") then
                 self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
             end
+            return self:getStat("health") == self:getHealth()
         else
-            self:setHealth(math.min(self:getStat("health"), self:getHealth() + amount))
+            return orig(self, amount, playsound)
         end
-        return self:getStat("health") == self:getHealth()
     end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)

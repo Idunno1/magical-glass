@@ -221,11 +221,13 @@ function HealItem:battleUseSound(user, target)
 end
 
 function HealItem:worldUseSound(target)
-    Game.world.timer:script(function(wait)
-        Assets.stopAndPlaySound("swallow")
-        wait(0.4)
-        Assets.stopAndPlaySound("power")
-    end)
+    if Game:isLight() then
+        Game.world.timer:script(function(wait)
+            Assets.stopAndPlaySound("swallow")
+            wait(0.4)
+            Assets.stopAndPlaySound("power")
+        end)
+    end
 end
 
 return HealItem
