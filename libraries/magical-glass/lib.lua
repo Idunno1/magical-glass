@@ -2684,31 +2684,10 @@ function lib:registerDebugOptions(debug)
         debug:enterMenu("light_encounter_select", 0)
     end)
 
-    debug:registerOption("encounter_select", "Start Dark Encounter in Light World", "Start a dark encounter in the light world.", function()
-        debug:enterMenu("dark_encounter_select_lw", 0)
-    end)
-    debug:registerOption("encounter_select", "Start Light Encounter in Dark World", "Start a light encounter in the dark world.", function()
-        debug:enterMenu("light_encounter_select_dw", 0)
-    end)
-
     debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
         debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
             Game:setFlag("current_battle_system#", "deltarune")
-            Game:encounter(id)
-            debug:closeMenu()
-        end)
-    end
-
-    debug:registerMenu("dark_encounter_select_lw", "Select Dark Encounter", "search")
-    for id,_ in pairs(Registry.encounters) do
-        debug:registerOption("dark_encounter_select_lw", id, "Start this encounter.", function()
-            Game:setFlag("current_battle_system#", "deltarune")
-            if Game:isLight() then
-                Game:setFlag("temporary_world_value#", "light")
-                MagicalGlassLib:saveStorageAndEquips()
-            end
-            Game:setLight(true)
             Game:encounter(id)
             debug:closeMenu()
         end)
@@ -2719,22 +2698,6 @@ function lib:registerDebugOptions(debug)
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 Game:setFlag("current_battle_system#", "undertale")
-                Game:encounter(id)
-                debug:closeMenu()
-            end)
-        end
-    end
-
-    debug:registerMenu("light_encounter_select_dw", "Select Light Encounter", "search")
-    for id,_ in pairs(self.light_encounters) do
-        if id ~= "_nobody" then
-            debug:registerOption("light_encounter_select_dw", id, "Start this encounter.", function()
-                Game:setFlag("current_battle_system#", "undertale")
-                if not Game:isLight() then
-                    Game:setFlag("temporary_world_value#", "dark")
-                    MagicalGlassLib:saveStorageAndEquips()
-                end
-                Game:setLight(false)
                 Game:encounter(id)
                 debug:closeMenu()
             end)
