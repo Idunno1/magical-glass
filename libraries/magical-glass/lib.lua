@@ -743,16 +743,16 @@ function lib:init()
             else
                 orig(self, encounter, transition, enemy, context)
             end
-        elseif light ~= nil then
-            if light then
+        elseif context and isClass(context) and context:includes(ChaserEnemy) then
+            if context.light_encounter then
                 Game:setFlag("current_battle_system#", "undertale")
                 Game:encounterLight(encounter, transition, enemy, context)
             else
                 Game:setFlag("current_battle_system#", "deltarune")
                 orig(self, encounter, transition, enemy, context)
             end
-        elseif context and isClass(context) and context:includes(ChaserEnemy) then
-            if context.light_encounter then
+        elseif light ~= nil then
+            if light then
                 Game:setFlag("current_battle_system#", "undertale")
                 Game:encounterLight(encounter, transition, enemy, context)
             else
