@@ -755,13 +755,8 @@ function lib:init()
                 end
             end
         else
-            if Kristal.getLibConfig("magical-glass", "default_battle_system") == "undertale" then
-                Game:setFlag("current_battle_system#", "undertale")
-                Game:encounterLight(encounter, transition, enemy, context)
-            elseif Kristal.getLibConfig("magical-glass", "default_battle_system") == "deltarune" then
-                Game:setFlag("current_battle_system#", "deltarune")
-                orig(self, encounter, transition, enemy, context)
-            end
+            Game:setFlag("current_battle_system#", "deltarune")
+            orig(self, encounter, transition, enemy, context)
         end
 
     end)
@@ -874,11 +869,6 @@ function lib:init()
                 encounter = self.encounter
                 enemy = self.enemy
             elseif self.light_encounter then
-                if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") then
-                    Game:setFlag("temporary_world_value#", "dark")
-                    Game:setLight(true)
-                end
-
                 encounter = self.light_encounter
                 enemy = self.light_enemy
             end
@@ -2342,7 +2332,6 @@ function lib:init()
 
         self.style = Kristal.getLibConfig("magical-glass", "light_stat_menu_style")
         self.undertale_stat_display = Kristal.getLibConfig("magical-glass", "undertale_stat_display")
-        self.always_show_magic = Kristal.getLibConfig("magical-glass", "always_show_magic")
 
         self.rightpressed = false
         self.leftpressed = false
@@ -2402,15 +2391,7 @@ function lib:init()
     Utils.hook(LightStatMenu, "draw", function(orig, self)
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        if self.style == "magical_glass" and #Game.party > 1 then
-            local name_offset = 0
-            for _,chara in ipairs(Game.party) do
-                love.graphics.printf(chara:getName(), (name_offset - 18) + (#chara:getName() - 4) * 7, 8, 100, "center")
-                name_offset = name_offset + 110
-            end
-        else
-            love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
-        end
+        love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
 
         local chara = Game.party[self.party_selecting]
 
@@ -2428,16 +2409,6 @@ function lib:init()
                 love.graphics.print("<                >", 162, 116)
             end
         elseif self.style == "magical_glass" then
-            local ox, oy = chara.actor:getPortraitOffset()
-            if chara:getLightPortrait() then
-                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
-            end
-
-            if #Game.party > 1 then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, (110 * (self.party_selecting - 1)) + (#chara:getName() * 6) - (self.party_selecting - 1), -8, 0, 2, 2)
-            end
-        elseif self.style == "undertale" then
             local ox, oy = chara.actor:getPortraitOffset()
             if chara:getLightPortrait() then
                 Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
@@ -2490,7 +2461,7 @@ function lib:init()
                 show_magic = true
             end
         end
-        if self.always_show_magic or show_magic then
+        if show_magic then
             offset = 18
             love.graphics.print("MG  ", 4, 228 - offset)
             love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset)
@@ -2867,10 +2838,6 @@ function lib:registerDebugOptions(debug)
         if id ~= "_nobody" then
             debug:registerOption("light_encounter_select", id, "Start this encounter.", function()
                 Game:setFlag("current_battle_system#", "undertale")
-                if Kristal.getLibConfig("magical-glass", "force_light_mode_in_light_battles") and not Game:isLight() then
-                    Game:setFlag("temporary_world_value#", "dark")
-                    MagicalGlassLib:saveStorageAndEquips()
-                end
                 Game:encounter(id)
                 debug:closeMenu()
             end)
