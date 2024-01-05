@@ -47,9 +47,7 @@ end
 
 function LightEncounter:onSoulTransition()
     local soul_player = Game.world.player
-    if Game:getSoulPartyMember() == Game.world.player:getPartyMember() then
-        soul_player = Game.world.player
-    else
+    if Game:getSoulPartyMember() ~= Game.world.player:getPartyMember() then
         for _,follower in ipairs(Game.world.followers) do
             if Game:getSoulPartyMember() == follower:getPartyMember() then
                 soul_player = follower
