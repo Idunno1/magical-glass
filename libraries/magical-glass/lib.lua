@@ -159,6 +159,7 @@ function lib:init()
     Utils.hook(Battle, "init", function(orig, self)
         orig(self)
         self.light = false
+        self.soul_speed_bonus = 0
     end)
     
     Utils.hook(Battle, "drawBackground", function(orig, self)
@@ -290,6 +291,11 @@ function lib:init()
             end
         end
         orig(self)
+    end)
+    
+    Utils.hook(Soul, "init", function(orig, self, x, y, color)
+        orig(self, x, y, color)
+        self.speed = self.speed + Game.battle.soul_speed_bonus
     end)
 
     Utils.hook(Game, "setLight", function(orig, self, light, temp)
