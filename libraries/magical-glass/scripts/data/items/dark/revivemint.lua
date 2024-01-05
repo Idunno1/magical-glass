@@ -1,15 +1,9 @@
 local item, super = Class("revivemint", true)
 
 function item:onLightBattleUse(user, target)
-    local amount
-    if target.chara:getHealth() <= 0 then
-        amount = math.abs(target.chara:getHealth()) + target.chara:getStat("health")
-    else
-        amount = math.ceil(target.chara:getStat("health") / 2)
-    end
-    target:heal(amount)
+    item:onBattleUse(user, target)
     Assets.stopAndPlaySound("power")
-    Game.battle:battleText(self:getLightBattleText(user, target).."\n"..self:getLightBattleHealingText(user, target, amount))
+    Game.battle:battleText(self:getLightBattleText(user, target))
 end
 
 return item

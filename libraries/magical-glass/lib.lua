@@ -1189,9 +1189,9 @@ function lib:init()
     Utils.hook(Item, "getLightBattleHealingText", function(orig, self, user, target, amount)
         if target then
             if self.target == "ally" then
-                maxed = target.chara:getHealth() >= target.chara:getStat("health")
+                maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount >= math.huge
             elseif self.target == "enemy" then
-                maxed = target.health >= target.max_health
+                maxed = target.health >= target.max_health or amount >= math.huge
             end
         end
 
