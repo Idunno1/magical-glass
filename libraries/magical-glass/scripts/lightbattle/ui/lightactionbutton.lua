@@ -180,7 +180,7 @@ function LightActionButton:select()
                 Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
             end
         })
-        if Kristal.getLibConfig("magical-glass", "light_battle_defend_btn") then
+        if Kristal.getLibConfig("magical-glass", "light_battle_defend_btn") or not Game:isLight() then
             Game.battle:addMenuItem({
                 ["name"] = "Defend",
                 ["special"] = "defend",

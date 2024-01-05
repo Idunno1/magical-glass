@@ -20,7 +20,7 @@ function LightBattle:init()
 
     self.post_battletext_state = "ACTIONSELECT"
 
-    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp")
+    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
 
     self.fader = Fader()
     self.fader.layer = 1000
