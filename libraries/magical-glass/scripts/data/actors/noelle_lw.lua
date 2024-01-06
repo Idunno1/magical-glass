@@ -4,7 +4,7 @@ function actor:init()
     super.init(self)
 
     -- Table of sprite animations
-    self.animations = {
+    Utils.merge(self.animations, {
         -- Battle animations
         ["battle/idle"]         = {"battle/idle", 0.2, true},
 
@@ -27,10 +27,7 @@ function actor:init()
 
         ["battle/transition"]   = {"battle/intro", 1/15, false},
         ["battle/victory"]      = {"battle/victory", 1/10, false},
-
-        -- Cutscene animations
-        ["laugh"]               = {"laugh", 4/30, true},
-    }
+    }, false)
 
     -- Alternate animations to use for Noelle weird mode (false to disable the animation)
     self.animations_alt = {
@@ -49,79 +46,16 @@ function actor:init()
     }
 
     -- Tables of sprites to change into in mirrors
-    self.mirror_sprites = {
-        ["walk/down"] = "walk/up",
-        ["walk/up"] = "walk/down",
-        ["walk/left"] = "walk/left",
-        ["walk/right"] = "walk/right",
+    Utils.merge(self.mirror_sprites, {
 
         ["walk_alt/down"] = "walk_alt/up",
         ["walk_alt/up"] = "walk_alt/down",
         ["walk_alt/left"] = "walk_alt/left",
         ["walk_alt/right"] = "walk_alt/right",
-
-        ["walk_blush/down"] = "walk_blush/up",
-        ["walk_blush/up"] = "walk_blush/down",
-        ["walk_blush/left"] = "walk_blush/left",
-        ["walk_blush/right"] = "walk_blush/right",
-
-        ["walk_lookup/down"] = "walk_lookup/up",
-        ["walk_lookup/up"] = "walk_lookup/down",
-        ["walk_lookup/left"] = "walk_lookup/left",
-        ["walk_lookup/right"] = "walk_lookup/right",
-
-        ["walk_sad/down"] = "walk_sad/up",
-        ["walk_sad/up"] = "walk_sad/down",
-        ["walk_sad/left"] = "walk_sad/left",
-        ["walk_sad/right"] = "walk_sad/right",
-
-        ["walk_smile/down"] = "walk_smile/up",
-        ["walk_smile/up"] = "walk_smile/down",
-        ["walk_smile/left"] = "walk_smile/left",
-        ["walk_smile/right"] = "walk_smile/right",
-
-        ["walk_mad/left"] = "walk_mad/left",
-        ["walk_mad/right"] = "walk_mad/right",
-    }
+    }, false)
 
     -- Table of sprite offsets (indexed by sprite name)
-    self.offsets = {
-        -- Movement offsets
-        ["walk/down"] = {0, 0},
-        ["walk/right"] = {0, 0},
-        ["walk/left"] = {0, 0},
-        ["walk/up"] = {0, 0},
-
-        ["walk_smile/down"] = {0, 0},
-        ["walk_smile/right"] = {0, 0},
-        ["walk_smile/left"] = {0, 0},
-        ["walk_smile/up"] = {0, 0},
-
-        ["walk_alt/down"] = {0, 0},
-        ["walk_alt/right"] = {0, 0},
-        ["walk_alt/left"] = {0, 0},
-        ["walk_alt/up"] = {0, 0},
-
-        ["walk_blush/down"] = {0, 0},
-        ["walk_blush/right"] = {0, 0},
-        ["walk_blush/left"] = {0, 0},
-        ["walk_blush/up"] = {0, 0},
-
-        ["walk_sad/down"] = {0, 0},
-        ["walk_sad/right"] = {0, 0},
-        ["walk_sad/left"] = {0, 0},
-        ["walk_sad/up"] = {0, 0},
-
-        ["walk_look_up/down"] = {0, 0},
-        ["walk_look_up/right"] = {0, 0},
-        ["walk_look_up/left"] = {0, 0},
-        ["walk_look_up/up"] = {0, 0},
-
-        ["walk_scared/left"] = {-4, 3},
-        ["walk_scared/right"] = {2, 3},
-
-        ["walk_mad/left"] = {-2, 2},
-        ["walk_mad/right"] = {5, 2},
+    Utils.merge(self.offsets, {
 
         -- Battle offsets
         ["battle/idle"] = {-3, 0},
@@ -150,41 +84,7 @@ function actor:init()
         ["battle_alt/float"] = {-11, -7},
         ["battle_alt/pray"] = {-3, 0},
         ["battle_alt/spell_special"] = {-5, -1},
-
-        -- Cutscene offsets
-        ["blush"] = {0, 0},
-        ["blush_side"] = {0, 0},
-
-        ["hand_mouth"] = {0, 0},
-        ["hand_mouth_side"] = {0, 0},
-
-        ["laugh"] = {0, 0},
-
-        ["point_up"] = {-4, 1},
-
-        ["shocked"] = {0, 0},
-        ["shocked_behind"] = {0, 0},
-
-        ["headtilt"] = {0, -1},
-
-        ["collapsed"] = {-14, 29},
-        ["collapsed_look_up"] = {-18, 23},
-        ["collapsed_reach"] = {-14, 29},
-
-        ["hurt"] = {0, 0},
-        ["kneel"] = {0, 0},
-        ["kneel_shocked_left"] = {0, 0},
-        ["kneel_shocked_right"] = {0, 0},
-        ["kneel_smile_left"] = {0, 0},
-        ["kneel_smile_right"] = {0, 0},
-
-        ["smile_left"] = {0, 0},
-        ["smile_right"] = {0, 0},
-
-        ["head_lowered"] = {0, 0},
-        ["head_lowered_look_left"] = {0, 0},
-        ["head_lowered_look_right"] = {0, 0},
-    }
+    }, false)
 end
 
 function actor:getAnimation(anim)

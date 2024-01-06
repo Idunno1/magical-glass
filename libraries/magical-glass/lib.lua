@@ -1987,6 +1987,13 @@ function lib:init()
             return orig(self, amount, playsound)
         end
     end)
+    
+    -- Prevents the heal when starting the game in the Light World so you can customize the starting Light World HP
+    Utils.hook(PartyMember, "convertToLight", function(orig, self)
+        local lw_health = self.lw_health
+        orig(self)
+        self.lw_health = lw_health
+    end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)
         if Game.save_name and self:shouldUsePlayerName() then
