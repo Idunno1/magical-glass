@@ -1141,7 +1141,7 @@ function lib:init()
 
     Utils.hook(Item, "getUseName", function(orig, self)
         if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
-            return self.use_name or self:getName()
+            return self.light and self.use_name or self:getName()
         else
             return not self.light and self.use_name or self.use_name:upper() or self:getName():upper()
         end
