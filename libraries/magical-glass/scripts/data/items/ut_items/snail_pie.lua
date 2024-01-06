@@ -69,7 +69,11 @@ end
 
 function item:onBattleUse(user, target)
     if self.target == "ally" then
-        target:heal(target.chara:getStat("health") - target.chara:getHealth() - 1)
+        local old_health = target.chara:getHealth()
+        target:heal(math.huge)
+        if old_health < target.chara:getStat("health") then
+            target.chara:setHealth(target.chara:getStat("health") - 1)
+        end
     elseif self.target == "enemy" then
         target:heal(math.huge)
     end
