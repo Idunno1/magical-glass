@@ -2621,7 +2621,7 @@ function lib:init()
             local snowflake = SnowGraveSnowflake(x, y)
             snowflake.physics.gravity = 2
             snowflake.physics.gravity_direction = math.rad(0)
-            snowflake.physics.speed_x = math.sin(self.timer / 2) * 0.5
+            snowflake.physics.speed_x = -(math.sin(self.timer / 2) * 0.5)
             snowflake.siner = self.timer / 2
             snowflake.rotation = math.rad(90)
             self:addChild(snowflake)
