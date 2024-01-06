@@ -20,7 +20,7 @@ function LightBattle:init()
 
     self.post_battletext_state = "ACTIONSELECT"
 
-    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp")
+    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
 
     self.fader = Fader()
     self.fader.layer = 1000
@@ -611,6 +611,7 @@ function LightBattle:processAction(action)
     elseif action.action == "ITEM" then
         local item = action.data
         if item.instant then
+            self:toggleSoul(false)
             self:finishAction(action)
         else
             local result = item:onLightBattleUse(battler, action.target)

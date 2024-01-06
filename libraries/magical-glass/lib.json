@@ -5,21 +5,28 @@
         "Sam Deluxe",
         "Bor",
         "Just Another Random User",
-        "FireRainV",
-        "AccurateJaney (Kris and Noelle Light World Sprites)",
-        "Discarded_Vessel (Susie Light World Sprites)"
+        "FireRainV"
     ],
     "version": "v1.1.1-dev",
     "engineVer": "v0.9.0-dev",
 
     "config": {
+        
         ///// Default battle system
         // If an encounter isn't forcing a battle system, use this system as a fallback.
-        ///// Values:
+        // Useful if starting from an encounter.
+        //
+        // Second value sets the default world type if no map is present.
+        // Used when playing using just an encounter without a map.
+        ///// First Value:
         // "undertale"
         // "deltarune"
+        //
+        ///// Second Value:
+        // true = Light
+        // false = Dark
         /////
-        "default_battle_system": "undertale",
+        "default_battle_system": ["deltarune", false],
 
         ///// Light Battle TP
         // Whether the Tension Bar and grazing should be enabled in light battles.
@@ -30,11 +37,6 @@
         // Adds the Defend command to the mercy action button in light battles.
         /////
         "light_battle_defend_btn": false,
-
-        ///// Force light mode in Light Battles
-        // Whether the game should enable light mode when entering a light battle in the dark world.
-        /////
-        "force_light_mode_in_light_battles": false,
 
         ///// UNDERTALE text skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.
@@ -66,30 +68,22 @@
         ///// Values:
         //
         // "magical_glass"
-        // Prints all 3 members' names without quotation marks at the top of the box with their portrait (if they have one)
-        // in the empty space across from LV and HP. A Soul is placed above their names to act
-        // as the cursor.
-        // (This option only supports up to 3 party members.)
+        // Prints the current member's name and portrait, and an indicator similar to the one from
+        // Deltatraveler on top of the portrait which functions the same way but has a different design choice.
         //
         // "deltatraveler"
         // The Light World STAT menu from Deltatraveler. Only shows the currently selected member's
         // name and portrait, with an indicator underneath the portrait showing you can press left
         // or right to select a character.
-        // (This option supports any amount of party members.)
-        //
-        // "undertale"
-        // Prints the current member's name and portrait, and an indicator similar to the one from
-        // Deltatraveler on top of the portrait which functions the same way but has a different design choice.
-        // (This option supports any amount of party members.)
         //
         /////
-        "light_stat_menu_style": "undertale",
+        "light_stat_menu_style": "magical_glass",
 
         ///// UNDERTALE stat display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
         /////
         "undertale_stat_display": true,
-
+        
         ///// Always show magic
         // Whether the MG stat should always be shown in the Light World STAT menu.
         ///// Values:

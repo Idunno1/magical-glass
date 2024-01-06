@@ -68,7 +68,7 @@ function HealItem:onLightBattleUse(user, target)
             battler:heal(amount)
         end
 
-        --Game.battle:battleText(text)
+        Game.battle:battleText(text)
         return true
     elseif self.target == "enemy" then
         local amount = self.heal_amount
@@ -156,9 +156,9 @@ end
 function HealItem:getLightBattleHealingText(user, target, amount)
     if target then
         if self.target == "ally" then
-            maxed = target.chara:getHealth() >= target.chara:getStat("health")
+            maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount >= math.huge
         elseif self.target == "enemy" then
-            maxed = target.health >= target.max_health
+            maxed = target.health >= target.max_health or amount >= math.huge
         end
     end
 
@@ -221,11 +221,13 @@ function HealItem:battleUseSound(user, target)
 end
 
 function HealItem:worldUseSound(target)
-    Game.world.timer:script(function(wait)
-        Assets.stopAndPlaySound("swallow")
-        wait(0.4)
-        Assets.stopAndPlaySound("power")
-    end)
+    if Game:isLight() then
+        Game.world.timer:script(function(wait)
+            Assets.stopAndPlaySound("swallow")
+            wait(0.4)
+            Assets.stopAndPlaySound("power")
+        end)
+    end
 end
 
 return HealItem

@@ -82,8 +82,7 @@ end
 
 function item:onBattleUse(user, target)
     if target.chara:getHealth() <= 2 then
-        target.chara:setHealth(target.chara:getStat("health"))
-        Assets.stopAndPlaySound("power")
+        target:heal(math.huge)
     else
         target.chara:setHealth(target.chara:getHealth() - 1)
         Assets.stopAndPlaySound("hurt")

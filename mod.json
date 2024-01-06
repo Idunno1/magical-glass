@@ -10,9 +10,10 @@
 
     "map": "tundra3",
     //"map": "darktundra1",
+    //"encounter": "dummy",
 
     //"party": ["kris"],
-    "party": ["noelle"],
+    "party": ["noelle", "susie"],
 
     "inventory": {
         // "items": ["ut_items/rock_candy", "ut_items/monster_candy", "ut_items/spider_donut", "ut_items/spider_cider", "ut_items/butterscotch_pie", "ut_items/ghost_fruit"],
@@ -29,6 +30,7 @@
             // End of config
         },
         "magical-glass": {
+            //"default_battle_system": ["undertale", true],
             "light_battle_tp": true,
             "light_battle_defend_btn": true,
             "mercy_messages": true,

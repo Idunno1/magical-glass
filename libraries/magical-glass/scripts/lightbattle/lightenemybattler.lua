@@ -53,8 +53,8 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.spareable_text = nil
 
     self.tired_percentage = 0
-    self.spare_percentage = 0.2
-    self.low_health_percentage = 0.2
+    self.spare_percentage = 1/3
+    self.low_health_percentage = 1/3
     
     -- Play the "damage" sound even when you deal 0 damage
     self.always_play_damage_sound = false
@@ -549,7 +549,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if Game:isLight() then
             total_damage = (lane.battler.chara:getStat("attack") - self.defense)
         else
-            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 40) - (self.defense * 3)
+            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 48) - (self.defense * 2.5)
         end
         total_damage = total_damage * ((points / 160) * (4 / lane.weapon:getBoltCount()))
         total_damage = Utils.round(total_damage) + Utils.random(0, 2, 1)
@@ -580,9 +580,9 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
                 total_damage = Utils.round((total_damage * stretch) * 2)
             end
         else
-            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 40) - (self.defense * 3) + Utils.random(0, 2, 1)
+            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 48) - (self.defense * 2.5) + Utils.random(0, 2, 1)
             if points <= 12 then
-                total_damage = Utils.round(total_damage)
+                total_damage = Utils.round(total_damage * 1.2)
             else
                 total_damage = Utils.round((total_damage * stretch))
             end

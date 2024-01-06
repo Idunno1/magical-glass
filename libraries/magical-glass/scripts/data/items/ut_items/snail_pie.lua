@@ -55,7 +55,7 @@ function item:onLightBattleUse(user, target)
             target.chara:setHealth(target.chara:getStat("health") - 1)
         end
     elseif self.target == "enemy" then
-        target:heal(math.huge)
+        target:heal(target.max_health)
     end
 
     if target.chara.id == Game.battle.party[1].chara.id then
