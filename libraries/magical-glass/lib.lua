@@ -182,13 +182,13 @@ function lib:init()
             love.graphics.setLineWidth(1)
 
             for i = 2, 16 do
-                Draw.setColor(0, 66 / 255, 0, (self.transition_timer / 10) / 2)
+                Draw.setColor(0, 61 / 255, 17 / 255, (self.transition_timer / 10) / 2)
                 love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
                 love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
             end
 
             for i = 3, 16 do
-                Draw.setColor(0, 66 / 255, 0, self.transition_timer / 10)
+                Draw.setColor(0, 61 / 255, 17 / 255, self.transition_timer / 10)
                 love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
                 love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
             end
