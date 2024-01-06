@@ -11,6 +11,9 @@ function item:init()
     -- Whether this item is for the light world
     self.light = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Damage is rather consistent.\nConsumable items heal 4 more HP."
+
     -- Light world check text
     self.check = "Weapon AT 10\n* Damage is rather consistent.\n* Consumable items heal 4 more HP."
 

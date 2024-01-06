@@ -18,6 +18,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "It says \"Best Friends Forever.\""
+
     -- Light world check text
     self.check = "Armor DF 15\n* It says \"Best Friends Forever.\""
 

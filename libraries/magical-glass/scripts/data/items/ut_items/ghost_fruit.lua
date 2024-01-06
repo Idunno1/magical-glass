@@ -22,6 +22,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "If eaten, it will never pass to the other side."
+
     -- Light world check text
     self.check = "Heals 16 HP\n* If eaten,[wait:10] it will never\npass to the other side."
 

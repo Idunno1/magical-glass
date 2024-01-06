@@ -18,6 +18,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Perfect for cutting plants and vines."
+
     -- Light world check text
     self.check = "Weapon AT 15\n* Perfect for cutting plants\nand vines."
 

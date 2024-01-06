@@ -19,6 +19,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "This battle-worn hat makes you want to grow a beard."
+
     -- Light world check text
     self.check = {
         "Armor DF 12\n* This battle-worn hat makes you\nwant to grow a beard.",

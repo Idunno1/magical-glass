@@ -25,6 +25,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Food that was probably once thrown away."
+
     -- Light world check text
     self.check = "Heals 17 HP\n* Food that was probably\nonce thrown away."
 

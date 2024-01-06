@@ -14,6 +14,9 @@ function item:init(inventory)
     self.light = true
     
     self.can_sell = false
+    
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "A small ball of accumulated things in your pocket."
 
     -- Light world check text
     self.check = "A small ball\nof accumulated things in your\npocket."

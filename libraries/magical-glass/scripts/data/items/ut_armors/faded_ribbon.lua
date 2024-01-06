@@ -17,6 +17,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "If you're cuter, monsters won't hit you as hard."
+
     -- Light world check text
     self.check = "Armor DF 3\n* If you're cuter,[wait:10] monsters\nwon't hit you as hard."
 

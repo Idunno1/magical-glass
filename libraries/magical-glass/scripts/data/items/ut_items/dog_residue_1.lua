@@ -18,6 +18,9 @@ function item:init(inventory)
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "Shiny trail left behind by a dog."
+
     -- Light world check text
     self.check = "Dog Item\n* Shiny trail left\nbehind by a dog."
 

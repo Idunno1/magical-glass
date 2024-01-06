@@ -16,6 +16,9 @@ function item:init()
     -- Whether the item can be sold
     self.can_sell = true
 
+    -- Item description text (unused by light items outside of debug menu)
+    self.description = "It has already been used several times."
+
     -- Light world check text
     self.check = "Heals 10 HP\n* It has already been used\nseveral times."
 
