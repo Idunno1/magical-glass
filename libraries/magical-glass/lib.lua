@@ -1072,6 +1072,9 @@ function lib:init()
         self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
+        
+        -- Name displayed when using a light item in a dark battle (optional)
+        self.dark_use_name = nil
     
     end)
     
@@ -1143,7 +1146,7 @@ function lib:init()
         if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
             return self.use_name or self:getName()
         else
-            return not self.light and self.use_name or self:getName():upper()
+            return not self.light and self.use_name or self.dark_use_name or self:getName():upper()
         end
     end)
 
