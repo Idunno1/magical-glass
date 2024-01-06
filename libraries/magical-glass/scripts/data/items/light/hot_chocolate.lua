@@ -5,7 +5,7 @@ function item:init()
 
     self.short_name = "HotChoc"
 
-    self.can_sell = false
+    self.price = 100
 end
 
 function item:getLightBattleText(user, target)
