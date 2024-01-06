@@ -1,4 +1,4 @@
-local item, super = Class(LightEquipItem, "light/eraser")
+local item, super = Class("light/eraser", true)
 
 function item:init()
     super.init(self)
