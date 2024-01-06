@@ -13,6 +13,13 @@ function item:init()
     -- Whether this item is for the light world
     self.light = true
 
+    -- Default shop price (sell price is halved)
+    self.price = 50
+    -- Default shop sell price
+    self.sell_price = 50
+    -- Whether the item can be sold
+    self.can_sell = true
+
     -- Item description text (unused by light items outside of debug menu)
     self.description = "A worn pink leather glove.\nFor five-fingered folk."
 

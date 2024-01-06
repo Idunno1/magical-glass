@@ -182,13 +182,13 @@ function lib:init()
             love.graphics.setLineWidth(1)
 
             for i = 2, 16 do
-                Draw.setColor(0, 66 / 255, 0, (self.transition_timer / 10) / 2)
+                Draw.setColor(0, 61 / 255, 17 / 255, (self.transition_timer / 10) / 2)
                 love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
                 love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
             end
 
             for i = 3, 16 do
-                Draw.setColor(0, 66 / 255, 0, self.transition_timer / 10)
+                Draw.setColor(0, 61 / 255, 17 / 255, self.transition_timer / 10)
                 love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
                 love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
             end
@@ -1141,9 +1141,9 @@ function lib:init()
 
     Utils.hook(Item, "getUseName", function(orig, self)
         if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
-            return self.use_name or self:getName()
+            return self.light and self.use_name or self:getName()
         else
-            return self.use_name or self:getName():upper()
+            return not self.light and self.use_name or self.use_name and self.use_name:upper() or self:getName():upper()
         end
     end)
 
@@ -1169,10 +1169,10 @@ function lib:init()
 
     Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
         self:battleUseSound(user, target)
-        if self.getLightBattleText then
+        if self:getLightBattleText(user, target) then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
-            Game.battle:battleText("* "..user.chara:getName().." used the "..self:getName().."!")
+            Game.battle:battleText("* "..user.chara:getNameOrYou().." used the "..self:getUseName().."!")
         end
     end)
     
@@ -2610,6 +2610,81 @@ function lib:init()
                         end
                     end
                 end
+            end
+        else
+            orig(self)
+        end
+    end)
+    
+    Utils.hook(SnowGraveSpell, "createSnowflake", function(orig, self, x, y)
+        if Game.battle.light then
+            local snowflake = SnowGraveSnowflake(x, y)
+            snowflake.physics.gravity = 2
+            snowflake.physics.gravity_direction = math.rad(0)
+            snowflake.physics.speed_x = -(math.sin(self.timer / 2) * 0.5)
+            snowflake.siner = self.timer / 2
+            snowflake.rotation = math.rad(90)
+            self:addChild(snowflake)
+            return snowflake
+        else
+            return orig(self, x, y)
+        end
+    end)
+    
+    Utils.hook(SnowGraveSpell, "draw", function(orig, self)
+        if Game.battle.light then
+            Object.draw(self)
+
+            Draw.setColor(1, 1, 1, self.bgalpha)
+            Draw.draw(self.bg)
+
+            self:drawTiled((self.snowspeed / 1.5), (self.timer * 6), self.bgalpha)
+            self:drawTiled((self.snowspeed), (self.timer * 8), self.bgalpha * 2)
+
+            if ((self.timer <= 10) and (self.timer >= 0)) then
+                if (self.bgalpha < 0.5) then
+                    self.bgalpha = self.bgalpha + 0.05 * DTMULT
+                end
+            end
+
+            if (self.timer >= 0) then
+                self.snowspeed = self.snowspeed + (20 + (self.timer / 5)) * DTMULT
+            end
+
+            if ((self.timer >= 20) and (self.timer <= 75)) then
+                self.stimer = self.stimer + 1 * DTMULT
+
+                if self.reset_once then
+                    self.reset_once = false
+                    self.since_last_snowflake = 1
+                end
+
+                if self.since_last_snowflake > 1 then
+                    self:createSnowflake(-40, 120 + 55)
+                    self:createSnowflake(-120, 120 + 0)
+                    self:createSnowflake(-80, 120 - 45)
+                    self.since_last_snowflake = self.since_last_snowflake - 1
+                end
+
+                if (self.stimer >= 8) then
+                    self.stimer = 0
+                end
+            end
+
+
+            if ((not self.hurt) and ((self.timer >= 95) and (self.damage > 0))) then
+                self.hurt = true
+                self.hurt_enemies = true
+            end
+
+            if (self.timer >= 90) then
+                if (self.bgalpha > 0) then
+                    self.bgalpha = self.bgalpha - 0.02 * DTMULT
+                end
+            end
+            if (self.timer >= 120) then
+                Game.battle:finishAction()
+                self:remove()
             end
         else
             orig(self)

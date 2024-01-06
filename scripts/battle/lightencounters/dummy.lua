@@ -10,7 +10,7 @@ function Dummy:init()
     self.music = "funky_town"
 
     -- Add the dummy enemy to the encounter
-    self:addEnemy("dummy", SCREEN_WIDTH/2, 240)
+    self:addEnemy("dummy")
 
     self.bg_siners = {0, 15, 30, 45, 60, 75}
 
@@ -45,20 +45,18 @@ end
 
 function Dummy:drawBackground()
     if self:getFlag("deltarune") then
-        Draw.setColor(0, 0, 0, 0)
-        love.graphics.rectangle("fill", -8, -8, SCREEN_WIDTH+16, SCREEN_HEIGHT+16)
-    
+
         love.graphics.setLineStyle("rough")
         love.graphics.setLineWidth(1)
-    
+
         for i = 2, 16 do
-            Draw.setColor(0 / 255, 66 / 255, 0 / 255, 1/2)
+            Draw.setColor(0, 61 / 255, 17 / 255, 1 / 2)
             love.graphics.line(0, -210 + (i * 50) + math.floor(self.offset / 2), 640, -210 + (i * 50) + math.floor(self.offset / 2))
             love.graphics.line(-200 + (i * 50) + math.floor(self.offset / 2), 0, -200 + (i * 50) + math.floor(self.offset / 2), 480)
         end
 
         for i = 3, 16 do
-            Draw.setColor(0 / 255, 66 / 255, 0 / 255, 1)
+            Draw.setColor(0, 61 / 255, 17 / 255, 1)
             love.graphics.line(0, -100 + (i * 50) - math.floor(self.offset), 640, -100 + (i * 50) - math.floor(self.offset))
             love.graphics.line(-100 + (i * 50) - math.floor(self.offset), 0, -100 + (i * 50) - math.floor(self.offset), 480)
         end

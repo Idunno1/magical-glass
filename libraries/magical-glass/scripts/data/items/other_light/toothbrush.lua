@@ -5,6 +5,8 @@ function item:init()
 
     -- Display name
     self.name = "Toothbrush"
+    self.short_name = "TthBrush"
+    self.serious_name = "Brush"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -19,6 +21,8 @@ function item:init()
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
+    
+    self.price = 30
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {

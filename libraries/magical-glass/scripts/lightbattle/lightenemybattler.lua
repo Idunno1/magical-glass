@@ -323,7 +323,7 @@ function LightEnemyBattler:addMercy(amount)
         return
     end
     
-    if Game:getConfig("mercyMessages") and Kristal.getLibConfig("magical-glass", "mercy_messages") then
+    if Game:getConfig("mercyMessages") and Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
         if amount > 0 then
             local pitch = 0.8
             if amount < 99 then pitch = 1 end
@@ -372,7 +372,7 @@ end
 
 function LightEnemyBattler:getNameColors()
     local result = {}
-    if self:canSpare() and self:getMercyVisibility() then
+    if self:canSpare() then
         table.insert(result, MagicalGlassLib.name_color)
     end
     if self.tired then
@@ -549,7 +549,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if Game:isLight() then
             total_damage = (lane.battler.chara:getStat("attack") - self.defense)
         else
-            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 48) - (self.defense * 2.5)
+            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.37)
         end
         total_damage = total_damage * ((points / 160) * (4 / lane.weapon:getBoltCount()))
         total_damage = Utils.round(total_damage) + Utils.random(0, 2, 1)
@@ -574,18 +574,13 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
 
         if Game:isLight() then
             total_damage = (lane.battler.chara:getStat("attack") - self.defense) + Utils.random(0, 2, 1)
-            if points <= 12 then
-                total_damage = Utils.round(total_damage * 2.2)
-            else
-                total_damage = Utils.round((total_damage * stretch) * 2)
-            end
         else
-            total_damage = ((lane.battler.chara:getStat("attack") * (300 - points)) / 48) - (self.defense * 2.5) + Utils.random(0, 2, 1)
-            if points <= 12 then
-                total_damage = Utils.round(total_damage * 1.2)
-            else
-                total_damage = Utils.round((total_damage * stretch))
-            end
+            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.37) + Utils.random(0, 2, 1)
+        end
+        if points <= 12 then
+            total_damage = Utils.round(total_damage * 2.2)
+        else
+            total_damage = Utils.round((total_damage * stretch) * 2)
         end
         
         if points <= 12 then

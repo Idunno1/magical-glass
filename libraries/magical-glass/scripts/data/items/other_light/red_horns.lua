@@ -22,6 +22,8 @@ function item:init()
     self.check = {
         "Armor 1 MG\n* Kris's beloved red horned headband."
     }
+    
+    self.price = 100
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
