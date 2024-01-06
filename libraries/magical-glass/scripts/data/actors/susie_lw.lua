@@ -4,9 +4,7 @@ function actor:init(style)
     super.init(self)
 
     -- Table of sprite animations
-    self.animations = {
-        -- Movement animations
-        ["slide"]               = {"slide", 4/30, true},
+    Utils.merge(self.animations, {
 
         -- Battle animations
         ["battle/idle"]         = {"battle/idle", 0.2, true},
@@ -33,69 +31,14 @@ function actor:init(style)
         ["battle/victory"]      = {"battle/victory", 1/10, false},
 
         ["battle/rude_buster"]  = {"battle/rudebuster", 1/15, false, next="battle/idle"},
+    }, false)
 
-        -- Cutscene animations
-        ["jump_fall"]           = {"fall", 1/5, true},
-        ["jump_ball"]           = {"ball", 1/15, true},
-
-        ["diagonal_kick_right"] = {"diagonal_kick_right", 4/30, false},
-        ["diagonal_kick_left"] = {"diagonal_kick_left", 4/30, false}
-    }
-
-    if susie_style == 1 then
+    if Game:getConfig("susieStyle") == 1 then
         self.animations["battle/transition"] = {"bangs_wall_right", 0, true}
     end
 
-    -- Tables of sprites to change into in mirrors
-    self.mirror_sprites = {
-        ["walk/down"] = "walk/up",
-        ["walk/up"] = "walk/down",
-        ["walk/left"] = "walk/left",
-        ["walk/right"] = "walk/right",
-
-        ["walk_unhappy/down"] = "walk_unhappy/up",
-        ["walk_unhappy/up"] = "walk_unhappy/down",
-        ["walk_unhappy/left"] = "walk_unhappy/left",
-        ["walk_unhappy/right"] = "walk_unhappy/right",
-
-        ["walk_bangs/down"] = "walk_bangs/up",
-        ["walk_bangs/up"] = "walk_bangs/down",
-        ["walk_bangs/left"] = "walk_bangs/left",
-        ["walk_bangs/right"] = "walk_bangs/right",
-
-        ["walk_bangs_unhappy/down"] = "walk_bangs_unhappy/up",
-        ["walk_bangs_unhappy/up"] = "walk_bangs_unhappy/down",
-        ["walk_bangs_unhappy/left"] = "walk_bangs_unhappy/left",
-        ["walk_bangs_unhappy/right"] = "walk_bangs_unhappy/right",
-    }
-
     -- Table of sprite offsets (indexed by sprite name)
-    self.offsets = {
-        -- Movement offsets
-        ["walk/down"] = {0, 0},
-        ["walk/left"] = {0, 0},
-        ["walk/right"] = {0, 0},
-        ["walk/up"] = {0, 0},
-
-        ["walk_bangs/down"] = {0, -2},
-        ["walk_bangs/left"] = {0, -2},
-        ["walk_bangs/right"] = {0, -2},
-        ["walk_bangs/up"] = {0, -2},
-
-        ["walk_bangs_unhappy/down"] = {0, -2},
-        ["walk_bangs_unhappy/left"] = {0, -2},
-        ["walk_bangs_unhappy/right"] = {0, -2},
-        ["walk_bangs_unhappy/up"] = {0, -2},
-
-        ["walk_unhappy/down"] = {0, 0},
-        ["walk_unhappy/left"] = {0, 0},
-        ["walk_unhappy/right"] = {0, 0},
-        ["walk_unhappy/up"] = {0, -2},
-
-        ["walk_back_arm/left"] = {-3, -2},
-        ["walk_back_arm/right"] = {0, -2},
-
-        ["slide"] = {-5, -12},
+    Utils.merge(self.offsets, {
 
         -- Battle offsets
         ["battle/idle"] = {-22, -1},
@@ -117,64 +60,7 @@ function actor:init(style)
         ["battle/victory"] = {-28, -7},
 
         ["battle/rudebuster"] = {-44, -33},
-
-        -- Cutscene offsets
-        ["pose"] = {-1, -1},
-
-        ["fall"] = {0, -4},
-        ["ball"] = {1, 7},
-        ["landed"] = {-5, -2},
-
-        ["shock_left"] = {0, -4},
-        ["shock_right"] = {-16, -4},
-        ["shock_down"] = {0, -2},
-        ["shock_up"] = {-6, 0},
-
-        ["shock_behind"] = {-15, -3},
-        ["shock_down_flip"] = {0, -2},
-
-        ["laugh_left"] = {-8, -2},
-        ["laugh_right"] = {-4, -2},
-
-        ["point_laugh_left"] = {-14, 2},
-        ["point_laugh_right"] = {0, 2},
-
-        ["point_left"] = {-11, 2},
-        ["point_right"] = {0, 2},
-        ["point_up"] = {-2, -12},
-
-        ["point_up_turn"] = {-4, -12},
-
-        ["playful_punch"] = {-8, 0},
-
-        ["wall_left"] = {0, -2},
-        ["wall_right"] = {0, -2},
-
-        ["bangs_wall_left"] = {0, -2},
-        ["bangs_wall_right"] = {0, -2},
-
-        ["exasperated_left"] = {-1, 0},
-        ["exasperated_right"] = {-5, 0},
-
-        ["angry_down"] = {-10, 2},
-        ["turn_around"] = {-12, 2},
-
-        ["away"] = {-1, -2},
-        ["away_turn"] = {-1, -2},
-        ["away_hips"] = {-2, -1},
-        ["away_hand"] = {-2, -2},
-        ["away_scratch"] = {-2, -2},
-
-        ["t_pose"] = {-6, 0},
-
-        ["fell"] = {-18, -2},
-
-        ["kneel_right"] = {-4, -2},
-        ["kneel_left"] = {-12, -2},
-
-        ["diagonal_kick_right"] = {-5, -1},
-        ["diagonal_kick_left"] = {-3, -1},
-    }
+    }, false)
 end
 
 return actor
