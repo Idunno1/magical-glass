@@ -323,7 +323,7 @@ function LightEnemyBattler:addMercy(amount)
         return
     end
     
-    if Game:getConfig("mercyMessages") and Kristal.getLibConfig("magical-glass", "mercy_messages") then
+    if Game:getConfig("mercyMessages") and Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
         if amount > 0 then
             local pitch = 0.8
             if amount < 99 then pitch = 1 end
@@ -372,7 +372,7 @@ end
 
 function LightEnemyBattler:getNameColors()
     local result = {}
-    if self:canSpare() and self:getMercyVisibility() then
+    if self:canSpare() then
         table.insert(result, MagicalGlassLib.name_color)
     end
     if self.tired then

@@ -396,17 +396,15 @@ function LightBattleUI:drawState()
                     local tired_icon = false
 
                     if enemy.tired and enemy:canSpare() then
-                        if enemy:getMercyVisibility() then
-                            Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10, 10 + y_offset)
-                            spare_icon = true
-                        end
+                        Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10, 10 + y_offset)
+                        spare_icon = true
                         
                         Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30, 10 + y_offset)
                         tired_icon = true
                     elseif enemy.tired then
                         Draw.draw(self.tiredmark, 100 + font_mono:getWidth(name) + 30, 10 + y_offset)
                         tired_icon = true
-                    elseif enemy.mercy >= 100 and enemy:getMercyVisibility() then
+                    elseif enemy.mercy >= 100 then
                         Draw.draw(self.sparestar, 100 + font_mono:getWidth(name) + 10, 10 + y_offset)
                         spare_icon = true
                     end
@@ -453,17 +451,14 @@ function LightBattleUI:drawState()
                     -- is an in-joke
 
                     if self.style == "undertale" then
-                        if enemy:getHPVisibility() then
-                            local name_length = 0
-
-                            for _,enemy in ipairs(enemies) do
-                                if string.len(enemy.name) > name_length then
-                                    name_length = string.len(enemy.name)
-                                end
+                        local name_length = 0
+                        for _,enemy in ipairs(enemies) do
+                            if string.len(enemy.name) > name_length then
+                                name_length = string.len(enemy.name)
                             end
-
-                            hp_x = hp_x + (name_length * 16)
-
+                        end
+                        hp_x = hp_x + (name_length * 16)
+                        if enemy:getHPVisibility() then
                             if Game.battle.state_reason ~= "ACT" then
                                 Draw.setColor(1,0,0,1)
                                 love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, bar_height)
@@ -480,7 +475,7 @@ function LightBattleUI:drawState()
                             Draw.setColor(PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 81)), bar_height)
                         else
-                            Draw.setColor(PALETTE["action_health_bg"])
+                            Draw.setColor(PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
                         end
                     end
@@ -489,7 +484,7 @@ function LightBattleUI:drawState()
                         Draw.setColor(PALETTE["action_health_text"])
                         if enemy:getHPVisibility() then
                             love.graphics.print(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
-                        else
+                        elseif self.style ~= "undertale" then
                             love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                         end
                     end
@@ -505,7 +500,9 @@ function LightBattleUI:drawState()
                 else
                     Draw.setColor(127/255, 127/255, 127/255, 1)
                 end
-                love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, bar_height)
+                if enemy:getMercyVisibility() or self.style ~= "undertale" then
+                    love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, bar_height)
+                end
 
                 if enemy.disable_mercy then
                     Draw.setColor(PALETTE["battle_mercy_text"])
@@ -522,7 +519,7 @@ function LightBattleUI:drawState()
                         Draw.setColor(PALETTE["battle_mercy_text"])
                         if enemy:getMercyVisibility() then
                             love.graphics.print(math.floor(enemy.mercy) .. "%", mercy_x + 4, 10 + y_offset, 0, 1, 0.5)
-                        else
+                        elseif self.style ~= "undertale" then
                             love.graphics.print("???", mercy_x + 4, 10 + y_offset, 0, 1, 0.5)
                         end
                     end
