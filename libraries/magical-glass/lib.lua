@@ -1172,10 +1172,10 @@ function lib:init()
 
     Utils.hook(Item, "onLightBattleUse", function(orig, self, user, target)
         self:battleUseSound(user, target)
-        if self.getLightBattleText then
+        if self:getLightBattleText(user, target) then
             Game.battle:battleText(self:getLightBattleText(user, target))
         else
-            Game.battle:battleText("* "..user.chara:getName().." used the "..self:getName().."!")
+            Game.battle:battleText("* "..user.chara:getNameOrYou().." used the "..self:getUseName().."!")
         end
     end)
     
