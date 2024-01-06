@@ -1,8 +1,9 @@
-local item, super = Class("light/egg", trye)
+local item, super = Class("light/egg", true)
 
 function item:init()
     super.init(self)
 
+    self.can_sell = false
     -- Item this item will get turned into when consumed
     self.result_item = "light/egg"
 end
