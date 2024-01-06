@@ -1146,7 +1146,7 @@ function lib:init()
         if (Game.state == "OVERWORLD" and Game:isLight()) or (Game.state == "BATTLE" and Game.battle.light)  then
             return self.use_name or self:getName()
         else
-            return not self.light and self.use_name or self.dark_use_name or self:getName():upper()
+            return self.dark_use_name or not self.light and self.use_name or self:getName():upper()
         end
     end)
 
