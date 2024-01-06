@@ -35,6 +35,11 @@ function actor:init()
 
     -- Table of talk sprites and their talk speeds (default 0.25)
     self.talk_sprites = {}
+    
+    -- Table of sprite offsets (indexed by sprite name)
+    self.offsets = {
+        ["idle"] = {-1, 0},
+    }
 
     -- self:addLightBattlerPart("body", {
         -- -- path, function that returns a path, or a function that returns a sprite object
