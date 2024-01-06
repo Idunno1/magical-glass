@@ -2660,9 +2660,9 @@ function lib:init()
                 end
 
                 if self.since_last_snowflake > 1 then
-                    self:createSnowflake(-80, 120 + 55)
+                    self:createSnowflake(-40, 120 + 55)
                     self:createSnowflake(-120, 120 + 0)
-                    self:createSnowflake(-40, 120 - 45)
+                    self:createSnowflake(-80, 120 - 45)
                     self.since_last_snowflake = self.since_last_snowflake - 1
                 end
 
