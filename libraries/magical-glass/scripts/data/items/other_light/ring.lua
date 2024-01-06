@@ -20,7 +20,7 @@ function item:init()
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     
-    self.price = 240
+    self.price = 300
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
