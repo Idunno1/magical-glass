@@ -504,7 +504,7 @@ function LightBattleUI:drawState()
                     love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, bar_height)
                 end
 
-                if enemy.disable_mercy then
+                if enemy.disable_mercy and not (not enemy:getMercyVisibility() and self.style == "undertale") then
                     Draw.setColor(PALETTE["battle_mercy_text"])
                     love.graphics.setLineWidth(2)
                     love.graphics.line(mercy_x, 11 + y_offset, mercy_x + mercy_lenght, 10 + y_offset + bar_height - 1)
