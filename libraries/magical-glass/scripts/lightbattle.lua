@@ -1438,12 +1438,6 @@ function LightBattle:returnToWorld()
     Game.state = "OVERWORLD"
 
     Game:setFlag("current_battle_system#", nil)
-
-    if Game:getFlag("temporary_world_value#") == "dark" then
-        Game:setLight(false)
-        MagicalGlassLib:loadStorageAndEquips()
-        Game:setFlag("temporary_world_value#", nil)
-    end
 end
 
 function LightBattle:setActText(text, dont_finish)
