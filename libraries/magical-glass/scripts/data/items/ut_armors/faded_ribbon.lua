@@ -6,6 +6,7 @@ function item:init()
     -- Display name
     self.name = "Faded Ribbon"
     self.short_name = "Ribbon"
+    self.use_name = "ribbon"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -38,10 +39,6 @@ end
 
 function item:showEquipText(target)
     Game.world:showText("* "..target:getNameOrYou().." equipped the ribbon.")
-end
-
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the ribbon."
 end
 
 return item

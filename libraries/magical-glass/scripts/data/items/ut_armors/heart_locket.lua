@@ -7,6 +7,7 @@ function item:init()
     self.name = "Heart Locket"
     self.short_name = "<--Locket"
     self.serious_name = "H. Locket"
+    self.use_name = "locket"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -37,10 +38,6 @@ end
 
 function item:showEquipText(target)
     Game.world:showText("* "..target:getNameOrYou().." equipped the locket.")
-end
-
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the locket."
 end
 
 return item

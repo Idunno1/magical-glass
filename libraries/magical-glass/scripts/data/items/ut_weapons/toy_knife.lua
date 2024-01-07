@@ -42,7 +42,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped Toy Knife."
+    if user == target then
+        return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    else
+        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* ".. target.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    end
 end
 
 

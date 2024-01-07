@@ -39,7 +39,19 @@ function item:showEquipText()
 end
 
 function item:getLightBattleText(user, target)
-    return "* Right where it belongs."
+    if user == target then
+        return "* Right where it belongs."
+    else
+        return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* Right where it belongs."
+    end
+end
+
+function item:getBattleText(user, target)
+    if user == target then
+        return "* Right where it belongs."
+    else
+        return "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName()..".\n* Right where it belongs."
+    end
 end
 
 return item

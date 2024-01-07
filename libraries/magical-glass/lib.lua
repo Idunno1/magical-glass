@@ -2026,9 +2026,13 @@ function lib:init()
         end
     end)
 
-    Utils.hook(PartyMember, "getNameOrYou", function(orig, self)
+    Utils.hook(PartyMember, "getNameOrYou", function(orig, self, lower)
         if self.id == Game.party[1].id then
-            return "You"
+            if lower then
+                return "you"
+            else
+                return "You"
+            end
         else
             return self:getName()
         end

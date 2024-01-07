@@ -7,6 +7,7 @@ function item:init()
     self.name = "Worn Dagger"
     self.short_name = "WornDG"
     self.serious_name = "W. Dagger"
+    self.use_name = "dagger"
 
     -- Item type (item, key, weapon, armor)
     self.type = "weapon"
@@ -40,10 +41,6 @@ end
 
 function item:showEquipText(target)
     Game.world:showText("* " .. target:getNameOrYou() .. " equipped the dagger.")
-end
-
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the dagger."
 end
 
 return item
