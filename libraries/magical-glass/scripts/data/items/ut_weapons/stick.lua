@@ -44,7 +44,7 @@ function item:getLightBattleText(user, target)
     elseif user == target then
         return "* "..user.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
     else
-        return "* "..user.chara:getNameOrYou().." gave the stick to "..target.chara:getNameOrYou(true).." and "..target.chara:getNameOrYou(true).." threw the it away.\n* Then picked it back up."
+        return "* "..user.chara:getNameOrYou().." gave the stick to "..target.chara:getNameOrYou(true).." and "..target.chara:getNameOrYou(true).." threw it away.\n* Then picked it back up."
     end
 end
 
@@ -54,7 +54,7 @@ function item:getBattleText(user, target)
     elseif user == target then
         return "* "..user.chara:getName().." threw the stick away.\n* Then picked it back up."
     else
-        return "* "..user.chara:getName().." gave the stick to "..target.chara:getName().." and "..target.chara:getName().." threw the it away.\n* Then picked it back up."
+        return "* "..user.chara:getName().." gave the stick to "..target.chara:getName().." and "..target.chara:getName().." threw it away.\n* Then picked it back up."
     end
 end
 
