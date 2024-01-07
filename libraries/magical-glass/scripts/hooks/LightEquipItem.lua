@@ -121,8 +121,7 @@ function LightEquipItem:onWorldUse(target)
         error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
-    self:onEquip(target, replacing)
-
+    self.storage, self.index = nil, nil
     self:showEquipText(target)
     return true
 end
@@ -159,8 +158,7 @@ function LightEquipItem:onLightBattleUse(user, target)
     else
         error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
-
-    self:onEquip(chara, replacing)
+    self.storage, self.index = nil, nil
     Game.battle:battleText(self:getLightBattleText(user, target))
 end
 
@@ -180,8 +178,7 @@ function LightEquipItem:onBattleUse(user, target)
     else
         error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
-
-    self:onEquip(chara, replacing)
+    self.storage, self.index = nil, nil
 end
 
 function LightEquipItem:onBoltHit(battler) end
