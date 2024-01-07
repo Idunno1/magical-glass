@@ -33,7 +33,7 @@ function item:init()
         attack = 99
     }
 
-    self.light_attack_direction = "random"
+    self.light_bolt_direction = "random"
 end
 
 function item:showEquipText()

@@ -35,7 +35,7 @@ function item:init()
         attack = 15
     }
 
-    self.light_attack_direction = "random" -- i swear it only goes to the left though
+    self.light_bolt_direction = "random"
 
 end
 
