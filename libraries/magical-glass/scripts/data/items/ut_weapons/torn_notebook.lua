@@ -38,13 +38,13 @@ function item:init()
         attack = 2
     }
 
-    self.bolt_count = 2
-    self.bolt_speed = 10
-    self.bolt_speed_variance = nil
-    self.bolt_start = {-50, -25} 
-    self.bolt_miss_threshold = 2
-    self.bolt_direction = "left"
-    self.multibolt_variance = {{0, 25, 50}}
+    self.light_bolt_count = 2
+    self.light_bolt_speed = 10
+    self.light_bolt_speed_variance = nil
+    self.light_bolt_start = {-50, -25} 
+    self.light_bolt_miss_threshold = 2
+    self.light_bolt_direction = "left"
+    self.light_multibolt_variance = {{0, 25, 50}}
     self.inv_bonus = 15/30
 
     self.attack_sound = "bookspin"

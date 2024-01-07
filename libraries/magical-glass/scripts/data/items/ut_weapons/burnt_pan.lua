@@ -33,13 +33,13 @@ function item:init()
 
     self.heal_bonus = 4
 
-    self.bolt_count = 4
-    self.bolt_speed = 10
-    self.bolt_speed_variance = nil
-    self.bolt_start = -80
-    self.bolt_miss_threshold = 2
-    self.multibolt_variance = {{0, 25, 50}, {100, 125, 150}, {200}}
-    self.bolt_direction = "left"
+    self.light_bolt_count = 4
+    self.light_bolt_speed = 10
+    self.light_bolt_speed_variance = nil
+    self.light_bolt_start = -80
+    self.light_bolt_miss_threshold = 2
+    self.light_multibolt_variance = {{0, 25, 50}, {100, 125, 150}, {200}}
+    self.light_bolt_direction = "left"
 
     self.attack_sound = "frypan"
     
