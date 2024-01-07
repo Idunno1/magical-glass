@@ -2,6 +2,9 @@ local LightEquipItem, super = Class("LightEquipItem", true)
 
 function LightEquipItem:init()
     super.init(self)
+    
+    self.index = nil
+    self.storage = nil
 
     self.equip_display_name = nil
 
@@ -61,6 +64,11 @@ function LightEquipItem:getBoltStart()
     end
 end
 
+function LightEquipItem:onBattleSelect(user, target)
+    self.storage, self.index = Game.inventory:getItemIndex(self)
+    return true
+end
+
 function LightEquipItem:getMultiboltVariance(index)
     if self.multibolt_variance[index] then
         return Utils.pick(self.multibolt_variance[index])
@@ -97,20 +105,16 @@ function LightEquipItem:showEquipText(target)
 end
 
 function LightEquipItem:onWorldUse(target)
+    self.storage, self.index = Game.inventory:getItemIndex(self)
     Assets.playSound("item")
-    local replacing = nil
     if self.type == "weapon" then
         if target:getWeapon() then
-            replacing = target:getWeapon()
-            replacing:onUnequip(target, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, target:getWeapon())
         end
         target:setWeapon(self)
     elseif self.type == "armor" then
         if target:getArmor(1) then
-            replacing = target:getArmor(1)
-            replacing:onUnequip(target, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, target:getArmor(1))
         end
         target:setArmor(1, self)
     else
@@ -120,11 +124,7 @@ function LightEquipItem:onWorldUse(target)
     self:onEquip(target, replacing)
 
     self:showEquipText(target)
-    return false
-end
-
-function LightEquipItem:onBattleSelect(user, target)
-    return false
+    return true
 end
 
 function LightEquipItem:getLightBattleText(user, target)
@@ -146,21 +146,18 @@ end
 function LightEquipItem:onLightBattleUse(user, target)
     Assets.playSound("item")
     local chara = target.chara
-    local replacing = nil
     if self.type == "weapon" then
         if chara:getWeapon() then
-            replacing = chara:getWeapon()
-            replacing:onUnequip(chara, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
         end
         chara:setWeapon(self)
     elseif self.type == "armor" then
         if chara:getArmor(1) then
-            replacing = chara:getArmor(1)
-            replacing:onUnequip(chara, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
         end
         chara:setArmor(1, self)
+    else
+        error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)
@@ -170,21 +167,18 @@ end
 function LightEquipItem:onBattleUse(user, target)
     Assets.playSound("item")
     local chara = target.chara
-    local replacing = nil
     if self.type == "weapon" then
         if chara:getWeapon() then
-            replacing = chara:getWeapon()
-            replacing:onUnequip(chara, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, chara:getWeapon())
         end
         chara:setWeapon(self)
     elseif self.type == "armor" then
         if chara:getArmor(1) then
-            replacing = chara:getArmor(1)
-            replacing:onUnequip(chara, self)
-            Game.inventory:replaceItem(self, replacing)
+            Game.inventory:addItemTo(self.storage, self.index, chara:getArmor(1))
         end
         chara:setArmor(1, self)
+    else
+        error("LightEquipItem "..self.id.." invalid type: "..self.type)
     end
 
     self:onEquip(chara, replacing)

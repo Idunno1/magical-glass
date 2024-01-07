@@ -32,6 +32,10 @@ function item:onWorldUse(target)
     return false
 end
 
+function item:onBattleSelect(user, target)
+    return false
+end
+
 function item:onLightBattleUse(user, target)
     Game.battle:battleText(self:getLightBattleText(user, target))
 end
