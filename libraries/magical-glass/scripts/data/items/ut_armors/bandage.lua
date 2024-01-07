@@ -88,7 +88,7 @@ function item:getLightBattleText(user, target)
 end
 
 function item:getBattleText(user, target)
-    return "* ".. target.chara:getName() .. " used the " .. self:getName():upper() .. "!"
+    return "* ".. user.chara:getName() .. " used the " .. self:getUseName() .. "!"
 end
 
 function item:onLightBattleUse(user, target)
