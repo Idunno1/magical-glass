@@ -53,7 +53,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped Tough Glove."
+    if user == target then
+        return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    else
+        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
+    end
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)

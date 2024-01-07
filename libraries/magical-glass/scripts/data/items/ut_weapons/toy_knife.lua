@@ -45,7 +45,7 @@ function item:getLightBattleText(user, target)
     if user == target then
         return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
     else
-        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* ".. target.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
     end
 end
 
