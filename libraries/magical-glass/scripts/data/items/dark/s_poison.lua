@@ -1,7 +1,7 @@
 local item, super = Class("s_poison", true)
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." administered the "..self:getUseName().."."
+    return "* "..user.chara:getNameOrYou().." administered the "..self:getUseName().."."
 end
 
 function item:onLightBattleUse(user, target)

@@ -4,8 +4,10 @@ function item:init()
     super.init(self)
 
     self.can_sell = false
-    -- Item this item will get turned into when consumed
-    self.result_item = "light/egg"
+end
+
+function item:onBattleSelect(user, target)
+    return false
 end
 
 function item:battleUseSound(user, target)

@@ -82,8 +82,6 @@ end
 function item:onBattleUse(user, target)
     if not MagicalGlassLib.serious_mode then
         Assets.stopAndPlaySound("hero")
-    else
-        Assets.stopAndPlaySound("power")
     end
     local amount = self:getBattleHealAmount(target.chara.id)
 

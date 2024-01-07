@@ -8,6 +8,7 @@ function item:init()
     self.short_name = "Temmie AR"
     self.serious_name = "Tem.Armor"
     self.equip_display_name = "Temmie Armor"
+    self.use_name = "Temmie Armor"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -47,7 +48,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." donned the Temmie Armor."
+    if user == target then
+        return "* "..user.chara:getNameOrYou().." donned the "..self:getUseName().."."
+    else
+        return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and "..user.chara:getNameOrYou(true).." donned it."
+    end
 end
 
 function item:getPrice()

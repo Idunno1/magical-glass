@@ -7,6 +7,7 @@ function item:init()
     self.name = "Cloudy Glasses"
     self.short_name = "ClodGlass"
     self.serious_name = "Glasses"
+    self.use_name = "glasses"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -42,10 +43,6 @@ end
 
 function item:showEquipText(target)
     Game.world:showText("* "..target:getNameOrYou().." equipped the glasses.")
-end
-
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the glasses."
 end
 
 return item

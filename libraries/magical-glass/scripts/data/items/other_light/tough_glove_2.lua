@@ -35,12 +35,12 @@ function item:init()
         attack = 5
     }
 
-    self.bolt_count = 4
-    self.bolt_speed = 8
-    self.bolt_speed_variance = nil
-    self.bolt_direction = "random"
-    self.bolt_miss_threshold = 22
-    self.multibolt_variance = {{15}, {50}, {85}}
+    self.light_bolt_count = 4
+    self.light_bolt_speed = 8
+    self.light_bolt_speed_variance = nil
+    self.light_bolt_direction = "random"
+    self.light_bolt_miss_threshold = 22
+    self.light_multibolt_variance = {{15}, {50}, {85}}
 
     self.attack_sound = "punchstrong"
 
@@ -56,7 +56,7 @@ function item:getLightBattleText(user, target)
     return "* "..target.chara:getNameOrYou().." equipped Tough Glove 2."
 end
 
-function item:onBoltHit(lane)
+function item:onLightBoltHit(lane)
     local battler = lane.battler
     local enemy = Game.battle:getActionBy(battler).target
 

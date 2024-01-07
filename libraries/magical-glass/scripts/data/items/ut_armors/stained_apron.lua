@@ -7,6 +7,7 @@ function item:init()
     self.name = "Stained Apron"
     self.short_name = "StainApro"
     self.serious_name = "Apron"
+    self.use_name = "apron"
 
     -- Item type (item, key, weapon, armor)
     self.type = "armor"
@@ -46,10 +47,6 @@ end
 
 function item:showEquipText(target)
     Game.world:showText("* "..target:getNameOrYou().." equipped the apron.")
-end
-
-function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped the apron."
 end
 
 return item

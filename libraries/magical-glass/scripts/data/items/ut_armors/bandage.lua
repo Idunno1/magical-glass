@@ -67,11 +67,6 @@ function item:onWorldUse(target)
     else
         Game.world:heal(target, amount, "* " .. target:getName() .. " applied the bandage.", self)
     end
-
-    Game.inventory:removeItem(self)
-end
-
-function item:onBattleSelect(user, target)
     return true
 end
 
@@ -88,7 +83,7 @@ function item:getLightBattleText(user, target)
 end
 
 function item:getBattleText(user, target)
-    return "* ".. target.chara:getName() .. " used the " .. self:getName():upper() .. "!"
+    return "* ".. user.chara:getName() .. " used the " .. self:getUseName() .. "!"
 end
 
 function item:onLightBattleUse(user, target)

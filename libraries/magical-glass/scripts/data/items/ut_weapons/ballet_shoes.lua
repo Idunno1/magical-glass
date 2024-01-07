@@ -33,11 +33,13 @@ function item:init()
         attack = 7
     }
 
-    self.bolt_count = 3
-    self.bolt_speed = 10
-    self.bolt_speed_variance = nil
-    self.bolt_start = -90
-    self.bolt_miss_threshold = 2
+    self.light_bolt_count = 3
+    self.light_bolt_speed = 10
+    self.light_bolt_speed_variance = nil
+    self.light_bolt_start = -90
+    self.light_bolt_miss_threshold = 2
+    self.light_bolt_direction = "right"
+    self.light_multibolt_variance = {{0, 25, 50}, {100, 125, 150}}
 
     self.attack_sound = "punchstrong"
 end
@@ -47,7 +49,11 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    return "* "..target.chara:getNameOrYou().." equipped Ballet Shoes."
+    if user == target then
+        return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    else
+        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
+    end
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)

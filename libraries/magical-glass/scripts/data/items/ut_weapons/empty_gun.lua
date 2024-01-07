@@ -36,12 +36,13 @@ function item:init()
         attack = 12
     }
 
-    self.bolt_count = 4
-    self.bolt_speed = 15
-    self.bolt_speed_variance = nil
-    self.bolt_start = 120
-    self.bolt_miss_threshold = 3
-    self.multibolt_variance = {{180, 210, 240}, {300, 330, 360}, {400, 430, 460}}
+    self.light_bolt_count = 4
+    self.light_bolt_speed = 15
+    self.light_bolt_speed_variance = nil
+    self.light_bolt_start = 120
+    self.light_bolt_miss_threshold = 3
+    self.light_multibolt_variance = {{180, 210, 240}, {300, 330, 360}, {400, 430, 460}}
+    self.light_bolt_direction = "right"
 
     self.attack_sound = "gunshot"
 end

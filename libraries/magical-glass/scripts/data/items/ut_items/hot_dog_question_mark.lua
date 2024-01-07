@@ -67,5 +67,13 @@ function item:worldUseSound(target)
     end)
 end
 
+function item:onBattleUse(user, target)
+    if not MagicalGlassLib.serious_mode then
+        Assets.stopAndPlaySound("dogsalad")
+    end
+    target:heal(self:getHealAmount())
+    return true
+end
+
 
 return item

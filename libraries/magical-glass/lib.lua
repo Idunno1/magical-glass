@@ -360,25 +360,25 @@ function lib:init()
             
             if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
                 if not self.inventory:hasItem("light/ball_of_junk") then
-                    self.inventory:addItem(Registry.createItem("light/ball_of_junk"))
+                    self.inventory:addItem("light/ball_of_junk")
                 end
                 
                 if has_shadowcrystal then
                     if not self.inventory:hasItem("light/glass") then
-                        self.inventory:addItem(Registry.createItem("light/glass"))
+                        self.inventory:addItem("light/glass")
                     end
                 else
                     while self.inventory:hasItem("light/glass") do
-                        self.inventory:removeItem(self.inventory:getItemByID("light/glass"))
+                        self.inventory:removeItem("light/glass")
                     end
                 end
                 if has_egg then
                     if not self.inventory:hasItem("light/egg") then
-                        self.inventory:addItem(Registry.createItem("light/egg"))
+                        self.inventory:addItem("light/egg")
                     end
                 else
                     while self.inventory:hasItem("light/egg") do
-                        self.inventory:removeItem(self.inventory:getItemByID("light/egg"))
+                        self.inventory:removeItem("light/egg")
                     end
                 end
             end
@@ -438,11 +438,11 @@ function lib:init()
                 end
                 if Game:getFlag("has_cell_phone", Kristal.getModOption("cell") ~= false) then
                     if not Game.inventory:hasItem("cell_phone") then
-                        Game.inventory:addItemTo("key_items", 1, Registry.createItem("cell_phone"))
+                        Game.inventory:addItemTo("key_items", 1, "cell_phone")
                     end
                 else
                     while Game.inventory:hasItem("cell_phone") do
-                        Game.inventory:removeItem(Game.inventory:getItemByID("cell_phone"))
+                        Game.inventory:removeItem("cell_phone")
                     end
                 end
             end
@@ -2026,9 +2026,13 @@ function lib:init()
         end
     end)
 
-    Utils.hook(PartyMember, "getNameOrYou", function(orig, self)
+    Utils.hook(PartyMember, "getNameOrYou", function(orig, self, lower)
         if self.id == Game.party[1].id then
-            return "You"
+            if lower then
+                return "you"
+            else
+                return "You"
+            end
         else
             return self:getName()
         end

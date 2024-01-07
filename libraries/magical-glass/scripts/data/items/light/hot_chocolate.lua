@@ -17,4 +17,8 @@ function item:onLightBattleUse(user, target)
     Game.battle:battleText(self:getLightBattleText(user, target))
 end
 
+function item:onBattleUse(user, target)
+    Assets.playSound("swallow")
+end
+
 return item
