@@ -23,7 +23,7 @@ function LightEquipItem:init()
 
     self.light_bolt_direction = "right" -- "right", "left", or "random"
 
-    self.light_bolt_miss_threshold = 296
+    self.light_bolt_miss_threshold = 280
 
     self.attack_sprite = "effects/attack/strike"
 
