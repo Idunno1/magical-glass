@@ -28,7 +28,7 @@ function item:init()
 end
 
 function item:onWorldUse(target)
-    Game.world:showText("* You threw the stick away.\n* Then picked it back up.")
+    Game.world:showText("* "..target:getNameOrYou().." threw the stick away.\n* Then picked it back up.")
     return false
 end
 
@@ -42,7 +42,7 @@ function item:getLightBattleText(user, target)
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
     else
-        return "* "..user.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
+        return "* "..target.chara:getNameOrYou().." threw the stick away.\n* Then picked it back up."
     end
 end
 
@@ -50,7 +50,7 @@ function item:getBattleText(user, target)
     if Game.battle.encounter.onStickUse then
         return Game.battle.encounter:onStickUse(self, user, target)
     else
-        return "* "..user.chara:getName().." threw the stick away.\n* Then picked it back up."
+        return "* "..target.chara:getName().." threw the stick away.\n* Then picked it back up."
     end
 end
 
