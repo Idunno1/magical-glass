@@ -185,7 +185,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) + 14 or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) - 14))
+        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
