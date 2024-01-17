@@ -154,19 +154,13 @@ function LightBattle:isPagerMenu()
 end
 
 function LightBattle:playSelectSound()
-    if not self.ui_select:isPlaying() then
-        self.ui_select:stop()
-        self.ui_select:play()
-    end
+    self.ui_select:stop()
+    self.ui_select:play()
 end
 
 function LightBattle:playMoveSound()
+    self.ui_move:stop()
     self.ui_move:play()
-end
-
-function LightBattle:playVaporizedSound()
-    self.vaporized:stop()
-    self.vaporized:play()
 end
 
 function LightBattle:toggleSoul(soul)
