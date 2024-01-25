@@ -1596,7 +1596,7 @@ function lib:init()
     
             if Input.pressed("confirm") then
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
-                if self.option_selecting == 1 then
+                if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") then
                     if #Game.party > 1 and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()
@@ -1614,7 +1614,7 @@ function lib:init()
                     end
                 elseif self.option_selecting == 2 then
                     item:onCheck()
-                else
+                elseif self.option_selecting == 3 then
                     self:dropItem(item)
                 end
             end
@@ -1666,7 +1666,7 @@ function lib:init()
         local inventory = Game.inventory:getStorage(self.storage)
     
         for index, item in ipairs(inventory) do
-            if item.usable_in == "world" or item.usable_in == "all" then
+            if (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
                 Draw.setColor(PALETTE["world_text"])
             else
                 Draw.setColor(PALETTE["world_text_unusable"])
@@ -1679,8 +1679,14 @@ function lib:init()
         end
 
         if self.state ~= "PARTYSELECT" then
-            Draw.setColor(PALETTE["world_text"])
+            local item = Game.inventory:getItem(self.storage, self.item_selecting)
+            if (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
+                Draw.setColor(PALETTE["world_text"])
+            else
+                Draw.setColor(PALETTE["world_gray"])
+            end
             love.graphics.print("USE" , 20 , 284)
+            Draw.setColor(PALETTE["world_text"])
             love.graphics.print("INFO", 116, 284)
             love.graphics.print("DROP", 230, 284)
         end
@@ -1750,11 +1756,11 @@ function lib:init()
         local result
         if item.target == "ally" then
             result = item:onWorldUse(Game.party[self.party_selecting])
-        elseif item.target == "party" or item.target == "none" then
+        else
             result = item:onWorldUse(Game.party)
         end
         
-        if (item.type == "item" and (result == nil or result)) or (item.type ~= "item" and result) then
+        if result then
             if item:hasResultItem() then
                 Game.inventory:replaceItem(item, item:createResultItem())
             else
