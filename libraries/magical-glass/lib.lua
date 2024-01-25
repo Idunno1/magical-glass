@@ -1083,15 +1083,15 @@ function lib:init()
         if self.target == "ally" then
             return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
         elseif self.target == "party" then
-            if #Game.party > 1 then
+            if #Game.battle.party > 1 then
                 return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
             else
-                return "* You "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+                return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
             end
         elseif self.target == "enemy" then
-            return "* " .. target.name .. " "..self:getUseMethod(target).." the " .. self:getUseName() .. "."
-        elseif self.target == "enemies" then
             return "* " .. target.name .. " "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+        elseif self.target == "enemies" then
+            return "* The enemies "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
         end
     end)
     
@@ -2624,36 +2624,35 @@ function lib:init()
     end)
     
     Utils.hook(Spell, "getHealMessage", function(orig, self, user, target, amount) 
-        local char_maxed
-        local enemy_maxed
+        local maxed = false
         if self.target == "ally" then
-            char_maxed = target.chara:getHealth() >= target.chara:getStat("health")
+            maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
         elseif self.target == "enemy" then
-            enemy_maxed = target.health >= target.max_health
+            maxed = target.health >= target.max_health or amount == math.huge
         end
         local message = ""
         if self.target == "ally" then
-            if target.chara.id == Game.battle.party[1].chara.id and char_maxed then
+            if target.chara.id == Game.battle.party[1].chara.id and maxed then
                 message = "* Your HP was maxed out."
-            elseif char_maxed then
+            elseif maxed then
                 message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
             else
                 message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
-            if #Game.party > 1 then
+            if #Game.battle.party > 1 then
                 message = "* Everyone recovered " .. amount .. " HP."
             else
                 message = "* You recovered " .. amount .. " HP."
             end
         elseif self.target == "enemy" then
-            if enemy_maxed then
+            if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
             else
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "enemies" then
-            message = "* The enemies all recovered " .. amount .. " HP."
+            message = "* The enemies recovered " .. amount .. " HP."
         end
         return message
     end)
