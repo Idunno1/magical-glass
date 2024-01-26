@@ -727,7 +727,7 @@ end
 
 function LightEnemyBattler:heal(amount)
     Assets.stopAndPlaySound("power")
-    self:lightStatusMessage("heal", "+" .. amount, {0, 1, 0})
+    self:lightStatusMessage("damage", "+" .. amount, {0, 1, 0})
 
     self.health = self.health + amount
 

@@ -1083,15 +1083,15 @@ function lib:init()
         if self.target == "ally" then
             return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
         elseif self.target == "party" then
-            if #Game.party > 1 then
+            if #Game.battle.party > 1 then
                 return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
             else
-                return "* You "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+                return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
             end
         elseif self.target == "enemy" then
-            return "* " .. target.name .. " "..self:getUseMethod(target).." the " .. self:getUseName() .. "."
-        elseif self.target == "enemies" then
             return "* " .. target.name .. " "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+        elseif self.target == "enemies" then
+            return "* The enemies "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
         end
     end)
     
@@ -1596,7 +1596,7 @@ function lib:init()
     
             if Input.pressed("confirm") then
                 local item = Game.inventory:getItem(self.storage, self.item_selecting)
-                if self.option_selecting == 1 then
+                if self.option_selecting == 1 and (item.usable_in == "world" or item.usable_in == "all") then
                     if #Game.party > 1 and item.target == "ally" then
                         self.ui_select:stop()
                         self.ui_select:play()
@@ -1614,7 +1614,7 @@ function lib:init()
                     end
                 elseif self.option_selecting == 2 then
                     item:onCheck()
-                else
+                elseif self.option_selecting == 3 then
                     self:dropItem(item)
                 end
             end
@@ -1666,7 +1666,7 @@ function lib:init()
         local inventory = Game.inventory:getStorage(self.storage)
     
         for index, item in ipairs(inventory) do
-            if item.usable_in == "world" or item.usable_in == "all" then
+            if (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
                 Draw.setColor(PALETTE["world_text"])
             else
                 Draw.setColor(PALETTE["world_text_unusable"])
@@ -1679,8 +1679,14 @@ function lib:init()
         end
 
         if self.state ~= "PARTYSELECT" then
-            Draw.setColor(PALETTE["world_text"])
+            local item = Game.inventory:getItem(self.storage, self.item_selecting)
+            if (item.usable_in == "world" or item.usable_in == "all") and not (item.target == "enemy" or item.target == "enemies") then
+                Draw.setColor(PALETTE["world_text"])
+            else
+                Draw.setColor(PALETTE["world_gray"])
+            end
             love.graphics.print("USE" , 20 , 284)
+            Draw.setColor(PALETTE["world_text"])
             love.graphics.print("INFO", 116, 284)
             love.graphics.print("DROP", 230, 284)
         end
@@ -1750,11 +1756,11 @@ function lib:init()
         local result
         if item.target == "ally" then
             result = item:onWorldUse(Game.party[self.party_selecting])
-        elseif item.target == "party" or item.target == "none" then
+        else
             result = item:onWorldUse(Game.party)
         end
         
-        if (item.type == "item" and (result == nil or result)) or (item.type ~= "item" and result) then
+        if result then
             if item:hasResultItem() then
                 Game.inventory:replaceItem(item, item:createResultItem())
             else
@@ -2451,8 +2457,8 @@ function lib:init()
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)
         love.graphics.print("NEXT: ".. exp_needed, 172, 196)
     
-        local weapon_name = "(NONE)"
-        local armor_name = "(NONE)"
+        local weapon_name = "None"
+        local armor_name = "None"
 
         if chara:getWeapon() then
             weapon_name = chara:getWeapon():getEquipDisplayName() or chara:getWeapon():getName()
@@ -2618,36 +2624,35 @@ function lib:init()
     end)
     
     Utils.hook(Spell, "getHealMessage", function(orig, self, user, target, amount) 
-        local char_maxed
-        local enemy_maxed
+        local maxed = false
         if self.target == "ally" then
-            char_maxed = target.chara:getHealth() >= target.chara:getStat("health")
+            maxed = target.chara:getHealth() >= target.chara:getStat("health") or amount == math.huge
         elseif self.target == "enemy" then
-            enemy_maxed = target.health >= target.max_health
+            maxed = target.health >= target.max_health or amount == math.huge
         end
         local message = ""
         if self.target == "ally" then
-            if target.chara.id == Game.battle.party[1].chara.id and char_maxed then
+            if target.chara.id == Game.battle.party[1].chara.id and maxed then
                 message = "* Your HP was maxed out."
-            elseif char_maxed then
+            elseif maxed then
                 message = "* " .. target.chara:getNameOrYou() .. "'s HP was maxed out."
             else
                 message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "party" then
-            if #Game.party > 1 then
+            if #Game.battle.party > 1 then
                 message = "* Everyone recovered " .. amount .. " HP."
             else
                 message = "* You recovered " .. amount .. " HP."
             end
         elseif self.target == "enemy" then
-            if enemy_maxed then
+            if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
             else
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
         elseif self.target == "enemies" then
-            message = "* The enemies all recovered " .. amount .. " HP."
+            message = "* The enemies recovered " .. amount .. " HP."
         end
         return message
     end)

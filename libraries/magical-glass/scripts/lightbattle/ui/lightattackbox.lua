@@ -28,13 +28,13 @@ function LightAttackBox:createBolts()
         lane.battler = battler
         lane.bolts = {}
         lane.weapon = battler.chara:getWeapon()
-        lane.speed = lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11
+        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or "right"
+        lane.direction = lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or "right"
 
-        if (lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1) > 1 then
+        if (lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"
         else
             lane.attack_type = "slice"
@@ -49,19 +49,19 @@ function LightAttackBox:createBolts()
             error("Invalid attack direction")
         end
 
-        for i = 1, lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1 do
+        for i = 1, lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1 do
             local bolt
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
@@ -120,7 +120,7 @@ end
 
 function LightAttackBox:hit(battler)
     local bolt = battler.bolts[1]
-    if battler.weapon.onLightBoltHit then
+    if battler.weapon and battler.weapon.onLightBoltHit then
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
@@ -128,7 +128,7 @@ function LightAttackBox:hit(battler)
 
         local eval = self:evaluateHit(battler, close)
         
-        if battler.weapon.scoreHit then
+        if battler.weapon and battler.weapon.scoreHit then
             battler.score = battler.weapon:scoreHit(battler, battler.score, eval, close)
         else
             battler.score = battler.score + eval
@@ -180,12 +180,12 @@ end
 function LightAttackBox:checkMiss(battler)
     if battler.attack_type == "shoe" then
         if battler.direction == "left" then
-            return self:getClose(battler) < -(battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
+            return self:getClose(battler) < -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         else
-            return self:getClose(battler) > (battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
+            return self:getClose(battler) > (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
+        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
