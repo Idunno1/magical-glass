@@ -2006,10 +2006,10 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getName", function(orig, self)
-        if Game.save_name and self:shouldUsePlayerName() then
+        if self.use_player_name then
             return Game.save_name
         else
-            return self.name
+            return orig(self)
         end
     end)
 
@@ -2046,10 +2046,6 @@ function lib:init()
         else
             return self:getName()
         end
-    end)
-
-    Utils.hook(PartyMember, "shouldUsePlayerName", function(orig, self)
-        return self.use_player_name
     end)
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
