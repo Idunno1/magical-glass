@@ -30,6 +30,8 @@ function character:init()
         self:addSpell("pacify")
         self:addSpell("dual_heal")
         self:addSpell("ultimate_heal")
+        
+        self.undertale_movement = true
     end
 
 end

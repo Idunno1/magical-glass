@@ -1959,6 +1959,8 @@ function lib:init()
         orig(self)
 
         self.light_can_defend = nil
+        
+        self.undertale_movement = false
 
         self.lw_portrait = nil
 
@@ -2498,15 +2500,7 @@ function lib:init()
             self:removeChild(self.soul)
         end
         
-        local undertale_movement = false
-        for _,party in ipairs(Kristal.getLibConfig("magical-glass", "ut_movement_chara")) do
-            if Game.party[1].id == party then
-                undertale_movement = true
-                break
-            end
-        end
-        
-        if undertale_movement then
+        if Game.party[1].undertale_movement then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)

@@ -35,7 +35,6 @@
             "light_battle_defend_btn": true,
             "mercy_messages": true,
             "mercy_bar": true,
-            "ut_movement_chara": ["noelle"],
             "debug": true,
         }
     }

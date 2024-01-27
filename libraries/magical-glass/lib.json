@@ -171,11 +171,6 @@
         /////
         "action_button_style": "magical_glass",
         
-        ///// Undertale movement characters
-        // Determines which party members as the player will use the movement from Undertale.
-        /////
-        "ut_movement_chara": [],
-        
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
         /////
