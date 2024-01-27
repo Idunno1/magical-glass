@@ -1958,8 +1958,8 @@ function lib:init()
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
 
-        self.can_defend = Kristal.getLibConfig("magical-glass", "light_battle_defend_btn")
-
+        self.light_can_defend = nil
+        
         self.undertale_movement = false
 
         self.lw_portrait = nil
@@ -1973,9 +1973,7 @@ function lib:init()
         self.light_xact_color = {1, 1, 1}
 
         self.lw_stats["magic"] = 0
-
-        -- what the fuck is this
-
+        
         local equipment = self.equipped
         Game.stage.timer:after(1/30, function()
             if self:getFlag("weapon_default") == nil then
@@ -1985,6 +1983,7 @@ function lib:init()
                 self:setFlag("armor_default", {equipment.armor[1] and equipment.armor[1].id or false, equipment.armor[2] and equipment.armor[2].id or false})
             end
         end)
+
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
@@ -2500,7 +2499,7 @@ function lib:init()
         if self.soul then
             self:removeChild(self.soul)
         end
-
+        
         if Game.party[1].undertale_movement then
             self.player = UnderPlayer(chara, x, y)
         else

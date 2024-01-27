@@ -36,7 +36,7 @@
         ///// Light Battle Defend command
         // Adds the Defend command to the mercy action button in Light Battles.
         /////
-        "light_battle_defend_btn": true,
+        "light_battle_defend_btn": false,
 
         ///// UNDERTALE text skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.
@@ -92,8 +92,8 @@
         "undertale_stat_display": true,
         
         ///// Always show magic
-        // Displays the MAGIC stat in the Light World STAT menu even if the currently hovered
-        // Member has 0 or less MAGIC.
+        // Displays the MAGIC stat in the Light World STAT menu even if there's no
+        // Member in the current party who has more than 0 MAGIC.
         /////
         "always_show_magic": false,
 
@@ -165,6 +165,11 @@
         // "magical_glass"
         // "deltatraveler"
         /////
-        "action_button_style": "magical_glass"
+        "action_button_style": "magical_glass",
+        
+        ///// Debug Mode
+        // Determines whether the library is in its debug mode state.
+        /////
+        "debug": false,
     }
 }
