@@ -351,7 +351,7 @@ function lib:init()
             
             local has_shadowcrystal = self.inventory:hasItem("shadowcrystal")
             local has_egg = self.inventory:hasItem("egg")
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 Game:setFlag("has_cell_phone", Game.inventory:hasItem("cell_phone"))
             end
             
@@ -362,7 +362,7 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") and not temp then
                 if not self.inventory:hasItem("light/ball_of_junk") then
                     self.inventory:addItem("light/ball_of_junk")
                 end
@@ -428,7 +428,7 @@ function lib:init()
                 self.inventory = lib.dark_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 if Game:getFlag("tossed_ball_of_junk") then
                     for i = 1, self.inventory.storages.items.max do
                         self.inventory.storages.items[i] = nil
@@ -500,7 +500,7 @@ function lib:init()
         else
             local dark_inv = self:getDarkInventory()
             local result = dark_inv:addItem(item)
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 if result then
                     return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]BALL OF JUNK[color:reset].)"
                 else
@@ -816,7 +816,7 @@ function lib:init()
         if properties["aura"] == nil then
             Game.world.timer:after(1/30, function()
                 if Game:isLight() then
-                    self.sprite.aura = Game:getConfig("enemyAuras") and Kristal.getLibConfig("magical-glass", "light_enemy_auras")
+                    self.sprite.aura = Kristal.getLibConfig("magical-glass", "light_enemy_auras")
                 else
                     self.sprite.aura = Game:getConfig("enemyAuras")
                 end
@@ -1952,7 +1952,9 @@ function lib:init()
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
 
-        self.use_player_name = false
+        self.can_defend = Kristal.getLibConfig("magical-glass", "light_battle_defend_btn")
+
+        self.undertale_movement = false
 
         self.lw_portrait = nil
 
@@ -1965,7 +1967,9 @@ function lib:init()
         self.light_xact_color = {1, 1, 1}
 
         self.lw_stats["magic"] = 0
-        
+
+        -- what the fuck is this
+
         local equipment = self.equipped
         Game.stage.timer:after(1/30, function()
             if self:getFlag("weapon_default") == nil then
@@ -1975,7 +1979,6 @@ function lib:init()
                 self:setFlag("armor_default", {equipment.armor[1] and equipment.armor[1].id or false, equipment.armor[2] and equipment.armor[2].id or false})
             end
         end)
-
     end)
 
     Utils.hook(PartyMember, "heal", function(orig, self, amount, playsound)
@@ -1997,14 +2000,6 @@ function lib:init()
         local lw_health = self.lw_health
         orig(self)
         self.lw_health = lw_health
-    end)
-
-    Utils.hook(PartyMember, "getName", function(orig, self)
-        if Game.save_name and self:shouldUsePlayerName() then
-            return Game.save_name
-        else
-            return self.name
-        end
     end)
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
@@ -2040,10 +2035,6 @@ function lib:init()
         else
             return self:getName()
         end
-    end)
-
-    Utils.hook(PartyMember, "shouldUsePlayerName", function(orig, self)
-        return self.use_player_name
     end)
 
     Utils.hook(PartyMember, "onLightLevelUp", function(orig, self)
@@ -2503,16 +2494,8 @@ function lib:init()
         if self.soul then
             self:removeChild(self.soul)
         end
-        
-        local undertale_movement = false
-        for _,party in ipairs(Kristal.getLibConfig("magical-glass", "ut_movement_chara")) do
-            if Game.party[1].id == party then
-                undertale_movement = true
-                break
-            end
-        end
-        
-        if undertale_movement then
+
+        if Game.party[1].undertale_movement then
             self.player = UnderPlayer(chara, x, y)
         else
             self.player = Player(chara, x, y)

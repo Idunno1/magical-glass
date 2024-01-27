@@ -113,9 +113,7 @@ function Froggit:onAct(battler, name)
 end
 
 function Froggit:onDefeat(damage, battler)
-    if Kristal.getLibConfig("magical-glass", "debug") then
-        Game:setFlag("##test_kills", Game:getFlag("##test_kills", 0) + 1)
-    end
+    Game:setFlag("##test_kills", Game:getFlag("##test_kills", 0) + 1)
     super.onDefeat(self, damage, battler)
 end
 

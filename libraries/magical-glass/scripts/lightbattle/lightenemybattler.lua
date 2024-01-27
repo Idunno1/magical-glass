@@ -323,7 +323,7 @@ function LightEnemyBattler:addMercy(amount)
         return
     end
     
-    if Game:getConfig("mercyMessages") and Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
+    if Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
         if amount > 0 then
             local pitch = 0.8
             if amount < 99 then pitch = 1 end

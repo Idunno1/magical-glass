@@ -864,7 +864,7 @@ function LightBattle:onStateChange(old,new)
             self.current_menu_y = 1
         end
 
-        if not self:isValidMenuLocation() then
+        if not self:isValidMenuLocation() and #self:getActiveEnemies() > 0 then
             repeat
                 self.current_menu_y = self.current_menu_y + 1
                 if not self.enemies[self.current_menu_y] then

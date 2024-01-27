@@ -3,6 +3,8 @@ function Mod:init()
 end
 
 function Mod:load(new_file)
+    Game:setFlag("debug", true)
+
     if new_file then
         Game.money = Kristal.getLibConfig("magical-glass", "debug") and 1000 or 0
         Game.lw_money = Kristal.getLibConfig("magical-glass", "debug") and 1000 or 0
