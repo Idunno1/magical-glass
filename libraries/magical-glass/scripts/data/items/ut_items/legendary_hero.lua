@@ -1,4 +1,4 @@
-local item, super = Class(HealItem, "ut_items/legandary_hero")
+local item, super = Class(HealItem, "ut_items/legendary_hero")
 
 function item:init(inventory)
     super.init(self)
