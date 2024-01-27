@@ -92,16 +92,8 @@
         "undertale_stat_display": true,
         
         ///// Always show magic
-        // Whether the MG stat should always be shown in the Light World STAT menu.
-        ///// Values:
-        //
-        // true
-        // Always shows the MG stat.
-        //
-        // false
-        // Only shows the MG stat if at least one party member has a magic stat greater than 0.
-        //
-        /////
+        // Displays the MAGIC stat in the Light World STAT menu even if there's no
+        // Member in the current party who has more than 0 MAGIC.
         "always_show_magic": false,
 
         ///// Item info
@@ -178,7 +170,7 @@
         /////
         "action_button_style": "magical_glass",
         
-        ///// Undertale Movement characters
+        ///// Undertale movement characters
         // Determines which party members as the player will use the movement from Undertale.
         /////
         "ut_movement_chara": [],
