@@ -215,6 +215,8 @@ function LightBattle:postInit(state, encounter)
 
     if self.encounter.story then
         self.story_wave = self.encounter:storyWave()
+    else
+        self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
     end
 
     self.arena = LightArena(SCREEN_WIDTH/2, 385)
@@ -257,8 +259,6 @@ function LightBattle:postInit(state, encounter)
     if not self.encounter:onBattleInit() then
         self:setState(state)
     end
-    
-    self.tension = not self.encounter.story and (Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight())
 end
 
 function LightBattle:onRemove(parent)
