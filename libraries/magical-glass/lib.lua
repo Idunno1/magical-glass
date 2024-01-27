@@ -1958,8 +1958,6 @@ function lib:init()
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
 
-        self.use_player_name = false
-
         self.lw_portrait = nil
 
         self.light_color = {1, 1, 1}
@@ -2003,14 +2001,6 @@ function lib:init()
         local lw_health = self.lw_health
         orig(self)
         self.lw_health = lw_health
-    end)
-
-    Utils.hook(PartyMember, "getName", function(orig, self)
-        if self.use_player_name then
-            return Game.save_name
-        else
-            return orig(self)
-        end
     end)
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
