@@ -19,7 +19,7 @@ function Noelle:init()
     self.money = 87
     self.experience = 50
     
-    if Game:getFlag("debug", false) then
+    if Kristal.getLibConfig("magical-glass", "debug") then
         self.can_freeze = true
     end
 

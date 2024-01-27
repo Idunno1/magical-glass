@@ -10,8 +10,8 @@ function LightBattleUI:init()
     self.arena = Game.battle.arena
 
     self.style = Kristal.getLibConfig("magical-glass", "gauge_style")
-    self.draw_mercy = Kristal.getLibConfig("magical-glass", "mercy_bar")
-    self.draw_percents = Kristal.getLibConfig("magical-glass", "enemy_bar_percentages")
+    self.draw_mercy = Game:getConfig("mercyBar") and Kristal.getLibConfig("magical-glass", "mercy_bar")
+    self.draw_percents = Game:getConfig("enemyBarPercentages") and Kristal.getLibConfig("magical-glass", "enemy_bar_percentages")
 
     self.encounter_text = Textbox(14, 17, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 53, "main_mono", nil, true)
     self.encounter_text.text.default_sound = "ut"

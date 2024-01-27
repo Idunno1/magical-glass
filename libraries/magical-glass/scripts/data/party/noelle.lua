@@ -19,7 +19,7 @@ function character:init()
     self.lw_weapon_default = "light/ring"
     self.lw_armor_default = "light/wristwatch"
     
-    if Game:getFlag("debug", false) then
+    if Kristal.getLibConfig("magical-glass", "debug") then
         -- Whether the party member can act / use spells
         self.has_act = true
         self.has_spells = true

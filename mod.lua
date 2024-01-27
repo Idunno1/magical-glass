@@ -3,8 +3,6 @@ function Mod:init()
 end
 
 function Mod:load(new_file)
-    Game:setFlag("debug", true)
-
     if new_file then
         Game.money = Game:getFlag("debug", true) and 1000 or 0
         Game.lw_money = Game:getFlag("debug", true) and 1000 or 0
