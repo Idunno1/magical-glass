@@ -20,8 +20,6 @@ function LightBattle:init()
 
     self.post_battletext_state = "ACTIONSELECT"
 
-    self.tension = Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight()
-
     self.fader = Fader()
     self.fader.layer = 1000
     self.fader.alpha = 1
@@ -258,7 +256,9 @@ function LightBattle:postInit(state, encounter)
 
     if not self.encounter:onBattleInit() then
         self:setState(state)
-    end   
+    end
+    
+    self.tension = not self.encounter.story and (Kristal.getLibConfig("magical-glass", "light_battle_tp") or not Game:isLight())
 end
 
 function LightBattle:onRemove(parent)
