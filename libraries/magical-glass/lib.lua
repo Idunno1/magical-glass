@@ -1958,6 +1958,8 @@ function lib:init()
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
 
+        self.light_can_defend = nil
+
         self.lw_portrait = nil
 
         self.light_color = {1, 1, 1}
