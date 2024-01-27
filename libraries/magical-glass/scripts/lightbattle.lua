@@ -20,6 +20,8 @@ function LightBattle:init()
 
     self.post_battletext_state = "ACTIONSELECT"
 
+    self.tension = false
+
     self.fader = Fader()
     self.fader.layer = 1000
     self.fader.alpha = 1
