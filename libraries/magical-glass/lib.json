@@ -136,25 +136,21 @@
 
         ///// Mercy Bar
         // Draws the Mercy Bar in Light Battles.
-        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "mercy_bar": false,
 
         ///// Mercy Messages
         // Shows the amount of mercy added to an enemy when their mercy gauge increases in Light Battles.
-        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "mercy_messages": false,
 
         ///// Enemy Bar Percentages
         // Draws the HP and Mercy text and Percentages on the gauges.
-        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "enemy_bar_percentages": false,
 
         ///// Light Enemy Chaser Auras
         // Whether enemies in the light world will also have auras.
-        // (Requires the Kristal config counterpart to also be enabled)
         /////
         "light_enemy_auras": false,
 

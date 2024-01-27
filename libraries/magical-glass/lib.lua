@@ -816,7 +816,7 @@ function lib:init()
         if properties["aura"] == nil then
             Game.world.timer:after(1/30, function()
                 if Game:isLight() then
-                    self.sprite.aura = Game:getConfig("enemyAuras") and Kristal.getLibConfig("magical-glass", "light_enemy_auras")
+                    self.sprite.aura = Kristal.getLibConfig("magical-glass", "light_enemy_auras")
                 else
                     self.sprite.aura = Game:getConfig("enemyAuras")
                 end
