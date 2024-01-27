@@ -94,6 +94,7 @@
         ///// Always show magic
         // Displays the MAGIC stat in the Light World STAT menu even if there's no
         // Member in the current party who has more than 0 MAGIC.
+        /////
         "always_show_magic": false,
 
         ///// Item info
