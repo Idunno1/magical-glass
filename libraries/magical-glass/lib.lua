@@ -351,7 +351,7 @@ function lib:init()
             
             local has_shadowcrystal = self.inventory:hasItem("shadowcrystal")
             local has_egg = self.inventory:hasItem("egg")
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 Game:setFlag("has_cell_phone", Game.inventory:hasItem("cell_phone"))
             end
             
@@ -362,7 +362,7 @@ function lib:init()
                 self.inventory = lib.light_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") and not temp then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") and not temp then
                 if not self.inventory:hasItem("light/ball_of_junk") then
                     self.inventory:addItem("light/ball_of_junk")
                 end
@@ -428,7 +428,7 @@ function lib:init()
                 self.inventory = lib.dark_inv
             end
             
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 if Game:getFlag("tossed_ball_of_junk") then
                     for i = 1, self.inventory.storages.items.max do
                         self.inventory.storages.items[i] = nil
@@ -500,7 +500,7 @@ function lib:init()
         else
             local dark_inv = self:getDarkInventory()
             local result = dark_inv:addItem(item)
-            if Kristal.getLibConfig("magical-glass", "key_items_conversion") then
+            if Kristal.getLibConfig("magical-glass", "key_item_conversion") then
                 if result then
                     return true, "* ([color:yellow]"..item:getName().."[color:reset] was added to your [color:yellow]BALL OF JUNK[color:reset].)"
                 else

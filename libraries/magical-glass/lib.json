@@ -1,20 +1,20 @@
 {
     "id": "magical-glass",
     "authors": [
-        "Nyakorita",
-        "Sam Deluxe",
-        "Bor",
-        "Just Another Random User",
-        "FireRainV"
+        "Nyakorita",                    // original author
+        "Sam Deluxe",                   // current author and lead programmer
+        "Bor",                          // contributor
+        "Just Another Random User",     // contributor
+        "FireRainV"                     // contributor
     ],
     "version": "v1.1.1-dev",
     "engineVer": "v0.9.0-dev",
 
     "config": {
         
-        ///// Default battle system
-        // If an encounter isn't forcing a battle system, use this system as a fallback.
-        // Useful if starting from an encounter.
+        ///// Default Battle System
+        // If an encounter isn't forcing a battle system, the system set here will be used
+        // as a fallback.
         //
         // Second value sets the default world type if no map is present.
         // Used when playing using just an encounter without a map.
@@ -29,12 +29,12 @@
         "default_battle_system": ["deltarune", false],
 
         ///// Light Battle TP
-        // Whether the Tension Bar and grazing should be enabled in light battles.
+        // Enables tension and grazing in Light Battles.
         /////
         "light_battle_tp": false,
         
         ///// Light Battle Defend command
-        // Adds the Defend command to the mercy action button in light battles.
+        // Adds the Defend command to the mercy action button in Light Battles.
         /////
         "light_battle_defend_btn": false,
 
@@ -47,17 +47,24 @@
         // Limits the length of the HP bar in light battles.
         ///// Values:
         //
-        // boolean (If true, limits it to 99. If false, disables the length cap)
-        // number (If set a number, limits it to the amount set)
+        // true
+        // Limits the gauge at 99. 
+        // false
+        // Doesn't limit the gauge.
+        //
+        // number
+        // Limits the gauge to the number specified.
+        //
         /////
         "hp_gauge_length_cap": true,
 
-        ///// Key Items Conversion
-        // Whether you'll have in your light inventory items like Ball of Junk or Glass when needed.
+        ///// Key Item Conversion
+        // Converts the Dark World inventory to the Ball of Junk and Shadow Crystals to Glass
+        // when traveling to the Light World.
         /////
-        "key_items_conversion": true,
+        "key_item_conversion": true,
 
-        ///// Hide CELL option in the Light World menu
+        ///// Hide CELL in the Light World menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
         /////
         "hide_cell": true,
@@ -107,7 +114,7 @@
         // This style will overlap with the bottom row of menu options. (doesn't apply to spells since it limits them to 2 rows.)
         //
         // "deltatraveler"
-        // Battle descriptions and TP costs are displayed in a small window underneath
+        // Battle descriptions and TP costs are displayed in a small window above
         // the main window.
         //
         /////
@@ -123,7 +130,7 @@
         // "deltarune"
         // deltarune-styled HP and Mercy gauges.
         //
-        // The following options require Magical Glass: Deltatraveled, which isn't out yet!
+        ///// The following options require Magical Glass: Deltatraveled, which isn't out yet!
         //
         // "deltatraveler_old"
         // The gauge styles used in Deltatraveler before version 2.07.
