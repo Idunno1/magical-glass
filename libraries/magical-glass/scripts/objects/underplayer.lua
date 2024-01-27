@@ -3,15 +3,12 @@ local UnderPlayer, super = Class(Player, "UnderPlayer")
 function UnderPlayer:init(chara, x, y)
     super.init(self, chara, x, y)
 
-	-- If 'true', the player will be unable to run, like in Undertale
     self.force_walk = true
-	-- The movement speed of the player.
-    self.walk_speed = 5
 
-	-- If 'false', if you run into an Event with collisions while walking diagonally, the player will stop moving, like in Undertale
-	self.eventdiagonalwalk = false
+	self.walk_speed = 6
 
-
+	-- Prevents any and all movement when walking into an event
+	self.event_diagonal_walk = false
 
 	-- Don't edit the stuff below --
 	self.can_move_x = true
@@ -22,15 +19,6 @@ end
 function UnderPlayer:handleMovement()
     local walk_x = 0
     local walk_y = 0
-	--[[
-	local colliding_event = false
-	local collided, target = self.world:checkCollision(self.collider, self.enemy_collision)
-	if collided then
-		if target:includes("Event") then
-			colliding_event = true
-		end
-	end
-	]]
 
     local should_turn = true
 	
@@ -46,34 +34,40 @@ function UnderPlayer:handleMovement()
 		if should_turn then
 			self.facing = "left"
 		end
-	elseif Input.down("right") then
-		if self.can_move_x == true then walk_x = walk_x + 1 end
-		if self.can_move_x == false and (self.sprite.facing ~= "up" and self.sprite.facing ~= "down") then should_turn = false end
-		if self.moving_y < 0 and self.facing == "up" then
+	end
+
+	if Input.down("up") then
+		if self.can_move_y == true then walk_y = walk_y - 1 end
+		if self.can_move_y == false and (self.sprite.facing ~= "right" and self.sprite.facing ~= "left") then should_turn = false end
+		if self.moving_x > 0 and self.facing == "right" then
 			should_turn = false
 		end
-		if self.moving_y > 0 and self.facing == "down" then
+		if self.moving_x < 0 and self.facing == "left" then
 			should_turn = false
 		end
 		if should_turn then
-			self.facing = "right"
+			self.facing = "up"
 		end
 	end
 
-	--if self["last_collided_x"] ~= true then
-		if Input.down("up") then
-			if self.can_move_y == true then walk_y = walk_y - 1 end
-			if self.can_move_y == false and (self.sprite.facing ~= "right" and self.sprite.facing ~= "left") then should_turn = false end
-			if self.moving_x > 0 and self.facing == "right" then
+	if Input.down("right") then
+		if not Input.down("left") then 
+			if self.can_move_x == true then walk_x = walk_x + 1 end
+			if self.can_move_x == false and (self.sprite.facing ~= "up" and self.sprite.facing ~= "down") then should_turn = false end
+			if self.moving_y < 0 and self.facing == "up" then
 				should_turn = false
 			end
-			if self.moving_x < 0 and self.facing == "left" then
+			if self.moving_y > 0 and self.facing == "down" then
 				should_turn = false
 			end
 			if should_turn then
-				self.facing = "up"
+				self.facing = "right"
 			end
-		elseif Input.down("down") then
+		end
+	end
+	
+	if Input.down("down") then
+		if not Input.down("up") then 
 			if self.can_move_y == true then walk_y = walk_y + 1 end
 			if self.can_move_y == false and (self.sprite.facing ~= "right" and self.sprite.facing ~= "left") then should_turn = false end
 			if self.moving_x > 0 and self.facing == "right" then
@@ -86,33 +80,17 @@ function UnderPlayer:handleMovement()
 				self.facing = "down"
 			end
 		end
-	--end
-	
+	end	
 
-    if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
+	-- i don't think we need this
+--[[     if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
 		self.sprite.facing = "up"
     else
-		--[[
-		if self.eventdiagonalwalk == false then
-			if Input.down("right") then
-				self.facing = "right"
-        		self.sprite.facing = self.facing
-			elseif Input.down("left") then
-				self.facing = "left"
-        		self.sprite.facing = self.facing
-			else
-        		self.sprite.facing = self.facing
-			end
-		else
-			self.sprite.facing = self.facing
-		end
-		--]]
     	self.sprite.facing = self.facing
-    end
-    --self.sprite.facing = self.facing
+    end ]]
 
-	--if self.can_move_y == true then self.moving_y = walk_y end
-	--if self.can_move_x == true then self.moving_x = walk_x end
+	self.sprite.facing = self.facing
+
     self.moving_x = walk_x
     self.moving_y = walk_y
 
@@ -205,20 +183,57 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
                 self[type] = last_a
                 self[other] = last_b
 
-                if not target:includes("Event") then
-                    if self.moving_y < 0 and (Input.down("up") and Input.down("down")) then
-						if not self["last_collided_"..other] == true then
-							self[type] = self[type] + 6
+                if target:includes("World") then
+					-- this handles the funny glitch
+					
+					local collided = self.world:checkCollision(self.collider, self.enemy_collision)
+
+
+					if self.moving_y < 0 then
+						if collided then
+							if Input.down("left") then
+								self.facing = "left"
+							end
+							if Input.down("right") then
+								self.facing = "right"
+							end
+						else
+							self.facing = "up"
 						end
-                        self.facing = "down"
-                        self.sprite.facing = self.facing
-                        local collided, target = self.world:checkCollision(self.collider, self.enemy_collision)
-                        if collided and not (other_amount > 0) then
+					end
+					if self.moving_y > 0 then
+						if collided then
+							if Input.down("left") then
+								self.facing = "left"
+							end
+							if Input.down("right") then
+								self.facing = "right"
+							end
+						else
+							self.facing = "down"
+						end
+					end
+
+					self.sprite.facing = self.facing
+
+					if self.moving_y < 0 and ((Input.down("up") and Input.down("down")) and not (Input.down("left")) or Input.down("right")) then
+						local last_dir = self.facing
+						if not self["last_collided_"..other] == true then							self.facing = "up"
+							self.facing = "down"
+							self[type] = self[type] + 6 * DTMULT
+						end
+						self.sprite.facing = self.facing
+
+						local collided_after = self.world:checkCollision(self.collider, self.enemy_collision)
+
+						if collided_after and not (other_amount > 0) then
                             self[type] = last_a
+							self.facing = "up"
                         end
-                    end
+						self.sprite.facing = self.facing
+					end
                 else
-                    if self.eventdiagonalwalk == true then
+                    if self.event_diagonal_walk == true then
 						if self.moving_x > 0 and (Input.down("right") and self.facing == "right") then
 							self.can_move_y = false
 						end
@@ -232,7 +247,6 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
 							self.can_move_x = false
 						end
 					else
-						--print(tostring(self["last_collided_x"]) .. "  LASTCOLLIDED X")
 						if (Input.down("down")) then
 							self.sprite.facing = self.facing
 							self.can_move_x = false
