@@ -72,8 +72,8 @@ function Dummy:drawBackground()
         end
     end
 
-    Draw.setColor(1/2, 1/2, 1/2)
-    love.graphics.rectangle("fill", 0, 0, 999, 999)
+--[[     Draw.setColor(1/2, 1/2, 1/2)
+    love.graphics.rectangle("fill", 0, 0, 999, 999) ]]
 end
 
 return Dummy
