@@ -546,7 +546,7 @@ function lib:init()
                 end
             end
         else
-            orig(self, data)
+            orig(self, storage, data)
         end
     end)
     
