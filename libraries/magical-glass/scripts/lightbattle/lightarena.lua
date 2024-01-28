@@ -1,10 +1,15 @@
 local LightArena, super = Class(Object)
 
 function LightArena:init(x, y, shape)
-    super:init(self, x, y)
+    super.init(self, x, y)
+
+    self:setOrigin(0.5, 1)
 
     self.x = math.floor(self.x)
     self.y = math.floor(self.y)
+
+    self.color = {1, 1, 1}
+    self.bg_color = {0, 0, 0}
 
     self.home_x = self.x
     self.home_y = self.y
@@ -16,26 +21,20 @@ function LightArena:init(x, y, shape)
     self.line_width = 5 -- must call setShape again if u change this
     self:setShape(shape or {{0, 0}, {self.init_width, 0}, {self.init_width, self.init_height}, {0, self.init_height}})
 
-    self.color = {1, 1, 1}
-    self.bg_color = {0, 0, 0}
+    self.sprite = ArenaSprite(self)
+    self.sprite.color = {0, 0, 0}
+    self.sprite.layer = BATTLE_LAYERS["below_ui"]
+    self:addChild(self.sprite)
 
-    self.sprite = LightArenaSprite(self)
-    self.sprite:setOrigin(0.5, 1)
-    self.sprite:setPosition(self:getRelativePos())
-    self.sprite.layer = BATTLE_LAYERS["above_bullets"]
-    Game.battle:addChild(self.sprite)
-
-    self.background = LightArenaBackground(self)
-    self.background:setOrigin(0.5, 1)
-    self.background:setPosition(self:getRelativePos())
-    self.background.layer = BATTLE_LAYERS["ui"] - 1
-    Game.battle:addChild(self.background)
+    self.sprite_border = ArenaSprite(self)
+    self.sprite_border:setOrigin(0.5, 1)
+    self.sprite_border.background = false
+    self.sprite_border.layer = BATTLE_LAYERS["above_bullets"]
+    Game.battle:addChild(self.sprite_border)
 
     self.mask = ArenaMask(1, 0, 0, self)
     self.mask.layer = BATTLE_LAYERS["above_ui"]
     self:addChild(self.mask)
-
-    self:setOrigin(0.5, 1)
 
     self.target_shape = {}
     self.target_position = {}
@@ -221,12 +220,17 @@ end
 function LightArena:drawMask()
     love.graphics.push()
     self.sprite:preDraw()
+    self.sprite:drawBackground()
     self.sprite:postDraw()
     love.graphics.pop()
 end
 
 function LightArena:draw()
-    super:draw(self)
+    super.draw(self)
+
+    self.sprite_border.x = self.x
+    self.sprite_border.y = self.y
+    self.sprite_border.width = self.width + 1
 
     if DEBUG_RENDER and self.collider then
         self.collider:draw(0, 0, 1)

@@ -71,6 +71,9 @@ function Dummy:drawBackground()
             offset = offset + 101
         end
     end
+
+    Draw.setColor(1/2, 1/2, 1/2)
+    love.graphics.rectangle("fill", 0, 0, 999, 999)
 end
 
 return Dummy
