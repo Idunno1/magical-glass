@@ -154,11 +154,11 @@ function LightArena:update()
         end
 
         if not Utils.equal(self.x, self.target_position[1], true) then
-            self.x = Utils.approach(self.x, self.target_position[1], DTMULT * 15)
+            self.x = Utils.approach(self.x, self.target_position[1], math.ceil(DTMULT * 15))
         end
 
         if not Utils.equal(self.y, self.target_position[2], true) then
-            self.y = Utils.approach(self.y, self.target_position[2], DTMULT * 15)
+            self.y = Utils.approach(self.y, self.target_position[2], math.ceil(DTMULT * 15))
         end
 
         if Utils.equal(self.x, self.target_position[1], true) and Utils.equal(self.y, self.target_position[2], true) then
@@ -225,12 +225,15 @@ function LightArena:drawMask()
     love.graphics.pop()
 end
 
-function LightArena:draw()
-    super.draw(self)
-
+function LightArena:preDraw()
+    super.preDraw(self)
     self.sprite_border.x = self.x
     self.sprite_border.y = self.y
-    self.sprite_border.width = self.width + 1
+    self.sprite_border.width = self.sprite.width-1
+end
+
+function LightArena:draw()
+    super.draw(self)
 
     if DEBUG_RENDER and self.collider then
         self.collider:draw(0, 0, 1)
