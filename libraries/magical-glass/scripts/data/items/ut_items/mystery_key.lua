@@ -19,13 +19,11 @@ function item:init(inventory)
     self.can_sell = false
 
     -- Item description text (unused by light items outside of debug menu)
-    self.description = "It has DON'T DROP IT written on it."
+    self.description = "It is too bent to fit on your keychain."
 
     -- Light world check text
-    self.check = "* \"Mystery Key\" Unique\n* It is too bent to fit on\nyour keychain."
+    self.check = "Unique\n* It is too bent to fit on\nyour keychain."
 
-    -- Consumable target mode (ally, party, enemy, enemies, or none)
-    self.target = "none"
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
@@ -35,16 +33,13 @@ function item:init(inventory)
     
 end
 
-function item:onWorldUse()
-    if Game.world.cutscene then Game.world.cutscene:endCutscene() end
-    Game.world:startCutscene(function(cutscene)
-        cutscene:text("* You used the Mystery Key.[wait:10]\n* But nothing happened.")
-        return false
-    end)
+function item:onBattleSelect(user, target)
+    return false
 end
 
-function Item:onCheck()
-    Game.world:showText(self:getCheck())
+function item:onWorldUse()
+    Game.world:showText("* You used the Mystery Key.[wait:10]\n* But nothing happened.")
+    return false
 end
 
 function item:onToss()

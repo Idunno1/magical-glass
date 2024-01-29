@@ -920,6 +920,7 @@ function LightBattle:onStateChange(old,new)
         end
 
         self.current_selecting = 0
+        self:toggleSoul(false)
         self.battle_ui:clearEncounterText()
         self.textbox_timer = 3 * 30
         self.use_textbox_timer = true
