@@ -44,7 +44,7 @@ function item:onBattleSelect(user, target)
 end
 
 function Item:onCheck()
-    Game.world:showText(self:getCheck())
+    Game.world:showText(self.check)
 end
 
 function Item:getBattleText(user, target) return false end
