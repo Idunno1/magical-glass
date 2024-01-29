@@ -9,9 +9,10 @@ function item:init(inventory)
     super.init(self)
 
     -- Display name
-    self.name = "Invalid Item"
-    self.short_name = "InvalidItm"
-    self.serious_name = "Invalid"
+    self.name = ""
+    -- self.name = "Invalid Item"
+    -- self.short_name = "InvalidItm"
+    -- self.serious_name = "Invalid"
 
     -- Item type (item, key, weapon, armor)
     self.type = "item"
@@ -25,15 +26,34 @@ function item:init(inventory)
     self.description = "Placeholder item."
 
     -- Light world check text
-    self.check = "Error\n* Placeholder item.\n* Did your item got deleted?"
+    self.check = "* If you are reading this,\nI messed up somehow."
+    -- self.check = "Error\n* Placeholder item.\n* Did your item got deleted?"
 
     -- Where this item can be used (world, battle, all, or none)
-    self.usable_in = "none"
+    self.usable_in = "all"
+    -- self.usable_in = "none"
     -- Item this item will get turned into when consumed
     self.result_item = nil
     -- Will this item be instantly consumed in battles?
     self.instant = false
     
+end
+
+function item:onBattleSelect(user, target)
+    return false
+end
+
+function Item:onCheck()
+    Game.world:showText(self:getCheck())
+end
+
+function Item:getBattleText(user, target) return false end
+
+function item:onLightBattleUse(user, target) end
+
+function item:onWorldUse()
+    Game.world:closeMenu()
+    return false
 end
 
 return item
