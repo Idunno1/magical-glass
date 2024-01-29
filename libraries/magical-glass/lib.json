@@ -69,15 +69,6 @@
         /////
         "hide_cell": true,
 
-        ///// Use Undertale's placeholder invalid item if you have a non existent item in your inventory
-        //// (IMPORTANT... Kinda.)
-        // When you somehow obtain a non existent item in your inventory, Kristal by default will simply stop loading your items.
-        // This means, that not only the non existent item, but the rest of your items that come after it, will not be loaded and could be lost.
-        // In Undertale, non existent items are replaced with this 'placeholder' or 'invalid' item.
-        // If this option is set to true, Kristal will also use Undertale's invalid item if one of your items doesn't exist.
-        /////
-        "use_invalid_item": true,
-
         ///// Light World STAT menu style
         // Determines the appearance of the Light World STAT menu when more than one character is
         // in the party.

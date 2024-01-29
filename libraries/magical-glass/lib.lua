@@ -530,23 +530,19 @@ function lib:init()
     end)
 
     Utils.hook(Inventory, "loadStorage", function(orig, self, storage, data)
-        if Kristal.getLibConfig("magical-glass", "use_invalid_item") == true then
-            storage.max = data.max
-            for i = 1, storage.max do
-                local item = data.items[tostring(i)]
-                if item then
-                    if Registry.getItem(item.id) then
-                        storage[i] = Registry.createItem(item.id)
-                        storage[i]:load(item)
-                    else
-                        Kristal.Console:error("Could not load item \""..item.id.."\". Replacing with placeholder item.")
-                        storage[i] = Registry.createItem("ut/invalid")
-                        storage[i]:load(item)
-                    end
+        storage.max = data.max
+        for i = 1, storage.max do
+            local item = data.items[tostring(i)]
+            if item then
+                if Registry.getItem(item.id) then
+                    storage[i] = Registry.createItem(item.id)
+                    storage[i]:load(item)
+                else
+                    Kristal.Console:error("Could not load item \""..item.id.."\". Replacing with placeholder item.")
+                    storage[i] = Registry.createItem("ut_items/invalid")
+                    storage[i]:load(item)
                 end
             end
-        else
-            orig(self, storage, data)
         end
     end)
     
@@ -2855,7 +2851,7 @@ function lib:registerDebugOptions(debug)
 
     for id, item_data in pairs(Registry.items) do
         local item = item_data()
-        if item.id ~= "ut/invalid" then
+        if item.id ~= "ut_items/invalid" then
             debug:registerOption("give_item", item.name + (item.light and " (Light Item)" or ""), item.description, function ()
                 Game.inventory:tryGiveItem(item_data())
             end)
