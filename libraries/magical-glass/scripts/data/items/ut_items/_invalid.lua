@@ -43,11 +43,11 @@ function item:onBattleSelect(user, target)
     return false
 end
 
-function Item:onCheck()
+function item:onCheck()
     Game.world:showText(self.check)
 end
 
-function Item:getBattleText(user, target) return false end
+function item:getBattleText(user, target) return false end
 
 function item:onLightBattleUse(user, target) end
 
