@@ -171,13 +171,6 @@ end
 function LightActionBoxSingle:drawStatusStrip()
     local x, y = 10, 130
     local name = self.battler.chara:getName()
-    if self.index == 1 then
-        if Kristal.getLibConfig("magical-glass", "use_save_name") then
-            name = Game.save_name
-        else
-            name = self.battler.chara:getName()
-        end
-    end
     local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
 
     love.graphics.setFont(Assets.getFont("namelv", 24))

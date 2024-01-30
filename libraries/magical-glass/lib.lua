@@ -67,7 +67,7 @@ end
 
 function lib:load(data, new_file)
     if Kristal.getModOption("encounter") then
-        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or Kristal.getLibConfig("magical-glass", "default_name") or "CHARA"
+        Game.save_name = Game.save_name or Kristal.Config["defaultName"] or "PLAYER"
     end
     
     Game.light = Kristal.getLibConfig("magical-glass", "default_battle_system")[2] or false
@@ -2275,11 +2275,7 @@ function lib:init()
     
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        if Kristal.getLibConfig("magical-glass", "use_save_name") then
-            love.graphics.print(Game.save_name, 46, 60 + offset)
-        else
-            love.graphics.print(chara:getName(), 46, 60 + offset)
-        end
+        love.graphics.print(chara:getName(), 46, 60 + offset)
         love.graphics.setFont(self.font_small)
         love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
         love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
@@ -2387,15 +2383,7 @@ function lib:init()
     Utils.hook(LightStatMenu, "draw", function(orig, self)
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        if self.party_selecting == 1 then
-            if Kristal.getLibConfig("magical-glass", "use_save_name") then
-                love.graphics.print("\"" .. Game.save_name .. "\"", 4, 8)
-            else
-                love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
-            end
-        else
-            love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
-        end
+        love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
 
         local chara = Game.party[self.party_selecting]
 
@@ -2586,7 +2574,7 @@ function lib:init()
         local data      = self.saved_file        or {}
         local mg        = data.magical_glass     or {}
 
-        local name      = data.name              or Game.save_name
+        local name      = data.name              or "EMPTY"
         local level     = mg.lw_save_lv          or 0
         local playtime  = data.playtime          or 0
         local room_name = data.room_name         or "--"
