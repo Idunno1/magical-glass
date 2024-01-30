@@ -28,16 +28,6 @@
         /////
         "default_battle_system": ["deltarune", false],
 
-        ///// Use Save Name
-        // Enables tension and grazing in Light Battles.
-        /////
-        "use_save_name": true,
-
-        ///// Default Save Name
-        // If you have no save name, default to this. Default: CHARA
-        /////
-        "default_name": "CHARA",
-
         ///// Light Battle TP
         // Enables tension and grazing in Light Battles.
         /////
