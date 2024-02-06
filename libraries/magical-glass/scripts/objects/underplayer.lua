@@ -19,6 +19,7 @@ function UnderPlayer:init(chara, x, y)
 	self.can_move_x = true
     self.can_move_y = true
 	self.event_collision_diagonal = false
+    self.event_collide = {}
 end
 
 function UnderPlayer:handleMovement()
@@ -27,7 +28,9 @@ function UnderPlayer:handleMovement()
     
     local can_move_x = not self.last_collided_x
     local can_move_y = not self.last_collided_y
-	
+    
+    local event_collide = self.event_collide["x"] or self.event_collide["y"] or false
+    
     if Input.down("left") then
         walk_x = walk_x - 1
         if not (Input.down("up") and self.facing == "up" or Input.down("down") and self.facing == "down") then
@@ -127,13 +130,17 @@ function UnderPlayer:handleMovement()
         self.fix_movement = false
     end
 
-    if not (Input.down("up") and Input.down("down") and not can_move_x and (Input.down("left") or Input.down("right"))) then
+    if event_collide and (not can_move_x or not can_move_y) and self.moving_x ~= 0 and self.moving_y ~= 0 then
+        self.facing = self.sprite.facing
+    elseif not (Input.down("up") and Input.down("down") and not can_move_x and self.moving_x ~= 0) then
         self:move(walk_x, walk_y, speed * DTMULT)
     else
         self.facing = "down"
     end
     
     self.sprite.facing = self.facing
+    
+    
 
     if not running or self.last_collided_x or self.last_collided_y then
         self.run_timer = 0
@@ -153,6 +160,7 @@ end
 
 function UnderPlayer:doMoveAmount(type, amount, other_amount)
     other_amount = other_amount or 0
+    self.event_collide[type] = false
 
     if amount == 0 then
         self["last_collided_"..type] = false
@@ -215,6 +223,7 @@ function UnderPlayer:doMoveAmount(type, amount, other_amount)
                         end
                     end
                 else
+                    self.event_collide[type] = true
                     if self.event_diagonal_walk == true then
 						if self.moving_x > 0 and (Input.down("right") and self.facing == "right") then
 							self.can_move_y = false
