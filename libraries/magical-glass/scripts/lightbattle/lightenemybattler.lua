@@ -877,12 +877,24 @@ function LightEnemyBattler:setSprite(sprite, speed, loop, after)
 end
 
 function LightEnemyBattler:update()
+    if self.actor then
+        self.actor:onBattleUpdate(self)
+    end
+
     if self.hurt_timer > 0 then
         self.hurt_timer = Utils.approach(self.hurt_timer, 0, DT)
 
         if self.hurt_timer == 0 then
             self:onHurtEnd()
         end
+    end
+
+    super.update(self)
+end
+
+function LightEnemyBattler:draw()
+    if self.actor then
+        self.actor:onBattleDraw(self)
     end
 
     super.update(self)
