@@ -8,9 +8,9 @@ function UnderPlayer:init(chara, x, y)
 	-- The movement speed of the player.
     self.walk_speed = 6
     
-    -- Related to holding up and down at the same time (also known as the Frisk Dance or Genocide Dance)
+    -- Related to holding up and down at the same time (also known as the Frisk Dance or Murder Dance)
     self.dance = nil
-    self.fix_movement = false
+    self.fix_movement = nil
     
     -- If 'false', if you run into an Event with collisions while walking diagonally, the player will stop moving, like in Undertale
 	self.event_diagonal_walk = false
@@ -121,21 +121,14 @@ function UnderPlayer:handleMovement()
         self.dance = nil
     end
 
-    if Input.down("up") and Input.down("down") and Input.down("left") and Input.down("right") then
-        self.fix_movement = true
-    elseif Input.down("up") and Input.down("down") and (Input.down("left") or Input.down("right")) and self.fix_movement then
-        can_move_x = true
-        self.fix_movement = false
-    else
-        self.fix_movement = false
-    end
-
-    if event_collide and (not can_move_x or not can_move_y) and self.moving_x ~= 0 and self.moving_y ~= 0 then
+    if event_collide and self.moving_x ~= 0 and self.moving_y ~= 0 then
         self.facing = self.sprite.facing
-    elseif not (Input.down("up") and Input.down("down") and not can_move_x and self.moving_x ~= 0) then
+    elseif not (Input.down("up") and Input.down("down") and not can_move_x and self.moving_x ~= 0) or self.fix_movement and self.fix_movement ~= self.moving_x then
         self:move(walk_x, walk_y, speed * DTMULT)
+        self.fix_movement = nil
     else
         self.facing = "down"
+        self.fix_movement = self.moving_x
     end
     
     self.sprite.facing = self.facing
