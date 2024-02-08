@@ -897,7 +897,7 @@ function LightEnemyBattler:draw()
         self.actor:onBattleDraw(self)
     end
 
-    super.update(self)
+    super.draw(self)
 end
 
 function LightEnemyBattler:canDeepCopy()
