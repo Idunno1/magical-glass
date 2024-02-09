@@ -855,11 +855,11 @@ function LightEnemyBattler:setActor(actor, use_overlay)
     end
 
     if self.sprite then
-        self.sprite.facing = "left"
+        self.sprite.facing = "down"
         self.sprite.inherit_color = true
     end
     if self.overlay_sprite then
-        self.overlay_sprite.facing = "left"
+        self.overlay_sprite.facing = "down"
         self.overlay_sprite.inherit_color = true
     end
 end
