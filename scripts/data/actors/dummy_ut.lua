@@ -47,7 +47,7 @@ function actor:init()
     self:addLightBattlerPart("body", {
         -- path, function that returns a path, or a function that returns a sprite object
         -- if one's not defined, get the default animation
-        ["sprite"] = function()
+        ["create_sprite"] = function()
             self.sprite = Sprite(self.path.."/lightbattle/body")
             return self.sprite
         end,
