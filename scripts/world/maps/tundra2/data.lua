@@ -519,7 +519,7 @@ return {
           rotation = 0,
           visible = true,
           properties = {
-            ["actor"] = "noelle_lw_npc",
+            ["actor"] = "noelle_lw",
             ["lightencounter"] = "noelle"
           }
         },
