@@ -310,16 +310,23 @@ function LightBattleUI:drawState()
         Game.battle.soul:setPosition(72, 255 + ((Game.battle.current_menu_y - (page * 3)) * 31.5))
         local font_main = Assets.getFont("main")
         local font_mono = Assets.getFont("main_mono")
+        local font_status = Assets.getFont("battlehud")
 
         Draw.setColor(1, 1, 1, 1)
 
-        if self.style ~= "undertale" then
-            love.graphics.setFont(font_main)
-            if Game.battle.state_reason ~= "XACT" then
-                love.graphics.print("HP", 400, -10, 0, 1, 0.5)
-            end
-            if self.draw_mercy then
-                love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+        if self.draw_percents then
+            if self.style == "deltatraveler_new" then
+                love.graphics.setFont(font_main)
+                love.graphics.print("HP", 412, -12, 0, 1, 0.75)
+                love.graphics.print("MERCY", 502, -12, 0, 1, 0.75)
+            elseif self.style == "deltarune" then
+                love.graphics.setFont(font_main)
+                if Game.battle.state_reason ~= "XACT" then
+                    love.graphics.print("HP", 400, -10, 0, 1, 0.5)
+                end
+                if self.draw_mercy then
+                    love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+                end
             end
         end
 
@@ -431,12 +438,12 @@ function LightBattleUI:drawState()
                 end
             end
 
-            if Game.battle.state_reason ~= "XACT" then
+            if self.style == "deltatraveler_new" or Game.battle.state_reason ~= "XACT" then
                 local namewidth = font_mono:getWidth(enemy.name)
 
                 Draw.setColor(128/255, 128/255, 128/255, 1)
 
-                if Kristal.getLibConfig("magical-glass", "gauge_styles") == "deltarune" then
+                if self.style == "deltarune" or self.style == "deltatraveler_new" then
                     if ((80 + namewidth + 110 + (font_mono:getWidth(enemy.comment) / 2)) < 338) then
                         love.graphics.print(enemy.comment, 80 + namewidth + 110, 0 + y_offset)
                     else
@@ -478,41 +485,108 @@ function LightBattleUI:drawState()
                             Draw.setColor(PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
                         end
-                    end
 
-                    if self.draw_percents and not (self.style == "undertale" and Game.battle.state_reason == "ACT") then
-                        Draw.setColor(PALETTE["action_health_text"])
+                        if self.draw_percents then
+                            Draw.setColor(PALETTE["action_health_text"])
+                            if enemy:getHPVisibility() then
+                                love.graphics.print(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            else
+                                love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            end
+                        end
+                    elseif self.style == "deltatraveler_new" then
                         if enemy:getHPVisibility() then
-                            love.graphics.print(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
-                        elseif self.style ~= "undertale" then
-                            love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                            Draw.setColor(PALETTE["action_health_bg"])
+                            love.graphics.rectangle("fill", hp_x + 12, 14 + y_offset, 75, 17)
+        
+                            Draw.setColor(PALETTE["action_health"])
+                            love.graphics.rectangle("fill", hp_x + 12, 14 + y_offset, math.floor(hp_percent * 75), 17)
+                        else
+                            Draw.setColor(PALETTE["action_health_bg"])
+                            love.graphics.rectangle("fill", hp_x + 12, 14 + y_offset, 75, 17)
+                        end
+
+                        if self.draw_percents then
+                            love.graphics.setFont(font_status)
+                            local shadow_offset = 1
+
+                            Draw.setColor(COLORS.black)
+                            if enemy:getHPVisibility() then
+                                love.graphics.printf(math.floor(hp_percent * 100) .. "%", (hp_x + 20) + shadow_offset, (13 + y_offset) + shadow_offset, 64, "center")
+                            else
+                                love.graphics.print("???", (hp_x + 32) + shadow_offset, (13 + y_offset) + shadow_offset)
+                            end
+
+                            Draw.setColor(PALETTE["action_health_text"])
+                            if enemy:getHPVisibility() then
+                                love.graphics.printf(math.floor(hp_percent * 100) .. "%", hp_x + 20, 13 + y_offset, 64, "center")
+                            else
+                                love.graphics.print("???", hp_x + 35, 13 + y_offset)
+                            end
+                        end
+
+                        if self.draw_mercy then
+                            love.graphics.setFont(font_status)
+                            local shadow_offset = 1
+
+                            Draw.setColor(PALETTE["battle_mercy_bg"])
+
+                            love.graphics.rectangle("fill", 502, 14 + y_offset, 75, 17)
+            
+                            if enemy.disable_mercy then
+                                Draw.setColor(PALETTE["battle_mercy_text"])
+                                love.graphics.setLineWidth(2)
+                                love.graphics.line(502, 15 + y_offset, 502 + 75, 15 + y_offset + 16 - 1)
+                                love.graphics.line(502, 15 + y_offset + 16 - 1, 502 + 75, 15 + y_offset)
+                            else
+                                Draw.setColor(1, 1, 0, 1)
+                                if enemy:getMercyVisibility() then
+                                    love.graphics.rectangle("fill", 502, 14 + y_offset, ((enemy.mercy / 100) * 75), 17)
+                                end
+            
+                                if self.draw_percents then
+                                    Draw.setColor(COLORS.black)
+                                    if enemy:getHPVisibility() then
+                                        love.graphics.printf(math.floor(enemy.mercy) .. "%", 509 + shadow_offset, (13 + y_offset) + shadow_offset, 64, "center")
+                                    else
+                                        love.graphics.print("???", 509 + shadow_offset, (13 + y_offset) + shadow_offset)
+                                    end
+
+                                    Draw.setColor({142/255, 12/255, 0})
+                                    if enemy:getMercyVisibility() then
+                                        love.graphics.printf(math.floor(enemy.mercy) .. "%", 509, 13 + y_offset, 64, "center")
+                                    else
+                                        love.graphics.print("???", 509, 13 + y_offset)
+                                    end
+                                end
+                            end
                         end
                     end
                 end
             end
 
             local mercy_x = self.style == "undertale" and (Game.battle.state_reason == "XACT" and 480 or hp_x) or 500
-            local mercy_lenght = self.style == "undertale" and 101 or 81
+            local mercy_length = self.style == "undertale" and 101 or 81
 
-            if self.draw_mercy and not enemy.done_state and not (self.style == "undertale" and Game.battle.state_reason == "ATTACK") then
+            if self.draw_mercy and not enemy.done_state and not (self.style ~= "deltarune" and Game.battle.state_reason == "ATTACK") then
                 if enemy.selectable then
                     Draw.setColor(PALETTE["battle_mercy_bg"])
                 else
                     Draw.setColor(127/255, 127/255, 127/255, 1)
                 end
                 if enemy:getMercyVisibility() or self.style ~= "undertale" then
-                    love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_lenght, bar_height)
+                    love.graphics.rectangle("fill", mercy_x, 10 + y_offset, mercy_length, bar_height)
                 end
 
                 if enemy.disable_mercy and not (not enemy:getMercyVisibility() and self.style == "undertale") then
                     Draw.setColor(PALETTE["battle_mercy_text"])
                     love.graphics.setLineWidth(2)
-                    love.graphics.line(mercy_x, 11 + y_offset, mercy_x + mercy_lenght, 10 + y_offset + bar_height - 1)
-                    love.graphics.line(mercy_x, 10 + y_offset + bar_height - 1, mercy_x + mercy_lenght, 11 + y_offset)
+                    love.graphics.line(mercy_x, 11 + y_offset, mercy_x + mercy_length, 10 + y_offset + bar_height - 1)
+                    love.graphics.line(mercy_x, 10 + y_offset + bar_height - 1, mercy_x + mercy_length, 11 + y_offset)
                 else
                     Draw.setColor(1, 1, 0, 1)
                     if enemy:getMercyVisibility() then
-                        love.graphics.rectangle("fill", mercy_x, 10 + y_offset, ((enemy.mercy / 100) * mercy_lenght), bar_height)
+                        love.graphics.rectangle("fill", mercy_x, 10 + y_offset, ((enemy.mercy / 100) * mercy_length), bar_height)
                     end
 
                     if self.draw_percents and enemy.selectable then
