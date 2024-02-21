@@ -111,7 +111,7 @@
         // the main window.
         //
         /////
-        "item_info": "deltatraveler",
+        "item_info": "magical_glass",
 
         ///// Gauge style
         // Determines the appearance of gauges drawn in ENEMYSELECT or PARTYSELECT in Light Battles.
@@ -130,12 +130,12 @@
         // The gauge styles used in Deltatraveler after version 2.07.
         //
         /////
-        "gauge_style": "deltatraveler_new",
+        "gauge_style": "undertale",
 
         ///// Mercy Bar
         // Draws the Mercy Bar in Light Battles.
         /////
-        "mercy_bar": true,
+        "mercy_bar": false,
 
         ///// Mercy Messages
         // Shows the amount of mercy added to an enemy when their mercy gauge increases in Light Battles.
@@ -145,7 +145,7 @@
         ///// Enemy Bar Percentages
         // Draws the HP and Mercy text and Percentages on the gauges.
         /////
-        "enemy_bar_percentages": true,
+        "enemy_bar_percentages": false,
 
         ///// Light Enemy Chaser Auras
         // Whether enemies in the light world will also have auras.
