@@ -876,6 +876,10 @@ function LightEnemyBattler:setSprite(sprite, speed, loop, after)
     end
 end
 
+function LightEnemyBattler:getSpritePart(part_id)
+    return self.sprite:getPart(part_id)
+end
+
 function LightEnemyBattler:update()
     if self.actor then
         self.actor:onBattleUpdate(self)
