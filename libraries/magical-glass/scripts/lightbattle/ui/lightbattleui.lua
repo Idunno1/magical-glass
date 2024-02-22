@@ -647,7 +647,7 @@ function LightBattleUI:drawState()
             love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
 
             if self.style == "undertale" then
-                Draw.setColor(PALETTE["action_health_bg"])
+                Draw.setColor(1,0,0,1)
                 love.graphics.rectangle("fill", 318, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
