@@ -48,7 +48,7 @@ function LightEquipItem:applyInvBonus(value) return value + self.inv_bonus end
 function LightEquipItem:getLightBoltCount() return self.light_bolt_count end
 
 function LightEquipItem:getLightBoltSpeed()
-    if self:getLightBoltSpeedVariance() then
+    if self:getLightBoltSpeedVariance() and #Game.battle.party == 1 then
         return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
     else
         return self.light_bolt_speed
