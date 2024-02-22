@@ -14,6 +14,7 @@ function LightAttackBox:init(x, y)
     -- called "fatal" for some reason in ut
     self.bolt_target = #Game.battle.party > 1 and self.arena.x / 2 - 10 or self.arena.x
 
+    self.shoe_finished = 0
     self.attackers = Game.battle.normal_attackers
     self.lanes = {}
 
@@ -23,6 +24,7 @@ function LightAttackBox:init(x, y)
 end
 
 function LightAttackBox:createBolts()
+    self.shoe_finished = 0
     for i,battler in ipairs(self.attackers) do
         local lane = {}
         lane.battler = battler
@@ -122,9 +124,12 @@ end
 function LightAttackBox:checkAttackEnd(battler, score, bolts, close)
     if #bolts == 0 then
         if battler.attack_type == "shoe" then
-            self.fading = true
+            self.shoe_finished = self.shoe_finished + 1
         end
         battler.attacked = true
+        if self.shoe_finished >= #self.attackers then
+            self.fading = true
+        end
         return battler.score
     end
 end
