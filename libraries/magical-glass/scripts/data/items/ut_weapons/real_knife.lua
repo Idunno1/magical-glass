@@ -41,11 +41,12 @@ function item:showEquipText()
 end
 
 function item:getLightBattleText(user, target)
-    if user == target then
-        return "* About time."
-    else
-        return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* About time."
-    end
+    -- if user == target then
+        -- return "* About time."
+    -- else
+        -- return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true)..".\n* About time."
+    -- end
+    return "* About time."
 end
 
 function item:getBattleText(user, target)

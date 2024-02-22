@@ -3,7 +3,7 @@ local LightActionBoxSingle, super = Class(Object)
 function LightActionBoxSingle:init(x, y, index, battler)
     super.init(self, x, y)
 
-    self.index = 1
+    self.index = index
     self.battler = battler
 
     self.selected_button = 1
@@ -103,6 +103,14 @@ function LightActionBoxSingle:snapSoulToButton()
 end
 
 function LightActionBoxSingle:update()
+    for _,button in ipairs(self.buttons) do
+        if (Game.battle.current_selecting == 0 and self.index == 1) or (Game.battle.current_selecting == self.index) then
+            self.visible = true
+        else
+            self.visible = false
+        end
+    end
+
     if self.buttons then
         for i,button in ipairs(self.buttons) do
             if (Game.battle.current_selecting == self.index) then
@@ -164,7 +172,11 @@ function LightActionBoxSingle:drawStatusStripStory()
         current = "0" .. tostring(current)
     end
 
-    love.graphics.setColor(COLORS["white"])
+    local color = COLORS.white
+    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+        color = COLORS.aqua
+    end
+    love.graphics.setColor(color)
     love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14, y)
 end
 

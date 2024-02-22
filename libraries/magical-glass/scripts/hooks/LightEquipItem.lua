@@ -127,16 +127,17 @@ function LightEquipItem:onWorldUse(target)
 end
 
 function LightEquipItem:getLightBattleText(user, target)
-    if user == target then
-        return "* ".. user.chara:getNameOrYou() .. " equipped the " .. self:getUseName() .. "."
-    else
-        return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and "..target.chara:getNameOrYou(true).." equppied it."
-    end
+    -- if user == target then
+        -- return "* ".. user.chara:getNameOrYou() .. " equipped the " .. self:getUseName() .. "."
+    -- else
+        -- return "* "..user.chara:getNameOrYou().." gave the "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and "..target.chara:getNameOrYou(true).." equppied it."
+    -- end
+    return "* ".. target.chara:getNameOrYou() .. " equipped the " .. self:getUseName() .. "."
 end
 
 function LightEquipItem:getBattleText(user, target)
     if user == target then
-        return "* ".. user.chara:getName() .. " equipped the " .. self:getUseName() .. "!"
+        return "* ".. target.chara:getName() .. " equipped the " .. self:getUseName() .. "!"
     else
         return "* "..user.chara:getName().." gave the "..self:getUseName().." to "..target.chara:getName().." and "..target.chara:getName().." equppied it!"
     end
