@@ -25,8 +25,6 @@ function item:init()
     self.usable_in = "all"
     -- Item this item will get turned into when consumed
     self.result_item = nil
-    
-    self.light_bolt_direction = "right"
 end
 
 function item:onWorldUse(target)
