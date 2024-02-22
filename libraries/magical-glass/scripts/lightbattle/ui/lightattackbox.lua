@@ -5,14 +5,14 @@ function LightAttackBox:init(x, y)
 
     self.arena = Game.battle.arena
 
-    self.target_sprite = Sprite("ui/lightbattle/dumbtarget")
+    self.target_sprite = #Game.battle.party > 1 and Sprite("ui/lightbattle/dumbtarget_multi") or Sprite("ui/lightbattle/dumbtarget")
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
     self.target_sprite.layer = BATTLE_LAYERS["above_ui"]
     Game.battle:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
-    self.bolt_target = self.arena.x
+    self.bolt_target = #Game.battle.party > 1 and self.arena.x / 2 - 10 or self.arena.x
 
     self.attackers = Game.battle.normal_attackers
     self.lanes = {}
@@ -32,7 +32,7 @@ function LightAttackBox:createBolts()
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or "right"
+        lane.direction = #Game.battle.party > 1 and "left" or lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or "right"
 
         if (lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"
@@ -40,31 +40,42 @@ function LightAttackBox:createBolts()
             lane.attack_type = "slice"
         end
 
+        local randomizer = #self.attackers == 1 and 0 or math.random(0,3) * 40
         local start_x
         if lane.direction == "left" then
-            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) 
+            start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) - randomizer
         elseif lane.direction == "right" then
-            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) 
+            start_x = (self.target_sprite.x - self.target_sprite.width / 1.8) + randomizer
         else
             error("Invalid attack direction")
         end
 
         for i = 1, lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1 do
             local bolt
+            local scale_y = (1 / #Game.battle.party)
             if i == 1 then
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler, scale_y)
                 end
             else
                 if lane.direction == "left" then
-                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
                 else
-                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler)
+                    bolt = LightAttackBar(start_x - (lane.weapon and lane.weapon.getLightMultiboltVariance and lane.weapon:getLightMultiboltVariance(i - 1) or (50 * i)), 319, battler, scale_y)
                 end
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
+            local centerizer = 0
+            if #Game.battle.party == 1 then
+                centerizer = 1
+            elseif #Game.battle.party == 2 then
+                centerizer = 33
+            elseif #Game.battle.party == 3 then
+                centerizer = 43
+            end
+            bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#Game.battle.party - Game.battle:getPartyIndex(lane.battler.chara.id)))) + centerizer
             bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
@@ -163,7 +174,7 @@ function LightAttackBox:hit(battler)
 
         return self:checkAttackEnd(battler, battler.score, battler.bolts, close), 2
     elseif battler.attack_type == "slice" then
-        battler.score = math.abs(self:getClose(battler))
+        battler.score = math.floor(math.abs(self:getClose(battler)) * (#Game.battle.party > 1 and self:getClose(battler) < -20 and 3 or 1))
         if battler.score == 0 then
             battler.score = 1
         end
@@ -185,7 +196,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
+        return (battler.direction == "left" and self:getClose(battler) - (#Game.battle.party > 1 and 180 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
@@ -225,11 +236,15 @@ function LightAttackBox:update()
             for _,lane in ipairs(self.lanes) do
                 if lane.direction == "right" then
                     for _,bolt in ipairs(lane.bolts) do
-                        bolt:move(lane.speed * DTMULT, 0)
+                        if not bolt.hit then
+                            bolt:move(lane.speed * DTMULT, 0)
+                        end
                     end
                 elseif lane.direction == "left" then
                     for _,bolt in ipairs(lane.bolts) do
-                        bolt:move(-lane.speed * DTMULT, 0)
+                        if not bolt.hit then
+                            bolt:move(-lane.speed * DTMULT, 0)
+                        end
                     end
                 end
             end
@@ -270,6 +285,7 @@ function LightAttackBox:draw()
                 Game.battle:debugPrintOutline("stretch: "  .. battler.stretch,         0, -200 + 32)
             end
             Game.battle:debugPrintOutline("attacked: "     .. tostring(battler.attacked), 0, -200 + 48)
+            break
         end
 
     end

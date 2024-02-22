@@ -1284,7 +1284,7 @@ function lib:init()
 
         local offset = 0
         if not kill then
-            offset = (self.hit_count * 20)
+            offset = (self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2))
         end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
