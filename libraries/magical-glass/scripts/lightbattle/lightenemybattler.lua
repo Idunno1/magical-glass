@@ -593,7 +593,9 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
             lane.battler.tp_gain = 3
         end
     end
-    
+    if total_damage >= self.health and self.exit_on_defeat then
+        self.done_state = "DEFEATED"
+    end
     return total_damage, crit
 end
 
