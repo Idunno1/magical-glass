@@ -34,7 +34,7 @@ function LightAttackBox:createBolts()
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = #Game.battle.party > 1 and "left" or lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or "right"
+        lane.direction = #Game.battle.party > 1 and "left" or lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or Utils.pick({"right", "left"})
 
         if (lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"

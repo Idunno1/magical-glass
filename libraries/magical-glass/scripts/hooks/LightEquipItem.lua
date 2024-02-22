@@ -21,7 +21,7 @@ function LightEquipItem:init()
     self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
     self.light_multibolt_variance = {{0}}
 
-    self.light_bolt_direction = "right" -- "right", "left", or "random"
+    self.light_bolt_direction = "random" -- "right", "left", or "random"
 
     self.light_bolt_miss_threshold = 280
 
