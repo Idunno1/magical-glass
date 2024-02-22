@@ -54,7 +54,7 @@ function LightAttackBox:createBolts()
 
         for i = 1, lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1 do
             local bolt
-            local scale_y = (1 / #Game.battle.party)
+            local scale_y = (1 / #self.attackers)
             if i == 1 then
                 if lane.direction == "left" then
                     bolt = LightAttackBar(start_x + (lane.weapon and lane.weapon.getLightBoltStart and lane.weapon:getLightBoltStart() or -16), 319, battler, scale_y)
@@ -70,14 +70,14 @@ function LightAttackBox:createBolts()
                 bolt.sprite:setSprite(bolt.inactive_sprite)
             end
             local centerizer = 0
-            if #Game.battle.party == 1 then
+            if #self.attackers == 1 then
                 centerizer = 1
-            elseif #Game.battle.party == 2 then
+            elseif #self.attackers == 2 then
                 centerizer = 33
-            elseif #Game.battle.party == 3 then
+            elseif #self.attackers == 3 then
                 centerizer = 43
             end
-            bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#Game.battle.party - Game.battle:getPartyIndex(lane.battler.chara.id)))) + centerizer
+            bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#self.attackers - Utils.getIndex(self.attackers, lane.battler)))) + centerizer
             bolt.layer = BATTLE_LAYERS["above_ui"]
             table.insert(lane.bolts, bolt)
             Game.battle:addChild(bolt)
