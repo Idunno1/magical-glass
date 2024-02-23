@@ -195,9 +195,17 @@ function LightActionButton:select()
             })
         end
         if Game.battle.encounter.can_flee then
+            local battle_leader
+            for i,battler in ipairs(Game.battle.party) do
+                if not battler.is_down then
+                    battle_leader = battler.chara.id
+                    break
+                end
+            end
             Game.battle:addMenuItem({
                 ["name"] = "Flee",
                 ["special"] = "flee",
+                ["unusable"] = Game.battle:getPartyIndex(battle_leader) ~= Game.battle.current_selecting,
                 ["callback"] = function(menu, item)
                     local chance = Game.battle.encounter.flee_chance
 
