@@ -146,7 +146,7 @@ function LightAttackBox:hit(battler)
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
-        local close = math.abs(self:getClose(battler))
+        local close = math.floor(math.abs(self:getClose(battler)) * (#Game.battle.party > 1 and self:getClose(battler) < -20 and 3 or 1))
 
         local eval = self:evaluateHit(battler, close)
         
