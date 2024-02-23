@@ -1057,6 +1057,7 @@ function LightBattle:onStateChange(old,new)
     elseif new == "VICTORY" then
         self.music:stop()
         self.current_selecting = 0
+        self.forced_victory = true
 
         for _,battler in ipairs(self.party) do
             battler:setSleeping(false)
