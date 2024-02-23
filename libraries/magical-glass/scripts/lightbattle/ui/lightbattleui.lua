@@ -662,6 +662,15 @@ function LightBattleUI:drawState()
                 love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
+        
+        Draw.setColor(1, 1, 1, 1)
+        
+        if page < max_page then
+            Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
+        end
+        if page > 0 then
+            Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
+        end
     elseif state == "FLEEING" or state == "TRANSITIONOUT" then
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font, 32)
