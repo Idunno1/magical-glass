@@ -53,12 +53,14 @@ function LightBattleUI:init()
     
     self.attacking = false
 
-    self.action_box_ut = LightActionBoxSingle(20, 0, 1, Game.battle.party[1])
-    self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
-    self.action_box_ut:move(self:getRelativePos())
-    Game.battle:addChild(self.action_box_ut)
-    table.insert(self.action_boxes, self.action_box_ut)
-    Game.battle.party[1].chara:onActionBox(self.action_box_ut, false)
+    for i,battler in ipairs(Game.battle.party) do
+        self.action_box_ut = LightActionBoxSingle(20, 0, i, battler)
+        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
+        self.action_box_ut:move(self:getRelativePos())
+        Game.battle:addChild(self.action_box_ut)
+        table.insert(self.action_boxes, self.action_box_ut)
+        battler.chara:onActionBox(self.action_box_ut, false)
+    end
 
     self.shown = true 
     
@@ -645,7 +647,7 @@ function LightBattleUI:drawState()
             love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
 
             if self.style == "undertale" then
-                Draw.setColor(PALETTE["action_health_bg"])
+                Draw.setColor(1,0,0,1)
                 love.graphics.rectangle("fill", 318, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")

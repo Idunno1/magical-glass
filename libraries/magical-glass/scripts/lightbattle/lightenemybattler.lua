@@ -12,6 +12,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.health = 100
     self.attack = 1
     self.defense = 0
+    
+    -- Used for calcuating where enemies are defeated by the attack so the next attacker's attack will jump to the next enemy
+    self.post_health = nil
 
     self.money = 0
     self.experience = 0
@@ -472,7 +475,7 @@ function LightEnemyBattler:onAct(battler, name)
     end
 end
 
-function LightEnemyBattler:onTurnStart() end
+function LightEnemyBattler:onTurnStart() self.post_health = nil end
 function LightEnemyBattler:onTurnEnd() end
 
 function LightEnemyBattler:getAct(name)
@@ -593,7 +596,13 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
             lane.battler.tp_gain = 3
         end
     end
-    
+    if not self.post_health then
+        self.post_health = self.health
+    end
+    self.post_health = self.post_health - total_damage
+    if self.post_health <= 0 and self.exit_on_defeat then
+        self.done_state = "DEFEATED"
+    end
     return total_damage, crit
 end
 

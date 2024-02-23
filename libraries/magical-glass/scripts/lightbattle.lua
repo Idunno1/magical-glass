@@ -174,7 +174,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, 1 do
+    for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -2947,8 +2947,12 @@ function LightBattle:handleActionSelectInput(key)
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting
 
-            --self:previousParty()
+            self:previousParty()
 
+            if self.current_selecting ~= old_selecting then
+                self:playMoveSound()
+                self.battle_ui.action_boxes[self.current_selecting]:unselect()
+            end
             if self.current_selecting ~= old_selecting then
                 self:playMoveSound()
             end
