@@ -1720,7 +1720,7 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            love.graphics.printf("Use " .. item:getName() .. " on", -45, 233, 400, "center")
+            love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
             for i,party in ipairs(Game.party) do
                 love.graphics.print(party.name, 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
