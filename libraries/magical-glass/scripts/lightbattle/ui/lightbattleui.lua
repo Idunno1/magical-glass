@@ -637,7 +637,7 @@ function LightBattleUI:drawState()
         local max_page = math.ceil(#Game.battle.party / 3) - 1
         local page_offset = page * 3
 
-        Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * 248), 255 + ((Game.battle.current_menu_y) * 31.5))
+        Game.battle.soul:setPosition(72, 255 + ((Game.battle.current_menu_y - (page * 3)) * 31.5))
 
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font)
