@@ -764,7 +764,7 @@ function LightEnemyBattler:freeze()
 
     -- self:recruitMessage("frozen")
     local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
-    message.y = message.y + 72
+    message.y = message.y + 60
     message:resetPhysics()
 
     self.hurt_timer = -1
