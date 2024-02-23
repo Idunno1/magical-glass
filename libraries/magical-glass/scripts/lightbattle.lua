@@ -2773,13 +2773,13 @@ function LightBattle:onKeyPressed(key)
     elseif self.state == "ENEMYSELECT" then
 
         if Input.isConfirm(key) then
+            if self.encounter:onEnemySelect(self.state_reason, self.current_menu_y) then return end
+            if Kristal.callEvent("onBattleEnemySelect", self.state_reason, self.current_menu_y) then return end
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
             self:playSelectSound()
             if #self.enemies == 0 then return end
             self.selected_enemy = self.current_menu_y
-            if self.encounter:onEnemySelect(self.state_reason, self.current_menu_y) then return end
-            if Kristal.callEvent("onBattleEnemySelect", self.state_reason, self.current_menu_y) then return end
             if self.state_reason == "XACT" then
                 local xaction = Utils.copy(self.selected_xaction)
                 if xaction.default then
