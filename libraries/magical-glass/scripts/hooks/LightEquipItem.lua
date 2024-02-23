@@ -49,7 +49,7 @@ function LightEquipItem:getLightBoltCount() return self.light_bolt_count end
 
 function LightEquipItem:getLightBoltSpeed()
     if self:getLightBoltSpeedVariance() then
-        return self.light_bolt_speed + self:getLightBoltSpeedVariance()
+        return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
     else
         return self.light_bolt_speed
     end
