@@ -228,7 +228,15 @@ function LightEncounter:beforeStateChange(old, new) end
 function LightEncounter:onStateChange(old, new) end
 
 function LightEncounter:onActionSelect(battler, button) end
-function LightEncounter:onMenuSelect(state, item, can_select) end
+
+function LightEncounter:onMenuSelect(state_reason, item, can_select) end
+function LightEncounter:onMenuCancel(state_reason, item) end
+
+function LightEncounter:onEnemySelect(state_reason, enemy_index) end
+function LightEncounter:onEnemyCancel(state_reason, enemy_index) end
+
+function LightEncounter:onPartySelect(state_reason, party_index) end
+function LightEncounter:onPartyCancel(state_reason, party_index) end
 
 function LightEncounter:onGameOver() end
 function LightEncounter:onReturnToWorld(events) end
