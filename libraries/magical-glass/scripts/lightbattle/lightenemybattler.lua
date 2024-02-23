@@ -525,6 +525,9 @@ function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional
     if self.health <= 0 then
         self.health = 0
+        if self.exit_on_defeat then
+            self.done_state = "DEFEATED"
+        end
 
         if not self.defeated then
             if on_defeat then
