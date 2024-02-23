@@ -637,7 +637,7 @@ function LightBattleUI:drawState()
         local max_page = math.ceil(#Game.battle.party / 3) - 1
         local page_offset = page * 3
 
-        Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * 248), 255 + ((Game.battle.current_menu_y) * 31.5))
+        Game.battle.soul:setPosition(72, 255 + ((Game.battle.current_menu_y - (page * 3)) * 31.5))
 
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font)
@@ -661,6 +661,15 @@ function LightBattleUI:drawState()
                 Draw.setColor(PALETTE["action_health"])
                 love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
+        end
+        
+        Draw.setColor(1, 1, 1, 1)
+        
+        if page < max_page then
+            Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
+        end
+        if page > 0 then
+            Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "FLEEING" or state == "TRANSITIONOUT" then
         local font = Assets.getFont("main_mono")
