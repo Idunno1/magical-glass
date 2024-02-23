@@ -173,7 +173,7 @@ function LightActionBoxSingle:drawStatusStripStory()
     end
 
     local color = COLORS.white
-    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
         color = COLORS.aqua
     end
     love.graphics.setColor(color)
@@ -218,7 +218,7 @@ function LightActionBoxSingle:drawStatusStrip()
     end
 
     local color = COLORS.white
-    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+    if Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
         color = COLORS.aqua
     end
     love.graphics.setColor(color)

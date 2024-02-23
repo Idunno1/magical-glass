@@ -76,6 +76,12 @@ function LightAttackBox:createBolts()
                 centerizer = 33
             elseif #self.attackers == 3 then
                 centerizer = 43
+            elseif #self.attackers == 4 then
+                centerizer = 49
+            elseif #self.attackers == 5 then
+                centerizer = 51
+            else
+                centerizer = 51 + (#self.attackers - 5) * 2
             end
             bolt.y = math.ceil(bolt.y - (bolt.sprite.height * scale_y * (#self.attackers - Utils.getIndex(self.attackers, lane.battler)))) + centerizer
             bolt.layer = BATTLE_LAYERS["above_ui"]
@@ -140,7 +146,7 @@ function LightAttackBox:hit(battler)
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
-        local close = math.abs(self:getClose(battler))
+        local close = math.floor(math.abs(self:getClose(battler)) * (#Game.battle.party > 1 and self:getClose(battler) < -20 and 3 or 1))
 
         local eval = self:evaluateHit(battler, close)
         

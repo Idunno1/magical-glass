@@ -525,6 +525,9 @@ function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional
     if self.health <= 0 then
         self.health = 0
+        if self.exit_on_defeat then
+            self.done_state = "DEFEATED"
+        end
 
         if not self.defeated then
             if on_defeat then
@@ -764,7 +767,7 @@ function LightEnemyBattler:freeze()
 
     -- self:recruitMessage("frozen")
     local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
-    message.y = message.y + 72
+    message.y = message.y + 60
     message:resetPhysics()
 
     self.hurt_timer = -1

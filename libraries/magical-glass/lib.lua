@@ -1289,7 +1289,7 @@ function lib:init()
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
+        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - (type == "msg" and arg == "frozen" and 0 or offset), color)
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
             if kill then
                 percent.kill_others = true
@@ -1574,7 +1574,8 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        self.party_select_bg = UIBox(-36, 242, 372, 52)
+        self.party_select_bg = UIBox(-36, 242, 370, 52)
+        --self.party_select_bg = UIBox(-92, 242, 482, 52) -- For MoreParty when it will be added
         self.party_select_bg.visible = false
         self.party_select_bg.layer = -1
         self.party_selecting = 1
@@ -1719,46 +1720,18 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            love.graphics.printf("Use " .. item:getName() .. " on", -45, 233, 400, "center")
+            love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
-            if #Game.party == 2 then
-                local offset = 0
-                for _,party in ipairs(Game.party) do
-                    love.graphics.print(party.name, 68 + offset, 269)
-                    offset = offset + 122
-                end
-
-                Draw.setColor(Game:getSoulColor())
-                if self.party_selecting == 1 then
-                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
-                elseif self.party_selecting == 2 then
-                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
-                else
-                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
-                end
-
-            elseif #Game.party == 3 then
-                local offset = 0
-                for _,party in ipairs(Game.party) do
-                    love.graphics.print(party.name, -2 + offset, 269)
-                    offset = offset + 122
-                end
-
-                Draw.setColor(Game:getSoulColor())
-                if self.party_selecting == 1 then
-                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-                elseif self.party_selecting == 2 then
-                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-                elseif self.party_selecting == 3 then
-                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-                else
-                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-                end
+            for i,party in ipairs(Game.party) do
+                love.graphics.print(party.name, 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
             end
 
+            Draw.setColor(Game:getSoulColor())
+            for i,party in ipairs(Game.party) do
+                if i == self.party_selecting or self.party_selecting == "all" then
+                    Draw.draw(self.heart_sprite, 40 - (#Game.party - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                end
+            end
         end
 
         LightItemMenu.__super.draw(self)
