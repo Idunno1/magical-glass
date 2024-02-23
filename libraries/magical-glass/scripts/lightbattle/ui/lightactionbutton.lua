@@ -203,7 +203,7 @@ function LightActionButton:select()
 
                     for _,party in ipairs(Game.battle.party) do
                         for _,equip in ipairs(party.chara:getEquipment()) do
-                            chance = chance + (equip.getFleeBonus and equip:getFleeBonus() or 0)
+                            chance = chance + (equip.getFleeBonus and equip:getFleeBonus() / #Game.battle.party or 0)
                         end
                     end
 
