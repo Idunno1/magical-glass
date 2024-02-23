@@ -46,16 +46,8 @@ function LightEncounter:init()
 end
 
 function LightEncounter:onSoulTransition()
-    local soul_player = Game.world.player
-    if Game:getSoulPartyMember() ~= Game.world.player:getPartyMember() then
-        for _,follower in ipairs(Game.world.followers) do
-            if Game:getSoulPartyMember() == follower:getPartyMember() then
-                soul_player = follower
-                break
-            end
-        end
-    end
-    Game.battle.fake_player = Game.battle:addChild(FakeClone(soul_player, soul_player:getScreenPos()))
+    local soul_char = Game.world:getPartyCharacterInParty(Game:getSoulPartyMember())
+    Game.battle.fake_player = Game.battle:addChild(FakeClone(soul_char, soul_char:getScreenPos()))
     Game.battle.fake_player.layer = Game.battle.fader.layer + 1
 
     Game.battle.timer:script(function(wait)
