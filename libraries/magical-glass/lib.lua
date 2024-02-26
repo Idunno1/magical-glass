@@ -1289,7 +1289,7 @@ function lib:init()
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - (type == "msg" and arg == "frozen" and 0 or offset), color)
+        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - (type == "msg" and arg == "frozen" and 0 or offset), color, self)
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
             if kill then
                 percent.kill_others = true
