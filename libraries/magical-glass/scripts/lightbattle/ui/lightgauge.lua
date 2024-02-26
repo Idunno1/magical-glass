@@ -21,7 +21,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
     self.enemy = enemy
     self.width, self.height = Utils.unpack(self.enemy:getGaugeSize())
 
-    self.amount = tonumber(amount)
+    self.amount = math.abs(tonumber(amount))
 
     if self.type == "damage" then
         self.value = self.enemy.health
@@ -34,7 +34,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         self.real_value = self.enemy.mercy
         self.max_value = 100
         self.extra_width = (self.width / self.max_value)
-        self.reversed = true
+        self.reversed = amount >= 0 and true or false -- allows for mercy reduction
     end
 
 end

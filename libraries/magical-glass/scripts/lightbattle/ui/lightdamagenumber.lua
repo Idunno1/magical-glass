@@ -35,7 +35,11 @@ function LightDamageNumber:init(type, arg, x, y, color)
             else
                 self.color = COLORS["yellow"]
             end
-            self.text = "+"..self.amount.."%"
+            if self.amount >= 0 then
+                self.text = "+"..self.amount.."%"
+            else
+                self.text = self.amount.."%"
+            end
         elseif self.type == "miss" then
             self.color = {1, 1, 1}
         else
