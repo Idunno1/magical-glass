@@ -2607,21 +2607,12 @@ function LightBattle:onKeyPressed(key)
         if key == "n" then
             NOCLIP = not NOCLIP
         end
-        if key == "delete" then
-            for _,party in ipairs(self.party) do
-                party.chara:setHealth(999)
-            end
-        end
     end
 
     if self.state == "MENUSELECT" then
         local menu_width = self.current_menu_columns
         local menu_height = math.ceil(#self.menu_items / self.current_menu_columns)
         if Input.isConfirm(key) then
-
-            if self.battle_ui.help_window then
-                self.battle_ui.help_window:setTension(0)
-            end
 
             local menu_item = self.menu_items[self:getItemIndex()]
             local can_select = self:canSelectMenuItem(menu_item)
