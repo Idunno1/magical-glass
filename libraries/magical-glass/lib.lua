@@ -1093,6 +1093,9 @@ function lib:init()
         self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
+        
+        -- Display magic stats for weapons and armors in light shops
+        self.light_shop_magic = false
     
     end)
     
@@ -1147,12 +1150,24 @@ function lib:init()
     Utils.hook(Item, "getLightShopDescription", function(orig, self)
         return self.shop
     end)
+    
+    Utils.hook(Item, "getLightShopShowMagic", function(orig, self)
+        return self.light_shop_magic
+    end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
         if self.type == "weapon" then
-            return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            if self:getLightShopShowMagic() then
+                return "Weapon: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            end
         elseif self.type == "armor" then
-            return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            if self:getLightShopShowMagic() then
+                return "Armor: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            end
         end
         return ""
     end)

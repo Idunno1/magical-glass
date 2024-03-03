@@ -581,12 +581,22 @@ function LightShop:draw()
                 for i,party in ipairs(Game.party) do
                     if current_item.item.type == "weapon" then
                         equip = party:getWeapon()
-                        difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
-                        stat = "AT"
+                        if current_item.item:getLightShopShowMagic() then
+                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            stat = "MG"
+                        else
+                            difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
+                            stat = "AT"
+                        end
                     elseif current_item.item.type == "armor" then
                         equip = party:getArmor(1)
-                        difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
-                        stat = "DF"
+                        if current_item.item:getLightShopShowMagic() then
+                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            stat = "MG"
+                        else
+                            difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
+                            stat = "DF"
+                        end
                     end
 
                     if difference >= 0 then

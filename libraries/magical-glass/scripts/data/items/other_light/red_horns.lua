@@ -24,6 +24,8 @@ function item:init()
     }
     
     self.price = 100
+    
+    self.light_shop_magic = true
 
     -- Where this item can be used (world, battle, all, or none)
     self.usable_in = "all"
