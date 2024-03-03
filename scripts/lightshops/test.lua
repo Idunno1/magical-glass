@@ -31,6 +31,7 @@ function TestShop:init()
     self:registerItem("ut_armors/cloudy_glasses", {price = 0})
 	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
     self:registerItem("ut_items/crab_apple")
+    self:registerItem("light/ring")
 
     self:registerTalk("Reflect")
     self:registerTalk("Where I Am")

@@ -575,24 +575,33 @@ function LightShop:draw()
             Draw.setColor(COLORS.white)
             if not current_item.options["dont_show_change"] == true and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
                 local equip
-                local difference = ""
+                local difference = 0
+                local difference_mg = 0
                 local stat = ""
                 if current_item.item.type == "weapon" then
                     equip = Game.party[1]:getWeapon()
                     difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
+                    difference_mg = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
                     stat = "AT"
                 elseif current_item.item.type == "armor" then
                     equip = Game.party[1]:getArmor(1)
                     difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
+                    difference_mg = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
                     stat = "DF"
                 end
 
                 if difference >= 0 then
                     difference = "+" .. difference
                 end
+                if difference_mg >= 0 then
+                    difference_mg = "+" .. difference_mg
+                end
 
-                local desc = current_item.options["description"] .. "("..difference.." "..stat..")"
-                love.graphics.print(desc, left + 28, top + 28)
+                if current_item.item:getStatBonus("magic") ~= 0 then
+                    love.graphics.print(current_item.options["description"] .. "("..difference.." "..stat.." | "..difference_mg.." MG)", left + 28, top + 28)
+                else
+                    love.graphics.print(current_item.options["description"] .. "("..difference.." "..stat..")", left + 28, top + 28)
+                end
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end
