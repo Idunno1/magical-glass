@@ -573,7 +573,7 @@ function LightShop:draw()
             Draw.scissor(left, top, width, height)
 
             Draw.setColor(COLORS.white)
-            if not current_item.options["dont_show_change"] == true and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
+            if not current_item.options["dont_show_change"] and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
                 local stats_diff = {}
                 local equip
                 local difference = ""
@@ -605,8 +605,7 @@ function LightShop:draw()
                 end
                 love.graphics.print(current_item.options["description"], left + 28, top + 28 * 3)
             else
-                love.graphics.print(current_item.item:getLightTypeName(), left + 28, top + 28)
-                love.graphics.print(current_item.options["description"], left + 28, top + 28 * 2)
+                love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end
 
             Draw.popScissor()
