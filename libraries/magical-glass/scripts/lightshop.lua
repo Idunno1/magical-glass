@@ -574,25 +574,30 @@ function LightShop:draw()
 
             Draw.setColor(COLORS.white)
             if not current_item.options["dont_show_change"] == true and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
-                local equip
-                local difference = ""
-                local stat = ""
-                if current_item.item.type == "weapon" then
-                    equip = Game.party[1]:getWeapon()
-                    difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
-                    stat = "AT"
-                elseif current_item.item.type == "armor" then
-                    equip = Game.party[1]:getArmor(1)
-                    difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
-                    stat = "DF"
-                end
+                love.graphics.print(current_item.options["description"], left + 28, top + 28)
+                for i,party in ipairs(Game.party) do
+                    local equip
+                    local difference = ""
+                    local stat = ""
+                    if current_item.item.type == "weapon" then
+                        equip = party:getWeapon()
+                        difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
+                        stat = "AT"
+                    elseif current_item.item.type == "armor" then
+                        equip = party:getArmor(1)
+                        difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
+                        stat = "DF"
+                    end
 
-                if difference >= 0 then
-                    difference = "+" .. difference
-                end
+                    if difference >= 0 then
+                        difference = "+" .. difference
+                    end
 
-                local desc = current_item.options["description"] .. "("..difference.." "..stat..")"
-                love.graphics.print(desc, left + 28, top + 28)
+                    if #Game.party > 1 then
+                        Draw.setColor(party:getLightColor())
+                    end
+                    love.graphics.print("("..difference.." "..stat..")", left + 28, top + 28 * (i+1))
+                end
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end
