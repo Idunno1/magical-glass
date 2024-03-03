@@ -301,7 +301,7 @@ function LightSoul:onDamage(bullet, amount)
     for _,party in ipairs(Game.battle.party) do
         for _,equip in ipairs(party.chara:getEquipment()) do
             if equip.applyInvBonus then
-                self.inv_timer = equip:applyInvBonus(self.inv_timer) / #Game.battle.party
+                self.inv_timer = equip:applyInvBonus(self.inv_timer)
             end
         end
     end
@@ -390,7 +390,7 @@ function LightSoul:update()
             -- to avoid issues with cacheing inside onCollide
             table.insert(collided_bullets, bullet)
         end
-        if self.inv_timer == 0 then
+        if self.inv_timer == 0 and Game.battle:getState() == "DEFENDING" then
             if bullet.tp ~= 0 and bullet:collidesWith(self.graze_collider) then
                 if bullet.grazed then
                     Game:giveTension(bullet.tp * DT * self.graze_tp_factor)
