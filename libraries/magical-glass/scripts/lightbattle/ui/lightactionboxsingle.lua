@@ -160,7 +160,7 @@ function LightActionBoxSingle:drawStatusStripStory()
         love.graphics.setColor(COLORS["red"])
         love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((math.max(0,current) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -187,8 +187,8 @@ function LightActionBoxSingle:drawStatusStrip()
     local name = self.battler.chara:getName()
     local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
     
-    local max = self.battler.chara:getStat("health")
     local current = self.battler.chara:getHealth()
+    local max = self.battler.chara:getStat("health")
     
     if #Game.battle.party == 1 then
         local x, y = 10, 130
@@ -212,7 +212,7 @@ function LightActionBoxSingle:drawStatusStrip()
         love.graphics.setColor(COLORS["red"])
         love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((math.max(0,current) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -243,10 +243,16 @@ function LightActionBoxSingle:drawStatusStrip()
         
         love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
         
+        local small = false
+        for _,party in ipairs(Game.battle.party) do
+            if party.chara:getHealth() >= 100 or party.chara:getStat("health") >= 100 then
+                small = true
+            end
+        end
         love.graphics.setColor(COLORS["red"])
-        love.graphics.rectangle("fill", x + 92, y, 32 * 1.25, 21)
+        love.graphics.rectangle("fill", x + 90, y, (small and 20 or 32) * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * 32) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25, 21)
         
         love.graphics.setFont(Assets.getFont("namelv", 16))
         if max < 10 and max >= 0 then
@@ -267,7 +273,7 @@ function LightActionBoxSingle:drawStatusStrip()
             color = COLORS.aqua
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. "/" .. max, x + 137, y + 3)
+        love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
         
         if Game.battle.current_selecting == self.index then
             love.graphics.setColor(self.battler.chara:getLightColor())
