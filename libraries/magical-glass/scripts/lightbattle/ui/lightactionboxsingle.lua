@@ -246,7 +246,7 @@ function LightActionBoxSingle:drawStatusStrip()
         love.graphics.setColor(COLORS["red"])
         love.graphics.rectangle("fill", x + 92, y, 32 * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 92, y, math.ceil((math.max(0,current) / max) * 32) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 92, y, math.ceil((Utils.clamp(current, 0, max) / max) * 32) * 1.25, 21)
         
         love.graphics.setFont(Assets.getFont("namelv", 16))
         if max < 10 and max >= 0 then
