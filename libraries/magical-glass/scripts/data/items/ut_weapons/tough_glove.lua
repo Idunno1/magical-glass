@@ -164,7 +164,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     punch:setOrigin(0.5, 0.5)
                     punch.layer = BATTLE_LAYERS["above_ui"] + 5
                     punch.color = {battler.chara:getLightAttackColor()}
-                    punch:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+                    punch:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
                     enemy.parent:addChild(punch)
                     punch:play(2/30, false, function(s) s:remove() finishAttack() end)
                 end
