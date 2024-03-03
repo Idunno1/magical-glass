@@ -1132,13 +1132,13 @@ function lib:init()
             end
         elseif self.target == "party" then
             message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
-        elseif self.target == "enemy" --[[why]] then
+        elseif self.target == "enemy" then
             if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
             else
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
-        elseif self.target == "enemies" --[[why 2]] then
+        elseif self.target == "enemies" then
             message = "* The enemies all recovered " .. amount .. " HP."
         end
         return message
