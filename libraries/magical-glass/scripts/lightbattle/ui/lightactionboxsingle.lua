@@ -171,7 +171,7 @@ function LightActionBoxSingle:drawStatusStripStory()
         end
 
         local color = COLORS.white
-        if self.battler.chara:getHealth() > 0 then
+        if self.battler.chara:getHealth() > 0 and not Game.battle.forced_victory then
             if self.battler.sleeping then
                 color = {0,0,1}
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
@@ -223,10 +223,10 @@ function LightActionBoxSingle:drawStatusStrip()
         end
 
         local color = COLORS.white
-        if self.battler.chara:getHealth() > 0 then
+        if self.battler.chara:getHealth() > 0 and not Game.battle.forced_victory then
             if self.battler.sleeping then
                 color = {0,0,1}
-            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
+            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
                 color = COLORS.aqua
             end
         end
@@ -265,12 +265,14 @@ function LightActionBoxSingle:drawStatusStrip()
 
         
         local color = COLORS.white
-        if self.battler.is_down then 
-            color = {1,0,0}
-        elseif self.battler.sleeping then
-            color = {0,0,1}
-        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
-            color = COLORS.aqua
+        if not Game.battle.forced_victory then
+            if self.battler.is_down then 
+                color = {1,0,0}
+            elseif self.battler.sleeping then
+                color = {0,0,1}
+            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+                color = COLORS.aqua
+            end
         end
         love.graphics.setColor(color)
         love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
