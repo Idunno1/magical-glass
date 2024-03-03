@@ -597,13 +597,13 @@ function LightShop:draw()
                 end
                 love.graphics.print(current_item.item:getLightTypeName(), left + 28, top + 28)
                 if #Game.party == 2 then
-                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{1,1,1},stat ..")"}, left + 28, top + 28 * 2 + 4)
+                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
                 elseif #Game.party == 3 then
-                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 * 2 + 4)
+                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
                 else
-                    love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 * 2 + 4)
+                    love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
                 end
-                love.graphics.print(current_item.options["description"], left + 28, top + 28 * 3 + 4)
+                love.graphics.print(current_item.options["description"], left + 28, top + 28 + self.font:getHeight() * 2)
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end
