@@ -1145,7 +1145,7 @@ function lib:init()
     end)
 
     Utils.hook(Item, "getLightShopDescription", function(orig, self)
-        return self:getLightTypeName() .. "\n" .. self.shop
+        return self.shop
     end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
