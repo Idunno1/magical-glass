@@ -1201,7 +1201,7 @@ function lib:init()
         local scale = (stretch * 2) - 0.5
         sprite:setScale(scale, scale)
         sprite:setOrigin(0.5, 0.5)
-        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
+        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5 - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 5))
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
         sprite.color = battler.chara:getLightAttackColor()
         enemy.parent:addChild(sprite)
