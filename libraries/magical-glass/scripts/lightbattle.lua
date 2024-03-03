@@ -1308,6 +1308,8 @@ function LightBattle:nextTurn()
     for _,enemy in ipairs(self.enemies) do
         enemy.selected_wave = nil
         enemy.hit_count = 0
+        enemy.x_number_offset = 0
+        enemy.post_health = nil
     end
 
     for _,battler in ipairs(self.party) do

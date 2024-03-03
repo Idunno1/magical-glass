@@ -1285,23 +1285,32 @@ function lib:init()
 
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
-
-        local offset = 0
-        if not kill then
-            offset = (self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2))
-        end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - (type == "msg" and arg == "frozen" and 0 or offset), color, self)
+        local function y_msg_position()
+            return y + (offset_y - 2) - ((type == "damage" or type == "msg" and arg == "miss") and not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+        end
+        
+        if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
+            self.hit_count = -2 
+        elseif y_msg_position() > SCREEN_HEIGHT / 2 then
+            self.hit_count = 0
+            self.x_number_offset = self.x_number_offset + 1
+        end
+        local percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
             if kill then
                 percent.kill_others = true
             end
             self.parent:addChild(percent)
         
-            if not kill then
-                self.hit_count = self.hit_count + 1
+            if not kill and Game.battle:getState() == "ATTACKING" then
+                if self.hit_count >= 0 then
+                    self.hit_count = self.hit_count + 1
+                else
+                    self.hit_count = self.hit_count - 1
+                end
             end
         end
 
