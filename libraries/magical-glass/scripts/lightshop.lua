@@ -574,11 +574,11 @@ function LightShop:draw()
 
             Draw.setColor(COLORS.white)
             if not current_item.options["dont_show_change"] == true and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
-                love.graphics.print(current_item.options["description"], left + 28, top + 28)
+                local stats_diff = {}
+                local equip
+                local difference = ""
+                local stat = ""
                 for i,party in ipairs(Game.party) do
-                    local equip
-                    local difference = ""
-                    local stat = ""
                     if current_item.item.type == "weapon" then
                         equip = party:getWeapon()
                         difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
@@ -592,14 +592,18 @@ function LightShop:draw()
                     if difference >= 0 then
                         difference = "+" .. difference
                     end
-
-                    if #Game.party > 1 then
-                        Draw.setColor(party:getLightColor())
-                    end
-                    love.graphics.print("("..difference.." "..stat..")", left + 28, top + 28 * (i+1))
+                    
+                    table.insert(stats_diff, difference .. " ")
+                end
+                if #Game.party == 2 then
+                    love.graphics.print({current_item.item:getLightTypeName() .. "\n(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{1,1,1},stat ..")\n" .. current_item.options["description"]}, left + 28, top + 28)
+                elseif #Game.party == 3 then
+                    love.graphics.print({current_item.item:getLightTypeName() .. "\n(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")\n" .. current_item.options["description"]}, left + 28, top + 28)
+                else
+                    love.graphics.print({current_item.item:getLightTypeName() .. "\n(",{1,1,1},stats_diff[1],{1,1,1},stat ..")\n" .. current_item.options["description"]}, left + 28, top + 28)
                 end
             else
-                love.graphics.print(current_item.options["description"], left + 28, top + 28)
+                love.graphics.print(current_item.item:getLightTypeName() .. "\n" .. current_item.options["description"], left + 28, top + 28)
             end
 
             Draw.popScissor()
