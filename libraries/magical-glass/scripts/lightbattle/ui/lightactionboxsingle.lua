@@ -171,10 +171,12 @@ function LightActionBoxSingle:drawStatusStripStory()
         end
 
         local color = COLORS.white
-        if self.battler.sleeping then
-            color = {0,0,1}
-        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory and self.battler.chara:getHealth() > 0 then
-            color = COLORS.aqua
+        if self.battler.chara:getHealth() > 0 then
+            if self.battler.sleeping then
+                color = {0,0,1}
+            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
+                color = COLORS.aqua
+            end
         end
         love.graphics.setColor(color)
         love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14, y)
@@ -221,10 +223,12 @@ function LightActionBoxSingle:drawStatusStrip()
         end
 
         local color = COLORS.white
-        if self.battler.sleeping then
-            color = {0,0,1}
-        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory and self.battler.chara:getHealth() > 0 then
-            color = COLORS.aqua
+        if self.battler.chara:getHealth() > 0 then
+            if self.battler.sleeping then
+                color = {0,0,1}
+            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
+                color = COLORS.aqua
+            end
         end
         love.graphics.setColor(color)
         love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14, y)
@@ -259,7 +263,7 @@ function LightActionBoxSingle:drawStatusStrip()
             color = {1,0,0}
         elseif self.battler.sleeping then
             color = {0,0,1}
-        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory and self.battler.chara:getHealth() > 0 then
+        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
             color = COLORS.aqua
         end
         love.graphics.setColor(color)
