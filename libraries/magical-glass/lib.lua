@@ -1967,6 +1967,7 @@ function lib:init()
         self.light_dmg_color = nil
         self.light_miss_color = nil
         self.light_attack_color = nil
+        self.light_multibolt_attack_color = nil
         self.light_attack_bar_color = nil
         self.light_xact_color = nil
 
@@ -2137,6 +2138,16 @@ function lib:init()
             return Utils.unpackColor({1, 105/255, 105/255})
         elseif self.light_attack_color and type(self.light_attack_color) == "table" then
             return Utils.unpackColor(self.light_attack_color)
+        else
+            return self:getLightColor()
+        end
+    end)
+    
+    Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 1, 1})
+        elseif self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
+            return self.light_multibolt_attack_color
         else
             return self:getLightColor()
         end

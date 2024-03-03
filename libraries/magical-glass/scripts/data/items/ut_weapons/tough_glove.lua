@@ -151,7 +151,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     local small_punch = Sprite("effects/attack/regfist")
                     small_punch:setOrigin(0.5, 0.5)
                     small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
-                    small_punch.color = {battler.chara:getLightAttackColor()}
+                    small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
                     small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
                     enemy.parent:addChild(small_punch)
                     small_punch:play(2/30, false, function(s) s:remove() end)
@@ -163,7 +163,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
                     local punch = Sprite("effects/attack/hyperfist")
                     punch:setOrigin(0.5, 0.5)
                     punch.layer = BATTLE_LAYERS["above_ui"] + 5
-                    punch.color = {battler.chara:getLightAttackColor()}
+                    punch.color = {battler.chara:getLightMultiboltAttackColor()}
                     punch:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
                     enemy.parent:addChild(punch)
                     punch:play(2/30, false, function(s) s:remove() finishAttack() end)

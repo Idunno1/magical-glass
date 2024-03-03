@@ -56,7 +56,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = {battler.chara:getLightAttackColor()}
+    sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     sprite:play(2/30, true)
 
@@ -82,7 +82,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             star.layer = BATTLE_LAYERS["above_ui"] + 5
             star.init_x = star.x
             star.init_y = star.y
-            star.color = {battler.chara:getLightAttackColor()}
+            star.color = {battler.chara:getLightMultiboltAttackColor()}
             if crit then
                 star:setColor(1, 1, 130/255)
                 Assets.stopAndPlaySound("saber3", 0.8)
@@ -130,7 +130,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             ring:setOrigin(0.5, 0.5)
             ring:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
             ring.layer = BATTLE_LAYERS["above_ui"] + 5
-            ring.color = {battler.chara:getLightAttackColor()}
+            ring.color = {battler.chara:getLightMultiboltAttackColor()}
             enemy.parent:addChild(ring)
     
             if crit then
