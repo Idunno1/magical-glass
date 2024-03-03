@@ -1094,7 +1094,7 @@ function lib:init()
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
         
-        -- Display magic stats for weapons and armors in light shops
+        -- Displays magic stats for weapons and armors in light shops
         self.light_shop_magic = false
     
     end)
