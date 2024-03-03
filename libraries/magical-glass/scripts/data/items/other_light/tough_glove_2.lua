@@ -65,7 +65,7 @@ function item:onLightBoltHit(lane)
     small_punch:setOrigin(0.5, 0.5)
     small_punch:setScale(0.5, 0.5)
     small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
-    small_punch.color = battler.chara:getLightMultiboltAttackColor()
+    small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
     small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
     enemy.parent:addChild(small_punch)
     small_punch:play(2/30, false, function(s) s:remove() end)
@@ -77,9 +77,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     local sprite = Sprite("effects/attack/hyperfist")
     sprite:setOrigin(0.5, 0.5)
-    sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+    sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara.light_color -- need to swap this to the get function
+    sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     Game.battle:shakeCamera(3, 3, 2)
 

@@ -174,7 +174,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, math.min(3, #Game.party) do
+    for i = 1, math.min(8, #Game.party) do -- Temp, should be 3
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -1308,6 +1308,8 @@ function LightBattle:nextTurn()
     for _,enemy in ipairs(self.enemies) do
         enemy.selected_wave = nil
         enemy.hit_count = 0
+        enemy.x_number_offset = 0
+        enemy.post_health = nil
     end
 
     for _,battler in ipairs(self.party) do
