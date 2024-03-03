@@ -160,7 +160,7 @@ function LightActionBoxSingle:drawStatusStripStory()
         love.graphics.setColor(COLORS["red"])
         love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current, 0, max + 10) * 1.25, 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -212,7 +212,7 @@ function LightActionBoxSingle:drawStatusStrip()
         love.graphics.setColor(COLORS["red"])
         love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or math.max(0,current) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current, 0, max + 10) * 1.25, 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
