@@ -58,7 +58,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     sprite:setOrigin(0.5, 0.5)
     sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara:getLightMultiboltAttackColor()
+    sprite.color = {battler.chara:getLightAttackColor()}
     enemy.parent:addChild(sprite)
     sprite:play(1/30, true)
 
@@ -76,7 +76,7 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
         star.physics.friction = 0.34
         star.physics.speed = 8
         star.ang = 12.25
-        star.color = battler.chara.light_color
+        star.color = {battler.chara:getLightAttackColor()}
         if crit then
             star:setColor(1, 1, 130/255)
         end
