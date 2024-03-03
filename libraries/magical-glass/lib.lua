@@ -713,6 +713,10 @@ function lib:init()
             self:fadeMusicOut()
             self:enterMenu("sound_test", 0)
         end, in_game)
+        
+        self:registerOption("main", "Change Party", "Enter the party change menu.", function ()
+            self:enterMenu("change_party", 0)
+        end, in_game)
 
 
         -- World specific
