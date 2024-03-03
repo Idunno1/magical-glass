@@ -1150,9 +1150,9 @@ function lib:init()
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
         if self.type == "weapon" then
-            return "Weapon: " .. self:getStatBonus("attack") .. "AT" .. (self:getStatBonus("magic") ~= 0 and (self:getStatBonus("magic") .. "MG") or "")
+            return "Weapon: " .. self:getStatBonus("attack") .. "AT"
         elseif self.type == "armor" then
-            return "Armor: " .. self:getStatBonus("defense") .. "DF" .. (self:getStatBonus("magic") ~= 0 and (self:getStatBonus("magic") .. "MG") or "")
+            return "Armor: " .. self:getStatBonus("defense") .. "DF"
         end
         return ""
     end)
