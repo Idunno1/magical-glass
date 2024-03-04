@@ -573,26 +573,47 @@ function LightShop:draw()
             Draw.scissor(left, top, width, height)
 
             Draw.setColor(COLORS.white)
-            if not current_item.options["dont_show_change"] == true and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
+            if not current_item.options["dont_show_change"] and (current_item.item.type == "weapon" or current_item.item.type == "armor") then
+                local stats_diff = {}
                 local equip
                 local difference = ""
                 local stat = ""
-                if current_item.item.type == "weapon" then
-                    equip = Game.party[1]:getWeapon()
-                    difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
-                    stat = "AT"
-                elseif current_item.item.type == "armor" then
-                    equip = Game.party[1]:getArmor(1)
-                    difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
-                    stat = "DF"
-                end
+                for i,party in ipairs(Game.party) do
+                    if current_item.item.type == "weapon" then
+                        equip = party:getWeapon()
+                        if current_item.item:getLightShopShowMagic() then
+                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            stat = "MG"
+                        else
+                            difference = current_item.item:getStatBonus("attack") - equip:getStatBonus("attack")
+                            stat = "AT"
+                        end
+                    elseif current_item.item.type == "armor" then
+                        equip = party:getArmor(1)
+                        if current_item.item:getLightShopShowMagic() then
+                            difference = current_item.item:getStatBonus("magic") - equip:getStatBonus("magic")
+                            stat = "MG"
+                        else
+                            difference = current_item.item:getStatBonus("defense") - equip:getStatBonus("defense")
+                            stat = "DF"
+                        end
+                    end
 
-                if difference >= 0 then
-                    difference = "+" .. difference
+                    if difference >= 0 then
+                        difference = "+" .. difference
+                    end
+                    
+                    table.insert(stats_diff, difference .. " ")
                 end
-
-                local desc = current_item.options["description"] .. "("..difference.." "..stat..")"
-                love.graphics.print(desc, left + 28, top + 28)
+                love.graphics.print(current_item.item:getLightTypeName(), left + 28, top + 28)
+                if #Game.party == 2 then
+                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
+                elseif #Game.party == 3 then
+                    love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
+                else
+                    love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
+                end
+                love.graphics.print(current_item.options["description"], left + 28, top + 28 + self.font:getHeight() * 2)
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end

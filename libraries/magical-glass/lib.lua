@@ -1093,6 +1093,9 @@ function lib:init()
         self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
+        
+        -- Displays magic stats for weapons and armors in light shops
+        self.light_shop_magic = false
     
     end)
     
@@ -1132,27 +1135,39 @@ function lib:init()
             end
         elseif self.target == "party" then
             message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
-        elseif self.target == "enemy" --[[why]] then
+        elseif self.target == "enemy" then
             if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
             else
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
-        elseif self.target == "enemies" --[[why 2]] then
+        elseif self.target == "enemies" then
             message = "* The enemies all recovered " .. amount .. " HP."
         end
         return message
     end)
 
     Utils.hook(Item, "getLightShopDescription", function(orig, self)
-        return self:getLightTypeName() .. "\n" .. self.shop
+        return self.shop
+    end)
+    
+    Utils.hook(Item, "getLightShopShowMagic", function(orig, self)
+        return self.light_shop_magic
     end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
         if self.type == "weapon" then
-            return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            if self:getLightShopShowMagic() then
+                return "Weapon: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            end
         elseif self.type == "armor" then
-            return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            if self:getLightShopShowMagic() then
+                return "Armor: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            end
         end
         return ""
     end)

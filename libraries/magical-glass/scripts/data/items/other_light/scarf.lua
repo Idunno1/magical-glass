@@ -21,6 +21,8 @@ function item:init()
     self.usable_in = "all"
     
     self.price = 200
+    
+    self.light_shop_magic = true
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {
