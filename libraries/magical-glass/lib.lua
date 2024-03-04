@@ -713,6 +713,10 @@ function lib:init()
             self:fadeMusicOut()
             self:enterMenu("sound_test", 0)
         end, in_game)
+        
+        self:registerOption("main", "Change Party", "Enter the party change menu.", function ()
+            self:enterMenu("change_party", 0)
+        end, in_game)
 
 
         -- World specific
@@ -1089,6 +1093,9 @@ function lib:init()
         self.use_method = "used"
         -- How this item is used on other party members (eats, etc.)
         self.use_method_other = nil
+        
+        -- Displays magic stats for weapons and armors in light shops
+        self.light_shop_magic = false
     
     end)
     
@@ -1128,27 +1135,39 @@ function lib:init()
             end
         elseif self.target == "party" then
             message = "* " .. target.chara:getNameOrYou() .. " recovered " .. amount .. " HP."
-        elseif self.target == "enemy" --[[why]] then
+        elseif self.target == "enemy" then
             if maxed then
                 message = "* " .. target.name .. "'s HP was maxed out."
             else
                 message = "* " .. target.name .. " recovered " .. amount .. " HP."
             end
-        elseif self.target == "enemies" --[[why 2]] then
+        elseif self.target == "enemies" then
             message = "* The enemies all recovered " .. amount .. " HP."
         end
         return message
     end)
 
     Utils.hook(Item, "getLightShopDescription", function(orig, self)
-        return self:getLightTypeName() .. "\n" .. self.shop
+        return self.shop
+    end)
+    
+    Utils.hook(Item, "getLightShopShowMagic", function(orig, self)
+        return self.light_shop_magic
     end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
         if self.type == "weapon" then
-            return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            if self:getLightShopShowMagic() then
+                return "Weapon: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Weapon: " .. self:getStatBonus("attack") .. "AT"
+            end
         elseif self.type == "armor" then
-            return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            if self:getLightShopShowMagic() then
+                return "Armor: " .. self:getStatBonus("magic") .. "MG"
+            else
+                return "Armor: " .. self:getStatBonus("defense") .. "DF"
+            end
         end
         return ""
     end)
@@ -1201,9 +1220,9 @@ function lib:init()
         local scale = (stretch * 2) - 0.5
         sprite:setScale(scale, scale)
         sprite:setOrigin(0.5, 0.5)
-        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5, (enemy.height / 2) - 5))
+        sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - 5 - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2) - 5))
         sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-        sprite.color = battler.chara:getLightAttackColor()
+        sprite.color = {battler.chara:getLightAttackColor()}
         enemy.parent:addChild(sprite)
         sprite:play((stretch / 4) / 1.5, false, function(this) -- timing may still be incorrect
             local sound = enemy:getDamageSound() or "damage"
@@ -1281,23 +1300,32 @@ function lib:init()
 
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
-
-        local offset = 0
-        if not kill then
-            offset = (self.hit_count * 20)
-        end
         
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
-        local percent = LightDamageNumber(type, arg, x + offset_x, y + (offset_y - 2) - offset, color)
+        local function y_msg_position()
+            return y + (offset_y - 2) - ((type == "damage" or type == "msg" and arg == "miss") and not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+        end
+        
+        if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then
+            self.hit_count = -2 
+        elseif y_msg_position() > SCREEN_HEIGHT / 2 then
+            self.hit_count = 0
+            self.x_number_offset = self.x_number_offset + 1
+        end
+        local percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
             if kill then
                 percent.kill_others = true
             end
             self.parent:addChild(percent)
         
-            if not kill then
-                self.hit_count = self.hit_count + 1
+            if not kill and Game.battle:getState() == "ATTACKING" then
+                if self.hit_count >= 0 then
+                    self.hit_count = self.hit_count + 1
+                else
+                    self.hit_count = self.hit_count - 1
+                end
             end
         end
 
@@ -1574,7 +1602,8 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        self.party_select_bg = UIBox(-36, 242, 372, 52)
+        self.party_select_bg = UIBox(-36, 242, 370, 52)
+        --self.party_select_bg = UIBox(-92, 242, 482, 52) -- For MoreParty when it will be added
         self.party_select_bg.visible = false
         self.party_select_bg.layer = -1
         self.party_selecting = 1
@@ -1719,46 +1748,18 @@ function lib:init()
             local item = Game.inventory:getItem(self.storage, self.item_selecting)
             Draw.setColor(PALETTE["world_text"])
 
-            love.graphics.printf("Use " .. item:getName() .. " on", -45, 233, 400, "center")
+            love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
-            if #Game.party == 2 then
-                local offset = 0
-                for _,party in ipairs(Game.party) do
-                    love.graphics.print(party.name, 68 + offset, 269)
-                    offset = offset + 122
-                end
-
-                Draw.setColor(Game:getSoulColor())
-                if self.party_selecting == 1 then
-                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
-                elseif self.party_selecting == 2 then
-                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
-                else
-                    Draw.draw(self.heart_sprite, 35, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 157, 277, 0, 2, 2)
-                end
-
-            elseif #Game.party == 3 then
-                local offset = 0
-                for _,party in ipairs(Game.party) do
-                    love.graphics.print(party.name, -2 + offset, 269)
-                    offset = offset + 122
-                end
-
-                Draw.setColor(Game:getSoulColor())
-                if self.party_selecting == 1 then
-                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-                elseif self.party_selecting == 2 then
-                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-                elseif self.party_selecting == 3 then
-                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-                else
-                    Draw.draw(self.heart_sprite, -35, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 87, 277, 0, 2, 2)
-                    Draw.draw(self.heart_sprite, 209, 277, 0, 2, 2)
-                end
+            for i,party in ipairs(Game.party) do
+                love.graphics.print(party.name, 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
             end
 
+            Draw.setColor(Game:getSoulColor())
+            for i,party in ipairs(Game.party) do
+                if i == self.party_selecting or self.party_selecting == "all" then
+                    Draw.draw(self.heart_sprite, 40 - (#Game.party - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                end
+            end
         end
 
         LightItemMenu.__super.draw(self)
@@ -1977,13 +1978,13 @@ function lib:init()
 
         self.lw_portrait = nil
 
-        self.light_color = {1, 1, 1}
-        self.light_dmg_color = {1, 0, 0}
-        self.light_miss_color = {192/255, 192/255, 192/255}
-        self.light_attack_color = {1, 105/255, 105/255}
-        self.light_multibolt_attack_color = {1, 1, 1}
-        self.light_attack_bar_color = {1, 1, 1}
-        self.light_xact_color = {1, 1, 1}
+        self.light_color = nil
+        self.light_dmg_color = nil
+        self.light_miss_color = nil
+        self.light_attack_color = nil
+        self.light_multibolt_attack_color = nil
+        self.light_attack_bar_color = nil
+        self.light_xact_color = nil
 
         self.lw_stats["magic"] = 0
         
@@ -2118,44 +2119,70 @@ function lib:init()
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
-        if self.light_color and type(self.light_color) == "table" then
-            return self.light_color
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 1, 1})
+        elseif self.light_color and type(self.light_color) == "table" then
+            return Utils.unpackColor(self.light_color)
+        else
+            return self:getColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
-        if self.light_dmg_color and type(self.light_dmg_color) == "table" then
-            return self.light_dmg_color
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 0, 0})
+        elseif self.light_dmg_color and type(self.light_dmg_color) == "table" then
+            return Utils.unpackColor(self.light_dmg_color)
+        else
+            return self:getLightColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
-        if self.light_miss_color and type(self.light_miss_color) == "table" then
-            return self.light_miss_color
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({192/255, 192/255, 192/255})
+        elseif self.light_miss_color and type(self.light_miss_color) == "table" then
+            return Utils.unpackColor(self.light_miss_color)
+        else
+            return self:getLightColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
-        if self.light_attack_color and type(self.light_attack_color) == "table" then
-            return self.light_attack_color
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 105/255, 105/255})
+        elseif self.light_attack_color and type(self.light_attack_color) == "table" then
+            return Utils.unpackColor(self.light_attack_color)
+        else
+            return self:getLightColor()
         end
     end)
-
+    
     Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
-        if self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 1, 1})
+        elseif self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
             return self.light_multibolt_attack_color
+        else
+            return self:getLightColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
-        if self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
-            return self.light_attack_bar_color
+        if Game.battle and #Game.battle.party == 1 then
+            return Utils.unpackColor({1, 1, 1})
+        elseif self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
+            return Utils.unpackColor(self.light_attack_bar_color)
+        else
+            return self:getLightColor()
         end
     end)
 
     Utils.hook(PartyMember, "getLightXActColor", function(orig, self)
         if self.light_xact_color and type(self.light_xact_color) == "table" then
-            return self.light_xact_color
+            return Utils.unpackColor(self.light_xact_color)
+        else
+            return self:getXActColor()
         end
     end)
     

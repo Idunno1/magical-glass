@@ -49,11 +49,12 @@ function item:showEquipText(target)
 end
 
 function item:getLightBattleText(user, target)
-    if user == target then
-        return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
-    else
-        return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
-    end
+    -- if user == target then
+        -- return "* ".. user.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
+    -- else
+        -- return "* "..user.chara:getNameOrYou().." gave "..self:getUseName().." to "..target.chara:getNameOrYou(true).." and ".. target.chara:getNameOrYou(true) .. " equipped it."
+    -- end
+    return "* ".. target.chara:getNameOrYou() .. " equipped " .. self:getUseName() .. "."
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
@@ -62,9 +63,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
 
     local sprite = Sprite("effects/attack/hyperfoot")
     sprite:setOrigin(0.5, 0.5)
-    sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+    sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara:getLightMultiboltAttackColor()
+    sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     Game.battle:shakeCamera(3, 3, 2)
 

@@ -28,9 +28,10 @@ function TestShop:init()
     self.talk_text = "Guess I\nshould\nthink."
 
     self:registerItem("ut_weapons/tough_glove")
-    self:registerItem("ut_armors/cloudy_glasses", {price = 0})
+    self:registerItem("ut_armors/cloudy_glasses", {description = "This is a\ntest.", price = 0})
 	self:registerItem("ut_weapons/torn_notebook", {description = "WEAPON\nWEAPON 2\nWEAPON 3", dont_show_change = true})
     self:registerItem("ut_items/crab_apple")
+    self:registerItem("light/ring")
 
     self:registerTalk("Reflect")
     self:registerTalk("Where I Am")

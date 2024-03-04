@@ -174,7 +174,7 @@ function LightBattle:toggleSoul(soul)
 end
 
 function LightBattle:createPartyBattlers()
-    for i = 1, 1 do
+    for i = 1, math.min(3, #Game.party) do
         local party_member = Game.party[i]
 
         local battler = LightPartyBattler(party_member)
@@ -791,14 +791,9 @@ function LightBattle:onStateChange(old,new)
             end
         end
 
-        if not had_started then
-            for _,party in ipairs(self.party) do
-                party.chara:onTurnStart()
-            end
-            local party = self.party[self.current_selecting]
-            party.chara:onActionSelect(party, false)
-            self.encounter:onCharacterTurn(party, false)
-        end
+        local party = self.party[self.current_selecting]
+        party.chara:onActionSelect(party, false)
+        self.encounter:onCharacterTurn(party, false)
 
         if self.battle_ui.help_window then
             self.battle_ui.help_window:toggleVisibility(true)
@@ -1057,6 +1052,7 @@ function LightBattle:onStateChange(old,new)
     elseif new == "VICTORY" then
         self.music:stop()
         self.current_selecting = 0
+        self.forced_victory = true
 
         for _,battler in ipairs(self.party) do
             battler:setSleeping(false)
@@ -1312,6 +1308,8 @@ function LightBattle:nextTurn()
     for _,enemy in ipairs(self.enemies) do
         enemy.selected_wave = nil
         enemy.hit_count = 0
+        enemy.x_number_offset = 0
+        enemy.post_health = nil
     end
 
     for _,battler in ipairs(self.party) do
@@ -1369,7 +1367,7 @@ function LightBattle:nextTurn()
         end
     end
 
-    if self.current_selecting ~= 0 then
+    if self.current_selecting ~= 0 and self.state ~= "ACTIONSELECT" then
         self:setState("ACTIONSELECT")
     end
 
@@ -2611,11 +2609,6 @@ function LightBattle:onKeyPressed(key)
         if key == "n" then
             NOCLIP = not NOCLIP
         end
-        if key == "delete" then
-            for _,party in ipairs(self.party) do
-                party.chara:setHealth(999)
-            end
-        end
     end
 
     if self.state == "MENUSELECT" then
@@ -2623,13 +2616,9 @@ function LightBattle:onKeyPressed(key)
         local menu_height = math.ceil(#self.menu_items / self.current_menu_columns)
         if Input.isConfirm(key) then
 
-            if self.battle_ui.help_window then
-                self.battle_ui.help_window:setTension(0)
-            end
-
             local menu_item = self.menu_items[self:getItemIndex()]
             local can_select = self:canSelectMenuItem(menu_item)
-            if Game.battle.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
+            if self.encounter:onMenuSelect(self.state_reason, menu_item, can_select) then return end
             if Kristal.callEvent("onBattleMenuSelect", self.state_reason, menu_item, can_select) then return end
 
             if not self:isPagerMenu() then
@@ -2644,6 +2633,8 @@ function LightBattle:onKeyPressed(key)
                 return
             end
         elseif Input.isCancel(key) then
+            if self.encounter:onMenuCancel(self.state_reason, menu_item) then return end
+            if Kristal.callEvent("onBattleMenuCancel", self.state_reason, menu_item, can_select) then return end
             Game:setTensionPreview(0)
 
             if not self:isPagerMenu() then
@@ -2775,6 +2766,8 @@ function LightBattle:onKeyPressed(key)
     elseif self.state == "ENEMYSELECT" then
 
         if Input.isConfirm(key) then
+            if self.encounter:onEnemySelect(self.state_reason, self.current_menu_y) then return end
+            if Kristal.callEvent("onBattleEnemySelect", self.state_reason, self.current_menu_y) then return end
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
             self:playSelectSound()
@@ -2830,6 +2823,8 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
+            if self.encounter:onEnemyCancel(self.state_reason, self.current_menu_y) then return end
+            if Kristal.callEvent("onBattleEnemyCancel", self.state_reason, self.current_menu_y) then return end
             self.enemyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
             if self.state_reason == "SPELL" or self.state_reason == "XACT" then
@@ -2871,6 +2866,8 @@ function LightBattle:onKeyPressed(key)
         end
     elseif self.state == "PARTYSELECT" then
         if Input.isConfirm(key) then
+            if self.encounter:onPartySelect(self.state_reason, self.current_menu_y) then return end
+            if Kristal.callEvent("onBattlePartySelect", self.state_reason, self.current_menu_y) then return end
             self.partyselect_cursor_memory[self.state_reason] = self.current_menu_y
 
             self:playSelectSound()
@@ -2884,6 +2881,8 @@ function LightBattle:onKeyPressed(key)
             return
         end
         if Input.isCancel(key) then
+            if self.encounter:onPartyCancel(self.state_reason, self.current_menu_y) then return end
+            if Kristal.callEvent("onBattlePartyCancel", self.state_reason, self.current_menu_y) then return end
             self.partyselect_cursor_memory[self.state_reason] = self.current_menu_y
             
             if self.state_reason == "SPELL" then
@@ -2947,8 +2946,12 @@ function LightBattle:handleActionSelectInput(key)
         elseif Input.isCancel(key) then
             local old_selecting = self.current_selecting
 
-            --self:previousParty()
+            self:previousParty()
 
+            if self.current_selecting ~= old_selecting then
+                self:playMoveSound()
+                self.battle_ui.action_boxes[self.current_selecting]:unselect()
+            end
             if self.current_selecting ~= old_selecting then
                 self:playMoveSound()
             end

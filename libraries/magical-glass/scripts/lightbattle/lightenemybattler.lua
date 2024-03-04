@@ -318,25 +318,27 @@ function LightEnemyBattler:onSpareable() end
 
 function LightEnemyBattler:addMercy(amount)
     
-    if self.mercy >= 100 then
-        -- We're already at full mercy; do nothing.
+    if (amount >= 0 and self.mercy >= 100) or (amount < 0 and self.mercy <= 0) then
+        -- We're already at full mercy and trying to add more; do nothing.
+        -- Also do nothing if trying to remove from an empty mercy bar.
         return
     end
     
     if Kristal.getLibConfig("magical-glass", "mercy_messages") and self:getMercyVisibility() then
-        if amount > 0 then
-            local pitch = 0.8
-            if amount < 99 then pitch = 1 end
-            if amount <= 50 then pitch = 1.2 end
-            if amount <= 25 then pitch = 1.4 end
+        if amount == 0 then
+            self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
+        else
+            if amount > 0 then
+                local pitch = 0.8
+                if amount < 99 then pitch = 1 end
+                if amount <= 50 then pitch = 1.2 end
+                if amount <= 25 then pitch = 1.4 end
 
-            local src = Assets.playSound("mercyadd", 0.8)
-            src:setPitch(pitch)
+                local src = Assets.playSound("mercyadd", 0.8)
+                src:setPitch(pitch)
+            end
 
             self:lightStatusMessage("mercy", amount)
-        else
-            local message = self:lightStatusMessage("msg", "miss", {192/255, 192/255, 192/255})
-            message:resetPhysics()
         end
     end
 
@@ -522,6 +524,9 @@ function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional
     if self.health <= 0 then
         self.health = 0
+        if self.exit_on_defeat then
+            self.done_state = "DEFEATED"
+        end
 
         if not self.defeated then
             if on_defeat then
@@ -593,7 +598,13 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
             lane.battler.tp_gain = 3
         end
     end
-    
+    if not self.post_health then
+        self.post_health = self.health
+    end
+    self.post_health = self.post_health - total_damage
+    if self.post_health <= 0 and self.exit_on_defeat then
+        self.done_state = "DEFEATED"
+    end
     return total_damage, crit
 end
 
@@ -755,7 +766,7 @@ function LightEnemyBattler:freeze()
 
     -- self:recruitMessage("frozen")
     local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
-    message.y = message.y + 72
+    message.y = message.y + 60
     message:resetPhysics()
 
     self.hurt_timer = -1

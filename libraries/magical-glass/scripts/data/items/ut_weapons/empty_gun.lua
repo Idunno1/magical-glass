@@ -54,9 +54,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
     local sprite = Sprite("effects/attack/gunshot_stab")
     sprite:setScale(2, 2)
     sprite:setOrigin(0.5, 0.5)
-    sprite:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+    sprite:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
     sprite.layer = BATTLE_LAYERS["above_ui"] + 5
-    sprite.color = battler.chara:getLightMultiboltAttackColor()
+    sprite.color = {battler.chara:getLightMultiboltAttackColor()}
     enemy.parent:addChild(sprite)
     sprite:play(2/30, true)
 
@@ -78,11 +78,11 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             star.star_ang = 20
             star.star_size = 0.5
             star.rotation = math.rad(20 * i)
-            star:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+            star:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
             star.layer = BATTLE_LAYERS["above_ui"] + 5
             star.init_x = star.x
             star.init_y = star.y
-            star.color = battler.chara.light_color
+            star.color = {battler.chara:getLightMultiboltAttackColor()}
             if crit then
                 star:setColor(1, 1, 130/255)
                 Assets.stopAndPlaySound("saber3", 0.8)
@@ -128,9 +128,9 @@ function item:onLightAttack(battler, enemy, damage, stretch, crit)
             local ring_shots = 0
             ring:setScale(1, 1)
             ring:setOrigin(0.5, 0.5)
-            ring:setPosition(enemy:getRelativePos((enemy.width / 2), (enemy.height / 2)))
+            ring:setPosition(enemy:getRelativePos((enemy.width / 2) - (#Game.battle.attackers - 1) * 5 / 2 + (Utils.getIndex(Game.battle.attackers, battler) - 1) * 5, (enemy.height / 2)))
             ring.layer = BATTLE_LAYERS["above_ui"] + 5
-            ring.color = battler.chara.light_color
+            ring.color = {battler.chara:getLightMultiboltAttackColor()}
             enemy.parent:addChild(ring)
     
             if crit then

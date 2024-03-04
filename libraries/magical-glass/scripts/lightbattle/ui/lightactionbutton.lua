@@ -57,7 +57,7 @@ function LightActionButton:select()
             Game.battle:addMenuItem({
                 ["name"] = self.battler.chara:getXActName() or "X-Action",
                 ["tp"] = 0,
-                ["color"] = { self.battler.chara:getXActColor() },
+                ["color"] = { self.battler.chara:getLightXActColor() },
                 ["data"] = spell,
                 ["callback"] = function(menu_item)
                     Game.battle.selected_xaction = spell
@@ -195,15 +195,23 @@ function LightActionButton:select()
             })
         end
         if Game.battle.encounter.can_flee then
+            local battle_leader
+            for i,battler in ipairs(Game.battle.party) do
+                if not battler.is_down then
+                    battle_leader = battler.chara.id
+                    break
+                end
+            end
             Game.battle:addMenuItem({
                 ["name"] = "Flee",
                 ["special"] = "flee",
+                ["unusable"] = Game.battle:getPartyIndex(battle_leader) ~= Game.battle.current_selecting,
                 ["callback"] = function(menu, item)
                     local chance = Game.battle.encounter.flee_chance
 
                     for _,party in ipairs(Game.battle.party) do
                         for _,equip in ipairs(party.chara:getEquipment()) do
-                            chance = chance + (equip.getFleeBonus and equip:getFleeBonus() or 0)
+                            chance = chance + (equip.getFleeBonus and equip:getFleeBonus() / #Game.battle.party or 0)
                         end
                     end
 
@@ -258,7 +266,7 @@ function LightActionButton:hasSpecial()
 end
 
 function LightActionButton:draw()
-    if (Game.battle.current_selecting == Game.battle:getPartyIndex(self.battler.chara.id)) and self.selectable and self.hovered then
+    if self.selectable and self.hovered then
         love.graphics.draw(self.hover_tex or self.tex)
     else
         love.graphics.draw(self.tex)

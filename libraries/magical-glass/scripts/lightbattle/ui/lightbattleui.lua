@@ -53,12 +53,14 @@ function LightBattleUI:init()
     
     self.attacking = false
 
-    self.action_box_ut = LightActionBoxSingle(20, 0, 1, Game.battle.party[1])
-    self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
-    self.action_box_ut:move(self:getRelativePos())
-    Game.battle:addChild(self.action_box_ut)
-    table.insert(self.action_boxes, self.action_box_ut)
-    Game.battle.party[1].chara:onActionBox(self.action_box_ut, false)
+    for i,battler in ipairs(Game.battle.party) do
+        self.action_box_ut = LightActionBoxSingle(20, 0, i, battler)
+        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
+        self.action_box_ut:move(self:getRelativePos())
+        Game.battle:addChild(self.action_box_ut)
+        table.insert(self.action_boxes, self.action_box_ut)
+        battler.chara:onActionBox(self.action_box_ut, false)
+    end
 
     self.shown = true 
     
@@ -635,7 +637,7 @@ function LightBattleUI:drawState()
         local max_page = math.ceil(#Game.battle.party / 3) - 1
         local page_offset = page * 3
 
-        Game.battle.soul:setPosition(72 + ((Game.battle.current_menu_x - 1 - (page * 2)) * 248), 255 + ((Game.battle.current_menu_y) * 31.5))
+        Game.battle.soul:setPosition(72, 255 + ((Game.battle.current_menu_y - (page * 3)) * 31.5))
 
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font)
@@ -645,7 +647,7 @@ function LightBattleUI:drawState()
             love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
 
             if self.style == "undertale" then
-                Draw.setColor(PALETTE["action_health_bg"])
+                Draw.setColor(1,0,0,1)
                 love.graphics.rectangle("fill", 318, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
@@ -659,6 +661,15 @@ function LightBattleUI:drawState()
                 Draw.setColor(PALETTE["action_health"])
                 love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
+        end
+        
+        Draw.setColor(1, 1, 1, 1)
+        
+        if page < max_page then
+            Draw.draw(self.arrow_sprite, 45, 90 + (math.sin(Kristal.getTime()*6) * 2))
+        end
+        if page > 0 then
+            Draw.draw(self.arrow_sprite, 45, 10 - (math.sin(Kristal.getTime()*6) * 2), 0, 1, -1)
         end
     elseif state == "FLEEING" or state == "TRANSITIONOUT" then
         local font = Assets.getFont("main_mono")

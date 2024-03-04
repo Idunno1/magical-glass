@@ -46,16 +46,8 @@ function LightEncounter:init()
 end
 
 function LightEncounter:onSoulTransition()
-    local soul_player = Game.world.player
-    if Game:getSoulPartyMember() ~= Game.world.player:getPartyMember() then
-        for _,follower in ipairs(Game.world.followers) do
-            if Game:getSoulPartyMember() == follower:getPartyMember() then
-                soul_player = follower
-                break
-            end
-        end
-    end
-    Game.battle.fake_player = Game.battle:addChild(FakeClone(soul_player, soul_player:getScreenPos()))
+    local soul_char = Game.world:getPartyCharacterInParty(Game:getSoulPartyMember())
+    Game.battle.fake_player = Game.battle:addChild(FakeClone(soul_char, soul_char:getScreenPos()))
     Game.battle.fake_player.layer = Game.battle.fader.layer + 1
 
     Game.battle.timer:script(function(wait)
@@ -236,7 +228,15 @@ function LightEncounter:beforeStateChange(old, new) end
 function LightEncounter:onStateChange(old, new) end
 
 function LightEncounter:onActionSelect(battler, button) end
-function LightEncounter:onMenuSelect(state, item, can_select) end
+
+function LightEncounter:onMenuSelect(state_reason, item, can_select) end
+function LightEncounter:onMenuCancel(state_reason, item) end
+
+function LightEncounter:onEnemySelect(state_reason, enemy_index) end
+function LightEncounter:onEnemyCancel(state_reason, enemy_index) end
+
+function LightEncounter:onPartySelect(state_reason, party_index) end
+function LightEncounter:onPartyCancel(state_reason, party_index) end
 
 function LightEncounter:onGameOver() end
 function LightEncounter:onReturnToWorld(events) end
