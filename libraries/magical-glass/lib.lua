@@ -742,7 +742,7 @@ function lib:init()
         end, in_dark_battle)
 
         self:registerOption("main", "Start Wave", "Start a wave.", function()
-            self:enterMenu("wave_select_light", 0)
+            self:enterMenu("wave_select", 0)
         end, in_light_battle)
 
         self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
@@ -2920,7 +2920,7 @@ function lib:registerDebugOptions(debug)
         end
     end
 
-    debug:registerMenu("wave_select_light", "Wave Select", "search")
+    debug:registerMenu("wave_select", "Wave Select", "search")
 
     local waves_list = {}
     for id,_ in pairs(Registry.waves) do
@@ -2934,9 +2934,13 @@ function lib:registerDebugOptions(debug)
     end)
 
     for _,id in ipairs(waves_list) do
-        debug:registerOption("wave_select_light", id, "Start this wave.", function()
-            Game.battle.debug_wave = true
-            Game.battle:setState("ENEMYDIALOGUE", {id})
+        debug:registerOption("wave_select", id, "Start this wave.", function ()
+            if Game.battle.light then
+                Game.battle.debug_wave = true
+                Game.battle:setState("ENEMYDIALOGUE", {id})
+            else
+                Game.battle:setState("DEFENDINGBEGIN", {id})
+            end
             debug:closeMenu()
         end)
     end
