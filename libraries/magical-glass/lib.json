@@ -33,12 +33,12 @@
         /////
         "light_battle_tp": false,
         
-        ///// Light Battle Defend command
+        ///// Light Battle Defend Command
         // Adds the Defend command to the mercy action button in Light Battles.
         /////
         "light_battle_defend_btn": false,
 
-        ///// UNDERTALE text skipping
+        ///// UNDERTALE Text Skipping
         // Disables skipping text in ANY textbox when holding down confirm or menu.
         /////
         "undertale_text_skipping": false,
@@ -64,12 +64,12 @@
         /////
         "key_item_conversion": true,
 
-        ///// Hide CELL in the Light World menu
+        ///// Hide CELL in The Light World Menu
         // Hides the CELL option in the Light World menu if the has_cell_phone flag is false.
         /////
         "hide_cell": true,
 
-        ///// Light World STAT menu style
+        ///// Light World STAT Menu Style
         // Determines the appearance of the Light World STAT menu when more than one character is
         // in the party.
         ///// Values:
@@ -86,18 +86,18 @@
         /////
         "light_stat_menu_style": "magical_glass",
 
-        ///// UNDERTALE stat display
+        ///// UNDERTALE Stat Display
         // Subtracts 10 from base AT and DF in the Light World's STAT menu.
         /////
         "undertale_stat_display": true,
         
-        ///// Always show magic
+        ///// Always Show Magic
         // Displays the MAGIC stat in the Light World STAT menu even if there's no
         // Member in the current party who has more than 0 MAGIC.
         /////
         "always_show_magic": false,
 
-        ///// Item info
+        ///// Item Info
         // Determines whether battle descriptions and TP costs should be displayed in the main
         // window or should be displayed in a box under it similar to Deltatraveler.
         ///// Values:
@@ -113,7 +113,7 @@
         /////
         "item_info": "deltatraveler",
 
-        ///// Gauge style
+        ///// Gauge Style
         // Determines the appearance of gauges drawn in ENEMYSELECT or PARTYSELECT in Light Battles.
         ///// Values:
         //
@@ -152,18 +152,29 @@
         /////
         "light_enemy_auras": false,
 
-        ///// Action Button flash
+        ///// Action Button Flash
         // Whether the Spell and Mercy buttons should flash in Light Battles if an enemy is pacifyable or sparable.
         /////
         "action_button_flash": false,
         
-        ///// Action Button styles
+        ///// Action Button Styles
         // Determines the appearance of the action buttons in Light Battles.
         ///// Values:
         // "magical_glass"
         // "deltatraveler"
         /////
         "action_button_style": "magical_glass",
+        
+        ///// Multi-Party Fixed Bolt Speed
+        // Whether all bolts in multi-party light battles will fixitate on a standard speed rather than using the defined weapon's bolt speed, allowing for easier attacking.
+        // Note: This just controls the default setting, you can still bypass this option for specific weapons if you want by overriding the bolt speed function.
+        /////
+        "multi_fixed_bolt_speed": true,
+        
+        ///// Multi-Party Neat UI
+        // Whether certain unimportant light battle UI objects in multi-party battles like the HP and KR sprites are visible.
+        /////
+        "multi_neat_ui": true,
         
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.

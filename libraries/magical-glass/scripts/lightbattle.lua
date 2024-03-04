@@ -528,22 +528,24 @@ function LightBattle:processAction(action)
             local damage = 0
             local crit
 
-            if not action.force_miss and action.points > 0 then
-                damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
-                damage = Utils.round(damage)
+            if enemy then
+                if not action.force_miss and action.points > 0 then
+                    damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
+                    damage = Utils.round(damage)
 
-                if damage < 0 then
-                    damage = 0
-                end
+                    if damage < 0 then
+                        damage = 0
+                    end
 
-                local result = weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
-                if result or result == nil then
-                    self:finishAction(action)
-                end
-            else
-                local result = weapon:onLightMiss(battler, enemy, true, false)
-                if result or result == nil then
-                    self:finishAction(action)
+                    local result = weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
+                    if result or result == nil then
+                        self:finishAction(action)
+                    end
+                else
+                    local result = weapon:onLightMiss(battler, enemy, true, false)
+                    if result or result == nil then
+                        self:finishAction(action)
+                    end
                 end
             end
 
@@ -2983,7 +2985,7 @@ function LightBattle:handleAttackingInput(key)
 
             for _,attack in ipairs(self.battle_ui.attack_box.lanes) do
                 if not attack.attacked then
-                    close = self.battle_ui.attack_box:getClose(attack)
+                    close = self.battle_ui.attack_box:getFirstBolt(attack)
                     if not closest then
                         closest = close
                         table.insert(closest_attacks, attack)

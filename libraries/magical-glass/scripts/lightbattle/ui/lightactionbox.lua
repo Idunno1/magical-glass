@@ -1,6 +1,6 @@
-local LightActionBoxSingle, super = Class(Object)
+local LightActionBox, super = Class(Object)
 
-function LightActionBoxSingle:init(x, y, index, battler)
+function LightActionBox:init(x, y, index, battler)
     super.init(self, x, y)
 
     self.index = index
@@ -18,13 +18,13 @@ function LightActionBoxSingle:init(x, y, index, battler)
     end
 end
 
-function LightActionBoxSingle:getHPGaugeLengthCap()
+function LightActionBox:getHPGaugeLengthCap()
     return Kristal.getLibConfig("magical-glass", "hp_gauge_length_cap")
 end
 
-function LightActionBoxSingle:getButtons(battler) end
+function LightActionBox:getButtons(battler) end
 
-function LightActionBoxSingle:createButtons()
+function LightActionBox:createButtons()
     for _,button in ipairs(self.buttons or {}) do
         button:remove()
     end
@@ -86,7 +86,7 @@ function LightActionBoxSingle:createButtons()
 
 end
 
-function LightActionBoxSingle:snapSoulToButton()
+function LightActionBox:snapSoulToButton()
     if self.buttons then
         if self.selected_button < 1 then
             self.selected_button = #self.buttons
@@ -102,7 +102,7 @@ function LightActionBoxSingle:snapSoulToButton()
     end
 end
 
-function LightActionBoxSingle:update()
+function LightActionBox:update()
     if self.buttons then
         for i,button in ipairs(self.buttons) do
             if (Game.battle.current_selecting == 0 and self.index == 1) or (Game.battle.current_selecting == self.index) then
@@ -124,16 +124,16 @@ function LightActionBoxSingle:update()
 
 end
 
-function LightActionBoxSingle:select()
+function LightActionBox:select()
     self.buttons[self.selected_button]:select()
     self.last_button = self.selected_button
 end
 
-function LightActionBoxSingle:unselect()
+function LightActionBox:unselect()
     self.buttons[self.selected_button]:unselect()
 end
 
-function LightActionBoxSingle:drawStatusStripStory()
+function LightActionBox:drawStatusStripStory()
     if self.index == 1 then
         local x, y = 180, 130
         local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
@@ -183,15 +183,15 @@ function LightActionBoxSingle:drawStatusStripStory()
     end
 end
 
-function LightActionBoxSingle:drawStatusStrip()
-    local name = self.battler.chara:getName()
-    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
-    
-    local current = self.battler.chara:getHealth()
-    local max = self.battler.chara:getStat("health")
-    
+function LightActionBox:drawStatusStrip()    
     if #Game.battle.party == 1 then
         local x, y = 10, 130
+        
+        local name = self.battler.chara:getName()
+        local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
+        
+        local current = self.battler.chara:getHealth()
+        local max = self.battler.chara:getStat("health")
 
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
@@ -233,7 +233,13 @@ function LightActionBoxSingle:drawStatusStrip()
         love.graphics.setColor(color)
         love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14, y)
     else
-        local x, y = 10 + (3 - #Game.battle.party) * 198 / 2 + (Utils.getIndex(Game.battle.party, self.battler) - 1) * 198, 130
+        local x, y = 2 + (3 - #Game.battle.party) * 101 + (self.index - 1) * 101 * 2, 130
+        
+        local name = self.battler.chara:getShortName()
+        local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
+        
+        local current = self.battler.chara:getHealth()
+        local max = self.battler.chara:getStat("health")
         
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
@@ -241,11 +247,13 @@ function LightActionBoxSingle:drawStatusStrip()
         love.graphics.setFont(Assets.getFont("namelv", 16))
         love.graphics.print("LV " .. level, x, y + 13)
         
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
+        if not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
+        end
         
         local small = false
         for _,party in ipairs(Game.battle.party) do
-            if party.chara:getHealth() >= 100 or party.chara:getStat("health") >= 100 then
+            if party.chara:getStat("health") >= 100 then
                 small = true
             end
         end
@@ -262,7 +270,6 @@ function LightActionBoxSingle:drawStatusStrip()
         if current < 10 and current >= 0 then
             current = "0" .. tostring(current)
         end
-
         
         local color = COLORS.white
         if not Game.battle.forced_victory then
@@ -275,20 +282,21 @@ function LightActionBoxSingle:drawStatusStrip()
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
+        -- love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
+        love.graphics.printf(current .. "/" .. max, x + 195 - 500, y + 3, 500, "right")
         
-        if Game.battle.current_selecting == self.index then
+        if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
             love.graphics.setColor(self.battler.chara:getLightColor())
             love.graphics.setLineWidth(2)
             love.graphics.line(x - 3, y - 7, x - 3, y + 28)
-            love.graphics.line(x - 3 - 1, y - 7, x + 188 + 1, y - 7)
-            love.graphics.line(x + 188, y - 7, x + 188, y + 28)
-            love.graphics.line(x - 3 - 1, y + 28, x + 188 + 1, y + 28)
+            love.graphics.line(x - 3 - 1, y - 7, x + 196 + 1, y - 7)
+            love.graphics.line(x + 196, y - 7, x + 196, y + 28)
+            love.graphics.line(x - 3 - 1, y + 28, x + 196 + 1, y + 28)
         end
     end
 end
 
-function LightActionBoxSingle:draw()
+function LightActionBox:draw()
 
     if Game.battle.encounter.story then
         self:drawStatusStripStory()
@@ -300,4 +308,4 @@ function LightActionBoxSingle:draw()
 
 end
 
-return LightActionBoxSingle
+return LightActionBox
