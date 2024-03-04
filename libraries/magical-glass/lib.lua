@@ -12,7 +12,7 @@ LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightGauge               = libRequire("magical-glass", "scripts/lightbattle/ui/lightgauge")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
 LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
-LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
+LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
 LightShop                = libRequire("magical-glass", "scripts/lightshop")
@@ -38,7 +38,7 @@ function lib:unload()
     LightGauge               = nil
     LightTensionBar          = nil
     LightActionButton        = nil
-    LightActionBoxSingle     = nil
+    LightActionBox           = nil
     LightAttackBox           = nil
     LightAttackBar           = nil
     RandomEncounter          = nil
@@ -1751,7 +1751,7 @@ function lib:init()
             love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
             for i,party in ipairs(Game.party) do
-                love.graphics.print(party.name, 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
+                love.graphics.print(party:getShortName(), 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
             end
 
             Draw.setColor(Game:getSoulColor())
@@ -1972,6 +1972,8 @@ function lib:init()
     Utils.hook(PartyMember, "init", function(orig, self)
         orig(self)
 
+        self.short_name = nil
+
         self.light_can_defend = nil
         
         self.undertale_movement = false
@@ -2023,6 +2025,10 @@ function lib:init()
 
     Utils.hook(PartyMember, "getLightEXP", function(orig, self)
         return self.lw_exp
+    end)
+    
+    Utils.hook(PartyMember, "getShortName", function(orig, self)
+        return self.short_name or string.sub(self:getName(), 1, 6)
     end)
 
     Utils.hook(PartyMember, "onActionSelect", function(orig, self, battler, undo)

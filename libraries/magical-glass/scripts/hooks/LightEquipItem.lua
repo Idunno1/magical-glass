@@ -48,13 +48,15 @@ function LightEquipItem:applyInvBonus(value) return value + self.inv_bonus end
 function LightEquipItem:getLightBoltCount() return self.light_bolt_count end
 
 function LightEquipItem:getLightBoltSpeed()
-    if self:getLightBoltSpeedVariance() and #Game.battle.party == 1 then
+    if #Game.battle.party == 1 then
         return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
+    elseif Kristal.getLibConfig("magical-glass", "multi_fixed_bolt_speed") then
+        return nil
     else
         return self.light_bolt_speed
     end
 end
-function LightEquipItem:getLightBoltSpeedVariance() return self.light_bolt_speed_variance end
+function LightEquipItem:getLightBoltSpeedVariance() return self.light_bolt_speed_variance or 0 end
 
 function LightEquipItem:getLightBoltStart()
     if type(self.light_bolt_start) == "table" then

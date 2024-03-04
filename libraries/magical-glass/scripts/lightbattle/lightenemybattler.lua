@@ -658,6 +658,9 @@ function LightEnemyBattler:onDefeat(damage, battler)
             self:toggleOverlay(true)
         end
         Game.battle.timer:after(self.hurt_timer, function()
+            if self.actor.use_light_battler_sprite then
+                self:toggleOverlay(true)
+            end
             if self.can_die then
                 if self.ut_death then
                     self:onDefeatVaporized(damage, battler)

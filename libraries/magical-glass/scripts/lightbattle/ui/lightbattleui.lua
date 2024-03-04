@@ -54,7 +54,7 @@ function LightBattleUI:init()
     self.attacking = false
 
     for i,battler in ipairs(Game.battle.party) do
-        self.action_box_ut = LightActionBoxSingle(20, 0, i, battler)
+        self.action_box_ut = LightActionBox(20, 0, i, battler)
         self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
         self.action_box_ut:move(self:getRelativePos())
         Game.battle:addChild(self.action_box_ut)
