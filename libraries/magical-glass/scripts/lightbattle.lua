@@ -2952,6 +2952,7 @@ function LightBattle:handleActionSelectInput(key)
             if self.current_selecting ~= old_selecting then
                 self:playMoveSound()
             end
+            Input.clear(key)
             return
         elseif Input.is("left", key) and #self.battle_ui.action_boxes[1].buttons > 1 then
             actbox.selected_button = actbox.selected_button - 1
