@@ -58,6 +58,8 @@ function LightEnemyBattler:init(actor, use_overlay)
     
     -- Play the "damage" sound even when you deal 0 damage
     self.always_play_damage_sound = false
+    -- Display 0 instead of miss
+    self.display_damage_on_miss = false
 
     -- Speech bubble style - defaults to "round" or "cyber", depending on chapter
     -- This is set to nil in `battler.lua` as well, but it's here for completion's sake.
@@ -495,10 +497,16 @@ end
 
 function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
     if amount <= 0 then
-        local message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        local message
+        if not self.display_damage_on_miss or (anim and anim ~= nil) then
+            message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        end
         if message and (anim and anim ~= nil) then
             message:resetPhysics()
         else
+            if self.display_damage_on_miss then
+                self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+            end
             self.hurt_timer = 1
         end
 

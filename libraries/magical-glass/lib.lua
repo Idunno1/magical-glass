@@ -742,7 +742,7 @@ function lib:init()
         end, in_dark_battle)
 
         self:registerOption("main", "Start Wave", "Start a wave.", function()
-            self:enterMenu("wave_select_light", 0)
+            self:enterMenu("wave_select", 0)
         end, in_light_battle)
 
         self:registerOption("main", "End Battle", "Instantly complete a battle.", function()
@@ -2902,10 +2902,12 @@ function lib:registerDebugOptions(debug)
 
     debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
-        debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
-            Game:encounter(id, true, nil, nil, false)
-            debug:closeMenu()
-        end)
+        if id ~= "_nobody" then
+            debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
+                Game:encounter(id, true, nil, nil, false)
+                debug:closeMenu()
+            end)
+        end
     end
 
     debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
@@ -2918,11 +2920,13 @@ function lib:registerDebugOptions(debug)
         end
     end
 
-    debug:registerMenu("wave_select_light", "Wave Select", "search")
+    debug:registerMenu("wave_select", "Wave Select", "search")
 
     local waves_list = {}
     for id,_ in pairs(Registry.waves) do
-        table.insert(waves_list, id)
+        if id ~= "_none" and id ~= "_story" then
+            table.insert(waves_list, id)
+        end
     end
 
     table.sort(waves_list, function(a, b)
@@ -2930,8 +2934,13 @@ function lib:registerDebugOptions(debug)
     end)
 
     for _,id in ipairs(waves_list) do
-        debug:registerOption("wave_select_light", id, "Start this wave.", function()
-            Game.battle:setState("ENEMYDIALOGUE", {id})
+        debug:registerOption("wave_select", id, "Start this wave.", function ()
+            if Game.battle.light then
+                Game.battle.debug_wave = true
+                Game.battle:setState("ENEMYDIALOGUE", {id})
+            else
+                Game.battle:setState("DEFENDINGBEGIN", {id})
+            end
             debug:closeMenu()
         end)
     end
@@ -3017,7 +3026,7 @@ function lib:changeSpareColor(color)
 end
 
 function lib:onFootstep(char, num)
-    if self.encounters_enabled and char == Game.world.player then
+    if self.encounters_enabled and Game.world.player and char == Game.world.player then
         self.steps_until_encounter = self.steps_until_encounter - 1
     end
 end
