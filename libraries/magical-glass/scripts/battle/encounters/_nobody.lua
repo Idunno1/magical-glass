@@ -6,6 +6,9 @@ function encounter:init()
     -- Text displayed at the bottom of the screen at the start of the encounter
     self.text = "[font:main_mono,15]* But nobody came."
 
+    -- Is a "But Nobody Came"/"Genocide" Encounter
+    self.nobody_came = true
+
     self.music = nil
 end
 
