@@ -8,6 +8,7 @@ function LightBattle:init()
 
     self.light = true
     self.forced_victory = false
+    self.debug_wave = false
     self.ended = false
 
     self.party = {}
@@ -1004,7 +1005,9 @@ function LightBattle:onStateChange(old,new)
                 enemy.current_target = enemy:getTarget()
             end
             local cutscene_args = {self.encounter:getDialogueCutscene()}
-            if #cutscene_args > 0 then
+            if self.debug_wave then
+                self:setState("DIALOGUEEND")
+            elseif #cutscene_args > 0 then
                 self:startCutscene(unpack(cutscene_args)):after(function()
                     self:setState("DIALOGUEEND")
                 end)
@@ -1288,6 +1291,8 @@ end
 function LightBattle:nextTurn()
   
     self.turn_count = self.turn_count + 1
+    
+    self.debug_wave = false
     if self.turn_count > 1 then
         if self.encounter:onTurnEnd() then
             return
@@ -2221,8 +2226,6 @@ function LightBattle:randomTargetOld()
         end
     end
 
-    target.should_darken = false
-    target.darken_timer = 0
     target.targeted = true
     return target
 end
@@ -2336,8 +2339,7 @@ function LightBattle:hurt(amount, exact, target)
         if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
             target = self:randomTargetOld()
         end
-
-        target.should_darken = false
+        
         target.targeted = true
     end
 

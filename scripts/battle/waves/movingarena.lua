@@ -6,11 +6,11 @@ function MovingArena:init()
     -- Initialize timer
     self.siner = 0
 
---[[     if Game.battle.light then
+    if Game.battle.light then
         self.darken = true
         self:setArenaSize(142, Game.battle.arena.height)
         self:setArenaPosition(SCREEN_WIDTH/2, 300)
-    end ]]
+    end
 end
 
 function MovingArena:onStart()
