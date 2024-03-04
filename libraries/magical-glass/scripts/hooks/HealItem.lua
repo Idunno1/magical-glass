@@ -133,7 +133,7 @@ function HealItem:getLightBattleText(user, target)
         return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
     elseif self.target == "party" then
         if #Game.battle.party > 1 then
-            return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+            return "* "..target.chara:getNameOrYou().." "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
         else
             return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
         end
