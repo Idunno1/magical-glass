@@ -42,7 +42,7 @@ function LightAttackBox:createBolts()
             lane.attack_type = "slice"
         end
 
-        local randomizer = #self.attackers == 1 and 0 or math.random(0,3) * 40
+        local randomizer = #self.attackers == 1 and 0 or Utils.random(0,3,1) * 40
         local start_x
         if lane.direction == "left" then
             start_x = (self.target_sprite.x + self.target_sprite.width / 1.8) - randomizer
@@ -98,6 +98,10 @@ function LightAttackBox:getClose(battler)
     elseif battler.attack_type == "slice" then
         return Utils.round(battler.bolts[1].x - self.bolt_target)
     end
+end
+
+function LightAttackBox:getFirstBolt(battler)
+    return Utils.round(battler.bolts[1].x - self.bolt_target)
 end
 
 function LightAttackBox:evaluateHit(battler, close)

@@ -8,6 +8,7 @@ function LightBattle:init()
 
     self.light = true
     self.forced_victory = false
+    self.debug_wave = false
     self.ended = false
 
     self.party = {}
@@ -164,6 +165,9 @@ function LightBattle:playMoveSound()
 end
 
 function LightBattle:toggleSoul(soul)
+    if not self.soul then
+        self:spawnSoul(self.arena:getCenter())
+    end
     if soul then
         self.soul.collidable = true
         self.soul.visible = true
@@ -302,7 +306,7 @@ function LightBattle:getSoulLocation(always_player)
     if self.soul and (not always_player) then
         return self.soul:getPosition()
     else
-        return -9, -9
+        return 49, 455
     end
 end
 
@@ -528,22 +532,24 @@ function LightBattle:processAction(action)
             local damage = 0
             local crit
 
-            if not action.force_miss and action.points > 0 then
-                damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
-                damage = Utils.round(damage)
+            if enemy then
+                if not action.force_miss and action.points > 0 then
+                    damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
+                    damage = Utils.round(damage)
 
-                if damage < 0 then
-                    damage = 0
-                end
+                    if damage < 0 then
+                        damage = 0
+                    end
 
-                local result = weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
-                if result or result == nil then
-                    self:finishAction(action)
-                end
-            else
-                local result = weapon:onLightMiss(battler, enemy, true, false)
-                if result or result == nil then
-                    self:finishAction(action)
+                    local result = weapon:onLightAttack(battler, enemy, damage, action.stretch, crit)
+                    if result or result == nil then
+                        self:finishAction(action)
+                    end
+                else
+                    local result = weapon:onLightMiss(battler, enemy, true, false)
+                    if result or result == nil then
+                        self:finishAction(action)
+                    end
                 end
             end
 
@@ -999,7 +1005,9 @@ function LightBattle:onStateChange(old,new)
                 enemy.current_target = enemy:getTarget()
             end
             local cutscene_args = {self.encounter:getDialogueCutscene()}
-            if #cutscene_args > 0 then
+            if self.debug_wave then
+                self:setState("DIALOGUEEND")
+            elseif #cutscene_args > 0 then
                 self:startCutscene(unpack(cutscene_args)):after(function()
                     self:setState("DIALOGUEEND")
                 end)
@@ -1283,6 +1291,8 @@ end
 function LightBattle:nextTurn()
   
     self.turn_count = self.turn_count + 1
+    
+    self.debug_wave = false
     if self.turn_count > 1 then
         if self.encounter:onTurnEnd() then
             return
@@ -1483,7 +1493,9 @@ function LightBattle:checkGameOver()
     if self.encounter:onGameOver() then
         return
     end
-    Game:gameOver(self:getSoulLocation())
+    Game.battle.timer:after(1/15, function()
+        Game:gameOver(self:getSoulLocation())
+    end)
 end
 
 function LightBattle:battleText(text,post_func)
@@ -2214,8 +2226,6 @@ function LightBattle:randomTargetOld()
         end
     end
 
-    target.should_darken = false
-    target.darken_timer = 0
     target.targeted = true
     return target
 end
@@ -2329,8 +2339,7 @@ function LightBattle:hurt(amount, exact, target)
         if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
             target = self:randomTargetOld()
         end
-
-        target.should_darken = false
+        
         target.targeted = true
     end
 
@@ -2594,8 +2603,9 @@ function LightBattle:onKeyPressed(key)
         if self.state == "DEFENDING" and key == "f" then
             self.encounter:onWavesDone()
         end
-        if self.soul and key == "j" then
+        if self.soul and self.soul.visible and self.state == "DEFENDING" and key == "j" then
             self.soul:shatter(6)
+            self:toggleSoul(false)
             self:getPartyBattler(Game:getSoulPartyMember().id):hurt(math.huge)
         end
         if key == "b" then
@@ -2983,7 +2993,7 @@ function LightBattle:handleAttackingInput(key)
 
             for _,attack in ipairs(self.battle_ui.attack_box.lanes) do
                 if not attack.attacked then
-                    close = self.battle_ui.attack_box:getClose(attack)
+                    close = self.battle_ui.attack_box:getFirstBolt(attack)
                     if not closest then
                         closest = close
                         table.insert(closest_attacks, attack)
