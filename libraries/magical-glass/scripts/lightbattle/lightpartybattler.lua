@@ -131,8 +131,12 @@ function LightPartyBattler:removeHealth(amount)
     else
         self.chara:setHealth(self.chara:getHealth() - amount)
         if (self.chara:getHealth() <= 0) then
-            amount = math.abs((self.chara:getHealth() - (self.chara:getStat("health") / 2)))
-            self.chara:setHealth(Utils.round(((-self.chara:getStat("health")) / 2)))
+            if #Game.battle.party == 1 then
+                self.chara:setHealth(0)
+            else
+                amount = math.abs((self.chara:getHealth() - (self.chara:getStat("health") / 2)))
+                self.chara:setHealth(Utils.round(((-self.chara:getStat("health")) / 2)))
+            end
         end
     end
     self:checkHealth()
@@ -141,8 +145,12 @@ end
 function LightPartyBattler:removeHealthBroken(amount)
     self.chara:setHealth(self.chara:getHealth() - amount)
     if (self.chara:getHealth() <= 0) then
-        -- BUG: Use Kris' max health...
-        self.chara:setHealth(Utils.round(((-Game.party[1]:getStat("health")) / 2)))
+        if #Game.battle.party == 1 then
+            self.chara:setHealth(0)
+        else
+            -- BUG: Use Kris' max health...
+            self.chara:setHealth(Utils.round(((-Game.party[1]:getStat("health")) / 2)))
+        end
     end
     self:checkHealth()
 end

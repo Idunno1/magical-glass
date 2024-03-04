@@ -109,6 +109,8 @@ end
 
 function LightEncounter:onNoTransition()
     Game.battle.timer:after(1/30, function()
+        Game.battle.fader:fadeIn(nil, {speed=5/30})
+        Game.battle.transitioned = true
         self:setBattleState()
     end)
 end

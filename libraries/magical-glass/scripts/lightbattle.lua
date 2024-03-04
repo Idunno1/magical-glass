@@ -164,6 +164,9 @@ function LightBattle:playMoveSound()
 end
 
 function LightBattle:toggleSoul(soul)
+    if not self.soul then
+        self:spawnSoul(self.arena:getCenter())
+    end
     if soul then
         self.soul.collidable = true
         self.soul.visible = true
@@ -302,7 +305,7 @@ function LightBattle:getSoulLocation(always_player)
     if self.soul and (not always_player) then
         return self.soul:getPosition()
     else
-        return -9, -9
+        return 49, 455
     end
 end
 
@@ -1485,7 +1488,9 @@ function LightBattle:checkGameOver()
     if self.encounter:onGameOver() then
         return
     end
-    Game:gameOver(self:getSoulLocation())
+    Game.battle.timer:after(1/15, function()
+        Game:gameOver(self:getSoulLocation())
+    end)
 end
 
 function LightBattle:battleText(text,post_func)
@@ -2596,8 +2601,9 @@ function LightBattle:onKeyPressed(key)
         if self.state == "DEFENDING" and key == "f" then
             self.encounter:onWavesDone()
         end
-        if self.soul and key == "j" then
+        if self.soul and self.soul.visible and self.state == "DEFENDING" and key == "j" then
             self.soul:shatter(6)
+            self:toggleSoul(false)
             self:getPartyBattler(Game:getSoulPartyMember().id):hurt(math.huge)
         end
         if key == "b" then

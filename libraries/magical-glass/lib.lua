@@ -2902,10 +2902,12 @@ function lib:registerDebugOptions(debug)
 
     debug:registerMenu("dark_encounter_select", "Select Dark Encounter", "search")
     for id,_ in pairs(Registry.encounters) do
-        debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
-            Game:encounter(id, true, nil, nil, false)
-            debug:closeMenu()
-        end)
+        if id ~= "_nobody" then
+            debug:registerOption("dark_encounter_select", id, "Start this encounter.", function()
+                Game:encounter(id, true, nil, nil, false)
+                debug:closeMenu()
+            end)
+        end
     end
 
     debug:registerMenu("light_encounter_select", "Select Light Encounter", "search")
@@ -2922,7 +2924,9 @@ function lib:registerDebugOptions(debug)
 
     local waves_list = {}
     for id,_ in pairs(Registry.waves) do
-        table.insert(waves_list, id)
+        if id ~= "_none" and id ~= "_story" then
+            table.insert(waves_list, id)
+        end
     end
 
     table.sort(waves_list, function(a, b)
@@ -3017,7 +3021,7 @@ function lib:changeSpareColor(color)
 end
 
 function lib:onFootstep(char, num)
-    if self.encounters_enabled and char == Game.world.player then
+    if self.encounters_enabled and Game.world.player and char == Game.world.player then
         self.steps_until_encounter = self.steps_until_encounter - 1
     end
 end
