@@ -18,12 +18,6 @@ function LightActionBox:init(x, y, index, battler)
     end
 end
 
-function LightActionBox:getHPGaugeLengthCap()
-    return Kristal.getLibConfig("magical-glass", "hp_gauge_length_cap")
-end
-
-function LightActionBox:getButtons(battler) end
-
 function LightActionBox:createButtons()
     for _,button in ipairs(self.buttons or {}) do
         button:remove()
@@ -36,10 +30,7 @@ function LightActionBox:createButtons()
     if not self.battler.chara:hasAct() then Utils.removeFromTable(btn_types, "act") end
     if not self.battler.chara:hasSpells() then Utils.removeFromTable(btn_types, "spell") end
 
-    for lib_id,_ in Kristal.iterLibraries() do
-        btn_types = Kristal.libCall(lib_id, "getLightActionButtons", self.battler, btn_types) or btn_types
-    end
-    btn_types = Kristal.modCall("getLightActionButtons", self.battler, btn_types) or btn_types
+    btn_types = Kristal.callEvent("getLightActionButtons", self.battler, btn_types) or btn_types
 
     for i,btn in ipairs(btn_types) do
         if type(btn) == "string" then
@@ -83,7 +74,6 @@ function LightActionBox:createButtons()
     end
 
     self.selected_button = Utils.clamp(self.selected_button, 1, #self.buttons)
-
 end
 
 function LightActionBox:snapSoulToButton()
@@ -119,9 +109,7 @@ function LightActionBox:update()
             end
         end
     end
-
     super.update(self)
-
 end
 
 function LightActionBox:select()
@@ -133,179 +121,69 @@ function LightActionBox:unselect()
     self.buttons[self.selected_button]:unselect()
 end
 
-function LightActionBox:drawStatusStripStory()
-    if self.index == 1 then
-        local x, y = 180, 130
-        local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
+function LightActionBox:drawBox()
+    local name = self.battler.chara:getName()
+    local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
+    
+    local current = self.battler.chara:getHealth()
+    local max = self.battler.chara:getStat("health")
 
-        love.graphics.setFont(Assets.getFont("namelv", 24))
-        love.graphics.setColor(COLORS["white"])
-        love.graphics.print("LV " .. level, x, y)
-
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 74, y + 5)
-
-        local max = self.battler.chara:getStat("health")
-        local current = self.battler.chara:getHealth()
+    local x, y = 10 + (3 - #Game.battle.party) * 198 / 2 + (Utils.getIndex(Game.battle.party, self.battler) - 1) * 198, 130
         
-        local limit = self:getHPGaugeLengthCap()
-        if limit == true then
-            limit = 99
+    love.graphics.setFont(Assets.getFont("namelv", 24))
+    love.graphics.setColor(COLORS["white"])
+    love.graphics.print(name, x, y - 7)
+    love.graphics.setFont(Assets.getFont("namelv"))
+    love.graphics.print("LV " .. level, x, y + 13)
+    
+    --love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
+    
+    local small = false
+    for _,party in ipairs(Game.battle.party) do
+        if party.chara:getHealth() >= 100 or party.chara:getStat("health") >= 100 then
+            small = true
         end
-        local size = max
-        if limit and size > limit then
-            size = limit
-            limit = true
-        end
-
-        love.graphics.setColor(COLORS["red"])
-        love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current, 0, max + 10) * 1.25, 21)
-
-        if max < 10 and max >= 0 then
-            max = "0" .. tostring(max)
-        end
-
-        if current < 10 and current >= 0 then
-            current = "0" .. tostring(current)
-        end
-
-        local color = COLORS.white
-        if self.battler.chara:getHealth() > 0 and not Game.battle.forced_victory then
-            if self.battler.sleeping then
-                color = {0,0,1}
-            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
-                color = COLORS.aqua
-            end
-        end
-        love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14, y)
     end
-end
+    love.graphics.setColor(COLORS["red"])
+    love.graphics.rectangle("fill", x + 90, y + 2, (small and 25 or 32) * 1.25, 16)
+    love.graphics.setColor(COLORS["yellow"])
+    love.graphics.rectangle("fill", x + 90, y + 2, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25, 16)
+    
+    love.graphics.setFont(Assets.getFont("namelv", 16))
+    if max < 10 and max >= 0 then
+        max = "0" .. tostring(max)
+    end
 
-function LightActionBox:drawStatusStrip()    
-    if #Game.battle.party == 1 then
-        local x, y = 10, 130
-        
-        local name = self.battler.chara:getName()
-        local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
-        
-        local current = self.battler.chara:getHealth()
-        local max = self.battler.chara:getStat("health")
+    if current < 10 and current >= 0 then
+        current = "0" .. tostring(current)
+    end
 
-        love.graphics.setFont(Assets.getFont("namelv", 24))
-        love.graphics.setColor(COLORS["white"])
-        love.graphics.print(name .. "   LV " .. level, x, y)
-
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
-        
-        local limit = self:getHPGaugeLengthCap()
-        if limit == true then
-            limit = 99
+    local color = COLORS.white
+    if not Game.battle.forced_victory then
+        if self.battler.is_down then 
+            color = {1,0,0}
+        elseif self.battler.sleeping then
+            color = {0,0,1}
+        elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
+            color = COLORS.aqua
         end
-        local size = max
-        if limit and size > limit then
-            size = limit
-            limit = true
-        end
-
-        love.graphics.setColor(COLORS["red"])
-        love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current, 0, max + 10) * 1.25, 21)
-
-        if max < 10 and max >= 0 then
-            max = "0" .. tostring(max)
-        end
-
-        if current < 10 and current >= 0 then
-            current = "0" .. tostring(current)
-        end
-
-        local color = COLORS.white
-        if self.battler.chara:getHealth() > 0 and not Game.battle.forced_victory then
-            if self.battler.sleeping then
-                color = {0,0,1}
-            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
-                color = COLORS.aqua
-            end
-        end
-        love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14, y)
-    else
-        local x, y = 2 + (3 - #Game.battle.party) * 101 + (self.index - 1) * 101 * 2, 130
-        
-        local name = self.battler.chara:getShortName()
-        local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
-        
-        local current = self.battler.chara:getHealth()
-        local max = self.battler.chara:getStat("health")
-        
-        love.graphics.setFont(Assets.getFont("namelv", 24))
-        love.graphics.setColor(COLORS["white"])
-        love.graphics.print(name, x, y - 7)
-        love.graphics.setFont(Assets.getFont("namelv", 16))
-        love.graphics.print("LV " .. level, x, y + 13)
-        
-        if not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
-        end
-        
-        local small = false
-        for _,party in ipairs(Game.battle.party) do
-            if party.chara:getStat("health") >= 100 then
-                small = true
-            end
-        end
-        love.graphics.setColor(COLORS["red"])
-        love.graphics.rectangle("fill", x + 90, y, (small and 20 or 32) * 1.25, 21)
-        love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25, 21)
-        
-        love.graphics.setFont(Assets.getFont("namelv", 16))
-        if max < 10 and max >= 0 then
-            max = "0" .. tostring(max)
-        end
-
-        if current < 10 and current >= 0 then
-            current = "0" .. tostring(current)
-        end
-        
-        local color = COLORS.white
-        if not Game.battle.forced_victory then
-            if self.battler.is_down then 
-                color = {1,0,0}
-            elseif self.battler.sleeping then
-                color = {0,0,1}
-            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
-                color = COLORS.aqua
-            end
-        end
-        love.graphics.setColor(color)
-        -- love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
-        love.graphics.printf(current .. "/" .. max, x + 195 - 500, y + 3, 500, "right")
-        
-        if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
-            love.graphics.setColor(self.battler.chara:getLightColor())
-            love.graphics.setLineWidth(2)
-            love.graphics.line(x - 3, y - 7, x - 3, y + 28)
-            love.graphics.line(x - 3 - 1, y - 7, x + 196 + 1, y - 7)
-            love.graphics.line(x + 196, y - 7, x + 196, y + 28)
-            love.graphics.line(x - 3 - 1, y + 28, x + 196 + 1, y + 28)
-        end
+    end
+    love.graphics.setColor(color)
+    love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
+    
+    if Game.battle.current_selecting == self.index then
+        love.graphics.setColor(self.battler.chara:getLightColor())
+        love.graphics.setLineWidth(2)
+        love.graphics.line(x - 3, y - 7, x - 3, y + 28)
+        love.graphics.line(x - 3 - 1, y - 7, x + 188 + 1, y - 7)
+        love.graphics.line(x + 188, y - 7, x + 188, y + 28)
+        love.graphics.line(x - 3 - 1, y + 28, x + 188 + 1, y + 28)
     end
 end
 
 function LightActionBox:draw()
-
-    if Game.battle.encounter.story then
-        self:drawStatusStripStory()
-    else
-        self:drawStatusStrip()
-    end
-
+    self:drawBox()
     super.draw(self)
-
 end
 
 return LightActionBox
