@@ -12,7 +12,6 @@ LightDamageNumber        = libRequire("magical-glass", "scripts/lightbattle/ui/l
 LightGauge               = libRequire("magical-glass", "scripts/lightbattle/ui/lightgauge")
 LightTensionBar          = libRequire("magical-glass", "scripts/lightbattle/ui/lighttensionbar")
 LightActionButton        = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbutton")
-LightActionBoxSingle     = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionboxsingle")
 LightActionBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightactionbox")
 LightAttackBox           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbox")
 LightAttackBar           = libRequire("magical-glass", "scripts/lightbattle/ui/lightattackbar")
@@ -1105,7 +1104,7 @@ function lib:init()
             return "* " .. target.chara:getNameOrYou() .. " "..self:getUseMethod(target.chara).." the " .. self:getUseName() .. "."
         elseif self.target == "party" then
             if #Game.battle.party > 1 then
-                return "* "..target.chara:getNameOrYou().." "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
+                return "* Everyone "..self:getUseMethod("other").." the " .. self:getUseName() .. "."
             else
                 return "* You "..self:getUseMethod("self").." the " .. self:getUseName() .. "."
             end

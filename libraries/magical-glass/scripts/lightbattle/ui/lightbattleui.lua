@@ -48,29 +48,19 @@ function LightBattleUI:init()
         Game.battle:addChild(self.help_window)
     end
 
-    self.action_boxes = {}
-
-    if #Game.battle.party == 1 then
-        local action_box = LightActionBoxSingle(20, 0, i, Game.battle.party[1])
-        action_box.layer = BATTLE_LAYERS["below_ui"]
-        action_box:move(self:getRelativePos())
-        Game.battle:addChild(action_box)
-        table.insert(self.action_boxes, action_box)
-        Game.battle.party[1].chara:onActionBox(action_box, false)
-    else
-        self.action_boxes = {}
-        for i,battler in ipairs(Game.battle.party) do
-            local action_box = LightActionBox(20, 0, i, battler)
-            action_box.layer = BATTLE_LAYERS["below_ui"]
-            action_box:move(self:getRelativePos())
-            Game.battle:addChild(action_box)
-            table.insert(self.action_boxes, action_box)
-            battler.chara:onActionBox(action_box, false)
-        end
-    end
-
     self.attack_box = nil
+    self.action_boxes = {}
+    
     self.attacking = false
+
+    for i,battler in ipairs(Game.battle.party) do
+        self.action_box_ut = LightActionBox(20, 0, i, battler)
+        self.action_box_ut.layer = BATTLE_LAYERS["below_ui"]
+        self.action_box_ut:move(self:getRelativePos())
+        Game.battle:addChild(self.action_box_ut)
+        table.insert(self.action_boxes, self.action_box_ut)
+        battler.chara:onActionBox(self.action_box_ut, false)
+    end
 
     self.shown = true 
     
@@ -78,6 +68,7 @@ function LightBattleUI:init()
 
     self.sparestar = Assets.getTexture("ui/battle/sparestar")
     self.tiredmark = Assets.getTexture("ui/battle/tiredmark")
+    
 end
 
 function LightBattleUI:clearEncounterText()
