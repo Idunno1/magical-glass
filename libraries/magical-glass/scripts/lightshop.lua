@@ -363,12 +363,13 @@ function LightShop:replaceItem(index, item, options)
     end
     if item then
         options = options or {}
-        options["name"]        = options["name"]        or item:getName()
-        options["description"] = options["description"] or item:getLightShopDescription()
-        options["price"]       = options["price"]       or item:getBuyPrice()
-        options["bonuses"]     = options["bonuses"]     or item:getStatBonuses()
-        options["color"]       = options["color"]       or {1, 1, 1, 1}
-        options["flag"]        = options["flag"]        or ("stock_" .. tostring(index) .. "_" .. item.id)
+        options["name"]             = options["name"]             or item:getName()
+        options["description"]      = options["description"]      or item:getLightShopDescription()
+        options["dont_show_change"] = options["dont_show_change"] or item:getLightShopDontShowChange()
+        options["price"]            = options["price"]            or item:getBuyPrice()
+        options["bonuses"]          = options["bonuses"]          or item:getStatBonuses()
+        options["color"]            = options["color"]            or {1, 1, 1, 1}
+        options["flag"]             = options["flag"]             or ("stock_" .. tostring(index) .. "_" .. item.id)
 
         options["stock"] = self:getFlag(options["flag"], options["stock"])
 

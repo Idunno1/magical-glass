@@ -1095,7 +1095,9 @@ function lib:init()
         self.use_method_other = nil
         
         -- Displays magic stats for weapons and armors in light shops
-        self.light_shop_magic = false
+        self.shop_magic = false
+        -- Doesn't display stats for weapons and armors in light shops
+        self.shop_dont_show_change = false
     
     end)
     
@@ -1152,7 +1154,11 @@ function lib:init()
     end)
     
     Utils.hook(Item, "getLightShopShowMagic", function(orig, self)
-        return self.light_shop_magic
+        return self.shop_magic
+    end)
+    
+    Utils.hook(Item, "getLightShopDontShowChange", function(orig, self)
+        return self.shop_dont_show_change
     end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)

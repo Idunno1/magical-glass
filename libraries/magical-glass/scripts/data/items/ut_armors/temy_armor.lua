@@ -15,6 +15,9 @@ function item:init()
     -- Whether this item is for the light world
     self.light = true
 
+    -- Shop description
+    self.shop = "ARMOR 20DF\nmakes\nbattles\ntoo easy"
+    self.shop_dont_show_change = true
     -- Default shop sell price
     self.sell_price = 500
     -- Whether the item can be sold

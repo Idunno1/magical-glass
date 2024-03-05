@@ -13,6 +13,8 @@ function item:init(inventory)
     -- Whether this item is for the light world
     self.light = true
 
+    -- Shop description
+    self.shop = "?????\nProbably\nto someone's\nhouse LOL"
     -- Default shop price (sell price is halved)
     self.price = 600
     -- Whether the item can be sold
