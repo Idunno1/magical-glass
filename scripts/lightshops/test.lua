@@ -33,6 +33,7 @@ function TestShop:init()
     self:registerItem("ut_items/crab_apple")
     self:registerItem("light/ring", {description = "This is a\ntest."})
     self:registerItem("ut_items/bisicle")
+    self:registerItem("ut_items/legendary_hero")
     self:registerItem("ut_armors/temy_armor")
 
     self:registerTalk("Reflect")
