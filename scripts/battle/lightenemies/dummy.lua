@@ -9,8 +9,8 @@ function Dummy:init()
     self:setActor("dummy_ut")
 
     -- Enemy health
-    self.max_health = 800
-    self.health = 800
+    self.max_health = 5000
+    self.health = 5000
     -- Enemy attack (determines bullet damage)
     self.attack = 5
     -- Enemy defense (usually 0)

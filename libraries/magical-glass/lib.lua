@@ -1304,7 +1304,7 @@ function lib:init()
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
         local function y_msg_position()
-            return y + (offset_y - 2) - ((type == "damage" or type == "msg" and arg == "miss") and not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+            return y + (offset_y - 2) - (not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
         end
         
         if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then

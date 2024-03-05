@@ -142,7 +142,7 @@ function LightActionBox:drawStatusStripStory()
         love.graphics.setColor(COLORS["white"])
         love.graphics.print("LV " .. level, x, y)
 
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 74, y + 5)
+        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74, y + 5)
 
         local max = self.battler.chara:getStat("health")
         local current = self.battler.chara:getHealth()
@@ -197,7 +197,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setColor(COLORS["white"])
         love.graphics.print(name .. "   LV " .. level, x, y)
 
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 214, y + 5)
+        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 214, y + 5)
         
         local limit = self:getHPGaugeLengthCap()
         if limit == true then
@@ -248,7 +248,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.print("LV " .. level, x, y + 13)
         
         if not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/hpname"), x + 64, y + 15)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 64, y + 15)
         end
         
         local small = false
