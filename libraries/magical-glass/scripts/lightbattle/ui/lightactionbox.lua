@@ -184,7 +184,7 @@ function LightActionBox:drawStatusStripStory()
 end
 
 function LightActionBox:drawStatusStrip()    
-    if #Game.battle.party == 1 then
+    if not Game.battle.multi_mode then
         local x, y = 10, 130
         
         local name = self.battler.chara:getName()

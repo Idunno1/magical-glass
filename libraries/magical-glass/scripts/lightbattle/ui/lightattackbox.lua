@@ -5,14 +5,14 @@ function LightAttackBox:init(x, y)
 
     self.arena = Game.battle.arena
 
-    self.target_sprite = #Game.battle.party > 1 and Sprite("ui/lightbattle/dumbtarget_multi") or Sprite("ui/lightbattle/dumbtarget")
+    self.target_sprite = Game.battle.multi_mode and Sprite("ui/lightbattle/dumbtarget_multi") or Sprite("ui/lightbattle/dumbtarget")
     self.target_sprite:setOrigin(0.5, 0.5)
     self.target_sprite:setPosition(self.arena:getRelativePos(self.arena.width / 2, self.arena.height / 2))
     self.target_sprite.layer = BATTLE_LAYERS["above_ui"]
     Game.battle:addChild(self.target_sprite)
 
     -- called "fatal" for some reason in ut
-    self.bolt_target = #Game.battle.party > 1 and self.arena.x / 2 - 10 or self.arena.x
+    self.bolt_target = Game.battle.multi_mode and self.arena.x / 2 - 10 or self.arena.x
 
     self.shoe_finished = 0
     self.attackers = Game.battle.normal_attackers
@@ -30,11 +30,11 @@ function LightAttackBox:createBolts()
         lane.battler = battler
         lane.bolts = {}
         lane.weapon = battler.chara:getWeapon()
-        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (#Game.battle.party == 1 and Utils.random(0, 2, 1) or 0)
+        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (not Game.battle.multi_mode and Utils.random(0, 2, 1) or 0)
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
-        lane.direction = #Game.battle.party > 1 and "left" or lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or Game:isLight() and "right" or Utils.pick({"right", "left"})
+        lane.direction = Game.battle.multi_mode and "left" or lane.weapon and lane.weapon.getLightBoltDirection and lane.weapon:getLightBoltDirection() or Game:isLight() and "right" or Utils.pick({"right", "left"})
 
         if (lane.weapon and lane.weapon.getLightBoltCount and lane.weapon:getLightBoltCount() or 1) > 1 then
             lane.attack_type = "shoe"
@@ -150,7 +150,7 @@ function LightAttackBox:hit(battler)
         battler.weapon:onLightBoltHit(battler)
     end
     if battler.attack_type == "shoe" then
-        local close = math.floor(math.abs(self:getClose(battler)) * (#Game.battle.party > 1 and self:getClose(battler) < -20 and 3 or 1))
+        local close = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
 
         local eval = self:evaluateHit(battler, close)
         
@@ -189,7 +189,7 @@ function LightAttackBox:hit(battler)
 
         return self:checkAttackEnd(battler, battler.score, battler.bolts, close), 2
     elseif battler.attack_type == "slice" then
-        battler.score = math.floor(math.abs(self:getClose(battler)) * (#Game.battle.party > 1 and self:getClose(battler) < -20 and 3 or 1))
+        battler.score = math.floor(math.abs(self:getClose(battler)) * (Game.battle.multi_mode and self:getClose(battler) < -20 and 3 or 1))
         if battler.score == 0 then
             battler.score = 1
         end
@@ -211,7 +211,7 @@ function LightAttackBox:checkMiss(battler)
             return self:getClose(battler) > (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 2)
         end
     elseif battler.attack_type == "slice" then
-        return (battler.direction == "left" and self:getClose(battler) - (#Game.battle.party > 1 and 180 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
+        return (battler.direction == "left" and self:getClose(battler) - (Game.battle.multi_mode and 180 or 0) <= -(battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280) or (battler.direction == "right" and self:getClose(battler) >= (battler.weapon and battler.weapon.getLightAttackMissZone and battler.weapon:getLightAttackMissZone() or 280)))
     end
 end
 
@@ -233,7 +233,7 @@ function LightAttackBox:update()
 
     self.timer = self.timer + DTMULT
 
-    -- if (#Game.battle.party == 1 and self.timer > 1 or #Game.battle.party > 1 and self.timer > 5) and #self.lanes == 0 then
+    -- if (not Game.battle.multi_mode and self.timer > 1 or Game.battle.multi_mode and self.timer > 5) and #self.lanes == 0 then
     if self.timer > 1 and #self.lanes == 0 then
         self:createBolts()
     end

@@ -232,6 +232,8 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
 
+    self.multi_mode = Kristal.getLibConfig("magical-glass", "multi_always_on") or #self.party > 1
+
     self.tension_bar = LightTensionBar(29, 53, true)
     if self.tension then
         self.tension_bar.visible = false
@@ -3005,7 +3007,7 @@ function LightBattle:handleAttackingInput(key)
                 end
             end
 
-            if closest and (closest <= 280 or #Game.battle.party == 1) then
+            if closest and (closest <= 280 or not Game.battle.multi_mode) then
                 for _,attack in ipairs(closest_attacks) do
                     local points, stretch = self.battle_ui.attack_box:hit(attack)
 
