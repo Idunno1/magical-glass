@@ -667,25 +667,34 @@ function LightBattleUI:drawState()
 
         local font = Assets.getFont("main_mono")
         love.graphics.setFont(font)
+        
+        local name_length = 0
+        for _,party in ipairs(Game.battle.party) do
+            if string.len(party.chara.name) > name_length then
+                name_length = string.len(party.chara.name)
+            end
+        end
+        local hp_x = 190 + (name_length * 16)
 
         for index = page_offset + 1, math.min(page_offset + 3, #Game.battle.party) do
             Draw.setColor(1, 1, 1, 1)
             love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
 
-            if self.style == "undertale" then
+            if self.style ~= "deltarune" then
                 Draw.setColor(1,0,0,1)
-                love.graphics.rectangle("fill", 318, 10 + ((index - page_offset - 1) * 32), 101, 17)
+                love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
                 Draw.setColor(PALETTE["action_health"])
-                love.graphics.rectangle("fill", 318, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
+                love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), math.max(0,math.ceil(percentage * 101)), 17)
             else
-                Draw.setColor(PALETTE["action_health_bg"])
-                love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), 101, 17)
+                -- Draw.setColor(PALETTE["action_health_bg"])
+                Draw.setColor(1,0,0,1)
+                love.graphics.rectangle("fill", 440, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
                 Draw.setColor(PALETTE["action_health"])
-                love.graphics.rectangle("fill", 400, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
+                love.graphics.rectangle("fill", 440, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
         
