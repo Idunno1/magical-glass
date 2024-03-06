@@ -25,7 +25,7 @@ function actor:init()
         ["battle/hurt"]         = {"battle/hurt", 1/15, false, temp=true, duration=0.5},
         ["battle/defeat"]       = {"battle/defeat", 1/15, false},
 
-        ["battle/transition"]   = {"battle/sword_jump_down", 0.2, true},
+        ["battle/transition"]   = {"sword_jump_down", 0.2, true},
         ["battle/intro"]        = {"battle/attack", 1/15, true},
         ["battle/victory"]      = {"battle/victory", 1/10, false},
     }, false)
@@ -50,11 +50,12 @@ function actor:init()
 
         ["battle/defeat"] = {-8, -5},
         ["battle/hurt"] = {-5, -6},
-        
-        ["battle/sword_jump_down"] = {-19, -5},
 
         ["battle/intro"] = {-8, -9},
         ["battle/victory"] = {-3, 0},
+        
+        -- Cutscene offsets
+        ["sword_jump_down"] = {-19, -5},
     }, false)
 end
 
