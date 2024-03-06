@@ -570,7 +570,7 @@ function LightBattleUI:drawState()
             local mercy_x = self.style == "undertale" and (Game.battle.state_reason == "XACT" and 480 or hp_x) or 500
             local mercy_length = self.style == "undertale" and 101 or 81
 
-            if self.draw_mercy and not enemy.done_state and not (self.style ~= "deltarune" and Game.battle.state_reason == "ATTACK") then
+            if self.draw_mercy and not enemy.done_state and not (self.style ~= "deltarune" and (Game.battle.state_reason == "ATTACK" or Game.battle.state_reason == "SPELL")) then
                 if enemy.selectable then
                     Draw.setColor(PALETTE["battle_mercy_bg"])
                 else
