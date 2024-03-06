@@ -510,7 +510,7 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
             self.hurt_timer = 1
         end
 
-        self:onDodge(battler)
+        self:onDodge(battler, not (anim and anim ~= nil))
         return
     end
 
@@ -526,7 +526,7 @@ function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
 
 end
 
-function LightEnemyBattler:onDodge(battler) end
+function LightEnemyBattler:onDodge(battler, attacked) end
 
 function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional
