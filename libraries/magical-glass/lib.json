@@ -123,11 +123,8 @@
         // "deltarune"
         // deltarune-styled HP and Mercy gauges.
         //
-        // "deltatraveler_old" (not yet implemented)
-        // The gauge styles used in Deltatraveler before version 2.07.
-        //
-        // "deltatraveler_new"
-        // The gauge styles used in Deltatraveler after version 2.07.
+        // "deltatraveler"
+        // The gauge styles used in Deltatraveler.
         //
         /////
         "gauge_style": "undertale",

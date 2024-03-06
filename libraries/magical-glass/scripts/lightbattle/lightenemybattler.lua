@@ -495,38 +495,42 @@ function LightEnemyBattler:isXActionShort(battler)
     return false
 end
 
-function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
+function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacked)
+    if attacked ~= false then
+        attacked = true
+    end
+    local message
     if amount <= 0 then
-        local message
-        if not self.display_damage_on_miss or (anim and anim ~= nil) then
+        if not self.display_damage_on_miss or not attacked then
             message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        else
+            message = self:lightStatusMessage("damage", 0, color or (battler and {battler.chara:getLightDamageColor()}))
         end
         if message and (anim and anim ~= nil) then
             message:resetPhysics()
-        else
-            if self.display_damage_on_miss then
-                self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
-            end
+        end
+        if attacked then
             self.hurt_timer = 1
         end
 
-        self:onDodge(battler)
+        self:onDodge(battler, attacked)
         return
     end
 
-    self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+    message = self:lightStatusMessage("damage", amount, color or (battler and {battler.chara:getLightDamageColor()}))
+    if message and (anim and anim ~= nil) then
+        message:resetPhysics()
+    end
     self.health = self.health - amount
 
-    if amount > 0 then
-        self.hurt_timer = 1
-        self:onHurt(amount, battler)
-    end
+    self.hurt_timer = 1
+    self:onHurt(amount, battler)
 
     self:checkHealth(on_defeat, amount, battler)
 
 end
 
-function LightEnemyBattler:onDodge(battler) end
+function LightEnemyBattler:onDodge(battler, attacked) end
 
 function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     -- on_defeat is optional

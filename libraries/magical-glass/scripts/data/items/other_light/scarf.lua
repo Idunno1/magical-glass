@@ -22,7 +22,7 @@ function item:init()
     
     self.price = 200
     
-    self.light_shop_magic = true
+    self.shop_magic = true
 
     -- Equip bonuses (for weapons and armor)
     self.bonuses = {

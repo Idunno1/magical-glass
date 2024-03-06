@@ -14,6 +14,8 @@ function item:init()
     -- Whether this item is for the light world
     self.light = true
 
+    -- Shop description
+    self.shop = "Invincible\nlonger"
     -- Default shop price (sell price is halved)
     self.price = 35
     -- Default shop sell price

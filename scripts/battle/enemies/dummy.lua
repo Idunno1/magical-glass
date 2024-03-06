@@ -9,14 +9,14 @@ function Dummy:init()
     self:setActor("dummy")
 
     -- Enemy health
-    self.max_health = 450
-    self.health = 450
+    self.max_health = 5000
+    self.health = 5000
     -- Enemy attack (determines bullet damage)
-    self.attack = 4
+    self.attack = 5
     -- Enemy defense (usually 0)
     self.defense = 0
     -- Enemy reward
-    self.money = 100
+    self.money = 69
 
     -- Mercy given when sparing this enemy before its spareable (20% for basic enemies)
     self.spare_points = 20

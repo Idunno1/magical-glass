@@ -14,6 +14,7 @@ function item:init(inventory)
     -- How this item is used on other party members (eats, etc.)
     self.use_method_other = "eats"
 
+
     -- Item type (item, key, weapon, armor)
     self.type = "item"
     -- Whether this item is for the light world
@@ -21,6 +22,8 @@ function item:init(inventory)
 
     self.heal_amount = 22
 
+    -- Shop description
+    self.shop = "Heals 22HP\nIt's my own\nrecipe."
     -- Default shop price (sell price is halved)
     self.price = 25
     -- Default shop sell price

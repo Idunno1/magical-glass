@@ -233,6 +233,7 @@ function LightAttackBox:update()
 
     self.timer = self.timer + DTMULT
 
+    -- if (#Game.battle.party == 1 and self.timer > 1 or #Game.battle.party > 1 and self.timer > 5) and #self.lanes == 0 then
     if self.timer > 1 and #self.lanes == 0 then
         self:createBolts()
     end

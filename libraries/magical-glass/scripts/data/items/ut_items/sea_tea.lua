@@ -18,6 +18,8 @@ function item:init(inventory)
 
     self.heal_amount = 10
 
+    -- Shop description
+    self.shop = "Heals 10HP\nSPEED\nup in\nbattle."
     -- Default shop price (sell price is halved)
     self.price = 18
     -- Default shop sell price

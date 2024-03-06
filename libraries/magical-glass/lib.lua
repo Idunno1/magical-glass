@@ -1095,7 +1095,9 @@ function lib:init()
         self.use_method_other = nil
         
         -- Displays magic stats for weapons and armors in light shops
-        self.light_shop_magic = false
+        self.shop_magic = false
+        -- Doesn't display stats for weapons and armors in light shops
+        self.shop_dont_show_change = false
     
     end)
     
@@ -1152,7 +1154,11 @@ function lib:init()
     end)
     
     Utils.hook(Item, "getLightShopShowMagic", function(orig, self)
-        return self.light_shop_magic
+        return self.shop_magic
+    end)
+    
+    Utils.hook(Item, "getLightShopDontShowChange", function(orig, self)
+        return self.shop_dont_show_change
     end)
 
     Utils.hook(Item, "getLightTypeName", function(orig, self)
@@ -1240,8 +1246,8 @@ function lib:init()
         return false
     end)
 
-    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim)
-        enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim, attacked)
+        enemy:hurt(0, battler, nil, nil, anim, attacked)
     end)
 
     Utils.hook(Item, "onCheck", function(orig, self)
@@ -1304,7 +1310,7 @@ function lib:init()
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
         local function y_msg_position()
-            return y + (offset_y - 2) - ((type == "damage" or type == "msg" and arg == "miss") and not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
+            return y + (offset_y - 2) - (not kill and self.hit_count * (Assets.getFont("lwdmg"):getHeight() + 2) or 0)
         end
         
         if y_msg_position() <= Assets.getFont("lwdmg"):getHeight() then

@@ -3005,7 +3005,7 @@ function LightBattle:handleAttackingInput(key)
                 end
             end
 
-            if closest then
+            if closest and (closest <= 280 or #Game.battle.party == 1) then
                 for _,attack in ipairs(closest_attacks) do
                     local points, stretch = self.battle_ui.attack_box:hit(attack)
 
