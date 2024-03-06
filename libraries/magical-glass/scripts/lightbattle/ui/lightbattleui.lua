@@ -690,11 +690,11 @@ function LightBattleUI:drawState()
             else
                 -- Draw.setColor(PALETTE["action_health_bg"])
                 Draw.setColor(1,0,0,1)
-                love.graphics.rectangle("fill", 440, 10 + ((index - page_offset - 1) * 32), 101, 17)
+                love.graphics.rectangle("fill", 420, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
                 Draw.setColor(PALETTE["action_health"])
-                love.graphics.rectangle("fill", 440, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
+                love.graphics.rectangle("fill", 420, 10 + ((index - page_offset - 1) * 32), math.ceil(percentage * 101), 17)
             end
         end
         
