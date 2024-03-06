@@ -650,10 +650,10 @@ function lib:init()
         
         if self.texture and self.run_away_light then
             local r,g,b,a = self:getDrawColor()
-            for i = 0, 160 do
+            for i = 0, 80 do
                 local alph = a * 0.4
                 Draw.setColor(r,g,b, ((alph - (self.run_away_timer / 8)) + (i / 200)))
-                Draw.draw(self.texture, i * 2, 0)
+                Draw.draw(self.texture, i * 4, 0)
             end
             return
         end
