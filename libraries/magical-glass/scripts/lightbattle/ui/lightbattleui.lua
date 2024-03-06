@@ -492,7 +492,8 @@ function LightBattleUI:drawState()
                         end
                     elseif self.style == "deltarune" then
                         if enemy:getHPVisibility() then
-                            Draw.setColor(PALETTE["action_health_bg"])
+                            -- Draw.setColor(PALETTE["action_health_bg"])
+                            Draw.setColor(1,0,0,1)
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
         
                             Draw.setColor(PALETTE["action_health"])
