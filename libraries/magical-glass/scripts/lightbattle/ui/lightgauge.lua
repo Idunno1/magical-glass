@@ -28,7 +28,7 @@ function LightGauge:init(type, amount, x, y, enemy, color)
         self.real_value = self.enemy.health
         self.max_value = self.enemy.max_health
         self.extra_width = (self.width / self.max_value)
-        self.reversed = string.sub(tostring(amount), 1, 1) == "+" and true or false -- heal
+        self.reversed = (string.sub(tostring(amount), 1, 1) == "+" or amount < 0) and true or false -- heal
     elseif self.type == "mercy" then
         self.value = self.enemy.mercy
         self.real_value = self.enemy.mercy
