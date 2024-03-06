@@ -316,23 +316,21 @@ function LightBattleUI:drawState()
 
         Draw.setColor(1, 1, 1, 1)
 
-        if self.draw_percents then
-            if self.style == "deltarune" then
-                love.graphics.setFont(font_main)
-                if Game.battle.state_reason ~= "XACT" then
-                    love.graphics.print("HP", 400, -10, 0, 1, 0.5)
-                end
-                if self.draw_mercy then
-                    love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
-                end
-            elseif self.style == "deltatraveler" then
-                love.graphics.setFont(font_main)
-                if Game.battle.state_reason ~= "XACT" then
-                    love.graphics.print("HP", 412, -15, 0, 1, 0.75)
-                end
-                if self.draw_mercy then
-                    love.graphics.print("MERCY", 502, -15, 0, 1, 0.75)
-                end
+        if self.style == "deltarune" then
+            love.graphics.setFont(font_main)
+            if Game.battle.state_reason ~= "XACT" then
+                love.graphics.print("HP", 400, -10, 0, 1, 0.5)
+            end
+            if self.draw_mercy then
+                love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+            end
+        elseif self.style == "deltatraveler" then
+            love.graphics.setFont(font_main)
+            if Game.battle.state_reason ~= "XACT" then
+                love.graphics.print("HP", 412, -15, 0, 1, 0.75)
+            end
+            if self.draw_mercy then
+                love.graphics.print("MERCY", 502, -15, 0, 1, 0.75)
             end
         end
 
@@ -506,7 +504,7 @@ function LightBattleUI:drawState()
                         if self.draw_percents then
                             Draw.setColor(PALETTE["action_health_text"])
                             if enemy:getHPVisibility() then
-                                love.graphics.print(0,math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                                love.graphics.print(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             else
                                 love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             end
