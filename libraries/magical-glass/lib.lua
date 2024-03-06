@@ -1246,8 +1246,8 @@ function lib:init()
         return false
     end)
 
-    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim)
-        enemy:hurt(0, battler, on_defeat, {battler.chara:getLightMissColor()}, anim)
+    Utils.hook(Item, "onLightMiss", function(orig, self, battler, enemy, anim, attacked)
+        enemy:hurt(0, battler, nil, nil, anim, attacked)
     end)
 
     Utils.hook(Item, "onCheck", function(orig, self)

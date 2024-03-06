@@ -495,22 +495,24 @@ function LightEnemyBattler:isXActionShort(battler)
     return false
 end
 
-function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim)
+function LightEnemyBattler:hurt(amount, battler, on_defeat, color, anim, attacked)
+    if attacked ~= false then
+        attacked = true
+    end
     if amount <= 0 then
         local message
-        if not self.display_damage_on_miss or (anim and anim ~= nil) then
+        if not self.display_damage_on_miss or not attacked then
             message = self:lightStatusMessage("msg", "miss", color or (battler and {battler.chara:getLightMissColor()}))
+        else
+            message = self:lightStatusMessage("damage", 0, color or (battler and {battler.chara:getLightDamageColor()}))
         end
         if message and (anim and anim ~= nil) then
             message:resetPhysics()
         else
-            if self.display_damage_on_miss then
-                self:lightStatusMessage("damage", 0, color or (battler and {battler.chara:getLightDamageColor()}))
-            end
             self.hurt_timer = 1
         end
 
-        self:onDodge(battler, not (anim and anim ~= nil))
+        self:onDodge(battler, attacked)
         return
     end
 
