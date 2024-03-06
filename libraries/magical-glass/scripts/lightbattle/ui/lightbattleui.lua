@@ -478,16 +478,16 @@ function LightBattleUI:drawState()
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, bar_height)
 
                             Draw.setColor(PALETTE["action_health"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 101)), bar_height)
+                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 101)), bar_height)
                             if self.draw_percents then
                                 love.graphics.setFont(font_status)
                                 local shadow_offset = 1
 
                                 Draw.setColor(COLORS.black)
-                                love.graphics.printf(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", (hp_x + 19) + shadow_offset, (9 + y_offset) + shadow_offset, 64, "center")
+                                love.graphics.printf(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", (hp_x + 19) + shadow_offset, (9 + y_offset) + shadow_offset, 64, "center")
 
                                 Draw.setColor(PALETTE["action_health_text"])
-                                love.graphics.printf(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 19, 9 + y_offset, 64, "center")
+                                love.graphics.printf(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 19, 9 + y_offset, 64, "center")
                             end
                         end
                     elseif self.style == "deltarune" then
@@ -497,7 +497,7 @@ function LightBattleUI:drawState()
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
         
                             Draw.setColor(PALETTE["action_health"])
-                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 81)), bar_height)
+                            love.graphics.rectangle("fill", hp_x, 10 + y_offset, math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 81)), bar_height)
                         else
                             Draw.setColor(PALETTE["action_health"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
@@ -506,7 +506,7 @@ function LightBattleUI:drawState()
                         if self.draw_percents then
                             Draw.setColor(PALETTE["action_health_text"])
                             if enemy:getHPVisibility() then
-                                love.graphics.print(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                                love.graphics.print(0,math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             else
                                 love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             end
@@ -518,7 +518,7 @@ function LightBattleUI:drawState()
                                 love.graphics.rectangle("fill", hp_x + 12, 11 + y_offset, 75, 17)
             
                                 Draw.setColor(PALETTE["action_health"])
-                                love.graphics.rectangle("fill", hp_x + 12, 11 + y_offset, math.max(math.ceil(hp_percent),math.floor(hp_percent * 75)), 17)
+                                love.graphics.rectangle("fill", hp_x + 12, 11 + y_offset, math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 75)), 17)
                             else
                                 Draw.setColor(PALETTE["action_health"])
                                 love.graphics.rectangle("fill", hp_x + 12, 11 + y_offset, 75, 17)
@@ -530,14 +530,14 @@ function LightBattleUI:drawState()
 
                                 Draw.setColor(COLORS.black)
                                 if enemy:getHPVisibility() then
-                                    love.graphics.printf(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", (hp_x + 20) + shadow_offset, (10 + y_offset) + shadow_offset, 64, "center")
+                                    love.graphics.printf(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", (hp_x + 20) + shadow_offset, (10 + y_offset) + shadow_offset, 64, "center")
                                 else
                                     love.graphics.print("???", (hp_x + 36) + shadow_offset, (10 + y_offset) + shadow_offset)
                                 end
 
                                 Draw.setColor(PALETTE["action_health_text"])
                                 if enemy:getHPVisibility() then
-                                    love.graphics.printf(math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 20, 10 + y_offset, 64, "center")
+                                    love.graphics.printf(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 20, 10 + y_offset, 64, "center")
                                 else
                                     love.graphics.print("???", hp_x + 36, 10 + y_offset)
                                 end
@@ -686,7 +686,7 @@ function LightBattleUI:drawState()
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
                 Draw.setColor(PALETTE["action_health"])
-                love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), math.max(math.ceil(percentage),math.floor(percentage * 101)), 17)
+                love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), math.max(0,math.ceil(percentage),math.floor(percentage * 101)), 17)
             else
                 -- Draw.setColor(PALETTE["action_health_bg"])
                 Draw.setColor(1,0,0,1)
