@@ -36,6 +36,7 @@
             "light_battle_defend_btn": true,
             "mercy_messages": true,
             "mercy_bar": true,
+            "enemy_bar_percentages": true,
             "debug": true,
         }
     }
