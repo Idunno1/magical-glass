@@ -61,7 +61,7 @@ function actor:init(style)
 
         ["battle/rudebuster"] = {-44, -33},
         
-        
+        -- Cutscene offsets
         ["bangs_wall_left"] = {0, -2},
         ["bangs_wall_right"] = {0, -2},
     }, false)
