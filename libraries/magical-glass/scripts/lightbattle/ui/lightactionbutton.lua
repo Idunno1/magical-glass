@@ -119,7 +119,7 @@ function LightActionButton:select()
 
                     if not spell.target or spell.target == "none" then
                         Game.battle:pushAction("SPELL", nil, menu_item)
-                    elseif spell.target == "ally" and #Game.battle.party == 1 then
+                    elseif spell.target == "ally" and not Game.battle.multi_mode then
                         Game.battle:pushAction("SPELL", Game.battle.party[1], menu_item)
                     elseif spell.target == "ally" then
                         Game.battle:setState("PARTYSELECT", "SPELL")
@@ -152,7 +152,7 @@ function LightActionButton:select()
 
                     if not item.target or item.target == "none" then
                         Game.battle:pushAction("ITEM", nil, menu_item)
-                    elseif item.target == "ally" and #Game.battle.party == 1 then
+                    elseif item.target == "ally" and not Game.battle.multi_mode then
                         Game.battle:pushAction("ITEM", Game.battle.party[1], menu_item)
                     elseif item.target == "ally" then
                         Game.battle:setState("PARTYSELECT", "ITEM")
