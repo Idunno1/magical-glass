@@ -165,18 +165,39 @@ function LightBattleUI:drawState()
             Draw.setColor(1, 1, 1, 1)
             local text_offset = 0
             local able = Game.battle:canSelectMenuItem(item)
+            
+            -- Head counter
+            local heads = 0
             if item.party then
+                for index, party_id in ipairs(item.party) do
+                    local chara = Game:getPartyMember(party_id)
+                    if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                        heads = heads + 1
+                    end
+                end
                 if not able then
                     Draw.setColor(COLORS.gray)
                 end
 
-                for index, party_id in ipairs(item.party) do
-                    local chara = Game:getPartyMember(party_id)
+                if heads <= 1 then
+                    for index, party_id in ipairs(item.party) do
+                        local chara = Game:getPartyMember(party_id)
 
-                    if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
-                        local ox, oy = chara:getHeadIconOffset()
-                        Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 102 + (x * (230 + extra_offset[2])) + ox, 5 + (y * 32) + oy)
-                        text_offset = text_offset + 37
+                        if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                            local ox, oy = chara:getHeadIconOffset()
+                            Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 92 + (x * (240 + extra_offset[2])) + ox, 5 + (y * 32) + oy)
+                            text_offset = text_offset + 37
+                        end
+                    end
+                else
+                    for index, party_id in ipairs(item.party) do
+                        local chara = Game:getPartyMember(party_id)
+                        -- Draw head only if it isn't the currently selected character
+                        if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                            local ox, oy = chara:getHeadIconOffset()
+                            Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 92 + (x * (240 + extra_offset[2])) + ox, 5 + (y * 32) + oy)
+                            text_offset = text_offset + 30
+                        end
                     end
                 end
             end
@@ -217,7 +238,7 @@ function LightBattleUI:drawState()
                 name = item.shortname
             end
 
-            if #item.party > 0 then
+            if heads > 0 then
 --[[                 self.menuselect_options[i]:setText(name)
                 self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
                 love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
@@ -316,23 +337,21 @@ function LightBattleUI:drawState()
 
         Draw.setColor(1, 1, 1, 1)
 
-        if self.draw_percents then
-            if self.style == "deltarune" then
-                love.graphics.setFont(font_main)
-                if Game.battle.state_reason ~= "XACT" then
-                    love.graphics.print("HP", 400, -10, 0, 1, 0.5)
-                end
-                if self.draw_mercy then
-                    love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
-                end
-            elseif self.style == "deltatraveler" then
-                love.graphics.setFont(font_main)
-                if Game.battle.state_reason ~= "XACT" then
-                    love.graphics.print("HP", 412, -15, 0, 1, 0.75)
-                end
-                if self.draw_mercy then
-                    love.graphics.print("MERCY", 502, -15, 0, 1, 0.75)
-                end
+        if self.style == "deltarune" then
+            love.graphics.setFont(font_main)
+            if Game.battle.state_reason ~= "XACT" then
+                love.graphics.print("HP", 400, -10, 0, 1, 0.5)
+            end
+            if self.draw_mercy then
+                love.graphics.print("MERCY", 500, -10, 0, 1, 0.5)
+            end
+        elseif self.style == "deltatraveler" then
+            love.graphics.setFont(font_main)
+            if Game.battle.state_reason ~= "XACT" then
+                love.graphics.print("HP", 412, -15, 0, 1, 0.75)
+            end
+            if self.draw_mercy then
+                love.graphics.print("MERCY", 502, -15, 0, 1, 0.75)
             end
         end
 
@@ -506,7 +525,7 @@ function LightBattleUI:drawState()
                         if self.draw_percents then
                             Draw.setColor(PALETTE["action_health_text"])
                             if enemy:getHPVisibility() then
-                                love.graphics.print(0,math.max(math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
+                                love.graphics.print(math.max(0,math.ceil(hp_percent),math.floor(hp_percent * 100)) .. "%", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             else
                                 love.graphics.print("???", hp_x + 4, 10 + y_offset, 0, 1, 0.5)
                             end

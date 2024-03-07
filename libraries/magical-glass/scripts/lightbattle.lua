@@ -232,6 +232,8 @@ function LightBattle:postInit(state, encounter)
     self.battle_ui = LightBattleUI()
     self:addChild(self.battle_ui)
 
+    self.multi_mode = Kristal.getLibConfig("magical-glass", "multi_always_on") or #self.party > 1
+
     self.tension_bar = LightTensionBar(29, 53, true)
     if self.tension then
         self.tension_bar.visible = false
@@ -684,74 +686,76 @@ function LightBattle:finishAction(action, keep_animation)
 
     local battler = self.party[action.character_id]
 
-    self.processed_action[action] = true
+    Game.battle.timer:after(battler.delay_turn_end and 1.4 or 0, function()
+        self.processed_action[action] = true
 
-    if self.processing_action == action then
-        self.processing_action = nil
-    end
+        if self.processing_action == action then
+            self.processing_action = nil
+        end
 
-    local all_processed = self:allActionsDone()
+        local all_processed = self:allActionsDone()
 
-    if all_processed then
-        for _,iaction in ipairs(Utils.copy(self.current_actions)) do
-            local ibattler = self.party[iaction.character_id]
+        if all_processed then
+            for _,iaction in ipairs(Utils.copy(self.current_actions)) do
+                local ibattler = self.party[iaction.character_id]
 
-            local party_num = 1
-            local callback = function()
-                party_num = party_num - 1
-                if party_num == 0 then
-                    Utils.removeFromTable(self.current_actions, iaction)
-                    self:tryProcessNextAction()
+                local party_num = 1
+                local callback = function()
+                    party_num = party_num - 1
+                    if party_num == 0 then
+                        Utils.removeFromTable(self.current_actions, iaction)
+                        self:tryProcessNextAction()
+                    end
                 end
-            end
 
-            if iaction.party then
-                for _,party in ipairs(iaction.party) do
-                    local jbattler = self.party[self:getPartyIndex(party)]
+                if iaction.party then
+                    for _,party in ipairs(iaction.party) do
+                        local jbattler = self.party[self:getPartyIndex(party)]
 
-                    if jbattler ~= ibattler then
-                        party_num = party_num + 1
+                        if jbattler ~= ibattler then
+                            party_num = party_num + 1
 
-                        local dont_end = false
-                        if (keep_animation) then
-                            if Utils.containsValue(keep_animation, party) then
-                                dont_end = true
+                            local dont_end = false
+                            if (keep_animation) then
+                                if Utils.containsValue(keep_animation, party) then
+                                    dont_end = true
+                                end
                             end
-                        end
 
-                        if not dont_end then
-                            self:endActionAnimation(jbattler, iaction, callback)
-                        else
-                            callback()
+                            if not dont_end then
+                                self:endActionAnimation(jbattler, iaction, callback)
+                            else
+                                callback()
+                            end
                         end
                     end
                 end
-            end
 
 
-            local dont_end = false
-            if (keep_animation) then
-                if Utils.containsValue(keep_animation, ibattler.chara.id) then
-                    dont_end = true
+                local dont_end = false
+                if (keep_animation) then
+                    if Utils.containsValue(keep_animation, ibattler.chara.id) then
+                        dont_end = true
+                    end
                 end
-            end
 
-            if not dont_end then
-                self:endActionAnimation(ibattler, iaction, callback)
-            else
-                callback()
-            end
+                if not dont_end then
+                    self:endActionAnimation(ibattler, iaction, callback)
+                else
+                    callback()
+                end
 
-            if iaction.action == "DEFEND" then
-                ibattler.defending = false
-            end
+                if iaction.action == "DEFEND" then
+                    ibattler.defending = false
+                end
 
-            Kristal.callEvent("onBattleActionEnd", iaction, iaction.action, ibattler, iaction.target, dont_end)
+                Kristal.callEvent("onBattleActionEnd", iaction, iaction.action, ibattler, iaction.target, dont_end)
+            end
+        else
+            -- Process actions if we can
+            self:tryProcessNextAction()
         end
-    else
-        -- Process actions if we can
-        self:tryProcessNextAction()
-    end
+    end)
 end
 
 function LightBattle:onStateChange(old,new)
@@ -1324,6 +1328,7 @@ function LightBattle:nextTurn()
 
     for _,battler in ipairs(self.party) do
         battler.hit_count = 0
+        battler.delay_turn_end = false
         if (battler.chara:getHealth() <= 0) and battler.chara:canAutoHeal() then
             battler:heal(battler.chara:autoHealAmount(), nil, true)
         end
@@ -3005,7 +3010,7 @@ function LightBattle:handleAttackingInput(key)
                 end
             end
 
-            if closest and (closest <= 280 or #Game.battle.party == 1) then
+            if closest and (closest <= 280 or not Game.battle.multi_mode) then
                 for _,attack in ipairs(closest_attacks) do
                     local points, stretch = self.battle_ui.attack_box:hit(attack)
 

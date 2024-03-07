@@ -37,14 +37,6 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
             end
         end
         amount = Utils.round((amount - def) / 5)
-        
-        if min and amount < min then
-            amount = min
-        end
-
-        if cap and amount > cap then
-            amount = cap
-        end
     else
         local threshold_a = (max_hp / 5)
         local threshold_b = (max_hp / 8)
@@ -61,6 +53,14 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
                 break
             end
         end
+    end
+    
+    if min and amount < min then
+        amount = min
+    end
+
+    if cap and amount > cap then
+        amount = cap
     end
 
     return math.max(amount, 1)
@@ -131,7 +131,7 @@ function LightPartyBattler:removeHealth(amount)
     else
         self.chara:setHealth(self.chara:getHealth() - amount)
         if (self.chara:getHealth() <= 0) then
-            if #Game.battle.party == 1 then
+            if not Game.battle.multi_mode then
                 self.chara:setHealth(0)
             else
                 amount = math.abs((self.chara:getHealth() - (self.chara:getStat("health") / 2)))
@@ -145,7 +145,7 @@ end
 function LightPartyBattler:removeHealthBroken(amount)
     self.chara:setHealth(self.chara:getHealth() - amount)
     if (self.chara:getHealth() <= 0) then
-        if #Game.battle.party == 1 then
+        if not Game.battle.multi_mode then
             self.chara:setHealth(0)
         else
             -- BUG: Use Kris' max health...

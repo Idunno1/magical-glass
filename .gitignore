@@ -4,7 +4,4 @@ obsolete
 libraries/magical-glass/scripts/data/items/ut_weapons/test.lua
 fuck.txt
 libraries/ExpandedAttackLib/
-scripts/data/party/susie1.lua
-scripts/data/party/susie2.lua
-scripts/data/party/susie3.lua
-scripts/data/party/susie4.lua
+/libraries/MoreParty

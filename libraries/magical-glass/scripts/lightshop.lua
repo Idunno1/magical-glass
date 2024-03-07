@@ -611,6 +611,32 @@ function LightShop:draw()
                     love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
                 elseif #Game.party == 3 then
                     love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
+                elseif Mod.libs["moreparty"] and #Game.party > 3 then
+                    if not Kristal.getLibConfig("moreparty", "classic_mode") then
+                        if #Game.party == 4 then
+                            love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{Game.party[4]:getLightColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight())
+                        else
+                            love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{Game.party[4]:getLightColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() - 10)
+                        end
+                        if #Game.party == 5 then
+                            love.graphics.print({"(",{Game.party[5]:getLightColor()},stats_diff[5],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        elseif #Game.party == 6 then
+                            love.graphics.print({"(",{Game.party[5]:getLightColor()},stats_diff[5],{Game.party[6]:getLightColor()},stats_diff[6],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        elseif #Game.party == 7 then
+                            love.graphics.print({"(",{Game.party[5]:getLightColor()},stats_diff[5],{Game.party[6]:getLightColor()},stats_diff[6],{Game.party[7]:getLightColor()},stats_diff[7],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        elseif #Game.party >= 8 then
+                            love.graphics.print({"(",{Game.party[5]:getLightColor()},stats_diff[5],{Game.party[6]:getLightColor()},stats_diff[6],{Game.party[7]:getLightColor()},stats_diff[7],{Game.party[8]:getLightColor()},stats_diff[8],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        end
+                    else
+                        love.graphics.print({"(",{Game.party[1]:getLightColor()},stats_diff[1],{Game.party[2]:getLightColor()},stats_diff[2],{Game.party[3]:getLightColor()},stats_diff[3],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() - 10)
+                        if #Game.party == 4 then
+                            love.graphics.print({"(",{Game.party[4]:getLightColor()},stats_diff[4],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        elseif #Game.party == 5 then
+                            love.graphics.print({"(",{Game.party[4]:getLightColor()},stats_diff[4],{Game.party[5]:getLightColor()},stats_diff[5],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        elseif #Game.party >= 6 then
+                            love.graphics.print({"(",{Game.party[4]:getLightColor()},stats_diff[4],{Game.party[5]:getLightColor()},stats_diff[5],{Game.party[6]:getLightColor()},stats_diff[6],{1,1,1},stat ..")"}, left + 28, top + 28 + self.font:getHeight() + 10)
+                        end
+                    end
                 else
                     love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
                 end

@@ -44,25 +44,11 @@ function LightActionBox:createButtons()
     for i,btn in ipairs(btn_types) do
         if type(btn) == "string" then
             local x
-            local loc = 2
             if #btn_types <= 4 then
-                if #btn_types < 4 then
-                    if btn == "fight" then
-                        loc = 1
-                    elseif btn == "act" or btn == "spell" then
-                        loc = 2
-                    elseif btn == "item" then
-                        loc = 3
-                    elseif btn == "mercy" then
-                        loc = 4
-                    end
-                else
-                    loc = i
-                end
-                x = math.floor(67 + ((loc - 1) * 156))
-                if loc == 2 then
+                x = math.floor(67 + ((i - 1) * 156))
+                if i == 2 then
                     x = x - 3
-                elseif loc == 3 then
+                elseif i == 3 then
                     x = x + 1
                 end
             else
@@ -73,6 +59,8 @@ function LightActionBox:createButtons()
             button.actbox = self
             table.insert(self.buttons, button)
             self:addChild(button)
+        elseif type(btn) == "boolean" then
+            -- nothing, used to create an empty space
         else
             btn:setPosition(math.floor(66 + ((i - 1) * 156)) + 0.5, 183)
             btn.battler = self.battler
@@ -184,7 +172,7 @@ function LightActionBox:drawStatusStripStory()
 end
 
 function LightActionBox:drawStatusStrip()    
-    if #Game.battle.party == 1 then
+    if not Game.battle.multi_mode then
         local x, y = 10, 130
         
         local name = self.battler.chara:getName()

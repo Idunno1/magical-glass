@@ -173,6 +173,11 @@
         /////
         "multi_neat_ui": true,
         
+        ///// Multi-Party Mode in Solo-Party
+        // Whether Multi-Party light battle style will also be enabled when playing with just a single party member.
+        /////
+        "multi_always_on": false,
+        
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
         /////

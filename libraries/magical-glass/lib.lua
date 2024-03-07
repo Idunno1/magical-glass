@@ -650,10 +650,10 @@ function lib:init()
         
         if self.texture and self.run_away_light then
             local r,g,b,a = self:getDrawColor()
-            for i = 0, 160 do
+            for i = 0, 80 do
                 local alph = a * 0.4
                 Draw.setColor(r,g,b, ((alph - (self.run_away_timer / 8)) + (i / 200)))
-                Draw.draw(self.texture, i * 2, 0)
+                Draw.draw(self.texture, i * 4, 0)
             end
             return
         end
@@ -1608,15 +1608,22 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        self.party_select_bg = UIBox(-36, 242, 370, 52)
-        --self.party_select_bg = UIBox(-92, 242, 482, 52) -- For MoreParty when it will be added
+        if Mod.libs["moreparty"] and #Game.party > 3 then
+            if not Kristal.getLibConfig("moreparty", "classic_mode") then
+                self.party_select_bg = UIBox(-92, 242, 482, 90)
+            else
+                self.party_select_bg = UIBox(-36, 242, 370, 90)
+            end
+        else
+            self.party_select_bg = UIBox(-36, 242, 370, 52)
+        end
         self.party_select_bg.visible = false
         self.party_select_bg.layer = -1
         self.party_selecting = 1
         self:addChild(self.party_select_bg)
 
     end)
-
+    
     Utils.hook(LightItemMenu, "update", function(orig, self)
     
         if self.state == "ITEMOPTION" then
@@ -1667,6 +1674,7 @@ function lib:init()
                 end
             end
         elseif self.state == "PARTYSELECT" then
+            lib.is_light_menu_partyselect = true
             if Input.pressed("cancel") then
                 self.party_select_bg.visible = false
                 self.state = "ITEMOPTION"
@@ -1684,7 +1692,11 @@ function lib:init()
                     self.party_selecting = self.party_selecting - 1
                 end
 
-                self.party_selecting = Utils.clamp(self.party_selecting, 1, #Game.party)
+                if self.party_selecting < 1 then
+                    self.party_selecting = #Game.party
+                elseif self.party_selecting > #Game.party then
+                    self.party_selecting = 1
+                end
 
                 if self.party_selecting ~= old_selecting then
                     self.ui_move:stop()
@@ -1756,14 +1768,24 @@ function lib:init()
 
             love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
+            local z = Mod.libs["moreparty"] and Kristal.getLibConfig("moreparty", "classic_mode") and 3 or 4
+
             for i,party in ipairs(Game.party) do
-                love.graphics.print(party:getShortName(), 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
+                if i <= z then
+                    love.graphics.print(party:getShortName(), 63 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 269)
+                else
+                    love.graphics.print(party:getShortName(), 63 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 269 + 36)
+                end
             end
 
             Draw.setColor(Game:getSoulColor())
             for i,party in ipairs(Game.party) do
                 if i == self.party_selecting or self.party_selecting == "all" then
-                    Draw.draw(self.heart_sprite, 40 - (#Game.party - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                    if i <= z then
+                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                    else
+                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 277 + 36, 0, 2, 2)
+                    end
                 end
             end
         end
@@ -1812,7 +1834,7 @@ function lib:init()
                 message = text .. " \n" .. message
             end
             
-            if not Game.cutscene_active then
+            if not Game.world:hasCutscene() then
                 Game.world:showText(message)
             end
         else
@@ -1962,7 +1984,7 @@ function lib:init()
             return damage
         end
         if Game:isLight() then
-            return ((battler.chara:getStat("attack") * points) / 68) - (self.defense * 2.25)
+            return ((battler.chara:getStat("attack") * points) / 68) - (self.defense * 2.2)
         else
             return orig(self, damage, battler, points)
         end
@@ -2131,7 +2153,7 @@ function lib:init()
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 1, 1})
         elseif self.light_color and type(self.light_color) == "table" then
             return Utils.unpackColor(self.light_color)
@@ -2141,7 +2163,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightDamageColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 0, 0})
         elseif self.light_dmg_color and type(self.light_dmg_color) == "table" then
             return Utils.unpackColor(self.light_dmg_color)
@@ -2151,7 +2173,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightMissColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({192/255, 192/255, 192/255})
         elseif self.light_miss_color and type(self.light_miss_color) == "table" then
             return Utils.unpackColor(self.light_miss_color)
@@ -2161,7 +2183,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightAttackColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 105/255, 105/255})
         elseif self.light_attack_color and type(self.light_attack_color) == "table" then
             return Utils.unpackColor(self.light_attack_color)
@@ -2171,7 +2193,7 @@ function lib:init()
     end)
     
     Utils.hook(PartyMember, "getLightMultiboltAttackColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 1, 1})
         elseif self.light_multibolt_attack_color and type(self.light_multibolt_attack_color) == "table" then
             return self.light_multibolt_attack_color
@@ -2181,7 +2203,7 @@ function lib:init()
     end)
 
     Utils.hook(PartyMember, "getLightAttackBarColor", function(orig, self)
-        if Game.battle and #Game.battle.party == 1 then
+        if Game.battle and not Game.battle.multi_mode then
             return Utils.unpackColor({1, 1, 1})
         elseif self.light_attack_bar_color and type(self.light_attack_bar_color) == "table" then
             return Utils.unpackColor(self.light_attack_bar_color)
@@ -2304,23 +2326,6 @@ function lib:init()
 
     Utils.hook(LightMenu, "draw", function(orig, self)
         LightMenu.__super.draw(self)
-
-        local offset = 0
-        if self.top then
-            offset = 270
-        end
-    
-        local chara = Game.party[1]
-    
-        love.graphics.setFont(self.font)
-        Draw.setColor(PALETTE["world_text"])
-        love.graphics.print(chara:getName(), 46, 60 + offset)
-        love.graphics.setFont(self.font_small)
-        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
-        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
-        -- pastency when -sam, to sam
-        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
-        love.graphics.print(Game.lw_money, 82, 136 + offset)
         
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
@@ -2349,11 +2354,31 @@ function lib:init()
                 love.graphics.print("CELL", 84, 188 + (36 * 2))
             end
         end
-    
+        
         if self.state == "MAIN" then
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
+        
+        local offset = 0
+        if self.top then
+            offset = 270
+            if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
+                love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
+            end
+        end
+    
+        local chara = Game.party[1]
+    
+        love.graphics.setFont(self.font)
+        Draw.setColor(PALETTE["world_text"])
+        love.graphics.print(chara:getName(), 46, 60 + offset)
+        love.graphics.setFont(self.font_small)
+        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
+        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
+        -- pastency when -sam, to sam
+        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
+        love.graphics.print(Game.lw_money, 82, 136 + offset)
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
@@ -3038,6 +3063,7 @@ function lib:onFootstep(char, num)
 end
 
 function lib:preUpdate()
+    lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP (might be used for shared exp at some point)
         if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
