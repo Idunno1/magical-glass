@@ -1,6 +1,7 @@
 local spell, super = Class("rude_buster", true)
 
 function spell:onLightCast(user, target)
+    user.delay_turn_end = true
     Game.battle.timer:after(15/30, function()
         Assets.playSound("rudebuster_swing")
         local x, y = (SCREEN_WIDTH/2), -100

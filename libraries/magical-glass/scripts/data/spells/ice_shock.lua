@@ -1,7 +1,8 @@
 local spell, super = Class("ice_shock", true)
 
 function spell:onLightCast(user, target)
-    self:onCast(user, target)
+    user.delay_turn_end = true
+    return self:onCast(user, target)
 end
 
 function spell:getDamage(user, target)
