@@ -179,13 +179,25 @@ function LightBattleUI:drawState()
                     Draw.setColor(COLORS.gray)
                 end
 
-                for index, party_id in ipairs(item.party) do
-                    local chara = Game:getPartyMember(party_id)
+                if heads <= 1 then
+                    for index, party_id in ipairs(item.party) do
+                        local chara = Game:getPartyMember(party_id)
 
-                    if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
-                        local ox, oy = chara:getHeadIconOffset()
-                        Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 102 + (x * (230 + extra_offset[2])) + ox, 5 + (y * 32) + oy)
-                        text_offset = text_offset + 37
+                        if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                            local ox, oy = chara:getHeadIconOffset()
+                            Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 102 + (x * (230 + extra_offset[2])) + ox, 5 + (y * 32) + oy)
+                            text_offset = text_offset + 37
+                        end
+                    end
+                else
+                    for index, party_id in ipairs(item.party) do
+                        local chara = Game:getPartyMember(party_id)
+                        -- Draw head only if it isn't the currently selected character
+                        if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                            local ox, oy = chara:getHeadIconOffset()
+                            Draw.draw(Assets.getTexture(chara:getHeadIcons() .. "/head"), text_offset + 92 + (x * 230) + ox, 9 + (y * 30) + oy)
+                            text_offset = text_offset + 30
+                        end
                     end
                 end
             end
