@@ -566,7 +566,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if Game:isLight() then
             total_damage = (lane.battler.chara:getStat("attack") - self.defense)
         else
-            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.37)
+            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.363)
         end
         total_damage = total_damage * ((points / 160) * (4 / lane.weapon:getLightBoltCount()))
         total_damage = Utils.round(total_damage) + Utils.random(0, 2, 1)
@@ -592,7 +592,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
         if Game:isLight() then
             total_damage = (lane.battler.chara:getStat("attack") - self.defense) + Utils.random(0, 2, 1)
         else
-            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.37) + Utils.random(0, 2, 1)
+            total_damage = (lane.battler.chara:getStat("attack") * 3.375 - self.defense * 1.363) + Utils.random(0, 2, 1)
         end
         if points <= 12 then
             total_damage = Utils.round(total_damage * 2.2)

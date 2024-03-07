@@ -37,14 +37,6 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
             end
         end
         amount = Utils.round((amount - def) / 5)
-        
-        if min and amount < min then
-            amount = min
-        end
-
-        if cap and amount > cap then
-            amount = cap
-        end
     else
         local threshold_a = (max_hp / 5)
         local threshold_b = (max_hp / 8)
@@ -61,6 +53,14 @@ function LightPartyBattler:calculateDamage(amount, min, cap)
                 break
             end
         end
+    end
+    
+    if min and amount < min then
+        amount = min
+    end
+
+    if cap and amount > cap then
+        amount = cap
     end
 
     return math.max(amount, 1)
