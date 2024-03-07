@@ -1608,16 +1608,20 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        self.party_select_bg = UIBox(-36, 242, 370, 52)
-        --self.party_select_bg = UIBox(-92, 242, 482, 52) -- For MoreParty when it will be added
+        if #Game.party > 3 then
+            self.party_select_bg = UIBox(-92, 242, 482, 90)
+        else
+            self.party_select_bg = UIBox(-36, 242, 370, 52)
+        end
         self.party_select_bg.visible = false
         self.party_select_bg.layer = -1
         self.party_selecting = 1
         self:addChild(self.party_select_bg)
 
     end)
-
+    
     Utils.hook(LightItemMenu, "update", function(orig, self)
+        lib.is_light_menu_partyselect = nil
     
         if self.state == "ITEMOPTION" then
             if Input.pressed("cancel") then
@@ -1667,6 +1671,7 @@ function lib:init()
                 end
             end
         elseif self.state == "PARTYSELECT" then
+            lib.is_light_menu_partyselect = true
             if Input.pressed("cancel") then
                 self.party_select_bg.visible = false
                 self.state = "ITEMOPTION"
@@ -1962,7 +1967,7 @@ function lib:init()
             return damage
         end
         if Game:isLight() then
-            return ((battler.chara:getStat("attack") * points) / 68) - (self.defense * 2.25)
+            return ((battler.chara:getStat("attack") * points) / 68) - (self.defense * 2.2)
         else
             return orig(self, damage, battler, points)
         end
@@ -2228,6 +2233,8 @@ function lib:init()
 
     Utils.hook(LightMenu, "init", function(orig, self)
         LightMenu.__super.init(self, 0, 0)
+        
+        lib.is_light_menu_partyselect = nil
 
         self.layer = 1 -- TODO
 
@@ -2304,23 +2311,6 @@ function lib:init()
 
     Utils.hook(LightMenu, "draw", function(orig, self)
         LightMenu.__super.draw(self)
-
-        local offset = 0
-        if self.top then
-            offset = 270
-        end
-    
-        local chara = Game.party[1]
-    
-        love.graphics.setFont(self.font)
-        Draw.setColor(PALETTE["world_text"])
-        love.graphics.print(chara:getName(), 46, 60 + offset)
-        love.graphics.setFont(self.font_small)
-        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
-        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
-        -- pastency when -sam, to sam
-        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
-        love.graphics.print(Game.lw_money, 82, 136 + offset)
         
         love.graphics.setFont(self.font)
         if Game.inventory:getItemCount(self.storage, false) <= 0 then
@@ -2349,11 +2339,32 @@ function lib:init()
                 love.graphics.print("CELL", 84, 188 + (36 * 2))
             end
         end
-    
+        
         if self.state == "MAIN" then
             Draw.setColor(Game:getSoulColor())
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
+        
+        if lib.is_light_menu_partyselect and #Game.party > 3 then
+            love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
+        end
+        
+        local offset = 0
+        if self.top then
+            offset = 270
+        end
+    
+        local chara = Game.party[1]
+    
+        love.graphics.setFont(self.font)
+        Draw.setColor(PALETTE["world_text"])
+        love.graphics.print(chara:getName(), 46, 60 + offset)
+        love.graphics.setFont(self.font_small)
+        love.graphics.print("LV  "..chara:getLightLV(), 46, 100 + offset)
+        love.graphics.print("HP  "..chara:getHealth().."/"..chara:getStat("health"), 46, 118 + offset)
+        -- pastency when -sam, to sam
+        love.graphics.print(Game:getConfig("lightCurrencyShort"), 46, 136 + offset)
+        love.graphics.print(Game.lw_money, 82, 136 + offset)
     end)
 
     Utils.hook(LightStatMenu, "init", function(orig, self)
