@@ -32,7 +32,7 @@ function item:init(inventory)
     self.description = "A cinnamon roll in the shape of a bunny.\nHeals everyone."
 
     -- Light world check text
-    self.check = "Heals Everyone 22 HP\n* A cinnamon roll in the shape\nof a bunny."
+    self.check = "Heals All 22 HP\n* A cinnamon roll in the shape\nof a bunny."
 
     -- Consumable target mode (ally, party, enemy, enemies, or none)
     self.target = "party"
