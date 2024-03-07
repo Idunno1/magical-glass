@@ -2363,13 +2363,13 @@ function lib:init()
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
         
-        if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
-            love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
-        end
-        
         local offset = 0
         if self.top then
             offset = 270
+        end
+        
+        if lib.is_light_menu_partyselect and self.top and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
+            love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
         end
     
         local chara = Game.party[1]
