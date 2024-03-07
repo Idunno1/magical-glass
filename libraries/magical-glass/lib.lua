@@ -1834,7 +1834,7 @@ function lib:init()
                 message = text .. " \n" .. message
             end
             
-            if not Game.cutscene_active then
+            if not Game.world:hasCutscene() then
                 Game.world:showText(message)
             end
         else
