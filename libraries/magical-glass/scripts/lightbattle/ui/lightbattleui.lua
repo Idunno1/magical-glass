@@ -165,7 +165,16 @@ function LightBattleUI:drawState()
             Draw.setColor(1, 1, 1, 1)
             local text_offset = 0
             local able = Game.battle:canSelectMenuItem(item)
+            
+            -- Head counter
+            local heads = 0
             if item.party then
+                for index, party_id in ipairs(item.party) do
+                    local chara = Game:getPartyMember(party_id)
+                    if Game.battle:getPartyIndex(party_id) ~= Game.battle.current_selecting then
+                        heads = heads + 1
+                    end
+                end
                 if not able then
                     Draw.setColor(COLORS.gray)
                 end
@@ -217,7 +226,7 @@ function LightBattleUI:drawState()
                 name = item.shortname
             end
 
-            if #item.party > 0 then
+            if heads > 0 then
 --[[                 self.menuselect_options[i]:setText(name)
                 self.menuselect_options[i]:setPosition(text_offset + 67 + (x * (240 + extra_offset[2])), 15 + (y * 32)) ]]
                 love.graphics.print(name, text_offset + 95 + (x * (240 + extra_offset[2])), (y * 32))
