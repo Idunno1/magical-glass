@@ -1608,8 +1608,12 @@ function lib:init()
 
         -- States: ITEMSELECT, ITEMOPTION, PARTYSELECT
 
-        if #Game.party > 3 then
-            self.party_select_bg = UIBox(-92, 242, 482, 90)
+        if Mod.libs["moreparty"] and #Game.party > 3 then
+            if not Kristal.getLibConfig("moreparty", "classic_mode") then
+                self.party_select_bg = UIBox(-92, 242, 482, 90)
+            else
+                self.party_select_bg = UIBox(-36, 242, 370, 90)
+            end
         else
             self.party_select_bg = UIBox(-36, 242, 370, 52)
         end
@@ -1761,14 +1765,24 @@ function lib:init()
 
             love.graphics.printf("Use " .. item:getName() .. " on", -50, 233, 400, "center")
 
+            local z = Mod.libs["moreparty"] and Kristal.getLibConfig("moreparty", "classic_mode") and 3 or 4
+
             for i,party in ipairs(Game.party) do
-                love.graphics.print(party:getShortName(), 63 - (#Game.party - 2) * 70 + (i - 1) * 122, 269)
+                if i <= z then
+                    love.graphics.print(party:getShortName(), 63 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 269)
+                else
+                    love.graphics.print(party:getShortName(), 63 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 269 + 36)
+                end
             end
 
             Draw.setColor(Game:getSoulColor())
             for i,party in ipairs(Game.party) do
                 if i == self.party_selecting or self.party_selecting == "all" then
-                    Draw.draw(self.heart_sprite, 40 - (#Game.party - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                    if i <= z then
+                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party,z) - 2) * 70 + (i - 1) * 122, 277, 0, 2, 2)
+                    else
+                        Draw.draw(self.heart_sprite, 40 - (math.min(#Game.party - z,z) - 2) * 70 + (i - 1 - z) * 122, 277 + 36, 0, 2, 2)
+                    end
                 end
             end
         end
@@ -2345,7 +2359,7 @@ function lib:init()
             Draw.draw(self.heart_sprite, 56, 160 + (36 * self.current_selecting), 0, 2, 2)
         end
         
-        if lib.is_light_menu_partyselect and #Game.party > 3 then
+        if lib.is_light_menu_partyselect and #Game.party > 3 and Mod.libs["moreparty"] and not Kristal.getLibConfig("moreparty", "classic_mode") then
             love.graphics.setScissor(0, 0, 96, SCREEN_HEIGHT)
         end
         
