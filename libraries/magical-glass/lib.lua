@@ -1625,7 +1625,6 @@ function lib:init()
     end)
     
     Utils.hook(LightItemMenu, "update", function(orig, self)
-        lib.is_light_menu_partyselect = nil
     
         if self.state == "ITEMOPTION" then
             if Input.pressed("cancel") then
@@ -2251,8 +2250,6 @@ function lib:init()
 
     Utils.hook(LightMenu, "init", function(orig, self)
         LightMenu.__super.init(self, 0, 0)
-        
-        lib.is_light_menu_partyselect = nil
 
         self.layer = 1 -- TODO
 
@@ -3066,6 +3063,7 @@ function lib:onFootstep(char, num)
 end
 
 function lib:preUpdate()
+    lib.is_light_menu_partyselect = nil
     Game.lw_xp = nil
     for _,party in pairs(Game.party_data) do -- Gets the party with the most Light EXP (might be used for shared exp at some point)
         if not Game.lw_xp or party:getLightEXP() > Game.lw_xp then  
