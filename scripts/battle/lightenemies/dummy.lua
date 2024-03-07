@@ -52,7 +52,7 @@ function Dummy:init()
     self:registerAct("Smile")
     self:registerAct("deltarune")
     self:registerAct("Attack")
-    self:registerAct("lmao")
+    self:registerAct("lmao", "", "all")
 
     -- Register party act with Noelle called "Tell Story"
     -- (second argument is description, usually empty)
