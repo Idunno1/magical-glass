@@ -780,7 +780,7 @@ function LightEnemyBattler:freeze()
     sprite:stopShake()
 
     -- self:recruitMessage("frozen")
-    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
+    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255}, true)
     message.y = message.y + 60
     message:resetPhysics()
 
