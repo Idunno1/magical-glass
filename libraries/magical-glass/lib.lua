@@ -1874,7 +1874,7 @@ function lib:init()
             
                 self:closeText()
             
-                width, height = 530, 104
+                local width, height = 530, 104
             
                 self.textbox = Textbox(56, 344, width, height)
                 self.textbox.text.hold_skip = false
