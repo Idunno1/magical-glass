@@ -686,7 +686,7 @@ function LightBattle:finishAction(action, keep_animation)
 
     local battler = self.party[action.character_id]
 
-    Game.battle.timer:after(battler.delay_turn_end and 1.4 or 0, function()
+    Game.battle.timer:after(battler.delay_turn_end and 43/30 or 0, function()
         self.processed_action[action] = true
 
         if self.processing_action == action then
