@@ -1964,7 +1964,7 @@ function lib:init()
                     return waitForTextbox, self.textbox
                 end
             else
-                orig(self, text, portrait, actor, options)
+                return orig(self, text, portrait, actor, options)
             end
         end)
     end
