@@ -493,7 +493,7 @@ function LightBattleUI:drawState()
                         end
                         hp_x = hp_x + (name_length * 16)
                         if enemy:getHPVisibility() and Game.battle.state_reason ~= "ACT" then
-                            Draw.setColor(1,0,0,1)
+                            Draw.setColor(PALETTE["action_health_bg_ut"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, bar_height)
 
                             Draw.setColor(PALETTE["action_health"])
@@ -512,7 +512,7 @@ function LightBattleUI:drawState()
                     elseif self.style == "deltarune" then
                         if enemy:getHPVisibility() then
                             -- Draw.setColor(PALETTE["action_health_bg"])
-                            Draw.setColor(1,0,0,1)
+                            Draw.setColor(PALETTE["action_health_bg_ut"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 81, bar_height)
         
                             Draw.setColor(PALETTE["action_health"])
@@ -533,7 +533,7 @@ function LightBattleUI:drawState()
                     elseif self.style == "deltatraveler" then
                         if Game.battle.state_reason ~= "XACT" then
                             if enemy:getHPVisibility() then
-                                Draw.setColor(1,0,0,1)
+                                Draw.setColor(PALETTE["action_health_bg_ut"])
                                 love.graphics.rectangle("fill", hp_x + 12, 11 + y_offset, 75, 17)
             
                                 Draw.setColor(PALETTE["action_health"])
@@ -700,7 +700,7 @@ function LightBattleUI:drawState()
             love.graphics.print("* " .. Game.battle.party[index].chara:getName(), 100, 0 + ((index - page_offset - 1) * 32))
 
             if self.style ~= "deltarune" then
-                Draw.setColor(1,0,0,1)
+                Draw.setColor(PALETTE["action_health_bg_ut"])
                 love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")
@@ -708,7 +708,7 @@ function LightBattleUI:drawState()
                 love.graphics.rectangle("fill", hp_x, 10 + ((index - page_offset - 1) * 32), math.max(0,math.ceil(percentage),math.floor(percentage * 101)), 17)
             else
                 -- Draw.setColor(PALETTE["action_health_bg"])
-                Draw.setColor(1,0,0,1)
+                Draw.setColor(PALETTE["action_health_bg_ut"])
                 love.graphics.rectangle("fill", 420, 10 + ((index - page_offset - 1) * 32), 101, 17)
 
                 local percentage = Game.battle.party[index].chara:getHealth() / Game.battle.party[index].chara:getStat("health")

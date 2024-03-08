@@ -2850,6 +2850,8 @@ function lib:init()
 
     PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
     PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
+    
+    PALETTE["action_health_bg_ut"] = {1, 0, 0, 1}
 end
 
 function lib:registerRandomEncounter(id, class)
