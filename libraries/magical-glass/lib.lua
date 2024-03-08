@@ -150,6 +150,14 @@ function lib:init()
         end
     end)
     
+    Utils.hook(World, "mapTransition", function(orig, self, ...)
+        orig(self, ...)
+        if lib.initiating_random_encounter then
+            Game.lock_movement = false
+            lib.initiating_random_encounter = nil
+        end
+    end)
+    
     Utils.hook(Game, "enterShop", function(orig, self, shop, options)
         if lib.in_light_shop then
             MagicalGlassLib:enterLightShop(shop, options)
