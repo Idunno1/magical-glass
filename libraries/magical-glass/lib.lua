@@ -1307,6 +1307,11 @@ function lib:init()
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
         
+        if self.active_msg <= 0 then
+            self.active_msg = 0
+            self.hit_count = 0
+        end
+        
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
         local function y_msg_position()
@@ -1319,14 +1324,16 @@ function lib:init()
             self.hit_count = 0
             self.x_number_offset = self.x_number_offset + 1
         end
-        local percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
+        local percent
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
+            percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
             if kill then
                 percent.kill_others = true
             end
             self.parent:addChild(percent)
+            self.active_msg = self.active_msg + 1
         
-            if not kill and Game.battle:getState() == "ATTACKING" then
+            if not kill then
                 if self.hit_count >= 0 then
                     self.hit_count = self.hit_count + 1
                 else
