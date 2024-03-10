@@ -62,7 +62,7 @@ function item:onLightBoltHit(lane)
     local battler = lane.battler
     local enemy = Game.battle:getActionBy(battler).target
 
-    if enemy ~= nil and type(enemy) ~= "boolean" then
+    if Game.battle:enemyExist(enemy) then
         Assets.playSound("punchweak")
         local small_punch = Sprite("effects/attack/hyperfist")
         small_punch:setOrigin(0.5, 0.5)
