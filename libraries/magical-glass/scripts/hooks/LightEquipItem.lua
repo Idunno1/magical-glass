@@ -75,15 +75,9 @@ function LightEquipItem:getLightMultiboltVariance(index)
     if Game.battle.multi_mode then
         return 24 + 40 * (index - 1)
     elseif self.light_multibolt_variance[index] then
-        return Utils.pick(self.light_multibolt_variance[index])
+        return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
     else
-        local value
-        if self.bolt_direction == "left" then
-            value = Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) - (self:getLightBoltStart() * (index - #self.light_multibolt_variance))
-        else
-            value = Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) + (-self:getLightBoltStart() * (index - #self.light_multibolt_variance))
-        end
-        return value
+        return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) - (self:getLightBoltStart() * (index - #self.light_multibolt_variance))
     end
 end
 
