@@ -30,7 +30,7 @@ function LightAttackBox:createBolts()
         lane.battler = battler
         lane.bolts = {}
         lane.weapon = battler.chara:getWeapon()
-        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (not Game.battle.multi_mode and Utils.random(0, 2, 1) or 1)
+        lane.speed = lane.weapon and lane.weapon.getLightBoltSpeed and lane.weapon:getLightBoltSpeed() or 11 + (not Game.battle.multi_mode and Utils.random(0, 2, 1) or 0)
         lane.attacked = false
         lane.score = 0
         lane.stretch = nil
