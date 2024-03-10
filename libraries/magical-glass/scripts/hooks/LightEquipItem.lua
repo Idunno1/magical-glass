@@ -19,7 +19,7 @@ function LightEquipItem:init()
     self.light_bolt_speed_variance = 2
 
     self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
-    self.light_multibolt_variance = nil
+    self.light_multibolt_variance = 60
 
     self.light_bolt_direction = "right" -- "right", "left", or "random"
 
@@ -72,7 +72,7 @@ function LightEquipItem:onBattleSelect(user, target)
 end
 
 function LightEquipItem:getLightMultiboltVariance(index)
-    if Game.battle.multi_mode or not self.light_multibolt_variance then
+    if Game.battle.multi_mode then
         return nil
     elseif type(self.light_multibolt_variance) == "number" then
         return self.light_multibolt_variance * index
