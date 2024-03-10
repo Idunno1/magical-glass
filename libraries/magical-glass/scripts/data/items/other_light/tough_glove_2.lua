@@ -62,15 +62,17 @@ function item:onLightBoltHit(lane)
     local battler = lane.battler
     local enemy = Game.battle:getActionBy(battler).target
 
-    Assets.playSound("punchweak")
-    local small_punch = Sprite("effects/attack/hyperfist")
-    small_punch:setOrigin(0.5, 0.5)
-    small_punch:setScale(0.5, 0.5)
-    small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
-    small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
-    small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
-    enemy.parent:addChild(small_punch)
-    small_punch:play(2/30, false, function(s) s:remove() end)
+    if enemy then
+        Assets.playSound("punchweak")
+        local small_punch = Sprite("effects/attack/hyperfist")
+        small_punch:setOrigin(0.5, 0.5)
+        small_punch:setScale(0.5, 0.5)
+        small_punch.layer = BATTLE_LAYERS["above_ui"] + 5
+        small_punch.color = {battler.chara:getLightMultiboltAttackColor()}
+        small_punch:setPosition(enemy:getRelativePos((love.math.random(enemy.width)), (love.math.random(enemy.height))))
+        enemy.parent:addChild(small_punch)
+        small_punch:play(2/30, false, function(s) s:remove() end)
+    end
 end
 
 function item:onLightAttack(battler, enemy, damage, stretch, crit)
