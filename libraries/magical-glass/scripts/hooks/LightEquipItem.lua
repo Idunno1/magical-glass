@@ -72,7 +72,9 @@ function LightEquipItem:onBattleSelect(user, target)
 end
 
 function LightEquipItem:getLightMultiboltVariance(index)
-    if self.light_multibolt_variance[index] then
+    if Game.battle.multi_mode then
+        return 24 + 40 * (index - 1)
+    elseif self.light_multibolt_variance[index] then
         return Utils.pick(self.light_multibolt_variance[index])
     else
         local value
