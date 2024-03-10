@@ -463,6 +463,7 @@ function LightBattle:retargetEnemy()
             return other
         end
     end
+    return true
 end
 
 function LightBattle:processAction(action)
@@ -475,7 +476,7 @@ function LightBattle:processAction(action)
     if enemy and enemy.done_state then
         enemy = self:retargetEnemy()
         action.target = enemy
-        if not enemy then
+        if enemy == nil or type(enemy) == "boolean" then
             return true
         end
     end
@@ -2204,6 +2205,11 @@ function LightBattle:getActiveParty()
 end
 
 function LightBattle:getActiveEnemies()
+    for _,enemy in pairs(self.enemies) do
+        if enemy.done_state == "PRE-DEATH" and enemy.health > 0 then
+            enemy.done_state = nil
+        end
+    end
     return Utils.filter(self.enemies, function(enemy) return not enemy.done_state end)
 end
 
