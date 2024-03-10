@@ -7,6 +7,10 @@ function item:init()
     self.short_name = "Watch"
 
     self.price = 300
+    
+    Utils.merge(self.bonuses, {
+        graze_time = 0.1,
+    }, false)
 end
 
 return item
