@@ -57,7 +57,9 @@ end
 function LightEquipItem:getLightBoltSpeedVariance() return self.light_bolt_speed_variance or 0 end
 
 function LightEquipItem:getLightBoltStart()
-    if type(self.light_bolt_start) == "table" then
+    if Game.battle.multi_mode then
+        return nil
+    elseif type(self.light_bolt_start) == "table" then
         return Utils.pick(self.light_bolt_start)
     elseif type(self.light_bolt_start) == "number" then
         return self.light_bolt_start
@@ -71,7 +73,7 @@ end
 
 function LightEquipItem:getLightMultiboltVariance(index)
     if Game.battle.multi_mode or not self.light_multibolt_variance then
-        return 24 + 40 * (index - 1)
+        return nil
     elseif type(self.light_multibolt_variance) == "number" then
         return self.light_multibolt_variance * index
     elseif self.light_multibolt_variance[index] then
