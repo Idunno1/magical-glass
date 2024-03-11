@@ -19,7 +19,7 @@ function LightEquipItem:init()
     self.light_bolt_speed_variance = 2
 
     self.light_bolt_start = -16 -- number or table of where the bolt spawns. if it's a table, a value is chosen randomly
-    self.light_multibolt_variance = {{0}}
+    self.light_multibolt_variance = 50
 
     self.light_bolt_direction = "right" -- "right", "left", or "random"
 
@@ -48,18 +48,18 @@ function LightEquipItem:applyInvBonus(value) return value + self.inv_bonus end
 function LightEquipItem:getLightBoltCount() return self.light_bolt_count end
 
 function LightEquipItem:getLightBoltSpeed()
-    if not Game.battle.multi_mode then
-        return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
-    elseif Kristal.getLibConfig("magical-glass", "multi_fixed_bolt_speed") then
+    if Game.battle.multi_mode then
         return nil
     else
-        return self.light_bolt_speed
+        return self.light_bolt_speed + Utils.random(0, self:getLightBoltSpeedVariance(), 1)
     end
 end
 function LightEquipItem:getLightBoltSpeedVariance() return self.light_bolt_speed_variance or 0 end
 
 function LightEquipItem:getLightBoltStart()
-    if type(self.light_bolt_start) == "table" then
+    if Game.battle.multi_mode then
+        return nil
+    elseif type(self.light_bolt_start) == "table" then
         return Utils.pick(self.light_bolt_start)
     elseif type(self.light_bolt_start) == "number" then
         return self.light_bolt_start
@@ -72,16 +72,14 @@ function LightEquipItem:onBattleSelect(user, target)
 end
 
 function LightEquipItem:getLightMultiboltVariance(index)
-    if self.light_multibolt_variance[index] then
-        return Utils.pick(self.light_multibolt_variance[index])
+    if Game.battle.multi_mode then
+        return nil
+    elseif type(self.light_multibolt_variance) == "number" then
+        return self.light_multibolt_variance * index
+    elseif self.light_multibolt_variance[index] then
+        return type(self.light_multibolt_variance[index]) == "table" and Utils.pick(self.light_multibolt_variance[index]) or self.light_multibolt_variance[index]
     else
-        local value
-        if self.bolt_direction == "left" then
-            value = Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) - (self:getLightBoltStart() * (index - #self.light_multibolt_variance))
-        else
-            value = Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) + (-self:getLightBoltStart() * (index - #self.light_multibolt_variance))
-        end
-        return value
+        return (type(self.light_multibolt_variance[#self.light_multibolt_variance]) == "table" and Utils.pick(self.light_multibolt_variance[#self.light_multibolt_variance]) or self.light_multibolt_variance[#self.light_multibolt_variance]) * (index - #self.light_multibolt_variance + 2) / 2
     end
 end
 

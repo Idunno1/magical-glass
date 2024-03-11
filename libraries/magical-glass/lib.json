@@ -162,12 +162,6 @@
         /////
         "action_button_style": "magical_glass",
         
-        ///// Multi-Party Fixed Bolt Speed
-        // Whether all bolts in multi-party light battles will fixitate on a standard speed rather than using the defined weapon's bolt speed, allowing for easier attacking.
-        // Note: This just controls the default setting, you can still bypass this option for specific weapons if you want by overriding the bolt speed function.
-        /////
-        "multi_fixed_bolt_speed": true,
-        
         ///// Multi-Party Neat UI
         // Whether certain unimportant light battle UI objects in multi-party battles like the HP and KR sprites are visible.
         /////

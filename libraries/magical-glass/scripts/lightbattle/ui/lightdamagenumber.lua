@@ -18,6 +18,8 @@ function LightDamageNumber:init(type, arg, x, y, color, enemy)
     self.physics.speed_y = -4
     self.physics.gravity = 0.5
     self.physics.gravity_direction = math.rad(90)
+    
+    self.enemy = enemy
 
     -- Halfway between UI and the layer above it
     self.layer = BATTLE_LAYERS["damage_numbers"]
@@ -26,7 +28,7 @@ function LightDamageNumber:init(type, arg, x, y, color, enemy)
 
     if self.type == "msg" then
         self.message = arg or "miss"
-    elseif self.type == "damage" and string.sub(tostring(arg or 0), 1, 1) == "+" and enemy.health + tonumber(arg) >= enemy.max_health then
+    elseif self.type == "damage" and string.sub(tostring(arg or 0), 1, 1) == "+" and self.enemy.health + tonumber(arg) >= self.enemy.max_health then
         self.type = "msg"
         self.message = "max"
     else
@@ -116,6 +118,7 @@ function LightDamageNumber:update()
                 end
             end
             self:remove()
+            self.enemy.active_msg = self.enemy.active_msg - 1
             return
         end
 

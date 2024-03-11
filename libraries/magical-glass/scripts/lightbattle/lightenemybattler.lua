@@ -537,7 +537,7 @@ function LightEnemyBattler:checkHealth(on_defeat, amount, battler)
     if self.health <= 0 then
         self.health = 0
         if self.exit_on_defeat then
-            self.done_state = "DEFEATED"
+            self.done_state = "PRE-DEATH"
         end
 
         if not self.defeated then
@@ -615,7 +615,7 @@ function LightEnemyBattler:getAttackDamage(damage, lane, points, stretch)
     end
     self.post_health = self.post_health - total_damage
     if self.post_health <= 0 and self.exit_on_defeat then
-        self.done_state = "DEFEATED"
+        self.done_state = "PRE-DEATH"
     end
     return total_damage, crit
 end
@@ -780,7 +780,7 @@ function LightEnemyBattler:freeze()
     sprite:stopShake()
 
     -- self:recruitMessage("frozen")
-    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255})
+    local message = self:lightStatusMessage("msg", "frozen", {58/255, 147/255, 254/255}, true)
     message.y = message.y + 60
     message:resetPhysics()
 

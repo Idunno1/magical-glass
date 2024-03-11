@@ -150,6 +150,14 @@ function lib:init()
         end
     end)
     
+    Utils.hook(World, "mapTransition", function(orig, self, ...)
+        orig(self, ...)
+        if lib.initiating_random_encounter then
+            Game.lock_movement = false
+            lib.initiating_random_encounter = nil
+        end
+    end)
+    
     Utils.hook(Game, "enterShop", function(orig, self, shop, options)
         if lib.in_light_shop then
             MagicalGlassLib:enterLightShop(shop, options)
@@ -1307,6 +1315,11 @@ function lib:init()
     Utils.hook(Battler, "lightStatusMessage", function(orig, self, x, y, type, arg, color, kill)
         x, y = self:getRelativePos(x, y)
         
+        if self.active_msg <= 0 then
+            self.active_msg = 0
+            self.hit_count = 0
+        end
+        
         local offset_x, offset_y = Utils.unpack(self:getDamageOffset())
         
         local function y_msg_position()
@@ -1319,14 +1332,16 @@ function lib:init()
             self.hit_count = 0
             self.x_number_offset = self.x_number_offset + 1
         end
-        local percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
+        local percent
         if (type == "mercy" and self:getMercyVisibility()) or type == "damage" or type == "msg" then
+            percent = LightDamageNumber(type, arg, x + offset_x + math.floor((self.x_number_offset + 1) / 2) * 122 * ((self.x_number_offset % 2 == 0) and -1 or 1), y_msg_position(), color, self)
             if kill then
                 percent.kill_others = true
             end
             self.parent:addChild(percent)
+            self.active_msg = self.active_msg + 1
         
-            if not kill and Game.battle:getState() == "ATTACKING" then
+            if not kill then
                 if self.hit_count >= 0 then
                     self.hit_count = self.hit_count + 1
                 else
@@ -2843,6 +2858,8 @@ function lib:init()
 
     PALETTE["energy_back"] = {53/255, 181/255, 89/255, 1}
     PALETTE["energy_fill"] = {186/255, 213/255, 60/255, 1}
+    
+    PALETTE["action_health_bg_ut"] = {1, 0, 0, 1}
 end
 
 function lib:registerRandomEncounter(id, class)

@@ -463,6 +463,11 @@ function LightBattle:retargetEnemy()
             return other
         end
     end
+    return true
+end
+
+function LightBattle:enemyExist(enemy)
+    return enemy ~= nil and type(enemy) ~= "boolean"
 end
 
 function LightBattle:processAction(action)
@@ -472,10 +477,10 @@ function LightBattle:processAction(action)
 
     self.current_processing_action = action
 
-    if enemy and enemy.done_state then
+    if self:enemyExist(enemy) and enemy.done_state then
         enemy = self:retargetEnemy()
         action.target = enemy
-        if not enemy then
+        if not self:enemyExist(enemy) then
             return true
         end
     end
@@ -520,10 +525,10 @@ function LightBattle:processAction(action)
 
         if lane.attacked then
 
-            if action.target and action.target.done_state then
+            if self:enemyExist(action.target) and action.target.done_state then
                 enemy = self:retargetEnemy()
                 action.target = enemy
-                if not enemy then
+                if not self:enemyExist(enemy) then
                     self.cancel_attack = true
                     self:finishAction(action)
                     return
@@ -534,7 +539,7 @@ function LightBattle:processAction(action)
             local damage = 0
             local crit
 
-            if enemy then
+            if self:enemyExist(enemy) then
                 if not action.force_miss and action.points > 0 then
                     damage, crit = enemy:getAttackDamage(action.damage or 0, lane, action.points or 0, action.stretch)
                     damage = Utils.round(damage)
@@ -686,7 +691,7 @@ function LightBattle:finishAction(action, keep_animation)
 
     local battler = self.party[action.character_id]
 
-    Game.battle.timer:after(battler.delay_turn_end and 1.4 or 0, function()
+    Game.battle.timer:after(battler.delay_turn_end and 43/30 or 0, function()
         self.processed_action[action] = true
 
         if self.processing_action == action then
@@ -1322,6 +1327,7 @@ function LightBattle:nextTurn()
     for _,enemy in ipairs(self.enemies) do
         enemy.selected_wave = nil
         enemy.hit_count = 0
+        enemy.active_msg = 0
         enemy.x_number_offset = 0
         enemy.post_health = nil
     end
@@ -2203,6 +2209,11 @@ function LightBattle:getActiveParty()
 end
 
 function LightBattle:getActiveEnemies()
+    for _,enemy in pairs(self.enemies) do
+        if enemy.done_state == "PRE-DEATH" and enemy.health > 0 then
+            enemy.done_state = nil
+        end
+    end
     return Utils.filter(self.enemies, function(enemy) return not enemy.done_state end)
 end
 
