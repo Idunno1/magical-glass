@@ -337,7 +337,7 @@ function LightBattle:registerXAction(party, name, description, tp)
         ["name"] = name,
         ["description"] = description,
         ["party"] = party,
-        ["color"] = {self.party[self:getPartyIndex(party)].chara:getXActColor()},
+        ["color"] = {self.party[self:getPartyIndex(party)].chara:getLightXActColor()},
         ["tp"] = tp or 0,
         ["short"] = false
     }
