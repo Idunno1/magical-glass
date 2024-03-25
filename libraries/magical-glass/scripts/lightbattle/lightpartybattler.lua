@@ -249,10 +249,10 @@ function LightPartyBattler:update()
     end
     
     -- Karma (KR) calculations
-    self.karma = Utils.clamp(self.karma, 0, 40)
     if self.karma >= self.chara:getHealth() then
         self.karma = self.chara:getHealth() - 1
     end
+    self.karma = Utils.clamp(self.karma, 0, 40)
     if self.karma > 0 and self.chara:getHealth() > 1 then
         self.karma_timer = self.karma_timer + DTMULT
         if self.prev_health == self.chara:getHealth() then

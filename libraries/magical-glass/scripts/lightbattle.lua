@@ -2133,8 +2133,6 @@ function LightBattle:removeSingleAction(action)
         return
     end
 
-    battler:resetSprite()
-
     if action.tp then
         if action.tp < 0 then
             Game:giveTension(-action.tp)
