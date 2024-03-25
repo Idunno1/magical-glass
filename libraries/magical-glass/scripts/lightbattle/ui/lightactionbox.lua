@@ -151,7 +151,7 @@ function LightActionBox:drawStatusStripStory()
             love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.25 + 9, y + 5)
         end
 
-        love.graphics.setColor(COLORS["red"])
+        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
         love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
         love.graphics.setColor({1,0,1})
         love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
