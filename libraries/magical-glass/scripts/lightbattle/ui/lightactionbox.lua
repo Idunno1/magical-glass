@@ -156,7 +156,7 @@ function LightActionBox:drawStatusStripStory()
         love.graphics.setColor({1,0,1})
         love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + 10) * 1.25) - (karma_mode and karma == 0 and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + 10) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -218,7 +218,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setColor({1,0,1})
         love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and karma == 0 and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -277,7 +277,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setColor({1,0,1})
         love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25 + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.25 - (karma_mode and karma == 0 and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.25 - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
         
         love.graphics.setFont(Assets.getFont("namelv", 16))
         if max < 10 and max >= 0 then
