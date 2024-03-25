@@ -180,6 +180,7 @@ function LightActionBox:drawStatusStrip()
         
         local current = self.battler.chara:getHealth()
         local max = self.battler.chara:getStat("health")
+        local karma = self.battler.karma
 
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
@@ -196,11 +197,18 @@ function LightActionBox:drawStatusStrip()
             size = limit
             limit = true
         end
+        
+        local karma_mode = Game.battle.encounter.karma_mode
+        if karma_mode then
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.25 + 8, y + 5)
+        end
 
-        love.graphics.setColor(COLORS["red"])
+        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
         love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
+        love.graphics.setColor({1,0,1})
+        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, limit == true and math.ceil((Utils.clamp(current, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current, 0, max + 10) * 1.25, 21)
+        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and current >= max and karma == 0 and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -216,10 +224,12 @@ function LightActionBox:drawStatusStrip()
                 color = {0,0,1}
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
                 color = COLORS.aqua
+            elseif karma > 0 then
+                color = {1,0,1}
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14, y)
+        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 8 or 0), y)
     else
         local x, y = 2 + (3 - #Game.battle.party) * 101 + (self.index - 1) * 101 * 2, 130
         
@@ -228,6 +238,7 @@ function LightActionBox:drawStatusStrip()
         
         local current = self.battler.chara:getHealth()
         local max = self.battler.chara:getStat("health")
+        local karma = self.battler.karma
         
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
@@ -245,10 +256,18 @@ function LightActionBox:drawStatusStrip()
                 small = true
             end
         end
-        love.graphics.setColor(COLORS["red"])
+        
+        local karma_mode = Game.battle.encounter.karma_mode
+        if karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") then
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 93 + (small and 20 or 32) * 1.25, y + 15)
+        end
+        
+        love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
         love.graphics.rectangle("fill", x + 90, y, (small and 20 or 32) * 1.25, 21)
-        love.graphics.setColor(COLORS["yellow"])
+        love.graphics.setColor({1,0,1})
         love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current, 0, max) / max) * (small and 20 or 32)) * 1.25, 21)
+        love.graphics.setColor(COLORS["yellow"])
+        love.graphics.rectangle("fill", x + 90, y, math.ceil((Utils.clamp(current - karma, 0, max) / max) * (small and 20 or 32)) * 1.25 - (karma_mode and current >= max and karma == 0 and 1 or 0), 21)
         
         love.graphics.setFont(Assets.getFont("namelv", 16))
         if max < 10 and max >= 0 then
@@ -267,11 +286,13 @@ function LightActionBox:drawStatusStrip()
                 color = {0,0,1}
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
                 color = COLORS.aqua
+            elseif karma > 0 then
+                color = {1,0,1}
             end
         end
         love.graphics.setColor(color)
-        -- love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3)
-        love.graphics.printf(current .. "/" .. max, x + 195 - 500, y + 3, 500, "right")
+        -- love.graphics.print(current .. "/" .. max, x + (small and 117 or 137), y + 3 - (karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") and 4 or 0))
+        love.graphics.printf(current .. "/" .. max, x + 195 - 500, y + 3 - (karma_mode and not Kristal.getLibConfig("magical-glass", "multi_neat_ui") and 4 or 0), 500, "right")
         
         if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
             love.graphics.setColor(self.battler.chara:getLightColor())
