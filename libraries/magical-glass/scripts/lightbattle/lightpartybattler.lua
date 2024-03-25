@@ -250,7 +250,7 @@ function LightPartyBattler:update()
     
     -- Karma (KR) calculations
     self.karma = Utils.clamp(self.karma, 0, 40)
-    if self.karma >= self.chara:getHealth() then
+    if self.karma >= self.chara:getHealth() and self.chara:getHealth() > 0 then
         self.karma = self.chara:getHealth() - 1
     end
     if self.karma > 0 and self.chara:getHealth() > 1 then
