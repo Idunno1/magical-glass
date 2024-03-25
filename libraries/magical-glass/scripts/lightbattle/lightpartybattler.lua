@@ -15,6 +15,13 @@ function LightPartyBattler:init(chara)
     self.sleeping = false
 
     self.targeted = false
+    
+    -- Karma (KR) calculations
+    self.karma = 0
+    self.karma_timer = 0
+    self.karma_bonus = 0
+    self.prev_health = self.chara:getHealth()
+    self.inv_bonus = 0
 end
 
 function LightPartyBattler:canTarget()
@@ -170,19 +177,16 @@ function LightPartyBattler:setSleeping(sleeping)
     if sleeping then
         if self.is_down then return end
         self.sleeping = true
-        self:toggleOverlay(true)
         if self.action then
             Game.battle:removeAction(Game.battle:getPartyIndex(self.chara.id))
         end
     else
         self.sleeping = false
-        self:toggleOverlay(false)
     end
 end
 
 function LightPartyBattler:revive()
     self.is_down = false
-    self:toggleOverlay(false)
 end
 
 function LightPartyBattler:heal(amount, show_up, sound)
@@ -226,21 +230,9 @@ function LightPartyBattler:isTargeted()
     return self.targeted
 end
 
-function LightPartyBattler:getHeadIcon()
-    if self.sleeping then
-        return "sleep"
-    elseif self.defending then
-        return "defend"
-    elseif self.action and self.action.icon then
-        return self.action.icon
-    elseif self.hurting then
-        return "head_hurt"
-    else
-        return "head"
-    end
+function LightPartyBattler:addKarma(amount)
+    self.karma = self.karma + amount
 end
-
-function LightPartyBattler:resetSprite() end
 
 function LightPartyBattler:update()
     if self.actor then
@@ -254,6 +246,59 @@ function LightPartyBattler:update()
         if self.chara:getArmor(i) then
             self.chara:getArmor(i):onBattleUpdate(self)
         end
+    end
+    
+    -- Karma (KR) calculations
+    self.karma = Utils.clamp(self.karma, 0, 40)
+    if self.karma >= self.chara:getHealth() then
+        self.karma = self.chara:getHealth() - 1
+    end
+    if self.karma > 0 and self.chara:getHealth() > 1 then
+        self.karma_timer = self.karma_timer + DTMULT
+        if self.prev_health == self.chara:getHealth() then
+            self.karma_bonus = 0
+            self.inv_bonus = 0
+            for _,equip in ipairs(self.chara:getEquipment()) do
+                if equip.applyInvBonus then
+                    self.inv_bonus = equip:applyInvBonus(self.inv_bonus)
+                end
+            end
+            if self.inv_bonus >= 15/30 then
+                self.karma_bonus = Utils.pick({0,1})
+            end
+            if self.inv_bonus >= 30/30 then
+                self.karma_bonus = Utils.pick({0,1,1})
+            end
+            if self.inv_bonus >= 45/30 then
+                self.karma_bonus = 1
+            end
+            
+            local function hurtKarma()
+                self.karma_timer = 0
+                self.chara:setHealth(self.chara:getHealth() - 1)
+                self.karma = self.karma - 1
+            end
+            
+            if self.karma_timer >= (1 + self.karma_bonus) and self.karma >= 40 then
+                hurtKarma()
+            end
+            if self.karma_timer >= (2 + self.karma_bonus * 2) and self.karma >= 30 then
+                hurtKarma()
+            end
+            if self.karma_timer >= (5 + self.karma_bonus * 3) and self.karma >= 20 then
+                hurtKarma()
+            end
+            if self.karma_timer >= (15 + self.karma_bonus * 5) and self.karma >= 10 then
+                hurtKarma()
+            end
+            if self.karma_timer >= (30 + self.karma_bonus * 10) then
+                hurtKarma()
+            end
+            if self.chara:getHealth() <= 0 then
+                self.chara:setHealth(1)
+            end
+        end
+        self.prev_health = self.chara:getHealth()
     end
 
     super.update(self)

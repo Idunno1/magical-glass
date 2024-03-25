@@ -31,6 +31,9 @@ function LightEncounter:init()
 
     -- A copy of battle.defeated_enemies, used to determine how an enemy has been defeated.
     self.defeated_enemies = nil
+    
+    -- Whether Karma (KR) UI changes will appear.
+    self.karma_mode = false
 
     self.can_flee = true
 

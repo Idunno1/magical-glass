@@ -1075,6 +1075,9 @@ function LightBattle:onStateChange(old,new)
             battler:setSleeping(false)
             battler.defending = false
             battler.action = nil
+            
+            battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
+            battler.karma = 0
 
             battler.chara:resetBuffs()
 
