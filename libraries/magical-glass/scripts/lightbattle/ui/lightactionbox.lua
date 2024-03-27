@@ -124,13 +124,17 @@ end
 function LightActionBox:drawStatusStripStory()
     if self.index == 1 then
         local x, y = 180, 130
+        
+        local karma_mode = Game.battle.encounter.karma_mode
+        local karma_mode_offset = karma_mode and 20 or 0
+        
         local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
 
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
-        love.graphics.print("LV " .. level, x, y)
+        love.graphics.print("LV " .. level, x - karma_mode_offset, y)
 
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74, y + 5)
+        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 74 - karma_mode_offset, y + 5)
 
         local max = self.battler.chara:getStat("health")
         local current = self.battler.chara:getHealth()
@@ -146,17 +150,16 @@ function LightActionBox:drawStatusStripStory()
             limit = true
         end
         
-        local karma_mode = Game.battle.encounter.karma_mode
         if karma_mode then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.25 + 9, y + 5)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 110 + size * 1.25 + 9 - karma_mode_offset, y + 5)
         end
 
         love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
-        love.graphics.rectangle("fill", x + 110, y, size * 1.25, 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, size * 1.25, 21)
         love.graphics.setColor({1,0,1})
-        love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 110, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + 10) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 110 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + 10) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + 10) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -177,13 +180,16 @@ function LightActionBox:drawStatusStripStory()
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0), y)
+        love.graphics.print(current .. " / " .. max, x + 115 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
     end
 end
 
 function LightActionBox:drawStatusStrip()    
     if not Game.battle.multi_mode then
         local x, y = 10, 130
+        
+        local karma_mode = Game.battle.encounter.karma_mode
+        local karma_mode_offset = karma_mode and 20 or 0
         
         local name = self.battler.chara:getName()
         local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
@@ -195,8 +201,8 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setFont(Assets.getFont("namelv", 24))
         love.graphics.setColor(COLORS["white"])
         love.graphics.print(name .. "   LV " .. level, x, y)
-
-        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 214, y + 5)
+        
+        love.graphics.draw(Assets.getTexture("ui/lightbattle/hp"), x + 214 - karma_mode_offset, y + 5)
         
         local limit = self:getHPGaugeLengthCap()
         if limit == true then
@@ -208,17 +214,16 @@ function LightActionBox:drawStatusStrip()
             limit = true
         end
         
-        local karma_mode = Game.battle.encounter.karma_mode
         if karma_mode then
-            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.25 + 9, y + 5)
+            love.graphics.draw(Assets.getTexture("ui/lightbattle/kr"), x + 245 + size * 1.25 + 9 - karma_mode_offset, y + 5)
         end
 
         love.graphics.setColor(karma_mode and {192/255, 0, 0} or COLORS["red"])
-        love.graphics.rectangle("fill", x + 245, y, size * 1.25, 21)
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, size * 1.25, 21)
         love.graphics.setColor({1,0,1})
-        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current, 0, max + (karma_mode and 5 or 10)) * 1.25) + (karma_mode and karma == 0 and current > 0 and current < max and 1 or 0), 21)
         love.graphics.setColor(COLORS["yellow"])
-        love.graphics.rectangle("fill", x + 245, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
+        love.graphics.rectangle("fill", x + 245 - karma_mode_offset, y, (limit == true and math.ceil((Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) / max) * size) * 1.25 or Utils.clamp(current - karma, 0, max + (karma_mode and 5 or 10)) * 1.25) - (karma_mode and (karma == 0 or current - karma >= max) and current > 0 and current >= max and 1 or 0), 21)
 
         if max < 10 and max >= 0 then
             max = "0" .. tostring(max)
@@ -239,7 +244,7 @@ function LightActionBox:drawStatusStrip()
             end
         end
         love.graphics.setColor(color)
-        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0), y)
+        love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
     else
         local x, y = 2 + (3 - #Game.battle.party) * 101 + (self.index - 1) * 101 * 2, 130
         
