@@ -502,14 +502,22 @@ function LightBattle:processAction(action)
 
     if action.action == "SPARE" then
 
-        self:toggleSoul(false)
+        if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
+            enemy:onMercy(battler)
+            self:finishAction(action)
 
-        for _,act_enemy in ipairs(self:getActiveEnemies()) do
-            local worked = act_enemy:canSpare()
-            act_enemy:onMercy(battler)
+            self:battleText("* " .. battler.chara:getNameOrYou() .. " spared " .. enemy.name .. ".")
+        else
+            self:toggleSoul(false)
+
+            for _,act_enemy in ipairs(self:getActiveEnemies()) do
+                act_enemy:onMercy(battler)
+            end
+
+            self:finishAction(action)
         end
-
-        self:finishAction(action)
+        
+        return false
 
     elseif action.action == "ATTACK" or action.action == "AUTOATTACK" then
 
@@ -2806,6 +2814,8 @@ function LightBattle:onKeyPressed(key)
                     xaction.name = self.enemies[self.selected_enemy]:getXAction(self.party[self.current_selecting])
                 end
                 self:pushAction("XACT", self.enemies[self.selected_enemy], xaction)
+            elseif self.state_reason == "SPARE" then
+                self:pushAction("SPARE", self.enemies[self.selected_enemy])
             elseif self.state_reason == "ACT" then
                 self:clearMenuItems()
                 local enemy = self.enemies[self.selected_enemy]

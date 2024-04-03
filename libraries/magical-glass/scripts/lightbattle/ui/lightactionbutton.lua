@@ -177,7 +177,11 @@ function LightActionButton:select()
             ["name"] = "Spare",
             ["special"] = "spare",
             ["callback"] = function(menu_item)
-                Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
+                if Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
+                    Game.battle:setState("ENEMYSELECT", "SPARE")
+                else
+                    Game.battle:pushAction("SPARE", Game.battle:getActiveEnemies())
+                end
             end
         })
         local battler_can_defend = Kristal.getLibConfig("magical-glass", "light_battle_defend_btn") or not Game:isLight()
