@@ -154,6 +154,11 @@ function LightEncounter:onFlee()
 
     Assets.playSound("escaped")
     
+    for _,battler in ipairs(Game.battle.party) do
+        battler.chara:setHealth(battler.chara:getHealth() - battler.karma)
+        battler.karma = 0
+    end
+    
     local money = self:getVictoryMoney(Game.battle.money) or Game.battle.money
     local xp = self:getVictoryXP(Game.battle.xp) or Game.battle.xp
 

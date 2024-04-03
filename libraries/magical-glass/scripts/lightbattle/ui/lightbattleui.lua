@@ -492,7 +492,7 @@ function LightBattleUI:drawState()
                             end
                         end
                         hp_x = hp_x + (name_length * 16)
-                        if enemy:getHPVisibility() and Game.battle.state_reason ~= "ACT" then
+                        if enemy:getHPVisibility() and Game.battle.state_reason ~= "ACT" and Game.battle.state_reason ~= "SPARE" then
                             Draw.setColor(PALETTE["action_health_bg_ut"])
                             love.graphics.rectangle("fill", hp_x, 10 + y_offset, 101, bar_height)
 
@@ -606,7 +606,7 @@ function LightBattleUI:drawState()
             local mercy_x = self.style == "undertale" and (Game.battle.state_reason == "XACT" and 480 or hp_x) or 500
             local mercy_length = self.style == "undertale" and 101 or 81
 
-            if self.draw_mercy and not enemy.done_state and not (self.style ~= "deltarune" and (Game.battle.state_reason ~= "ACT" and Game.battle.state_reason ~= "XACT")) and self.style ~= "deltatraveler" then
+            if self.draw_mercy and not enemy.done_state and not (self.style ~= "deltarune" and (Game.battle.state_reason ~= "ACT" and Game.battle.state_reason ~= "XACT" and Game.battle.state_reason ~= "SPARE")) and self.style ~= "deltatraveler" then
                 if enemy.selectable then
                     Draw.setColor(PALETTE["battle_mercy_bg"])
                 else

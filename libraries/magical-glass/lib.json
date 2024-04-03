@@ -172,6 +172,11 @@
         /////
         "multi_always_on": false,
         
+        ///// Multi-Party Deltarune Spare Style
+        // Whether you can only spare a single enemy per battler in Multi-Party light battles.
+        /////
+        "multi_deltarune_spare": false,
+        
         ///// Debug Mode
         // Determines whether the library is in its debug mode state.
         /////
