@@ -2021,6 +2021,7 @@ function lib:init()
         
         self.undertale_movement = false
 
+        self.lw_stat_text = nil
         self.lw_portrait = nil
 
         self.light_color = nil
@@ -2165,6 +2166,7 @@ function lib:init()
         }
     end)
 
+    Utils.hook(PartyMember, "getLightStatText", function(orig, self) return self.lw_stat_text end)
     Utils.hook(PartyMember, "getLightPortrait", function(orig, self) return self.lw_portrait end)
 
     Utils.hook(PartyMember, "getLightColor", function(orig, self)
@@ -2237,30 +2239,16 @@ function lib:init()
     
     Utils.hook(PartyMember, "onLightAttackHit", function(orig, self, enemy, damage) end)
     
-    Utils.hook(PartyMember, "save", function(orig, self) 
-        local data = {
-            id = self.id,
-            title = self.title,
-            level = self.level,
-            health = self.health,
-            stats = self.stats,
-            lw_lv = self.lw_lv,
-            lw_exp = self.lw_exp,
-            lw_health = self.lw_health,
-            lw_stats = self.lw_stats,
-            spells = self:saveSpells(),
-            equipped = self:saveEquipment(),
-            flags = self.flags,
-            
-            lw_portrait = self.lw_portrait
-        }
-        self:onSave(data)
-        return data
+    Utils.hook(PartyMember, "onSave", function(orig, self, data)
+        orig(self, data)
+        data.lw_stat_text = self.lw_stat_text
+        data.lw_portrait = self.lw_portrait
     end)
     
-    Utils.hook(PartyMember, "load", function(orig, self, data) 
-        self.lw_portrait = data.lw_portrait or self.lw_portrait
+    Utils.hook(PartyMember, "onLoad", function(orig, self, data)
         orig(self, data)
+        self.lw_stat_text = data.lw_stat_text or self.lw_stat_text
+        self.lw_portrait = data.lw_portrait or self.lw_portrait
     end)
 
     Utils.hook(LightMenu, "init", function(orig, self)
@@ -2462,47 +2450,41 @@ function lib:init()
     Utils.hook(LightStatMenu, "draw", function(orig, self)
         love.graphics.setFont(self.font)
         Draw.setColor(PALETTE["world_text"])
-        love.graphics.print("\"" .. Game.party[self.party_selecting]:getName() .. "\"", 4, 8)
-
+        
         local chara = Game.party[self.party_selecting]
+        
+        love.graphics.print("\"" .. chara:getName() .. "\"", 4, 8)
+        if chara:getLightStatText() and not chara:getLightPortrait() then
+            love.graphics.print(chara:getLightStatText(), 172, 8)
+        end
+        
+        local ox, oy = chara.actor:getPortraitOffset()
+        if chara:getLightPortrait() then
+            Draw.draw(Assets.getTexture(chara:getLightPortrait()), 179 + ox, 7 + oy, 0, 2, 2)
+        end
 
-        if self.style == "deltatraveler" then
-            local ox, oy = chara.actor:getPortraitOffset()
-            if chara:getLightPortrait() then
-                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
-            end
-
-            if #Game.party > 1 then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
-
+        if #Game.party > 1 then
+            Draw.setColor(Game:getSoulColor())
+            Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
+            
+            if self.style == "deltatraveler" then
                 Draw.setColor(PALETTE["world_text"])
                 love.graphics.print("<                >", 162, 116)
-            end
-        elseif self.style == "magical_glass" then
-            local ox, oy = chara.actor:getPortraitOffset()
-            if chara:getLightPortrait() then
-                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 50 + oy, 0, 2, 2)
-            end
-
-            if #Game.party > 1 then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 213, 12 + 4, 0, 2, 2)
-                
+            elseif self.style == "magical_glass" then
                 if self.rightpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 13, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 124 - 3, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 13, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 124 - 3, 0, 2, 2)
                 end
 
                 if self.leftpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 13, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158 - 4, 124 - 3, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 13, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158, 124 - 3, 0, 2, 2)
                 end
             end
         end
@@ -2514,6 +2496,7 @@ function lib:init()
     
         local at = chara:getBaseStats()["attack"]
         local df = chara:getBaseStats()["defense"]
+        local mg = chara:getBaseStats()["magic"]
         
         if self.undertale_stat_display then
             at = at - 10
@@ -2523,17 +2506,17 @@ function lib:init()
         local offset = 0
         local show_magic = false
         for _,party in pairs(Game.party) do
-            if party.lw_stats.magic > 0 then
+            if party:getBaseStats()["magic"] > 0 then
                 show_magic = true
             end
         end
         if self.always_show_magic or show_magic then
-            offset = 18
+            offset = 16
             love.graphics.print("MG  ", 4, 228 - offset)
-            love.graphics.print(chara:getBaseStats()["magic"]   .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset)
+            love.graphics.print(mg  .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset) -- alinging the numbers with the rest of the stats
         end
-        love.graphics.print("LV  "..chara:getLightLV(), 4, 68 - offset)
-        love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100 - offset)
+        love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
+        love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
         love.graphics.print("AT  "  .. at  .. " ("..chara:getEquipmentBonus("attack")  .. ")", 4, 164 - offset)
         love.graphics.print("DF  "  .. df  .. " ("..chara:getEquipmentBonus("defense") .. ")", 4, 196 - offset)
         love.graphics.print("EXP: " .. chara:getLightEXP(), 172, 164)

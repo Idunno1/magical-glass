@@ -43,6 +43,11 @@
         /////
         "undertale_text_skipping": false,
         
+        ///// UNDERTALE Movement Can Run
+        // Enables the ability to run when using the Undertale player movement.
+        /////
+        "undertale_movement_can_run": false,
+        
         ///// Light Battles HP Gauge Length Cap
         // Limits the length of the HP bar in light battles.
         ///// Values:

@@ -4,7 +4,7 @@ function UnderPlayer:init(chara, x, y)
     super.init(self, chara, x, y)
 
 	-- If 'true', the player will be unable to run, like in Undertale
-    self.force_walk = true
+    self.force_walk = not Kristal.getLibConfig("magical-glass", "undertale_movement_can_run")
 	-- The movement speed of the player.
     self.walk_speed = 6
     
@@ -91,19 +91,9 @@ function UnderPlayer:handleMovement()
         running = not running
     end
 
-    if self.force_run and not self.force_walk then
-        self.run_timer = 200
-    end
-
     local speed = self.walk_speed
     if running then
-        if self.run_timer > 60 then
-            speed = speed * 2.25
-        elseif self.run_timer > 10 then
-            speed = speed * 2
-        else
-            speed = speed * 1.5
-        end
+        speed = speed * 1.5
     end
     
     if Input.down("up") and Input.down("down") then
