@@ -2522,7 +2522,8 @@ function lib:init()
         end
         if self.always_show_magic or show_magic then
             offset = 16
-            love.graphics.print("MG  " .. mg  .. " ("..chara:getEquipmentBonus("magic")   .. ")", 4, 228 - offset)
+            love.graphics.print("MG  ", 4, 228 - offset)
+            love.graphics.print(mg  .. " ("..chara:getEquipmentBonus("magic")   .. ")", 44, 228 - offset) -- alinging the numbers with the rest of the stats
         end
         love.graphics.print("LV  "..chara:getLightLV(), 4, 68)
         love.graphics.print("HP  "..chara:getHealth().." / "..chara:getStat("health"), 4, 100)
