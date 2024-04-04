@@ -2457,44 +2457,34 @@ function lib:init()
         if chara:getLightStatText() and not chara:getLightPortrait() then
             love.graphics.print(chara:getLightStatText(), 172, 8)
         end
+        
+        local ox, oy = chara.actor:getPortraitOffset()
+        if chara:getLightPortrait() then
+            Draw.draw(Assets.getTexture(chara:getLightPortrait()), 179 + ox, 7 + oy, 0, 2, 2)
+        end
 
-        if self.style == "deltatraveler" then
-            local ox, oy = chara.actor:getPortraitOffset()
-            if chara:getLightPortrait() then
-                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
-            end
-
-            if #Game.party > 1 then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
-
+        if #Game.party > 1 then
+            Draw.setColor(Game:getSoulColor())
+            Draw.draw(self.heart_sprite, 212, 124, 0, 2, 2)
+            
+            if self.style == "deltatraveler" then
                 Draw.setColor(PALETTE["world_text"])
                 love.graphics.print("<                >", 162, 116)
-            end
-        elseif self.style == "magical_glass" then
-            local ox, oy = chara.actor:getPortraitOffset()
-            if chara:getLightPortrait() then
-                Draw.draw(Assets.getTexture(chara:getLightPortrait()), 180 + ox, 7 + oy, 0, 2, 2)
-            end
-
-            if #Game.party > 1 then
-                Draw.setColor(Game:getSoulColor())
-                Draw.draw(self.heart_sprite, 213, 124 + 3, 0, 2, 2)
-                
+            elseif self.style == "magical_glass" then
                 if self.rightpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 124, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268 + 4, 124 - 3, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 124, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_right"), 268, 124 - 3, 0, 2, 2)
                 end
 
                 if self.leftpressed == true then
                     Draw.setColor({1,1,0})
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160 - 4, 124, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158 - 4, 124 - 3, 0, 2, 2)
                 else
                     Draw.setColor(PALETTE["world_text"])
-                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 160, 124, 0, 2, 2)
+                    Draw.draw(Assets.getTexture("kristal/menu_arrow_left"), 158, 124 - 3, 0, 2, 2)
                 end
             end
         end
