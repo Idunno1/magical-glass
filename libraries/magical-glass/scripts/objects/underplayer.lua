@@ -4,7 +4,7 @@ function UnderPlayer:init(chara, x, y)
     super.init(self, chara, x, y)
 
 	-- If 'true', the player will be unable to run, like in Undertale
-    self.force_walk = true
+    self.force_walk = not Kristal.getLibConfig("magical-glass", "undertale_movement_can_run")
 	-- The movement speed of the player.
     self.walk_speed = 6
     
