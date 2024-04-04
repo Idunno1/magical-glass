@@ -91,19 +91,9 @@ function UnderPlayer:handleMovement()
         running = not running
     end
 
-    if self.force_run and not self.force_walk then
-        self.run_timer = 200
-    end
-
     local speed = self.walk_speed
     if running then
-        if self.run_timer > 60 then
-            speed = speed * 2.25
-        elseif self.run_timer > 10 then
-            speed = speed * 2
-        else
-            speed = speed * 1.5
-        end
+        speed = speed * 1.5
     end
     
     if Input.down("up") and Input.down("down") then
