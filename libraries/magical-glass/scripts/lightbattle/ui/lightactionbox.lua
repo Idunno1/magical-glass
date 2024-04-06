@@ -246,7 +246,7 @@ function LightActionBox:drawStatusStrip()
         love.graphics.setColor(color)
         love.graphics.print(current .. " / " .. max, x + 245 + size * 1.25 + 14 + (karma_mode and Assets.getTexture("ui/lightbattle/kr"):getWidth() + 12 or 0) - karma_mode_offset, y)
     else
-        local x, y = 2 + (3 - #Game.battle.party) * 101 + (self.index - 1) * 101 * 2, 130
+        local x, y = 2 + (3 - #Game.battle.party - (#Game.battle.party == 2 and 0.4 or 0)) * 101 + (self.index - 1) * 101 * 2 * (#Game.battle.party == 2 and 1.4 or 1), 130
         
         local name = self.battler.chara:getShortName()
         local level = Game:isLight() and self.battler.chara:getLightLV() or self.battler.chara:getLevel()
