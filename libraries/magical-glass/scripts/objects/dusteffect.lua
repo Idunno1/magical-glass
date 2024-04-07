@@ -1,4 +1,4 @@
----@class DustEffect : Object
+---@class ,,Effect : Object
 ---@overload fun(...) : DustEffect
 local DustEffect, super = Class(Object, "DustEffect") -- made by nyako. thank you! -sam
 

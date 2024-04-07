@@ -165,6 +165,12 @@ function lib:init()
             orig(self, shop, options)
         end
     end)
+
+    Utils.hook(World, "lightShopTransition", function(orig, self, shop, options)
+        self:fadeInto(function()
+            Game:enterLightShop()
+        end)
+    end)
     
     Utils.hook(Battle, "init", function(orig, self)
         orig(self)

@@ -32,6 +32,9 @@ function LightEnemyBattler:init(actor, use_overlay)
     self.can_die = true
     self.ut_death = true
 
+    -- Whether this enemy should use bigger dust particles upon death when ut_death is enabled.
+    self.large_dust = false
+
     -- Whether this enemy can be selected or not
     self.selectable = true
 
