@@ -173,7 +173,7 @@ function LightActionBox:drawStatusStripStory()
         if self.battler.chara:getHealth() > 0 and not Game.battle.forced_victory then
             if self.battler.sleeping then
                 color = {0,0,1}
-            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" and not Game.battle.forced_victory then
+            elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
                 color = COLORS.aqua
             elseif karma > 0 then
                 color = {1,0,1}
@@ -301,6 +301,8 @@ function LightActionBox:drawStatusStrip()
                 color = {0,0,1}
             elseif Game.battle:getActionBy(self.battler) and Game.battle:getActionBy(self.battler).action == "DEFEND" then
                 color = COLORS.aqua
+            elseif Game.battle:getActionBy(self.battler) and Utils.containsValue({"ACTIONSELECT", "MENUSELECT", "ENEMYSELECT", "PARTYSELECT"}, Game.battle:getState()) then
+                color = COLORS.yellow
             elseif karma > 0 then
                 color = {1,0,1}
             end
