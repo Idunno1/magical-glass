@@ -168,7 +168,7 @@ function lib:init()
 
     Utils.hook(World, "lightShopTransition", function(orig, self, shop, options)
         self:fadeInto(function()
-            Game:enterLightShop()
+            MagicalGlassLib:enterLightShop()
         end)
     end)
     
