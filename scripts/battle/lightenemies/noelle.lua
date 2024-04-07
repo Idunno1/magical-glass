@@ -57,6 +57,8 @@ function Noelle:init()
 
     self.damage_offset = {0,40}
     
+    self.large_dust = true
+
     self.sniff = 0
     self.befriend = 0
 end
