@@ -367,14 +367,16 @@ function LightEnemyBattler:addMercy(amount)
 end
 
 function LightEnemyBattler:onMercy(battler)
-    if self:canSpare() then
-        self:spare()
-        return true
-    else
-        if self.spare_points ~= 0 or Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
-            self:addMercy(self.spare_points)
+    if not self.done_state then
+        if self:canSpare() then
+            self:spare()
+            return true
+        else
+            if self.spare_points ~= 0 or Kristal.getLibConfig("magical-glass", "multi_deltarune_spare") and Game.battle.multi_mode then
+                self:addMercy(self.spare_points)
+            end
+            return false
         end
-        return false
     end
 end
 
