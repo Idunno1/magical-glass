@@ -28,7 +28,7 @@ function DustEffectLarge:init(texture, x, y)
             pixel.r, pixel.g, pixel.b = data:getPixel(x - 1, y - 1)
             table.insert(line, pixel)
         end
-        local particle = DustEffectLargeParticle(line, x - 1, y - 1)
+        local particle = DustEffectLargeParticle(line, x + 1, y - 1)
         self:addChild(particle)
 
         Game.battle.timer:after(math.floor(delay / 3) / 30, function()
