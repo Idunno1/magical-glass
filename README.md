@@ -36,6 +36,9 @@ Adds **UNDERTALE** battles (and more!) to Kristal!
 ## Contributors:
 * FireRainV
 
+## Moldsmal Recreation:
+* BrendaK2700
+
 ### Testers:
 * Racckoon
 
