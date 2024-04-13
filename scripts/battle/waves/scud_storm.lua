@@ -9,7 +9,7 @@ function ScudStorm:onStart()
         local x = Game.battle.arena.x - 100
         local y = Utils.random(Game.battle.arena.left - 50, Game.battle.arena.right + 50) - 100
 
-        local bullet = self:spawnBullet("scud", x, y, math.rad(45), 12)
+        local bullet = self:spawnBulletTo(Game.battle.mask, "scud", x, y, math.rad(45), 10)
 
         bullet.remove_offscreen = true
     end)
