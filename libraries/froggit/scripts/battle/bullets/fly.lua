@@ -1,7 +1,9 @@
 local bullet, super = Class(Bullet)
 
 function bullet:init(x, y)
-    super:init(self, x, y)
+    super.init(self, x, y)
+    self.remove_outside_of_arena = true
+
     self:setSprite("bullets/froggit/flybullet", 2/30, true)
 
     self:setScale(1, 1)
@@ -29,20 +31,6 @@ function bullet:init(x, y)
     Game.battle.timer:every(1.5, function()
         self.physics.speed = 3
     end)
-end
-
-function bullet:update()
-    super.update(self)
-
-    if self.x < Game.battle.arena.left then
-        self:remove()
-    elseif self.x > Game.battle.arena.right then
-        self:remove()
-    elseif self.y > Game.battle.arena.bottom then
-        self:remove()
-    elseif self.y < Game.battle.arena.top then
-        self:remove()
-    end
 end
 
 return bullet

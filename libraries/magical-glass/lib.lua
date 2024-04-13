@@ -1620,7 +1620,23 @@ function lib:init()
         if Game:isLight() then
             self.inv_timer = 1
         end
+        self.remove_outside_of_arena = false
 
+    end)
+
+    Utils.hook(Bullet, "update", function(orig, self)
+        orig(self)
+        if self.remove_outside_of_arena then
+            if self.x < Game.battle.arena.left then
+                self:remove()
+            elseif self.x > Game.battle.arena.right then
+                self:remove()
+            elseif self.y > Game.battle.arena.bottom then
+                self:remove()
+            elseif self.y < Game.battle.arena.top then
+                self:remove()
+            end
+        end
     end)
 
     Utils.hook(LightItemMenu, "init", function(orig, self)
