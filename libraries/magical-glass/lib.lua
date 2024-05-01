@@ -502,7 +502,7 @@ function lib:init()
             item = Registry.createItem(item)
         end
         if ignore_dark or item.light then
-            return LightInventory.__super.tryGiveItem(self, item, ignore_dark)
+            return Inventory.tryGiveItem(self, item, ignore_dark)
         else
             local dark_inv = self:getDarkInventory()
             local result = dark_inv:addItem(item)
@@ -1486,7 +1486,7 @@ function lib:init()
     end)
 
     Utils.hook(DialogueText, "resetState", function(orig, self)
-        DialogueText.__super.resetState(self)
+        Text.resetState(self)
         self.state["typing_sound"] = self.default_sound
     end)
 
@@ -1605,7 +1605,7 @@ function lib:init()
     
         self:updateTalkSprite(self.state.talk_anim and self.state.typing)
     
-        Object.update(self)
+        Text.update(self)
     
         self.last_talking = self.state.talk_anim and self.state.typing
     end)
