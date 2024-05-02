@@ -134,7 +134,9 @@ function LightActionButton:select()
             })
         end
 
-        Game.battle:setState("MENUSELECT", "SPELL")
+        if #Game.battle.menu_items > 0 then
+            Game.battle:setState("MENUSELECT", "SPELL")
+        end
     elseif self.type == "item" then
         Game.battle.current_menu_columns = 2
         Game.battle.current_menu_rows = 2
