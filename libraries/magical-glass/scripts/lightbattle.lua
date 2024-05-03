@@ -967,7 +967,7 @@ function LightBattle:onStateChange(old,new)
                     self.enemies[love.math.random(1, #self.enemies)].selected_wave = self.state_reason[1]
                 end
             else
-                self:setWaves(self.encounter:getNextWaves(), true)
+                self:setWaves(self.encounter:getNextWaves())
             end
 
             local soul_x, soul_y, soul_offset_x, soul_offset_y
@@ -2412,17 +2412,17 @@ function LightBattle:clearMenuWaves()
     self.menu_waves = {}
 end
 
-function LightBattle:setWaves(waves, allow_duplicates)
+function LightBattle:setWaves(waves)
     self:clearWaves()
     self:clearMenuWaves()
     self.finished_waves = false
     local added_wave = {}
     for _,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
-        if allow_duplicates or not exists then
-            if type(wave) == "string" then
-                wave = Registry.createWave(wave)
-            end
+        if type(wave) == "string" then
+            wave = Registry.createWave(wave)
+        end
+        if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
             self:addChild(wave)
             table.insert(self.waves, wave)
@@ -2434,17 +2434,17 @@ function LightBattle:setWaves(waves, allow_duplicates)
     return self.waves
 end
 
-function LightBattle:setMenuWaves(waves, allow_duplicates)
+function LightBattle:setMenuWaves(waves)
     self:clearWaves()
     self:clearMenuWaves()
     self.finished_menu_waves = false
     local added_wave = {}
     for _,wave in ipairs(waves) do
         local exists = (type(wave) == "string" and added_wave[wave]) or (isClass(wave) and added_wave[wave.id])
-        if allow_duplicates or not exists then
-            if type(wave) == "string" then
-                wave = Registry.createWave(wave)
-            end
+        if type(wave) == "string" then
+            wave = Registry.createWave(wave)
+        end
+        if wave:getAllowDuplicates() or not exists then
             wave.encounter = self.encounter
             self:addChild(wave)
             table.insert(self.menu_waves, wave)

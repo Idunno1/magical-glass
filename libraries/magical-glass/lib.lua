@@ -1021,9 +1021,16 @@ function lib:init()
 
     Utils.hook(Wave, "init", function(orig, self)
         orig(self)
+
+        self.allow_duplicates = false
+
         self.has_soul = true
         self.darken = false
         self.auto_clear = true
+    end)
+
+    Utils.hook(Wave, "getAllowDuplicates", function(orig, self)
+        return self.allow_duplicates
     end)
     
     Utils.hook(Wave, "setArenaSize", function(orig, self, width, height)
