@@ -1212,9 +1212,14 @@ function LightBattle:onStateChange(old,new)
                 enemy:onEncounterTransitionOut(enemy == self.encounter_context, self.encounter)
             end
         end
-        self.encounter:onReturnToWorld(enemies)
-        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
 
+        local enemies = {}
+        for k,v in pairs(self.enemy_world_characters) do
+            table.insert(enemies, v)
+        end
+        self.encounter:onReturnToWorld(enemies)
+
+        Game.fader:transition(function() self:returnToWorld() end, nil, {speed = 10/30})
     elseif new == "DEFENDINGBEGIN" then
         self.battle_ui:clearEncounterText()
     elseif new == "FLEEING" then
