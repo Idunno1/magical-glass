@@ -313,10 +313,7 @@ function LightActionBox:drawStatusStrip()
         if Game.battle.current_selecting == self.index or DEBUG_RENDER and Input.alt() then
             love.graphics.setColor(self.battler.chara:getLightColor())
             love.graphics.setLineWidth(2)
-            love.graphics.line(x - 3, y - 7, x - 3, y + 28)
-            love.graphics.line(x - 3 - 1, y - 7, x + 198 + 1, y - 7)
-            love.graphics.line(x + 198, y - 7, x + 198, y + 28)
-            love.graphics.line(x - 3 - 1, y + 28, x + 198 + 1, y + 28)
+            love.graphics.rectangle("line", x - 3, y - 7, 201, 35)
         end
     end
 end

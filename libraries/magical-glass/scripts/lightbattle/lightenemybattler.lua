@@ -854,8 +854,8 @@ function LightEnemyBattler:defeat(reason, violent)
         Game.battle.used_violence = true
         if self.done_state == "KILLED" or self.done_state == "FROZEN" then
             MagicalGlassLib.kills = MagicalGlassLib.kills + 1
-            Game.battle.xp = Game.battle.xp + self.experience
         end
+        Game.battle.xp = Game.battle.xp + self.experience
     end
     
     Game.battle.money = Game.battle.money + self:getMoney()
