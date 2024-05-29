@@ -12,16 +12,13 @@ function encounter:init()
     self.music = nil
 end
 
-function encounter:onBattleStart()
-    Game.battle.timer:every(1/30, function()
-        if Game.battle:getState() == "ACTIONSELECT" then
-            Game.world.music:stop()
-            Game.world.music:resume()
-            Game.world.music:play("toomuch", 1)
-            Game.battle:setState("VICTORY")
-            return false
-        end
-    end)
+function encounter:onStateChange(old, new)
+    if new == "ACTIONSELECT" then
+        Game.world.music:stop()
+        Game.world.music:resume()
+        Game.world.music:play("toomuch", 1)
+        Game.battle:setState("VICTORY")
+    end
 end
 
 function encounter:getVictoryText()
