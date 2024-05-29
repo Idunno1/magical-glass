@@ -13,7 +13,7 @@ function encounter:init()
 end
 
 function encounter:onStateChange(old, new)
-    if new == "ACTIONSELECT" then
+    if old == "INTRO" and new == "ACTIONSELECT" then
         Game.world.music:stop()
         Game.world.music:resume()
         Game.world.music:play("toomuch", 1)
