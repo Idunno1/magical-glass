@@ -1007,11 +1007,11 @@ function LightShop:buyItem(current_item)
 end
 
 function LightShop:setFlag(name, value)
-    Game:setFlag("shop#" .. self.id .. ":" .. name, value)
+    Game:setFlag("lightshop#" .. self.id .. ":" .. name, value)
 end
 
 function LightShop:getFlag(name, default)
-    return Game:getFlag("shop#" .. self.id .. ":" .. name, default)
+    return Game:getFlag("lightshop#" .. self.id .. ":" .. name, default)
 end
 
 function LightShop:sellItem(current_item)
