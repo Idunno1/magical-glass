@@ -982,9 +982,6 @@ function LightShop:buyItem(current_item)
     if (current_item.options["price"] or 0) > self:getMoney() then
         self:setRightText(self.buy_too_expensive_text)
     else
-        -- PURCHASE THE ITEM
-        -- Remove the gold
-        self:removeMoney(current_item.options["price"] or 0)
 
         -- Decrement the stock
         if current_item.options["stock"] then
@@ -999,6 +996,10 @@ function LightShop:buyItem(current_item)
             -- Visual/auditorial feedback (did I spell that right?)
             Assets.playSound("buyitem")
             self:setRightText(self.buy_text)
+            
+            -- PURCHASE THE ITEM
+            -- Remove the money
+            self:removeMoney(current_item.options["price"] or 0)
         else
             -- Not enough space, oops
             self:setRightText(self.buy_no_space_text)
