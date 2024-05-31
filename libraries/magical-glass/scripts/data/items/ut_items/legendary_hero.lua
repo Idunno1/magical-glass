@@ -21,7 +21,7 @@ function item:init(inventory)
     self.heal_amount = 40
 
     -- Shop description
-    self.shop = "Heals 40HP\nHero Sandwich.\nATTACK UP\nin battle."
+    self.shop = "Hero Sandwich.\nATTACK UP\nin battle."
     -- Default shop price (sell price is halved)
     self.price = 300
     -- Default shop sell price

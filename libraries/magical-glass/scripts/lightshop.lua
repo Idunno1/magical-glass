@@ -641,6 +641,8 @@ function LightShop:draw()
                     love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
                 end
                 love.graphics.print(current_item.options["description"], left + 28, top + 28 + self.font:getHeight() * 2)
+            elseif not current_item.options["dont_show_change"] and current_item.item.type == "item" and current_item.item.heal_amount then
+                love.graphics.print("Heals " .. current_item.item:getHealAmount() .. "HP\n" .. current_item.options["description"], left + 28, top + 28)
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end
