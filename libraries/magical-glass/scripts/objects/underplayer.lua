@@ -93,7 +93,7 @@ function UnderPlayer:handleMovement()
 
     local speed = self.walk_speed
     if running then
-        speed = speed * 1.5
+        speed = speed + 3
     end
     
     if Input.down("up") and Input.down("down") then
