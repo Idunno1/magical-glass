@@ -108,7 +108,7 @@ function LightShop:init()
     self.fade_alpha = 0
     self.fading_out = false
 
-    self.draw_divider = true
+    self.draw_divider = false
 
     self.hide_price = false
 
@@ -237,14 +237,16 @@ function LightShop:onStateChange(old,new)
     Game.key_repeat = false
     self.buy_confirming = false
     self.sell_confirming = false
-    self.draw_divider = true
+    self.draw_divider = false
     if new == "MAINMENU" then
+        self.draw_divider = true
         self.info_box.visible = false
         self.dialogue_text.width = 372
         self:setDialogueText(self.shop_text)
         self:setRightText("")
         self.sold_items = 0
     elseif new == "BUYMENU" then
+        self.draw_divider = true
         self:setDialogueText("")
         self:setRightText(self.buy_menu_text)
         self.info_box.visible = true
@@ -256,13 +258,13 @@ function LightShop:onStateChange(old,new)
     elseif new == "SELLING" then
         Game.key_repeat = true
         self:setDialogueText("")
-        self.draw_divider = false
         self:setRightText("")
         self.info_box.visible = false
         self.sell_current_selecting_x = 1
         self.sell_current_selecting_y = 1
         self.item_offset = 0
     elseif new == "TALKMENU" then
+        self.draw_divider = true
         self:setDialogueText("")
         self:setRightText(self.talk_text)
         self.info_box.visible = false
@@ -276,13 +278,11 @@ function LightShop:onStateChange(old,new)
         self.info_box.visible = false
         self:onLeave()
     elseif new == "LEAVING" then
-        self.draw_divider = false
         self:setRightText("")
         self:setDialogueText("")
         self.info_box.visible = false
         self:leave()
     elseif new == "DIALOGUE" then
-        self.draw_divider = false
         self.dialogue_text.width = 598
         self:setRightText("")
         self.info_box.visible = false
@@ -641,6 +641,8 @@ function LightShop:draw()
                     love.graphics.print("(" .. stats_diff[1] .. stat ..")", left + 28, top + 28 + self.font:getHeight())
                 end
                 love.graphics.print(current_item.options["description"], left + 28, top + 28 + self.font:getHeight() * 2)
+            elseif not current_item.options["dont_show_change"] and current_item.item:includes(HealItem) then
+                love.graphics.print("Heals " .. current_item.item:getHealAmount() .. "HP\n" .. current_item.options["description"], left + 28, top + 28)
             else
                 love.graphics.print(current_item.options["description"], left + 28, top + 28)
             end

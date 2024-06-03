@@ -15,6 +15,7 @@ function item:init(inventory)
 
     -- Shop description
     self.shop = "Heals 11HP x 2\nEat it twice!"
+    self.shop_dont_show_change = true
     -- Default shop price (sell price is halved)
     self.price = 15
     -- Default shop sell price
