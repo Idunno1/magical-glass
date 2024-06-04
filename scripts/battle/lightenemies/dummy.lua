@@ -53,10 +53,13 @@ function Dummy:init()
     self:registerAct("deltarune")
     self:registerAct("Attack")
     self:registerAct("lmao", "", "all")
-
+    
     -- Register party act with Noelle called "Tell Story"
     -- (second argument is description, usually empty)
     self:registerAct("Tell Story", "", {"noelle"})
+    
+    self:registerAct("Red Buster", "Red\nDamage", "susie", 60)
+    self:registerAct("DualHeal", "Heals\neveryone", "noelle", 50)
 
     -- can be a table or a number. if it's a number, it determines the width, and the height will be 13 (the ut default).
     -- if it's a table, the first value is the width, and the second is the height
@@ -66,7 +69,11 @@ function Dummy:init()
 end
 
 function Dummy:onAct(battler, name)
-    if name == "Smile" then
+    if name == "DualHeal" then
+        Game.battle:powerAct("dual_heal", battler, "noelle")
+    elseif name == "Red Buster" then
+        Game.battle:powerAct("red_buster", battler, "susie", self)
+    elseif name == "Smile" then
         -- Give the enemy 100% mercy
         self:addMercy(100)
         -- Change this enemy's dialogue for 1 turn
