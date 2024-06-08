@@ -123,9 +123,9 @@ function LightPartyBattler:hurt(amount, exact, color, options)
             if self.defending then
                 amount = math.ceil((3 * amount) / 4)
             end
-
-            self:removeHealthBroken(amount)
         end
+        
+        self:removeHealthBroken(amount)
     end
 
     Game.battle:shakeCamera(2)
