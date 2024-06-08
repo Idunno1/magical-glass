@@ -1526,13 +1526,6 @@ function LightBattle:shortActText(text)
     self.battle_ui.short_act_text_3:setText(text[3] or "")
 end
 
-function LightBattle:hurt(amount, exact)
-    if self.player then
-        self.player.health = self.player.health - amount
-    end
-    self:checkGameOver()
-end
-
 function LightBattle:checkGameOver()
     for _,battler in ipairs(self.party) do
         if not battler.is_down then
@@ -2398,11 +2391,9 @@ function LightBattle:getPartyFromTarget(target)
 end
 
 function LightBattle:hurt(amount, exact, target)
-    -- Note: 0, 1 and 2 are to target a specific party member.
-    -- In Kristal, we'll allow them to be objects as well.
-    -- Also in Kristal, they're 1, 2 and 3.
-    -- 3 is "ALL" in Kristal,
-    -- while 4 is "ANY".
+    -- If target is a numberic value, it will hurt the party battler with that index
+    -- "ANY" will choose the target randomly
+    -- "ALL" will hurt the entire party all at once
     target = target or "ANY"
 
     -- Alright, first let's try to adjust targets.
@@ -2411,7 +2402,7 @@ function LightBattle:hurt(amount, exact, target)
         target = self.party[target]
     end
 
-    if isClass(target) and (target:includes(PartyBattler) or target:includes(LightPartyBattler)) then
+    if isClass(target) and target:includes(LightPartyBattler) then
         if (not target) or (target.chara:getHealth() <= 0) then -- Why doesn't this look at :canTarget()? Weird.
             target = self:randomTargetOld()
         end
@@ -2419,6 +2410,15 @@ function LightBattle:hurt(amount, exact, target)
 
     if target == "ANY" then
         target = self:randomTargetOld()
+
+        -- Calculate the average HP of the party.
+        -- This is "scr_party_hpaverage", which gets called multiple times in the original script.
+        -- We'll only do it once here, just for the slight optimization. This won't affect accuracy.
+
+        -- Speaking of accuracy, this function doesn't work at all!
+        -- It contains a bug which causes it to always return 0, unless all party members are at full health.
+        -- This is because of a random floor() call.
+        -- I won't bother making the code accurate; all that matters is the output.
 
         local party_average_hp = 1
 
@@ -2429,6 +2429,7 @@ function LightBattle:hurt(amount, exact, target)
             end
         end
 
+        -- Retarget... twice.
         if target.chara:getHealth() / target.chara:getStat("health") < (party_average_hp / 2) then
             target = self:randomTargetOld()
         end
@@ -2436,13 +2437,15 @@ function LightBattle:hurt(amount, exact, target)
             target = self:randomTargetOld()
         end
 
+        -- If we landed on Kris (or, well, the first party member), and their health is low, retarget (plot armor lol)
         if (target == self.party[1]) and ((target.chara:getHealth() / target.chara:getStat("health")) < 0.35) then
             target = self:randomTargetOld()
         end
-        
+
         target.targeted = true
     end
 
+    -- Now it's time to actually damage them!
     if isClass(target) and target:includes(LightPartyBattler) then
         target:hurt(amount, exact)
         return {target}
@@ -2450,13 +2453,14 @@ function LightBattle:hurt(amount, exact, target)
 
     if target == "ALL" then
         Assets.playSound("hurt")
+        local alive_battlers = Utils.filter(self.party, function(battler) return not battler.is_down end)
         for _,battler in ipairs(self.party) do
             if not battler.is_down then
                 battler:hurt(amount, exact, nil, {all = true})
             end
         end
-
-        return Utils.filter(self.party, function(item) return not item.is_down end)
+        -- Return the battlers who aren't down, aka the ones we hit.
+        return alive_battlers
     end
 end
 
