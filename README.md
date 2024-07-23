@@ -1,3 +1,6 @@
+# THIS LIBRARY HAS BEEN DEPRECATED!
+# CHECK OUT THE REWRITE, [MAGICAL GLASS 2!](https://github.com/Idunno1/magical-glass-2)
+
 # Magical Glass v1.1.0 for [Kristal](https://github.com/KristalTeam/Kristal)
 
 <p align="center" width="100%">
